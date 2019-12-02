@@ -1,0 +1,74 @@
+{~
+@view = \Base::instance()->get('view');
+
+@orderalt = @view->orderalt;
+@col_arrow = @view->col_arrow;
+@page = @view->page;
+@data = &@page->items;
+@pgsize = "?pgsize=" . @view->pgsize;
+@ubase =  @view->url . @pgsize . "&orderby=";
+
+~}
+
+<div class='outerwrap pad10'>
+    <div class="container-fluid">
+        <check if="{{ @page->last > 1 }}"><true>
+            &nbsp; | &nbsp;<link-to href="{{ @link }}" text="First" />
+            &nbsp; | &nbsp;<link-to href="{{ @link . '&page='. @page->before  }}" text="Previous" />
+            &nbsp; | &nbsp;<link-to href="{{ @link . '&page=' . @page->next  }}" text="Next" />
+            &nbsp; | &nbsp;<link-to href="{{ @link .  '&page=' . @page->last  }}" text="Last" />
+            </true>
+            <false>
+                
+            </false>
+        </check>
+        &nbsp;|&nbsp;  {{ @page->current . "/" . @page->last }}
+        &nbsp;|&nbsp;  
+        <div class="row">
+            <div class="col-3">
+                # <span class="float-right"><link-to href="{{ @ubase . @orderalt.name }}" text="Name" />{{ @col_arrow.name }}</span>
+            </div>
+            <div class="col-1">
+                <span class=""><link-to href="{{ @ubase . @orderalt.surname }}" text="Surname" />{{ @col_arrow.surname }}</span>
+            </div>
+            <div class="col-3">
+                <span class=""><link-to href="{{ @ubase . @orderalt.email }}" text="Email" />{{ @col_arrow.email }}</span>
+            </div>
+            <div class="col-2">
+                <span class=""><link-to href="{{ @ubase . @orderalt.phone }}" text="Phone" />{{ @col_arrow.phone }}</span>
+            </div>
+            <div class="col-2">
+                <span class=""><link-to href="{{ @ubase . @orderalt.city }}" text="Suburb" />{{ @col_arrow.city }}</span>
+            </div>
+            <div class="col-1">
+                <span class=""><link-to href="{{ @ubase . @orderalt.status }}" text="Status" />{{ @col_arrow.status }}</span>
+            </div>
+        </div>
+        <hr>
+        {~ @rno = 0; ~}
+        <repeat group="{{ @data }}" value="{{ @row }}">
+            {~ @rno += 1; ~}
+
+            <div class="row">
+                <div class="col-3">
+                    {{ @rno }} <span class="float-right">{{ @row.fname }}</span>
+                </div>
+                <div class="col-1">
+                    {{ @row.lname }}
+                </div>
+                <div class="col-3">
+                    {{ @row.email_address }}
+                </div>
+                <div class="col-2">
+                    {{ @row.phone }}
+                </div>
+                <div class="col-2">
+                    {{ @row.city }}
+                </div>
+                <div class="col-1">
+                    {{ @row.mcstatus }}
+                </div>
+            </div>
+        </repeat>
+    </div>
+</div>

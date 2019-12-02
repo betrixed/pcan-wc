@@ -1,0 +1,225 @@
+<wc:init></wc:init>
+<style>
+    .outerwrap {
+        font-size:16pt;
+    }
+    label  {
+        padding-left:15px;
+        padding-right:10px;
+    }
+</style>
+{~
+@rec = @view->rec;
+@url = @view->url;
+@emails = @view->emails;
+@donations = @view->donations;
+~}
+<div class='container outerwrap pad10'>
+    <div class="row">
+        <div class="col-2">
+            <link-to href="/dash" text="Dash"></link-to>
+        </div>
+        <div class="col-2">
+            <link-to href="/admin/member/list" text="List"></link-to>
+        </div>
+        <div class="col-2">
+            <link-to href="/admin/member/new" text="New Record"></link-to>
+        </div>
+
+    </div>
+    <hr>
+    <form id='member' method="post" action="{{@url . 'post'}}" >
+        <div class="row">
+            <text-field name="fname" label='First Name' size='50' value="{{@rec.fname}}" data-lpignore="true"></text-field>
+        </div>
+        <div class="row">
+            <text-field name="lname" label='Last Name' size='50' value="{{@rec.lname}}" data-lpignore="true"></text-field>
+        </div>
+        <div class="row">
+            <div class='col-10'>
+                <text-field name="addr1" label='Street Address' size='50' value="{{@rec.addr1}}" data-lpignore="true"></text-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-10'>
+                <text-field name="addr2" label='More Address' size='50' value="{{@rec.addr2}}" data-lpignore="true"></text-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-8'>
+                <text-field name="city" label='City' size='40' value="{{@rec.city}}" data-lpignore="true"></text-field>
+            </div>
+            <div class='col-4'>
+                <text-field name="state" label='State' size='12' value="{{@rec.state}}" data-lpignore="true"></text-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-8'>
+                <text-field name="postcode" label='Post-Code' size='8' value="{{@rec.postcode}}" data-lpignore="true"></text-field>      
+            </div>
+            <div class='col-4'>
+                <text-field name="country_code" label='Country' size='4' value="{{@rec.country_code}}" data-lpignore="true"></text-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-5'>
+                <phone name="phone" label='Phone' size='12' value="{{@rec.phone}}" data-lpignore="true"></phone>
+            </div>   
+        </div>
+        <div class="row">
+            <div class='col-12'>
+                <text-field name="source" label='Source' size='60'  value="{{@rec.source}}" data-lpignore="true"></text-field>
+            </div>   
+        </div>
+        <check if="{{ @rec.id > 0 }}" >
+
+            <div class="row">
+                <div class='col-6'>
+                    <datetime name="create_date" label='Created' size='20'  value="{{@rec.create_date}}" readonly></datetime>
+                </div>   
+                <div class='col-6'>
+                    <datetime name="last_update" label='Updated' size='20' value="{{@rec.last_update}}" readonly></datetime>
+                </div>   
+            </div>
+
+            <div class="row">
+                <div class='col-8'>
+                    <text-field name="status" label='Status' size='30' value="{{@rec.status}}" data-lpignore="true"></text-field>
+                </div>   
+            </div>
+        </check>
+        <hr>
+        <hidden name="id" value="{{@rec.id}}"></hidden>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-4">
+                <submit-btn name='Submit' class="btn btn-info"></submit-btn>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container outerwrap pad10">
+    <div class="row">
+        <div class="col">
+            <form id="update" method="post" action="{{@url . 'update'}}" >
+                <hidden name="uid" value="{{@rec.id}}"></hidden>
+                <submit-btn value="Verify chimp status" class="btn btn-danger"></submit-btn>
+            </form>
+        </div>
+    </div>
+    <form id="email-list" method="post" action="{{@url . 'empost'}}">
+        <hidden name="mid" value="{{@rec.id}}"></hidden>
+        <check if="{{ !empty(@emails) }}">
+            <div class="row">
+
+                <div class="col-6 text-left">
+                    <label>Email</label>
+                </div>
+                <div class="col-2 text-center">
+                    <label>delete</label>
+                </div>
+                <div class="col-3 text-left">
+                    <label>Status</label>
+                </div>
+            </div>
+        </check>
+        <repeat group="{{ @emails }}" value="{{@em}}">
+            <div class="row">
+
+                <div class="col-6">
+                    <email name="{{'eml' . @em.id}}" value="{{@em.email_address}}" readonly></email>
+                </div>
+                <div class="col-2 text-center">
+                    <checkbox name="{{'chk' . @em.id}}"></checkbox>
+                </div>
+                <div class="col-3">
+                    <hidden value="{{@em.status}}" name="{{'stat' . @em.id}}" ></hidden>
+                    <check if="{{@em.status === 'subscribed'}}">
+                        <true>
+                        <checkbox name="{{'chimp' . @em.id}}"  checked="1"></checkbox>
+                        </true>
+                        <false>
+                        <checkbox name="{{'chimp' . @em.id}}"></checkbox>
+                        </false>
+                    </check>
+                    <span>{{@em.status}}</span>
+                </div>
+            </div>
+        </repeat>
+        <hr>
+        <div class="row">
+            <div class="col-3 text-right">
+                Add email
+            </div>
+            <div class="col-6">
+                <email name="eml0" data-lpignore="true"></email>
+            </div>
+        </div>
+
+
+        <hr>
+        <div class="row">
+
+            <div class="col">
+                <submit-btn value="Update emails"></submit-btn>
+            </div>
+        </div>
+    </form>
+
+</div>
+<div class="container outerwrap pad10">
+    <div class="row">
+        <div class="col">
+            <span>Record Donations & Membership</span>
+            <hr>
+        </div>
+    </div>
+
+    <div id="donateList">
+        <div class="row">
+            <div class="col-2"><span>Date</span></div>
+            <div class="col-2"><span>Purpose</span></div>
+            <div class="col-2 text-right"<span class="align-right">Amount</span></div>
+        </div>
+        <hr>
+        <repeat group="{{ @donations }}" value="{{@dn}}">
+            <div class="row" id="dnid{{ @dn.donateId }}">
+
+                <div class="col-2">
+                    <span>{{@dn.member_date}}</span>
+                </div>
+                
+                <div class="col-2">
+                    <span>{{@dn.purpose}}</span>
+                </div>
+                <div class="col-2 text-right">
+                    <span class="align-right">{{@dn.amount | price}}</span>
+                </div>
+            </div>
+        </repeat>
+    </div>
+    <hr>
+    <form id="donateForm" method="post" action="{{@url . 'donate'}}" >
+        <hidden name="duid" value="{{@rec.id}}"></hidden>
+        <div class="row">
+            <div class="col-3">
+                <label for="amount">Amount</label><input type="money" name="amount" value="10.00" min="0.00" max="10000.00" step="any" size="6"></input>
+            </div>
+            <div class="col-3">
+                <label for="purpose">For</label><select name="purpose">
+                    <option value="donate">Donation</option>
+                    <option value="member">Membership</option>
+                </select>
+            </div>
+             <div class="col-1">
+                <submit-btn value="Record donation" class="btn btn-danger"></submit-btn>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                <datetime name="member-date" label="Date"></datetime>
+            </div>
+        </div>
+    </form>
+
+</div>

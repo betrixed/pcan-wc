@@ -1,0 +1,81 @@
+<?php 
+Use \SBO\Cart;
+?>
+{~
+    @items = @view->items;
+    @cart = @view->cart;
+    @tick = @theme . "/tick16.png";
+~}
+<style>
+    .card-title {
+        color: blue;
+        font-weight:bold;
+    }
+</style>
+
+<div class="container">
+    <div class="row outerwrap pad10">
+        <check if="{{ @cart->totalItems > 0 }}" >
+            <true>
+            <div class='col-4'>
+            <p>Your shopping cart has {{ @cart->totalItems . ' ' . @cart->itemsStr() }}, total ${{  @cart->totalCost | price }}</p>
+            </div>
+            <div class='col-2'>
+            <a href='/shop/cart/edit' class='btn btn-dark text-light'>Edit Cart</a>
+            </div>
+            </true>
+            <false>
+            <p>Your shopping cart is empty</p>
+            </false>
+        </check>
+    </div>
+    <div class="row">  
+    <repeat group="{{ @items }}"  value="{{ @rec }}" >
+        {~ @id = @rec.id;
+           @dref = '/shop/item/' . @id; 
+           @item = @cart->hasId(@id) ? @cart->get(@id) : false;
+        ~}
+        <div class="card" style="padding:10px; width:250px;">
+            <div class="card-body>">
+                <span class="card-title">{{ @rec.title }}</span>
+                <check if="{{ @item}}">
+                    <true>
+                    <span class='float-right'>{{ @item->qty }}</span><img class="float-right" src='{{ @tick }}'>
+                    <true>
+                    <false>
+
+                    </false>
+                </check>
+                    <form id="add-basket" method="post" action='{{ "/shop/buy/" . @rec.id }}' onsubmit='{{"return valid_data(" . @id . ")" }}'>
+                        <submit-btn value="Add to Cart"></submit-btn>&nbsp;<label>X</label> <input name="qty" id='{{ "qty"  . @id }}' value="1" size="2"><br>
+                        <p id='{{ "msg"  . @id  }}'></p>
+                    </form>  
+                <a href="{{ @dref }}"><img style="height: 200px;" class="card-img" src="{{ @rec.picture }}"></a><br>
+                <p>$ {{ @rec.cost | price }}</p>
+                <a href="{{ @dref }}" class="btn btn-default" >More Details ...</a>
+            </div>
+        </div>    
+    </repeat>
+    </div>
+    <div class='row'>
+        <p>Currency is Australian dollars</p>
+    </div>
+</div>
+<script>
+function valid_data(rec) {
+  var x, text, result;
+  
+  // Get the value of the input field with id="numb"
+  x = document.getElementById("qty" + rec).value;
+  // If x is Not a Number or less than one or greater than 10
+  if (isNaN(x) || x < 1) {
+    text = "*** Quantity not valid";
+    document.getElementById("msg" + rec).innerHTML = text;
+    result = false;
+  } else {
+    result = true;
+  }
+  
+  return result;
+}
+</script>

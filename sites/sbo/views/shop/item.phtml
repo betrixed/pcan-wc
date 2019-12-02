@@ -1,0 +1,63 @@
+{~
+@rec = @view->item;
+~}
+<style>
+    .cd-title {
+        color: darkblue;
+        font-weight:bold;
+        font-size:1.5em;
+    }
+</style>
+
+<div class="container">
+    <div class="row pad10 outerwrap">
+        <div class="col-3 cd-title">
+            <h4>{{ @rec.title }}</h4>
+        </div>
+        <div class="col-3">
+              <form id="add-basket" method="post" action='{{ "/shop/buy/" . @rec.id }}' onsubmit="return valid_data()">
+                <submit-btn value="Add to Cart"></submit-btn>&nbsp;<label>Quantity</label> <input name="qty" id="qty" value="1" size="2"><br>
+                <p id="msg"></p>
+            </form>          
+        </div>
+    </div>
+    
+    <check if="{{@rec.article}}">
+        <true>
+    <div class="row">
+        <div class="outerwrap pad10">
+            
+            <div class="{{ @rec.style }}">
+                {{ @rec.article | raw }}
+            </div>
+        </div>
+    </div>
+        </true>
+        <false>
+        <div class="row">
+            <div class="outerwrap pad10">
+                <p>No other details</p>
+            </div>
+        </div>
+        </false>
+    </check>
+</div>
+
+<script>
+function valid_data() {
+  var x, text, result;
+  
+  // Get the value of the input field with id="numb"
+  x = document.getElementById("qty").value;
+  // If x is Not a Number or less than one or greater than 10
+  if (isNaN(x) || x < 1) {
+    text = "*** Quantity not valid";
+    document.getElementById("msg").innerHTML = text;
+    result = false;
+  } else {
+    result = true;
+  }
+  
+  return result;
+}
+</script>

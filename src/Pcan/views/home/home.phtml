@@ -1,0 +1,71 @@
+{~
+@view = \Base::instance()->get('view');
+@hasLeftSide = !empty(@view->sides);
+if (@hasLeftSide):
+@mainWidth = "col-lg-8";
+else:
+@mainWidth = "col-lg-12";
+endif;
+~}
+
+<style>
+    div.sidebox {
+        background-color:whitesmoke;
+        border-radius:4px;
+    }
+    div.title-area span.link-sitename {
+        color:darkred;
+        font-size:1.2em;
+    }
+    
+    div.colborder {
+        border-left-style: dotted;
+        border-left-width:1;
+        border-left-color: lightgray;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+
+
+        <div class='{{ @mainWidth }} body-wrap pad10'>
+            <repeat group="{{ @view->main }}" value="{{ @link }}">
+                {~
+                @url = @link.url;
+                @ulen = strlen(@url);
+                @urlhint = (@ulen > 55) ? substr(@url,0,25) . '...' . substr(@url,@ulen-27) : @url;
+                ~}
+                <div class='mitem' id='lnk{{ @link.id}}'>
+                    <div class="title-area">
+                        <span class="link-title">
+                            <a  href='{{ @url  }}' target='_blank'>{{ @link.title }}</a>
+                        </span>
+                        <span class='link-sitename float-right' >{{ @link.sitename }}</span>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="link-summary">{{ @link.summary }}</div>
+                    <check if="{{ @link.urltype == 'Blog' }}">
+                        <true>
+                        <a href = '{{ @url }}' target='_blank' title="{{ @urlhint }}">&nbsp;.. more</a>
+                        </true>
+                    </check>
+                </div>
+                <div class="clear"></div>
+                <hr>
+            </repeat>
+        </div>
+        <check if="{{@hasLeftSide}}">
+            <div class="col-lg-4 colborder" >
+                <repeat group="{{ @view->sides }}" value="{{ @box }}">
+                    <div class="sidebox ">
+                        <span class='link-title'>{{ @box.title }}</span>
+                        <hr>
+                        <span class='link-summary'>{{ @box.summary }}</span>
+                    </div>
+                </repeat>
+            </div>
+        </check>
+    </div>
+</div>
+
+</div>

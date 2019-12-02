@@ -1,0 +1,100 @@
+{~
+@view = Base::instance()->get('view');
+@catId = @view->catId;
+@orderalt = @view ->orderalt;
+@col_arrow = @view ->col_arrow;
+@isEditor = @view ->isEditor;
+@user_id = @view ->userId;
+@catItems = @view ->catItems;
+@url = "/admin/blog/";
+
+if (@catId > 0) {
+    @ubase =  @url . "export?catId=" . @catId . "&orderby=";
+} else {
+     @ubase =  @url . "export?orderby=";
+}
+@link = @ubase . @view->orderby;  
+@page = @view->page;
+
+~}
+
+<div class="body-wrap">
+    <a href="/dash" class="btn btn-outline-default title">Dash</a> 
+    <check if="{{ @page->last > 1 }}"><true>
+    &nbsp; | &nbsp;<link-to href="{{ @link }}" text="First" />
+    &nbsp; | &nbsp;<link-to href="{{ @link . '&page='. @page->before  }}" text="Previous" />
+    &nbsp; | &nbsp;<link-to href="{{ @link . '&page=' . @page->next  }}" text="Next" />
+    &nbsp; | &nbsp;<link-to href="{{ @link .  '&page=' . @page->last  }}" text="Last" />
+     </true>
+    </check>
+     &nbsp;|&nbsp;  {{ @page->current . "/" . @page->last }}
+    
+
+    <check if="{{ count(@catItems) > 0 }}" >
+        <true>
+            <div class="container">
+        <form method='get'>
+            <label>Category</label>
+            <select id="catId" name="catId">
+                <option value="0">- None -</option>
+                <repeat group="{{ @catItems }}" value="{{ @category }}">
+                    <check if="{{ @category.id == @catId  }}" >
+                        <true>
+                            <option value='{{ @category.id }}' selected>{{ @category.name }}</option>
+                        </true>
+                        <false>
+                            <option value='{{ @category.id }}'>{{ @category.name }}</option>
+                        </false>
+                    </check>
+                </repeat>
+            </select>
+            <hidden name="args" value="{{ @view->args }}" ></hidden>
+            <submit-btn  value="Fetch" />
+        </form>
+    </div>
+        </true>
+    </check>
+</div>
+<div class="container outerwrap">
+     <form method="post" action="{{ @url . 'exportpost' }}" >
+    <table class="table table-bordered table-striped" align="center">
+        <thead>
+            <tr>
+                <th><img src='/image/gallery/site/tick16.png' /></th>
+                <th style="width:50%;"><link-to href="{{ @ubase . @orderalt.title }}" text="Title" />{{ @col_arrow.title }}</th>
+                <th style="width:15%;"><link-to href="{{ @ubase . @orderalt.author }}" text="Author" />{{ @col_arrow.author }}</th>
+                <th style="width:10%;"><link-to href="{{ @ubase . @orderalt.date }}" text="Date" />{{ @col_arrow.date }}</th>
+                <th style="width:10%;"><link-to href="{{ @ubase . @orderalt.update }}" text="Updated" />{{ @col_arrow.update }}</th>
+            </tr>
+        </thead>
+        <tbody>
+             
+        <repeat group="{{ @page->items }}" value="{{ @blog }}" >
+            {~ 
+                @pubdate = (new DateTime(@blog.date_published))->format('d M y'); 
+                @update = (new DateTime(@blog.date_updated))->format('d M y'); 
+            ~}
+            <tr>
+                <td> <checkbox name="{{ 'op' . @blog.id }}"></checkbox></td>
+                <check if='{{ @isEditor }}' ><true>
+                <td class="leftCell"><link-to href='{{ @url  . "edit/" . @blog.id }}'  text="{{ @blog.title }}"/></td>
+                </true>
+                <false><td><link-to href="{{  '/article/' . @blog.title_clean }}" text="{{ @blog.title }}" /></td>
+                </false>
+                </check>
+                <td>{{ @blog.author_name }}</td>
+                <td>{{ @pubdate }}</td>
+                <td>{{ @update }}</td>
+                </tr>
+                </repeat>
+        </tbody>
+    </table>
+         <select name="bksel">
+              <option value="newbackup">New Backup</option>
+              <option value="delbackup">Delete Backup</option>
+              <option value="backupdel">Backup, delete article</option>
+         </select>
+           <submit-btn  value="Execute" />
+           <hidden name="args" value="{{ @view->args }}" ></hidden>
+     </form>
+</div>

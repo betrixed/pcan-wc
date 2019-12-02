@@ -1,0 +1,64 @@
+<wc:init></wc:init>
+{~
+@view = \Base::instance()->get('view');
+@url = @view->url;
+@rec = @view->rec;
+@google = @view->google;
+~}
+<style>
+    div.form-group  label {
+        font-weight: bold;
+        margin-right:10px;
+        vertical-align: bottom;
+    }
+
+    div.outerwrap {
+        margin-top:1.0em;
+        padding-top:1.0em;
+    }
+    p {
+        font-size:1.2em;
+    }
+</style>
+
+<div class='container novosti outerwrap'>
+
+    <h3>Rehearse and perform with the SBO</h3>
+    <hr>
+    <p> Rehearsals are conducted every Wednesday night at North Ryde, Sydney. 
+        Feel free to come along to one of our rehearsals and listen in. You would be very welcome.<br />
+        Please call our Musical Director, Victor Serghie on 02) 88503623 for further information.</p>
+
+    <check if="{{ @rec.id }}">
+        <true>            
+        <hidden name="id" value="{{ @rec.id }}" ></hidden>
+        <div class="form-group row">
+            <div class="col-5">
+                <datetime label='Date entered' name="created_on" value="{{ @rec.created_on }}" readonly class="form-control" ></datetime>
+            </div>
+        </div>
+        </true>
+    </check>
+    <div class="form-group row">
+        <div class="col-4">
+            <text-field  name="name" value="{{ @rec.name }}"  label='Name' size="16" readonly class="form-control"></text-field>
+        </div>
+        <div class="col-4">
+            <email name="email" value="{{ @rec.email }}" label="Your email address"  readonly class="form-control" ></email>
+        </div>
+        <div class="col-4">
+            <phone name="phone" value="{{ @rec.phone }}"  label='Phone number' size="16" readonly class="form-control"></phone>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-6">
+            <text-field name="instrument" value="{{ @rec.instrument }}" label="Main Instrument"  readonly class="form-control"></text-field>
+        </div>
+        <div class="col-4">
+            <text-field name="experience" value="{{ @rec.experience }}" label="Level/Duration of experience"  readonly class="form-control"></text-field>
+        </div>
+    </div>
+    <label>Brief description of your musical experiences</label>
+    <multiline name="history" cols="80" rows="5" readonly value="{{ @rec.history }}"></multiline>
+    <hr>
+</div>

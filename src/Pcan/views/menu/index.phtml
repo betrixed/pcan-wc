@@ -1,0 +1,33 @@
+{~ 
+    @view = \Base::instance()->get('view');
+    @menulist = @view->menulist;
+    @url = @view->url;
+~}
+<div class='container-fluid outerwrap'>
+
+<div class='row center body-wrap'>
+    <span class="title">Menu Index</span>
+    <link-to href="{{ @url . 'list' }}" text="All items"  class="btn btn-outline-default"></link-to>
+     <link-to href="{{ @url . 'submenu' }}" text="New Menu"  class="ml-2 btn btn-outline-default"></link-to>
+</div>
+<div class="col-md-2">
+<table class="table table-condensed" align="center">
+    <thead>
+        <tr>
+            <th style="width:65%;">Name</th>
+        </tr>
+    </thead>
+    <tbody>
+    <repeat group="{{ @menulist }}" value="{{ @menu }}">
+            <tr>
+                <td class="leftCell"><link-to href="{{ '/admin/menu/edit?m0=' . @menu.id }}" text="{{ @menu.name }}"></link-to></td>
+            </tr>
+            </repeat>
+    </tbody>
+
+</table>
+</div>
+
+</div>
+        
+

@@ -1,0 +1,12 @@
+<li class="nav-item">
+<a class="nav-link" href="/index">Home</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="/contact/index">Contact</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="/map/index">Location</a>
+</li>
+<check if="{{ UserSession::isLoggedIn('Admin') }}"><true>
+<drop-down root='4' title='Dash' ></drop-down>
+</true></check>

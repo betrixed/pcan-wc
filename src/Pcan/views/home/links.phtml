@@ -1,0 +1,102 @@
+
+{~ 
+    @view = Base::Instance()->get('view');
+    @links = @view->links;
+~}
+<style>
+@media screen and (max-width: 900px){
+    #mgrid[data-columns]::before {
+        content: '3 .column.size-1of1';
+    }
+}
+
+@media screen and (min-width: 901px) and (max-width: 1300px) {
+	#mgrid[data-columns]::before {
+		content: '2 .column.size-1of2';
+	}
+}
+@media screen and (min-width: 1301px) {
+	#mgrid[data-columns]::before {
+		content: '3 .column.size-1of3';
+	}
+}
+
+.column { float:left; }
+.size-1of1 { width: 100%; }
+.size-1of2 { width: 50%; }
+.size-1of3 { width: 33.333%; }
+
+div.mgrid {
+    background-color: blueviolet;
+}
+div.mitem {
+    float:left;
+    font-size:1.2em;
+    border: 1px solid hsla(0, 0%, 15%, 0.5);
+    overflow-y:auto;
+    overflow-x:auto;
+    max-height:1200px;
+    margin-bottom:10px;
+    margin-left:10px;
+    padding-right:10px;
+    background: #e8f4e8;
+}
+
+div.siteid {
+    background-color:#000;
+    color:#fff;
+    text-align:center;
+    font-size:0.8em;
+}
+
+div.link-title a {
+    color: darkblue;
+}
+div.title-area {
+    margin: 4px;
+    border-bottom-style: inset;
+    border-bottom-width: 3px;
+    border-bottom-color: #0d8ea6;
+}
+</style>
+
+<check if="{{@links['ct'] > 0}}"><true>
+<div id="mgrid" data-columns>
+<repeat group="{{ @links['rows'] }}" value="{{ @row }}">
+
+    {~ 
+    @url = @row.url;
+    @id = @row.id;
+     @title = @row.title;
+     @ulen = strlen(@url);
+     if (@ulen > 55):
+        @urlhint = substr(@url,0,25) . '...' . substr(@url, @ulen - 27);
+     else:
+         @urlhint = @url;
+     endif;
+     ~}
+     
+    <div class='mitem' style="width:100%" id="{{ 'lnk' . @id }}">
+        <div class="siteid" >{{ @row.sitename }}</div>  
+        <div class="title-area" >
+        <div class="link-title">
+            <check if="{{ @url === '/' }}" >
+                <true><a onclick='linkload({{ @id }});' target='_blank'>{{ @title }}</a></true>
+                <false><a href='{{ @url  }}' target='_blank'>{{ @title }}</a></false>
+            </check>
+        </div>
+        </div>
+        <div class="link-summary">{{ @row.summary| raw }}</div>
+        <check if="{{ @row.urltype === 'Blog' }}">
+            <true><a href = "{{ @url }}" target="_blank"  title="{{ @title }}">&nbsp;.. read more</a></true>
+        </check>
+    </div>
+
+</repeat>
+</true></check>
+
+</div>
+
+
+
+

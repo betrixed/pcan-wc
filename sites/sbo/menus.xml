@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tb>
+    <s k="version">1.0</s>
+    <a k="list">
+        <s>About</s>
+        <s>Events</s>
+        <s>Media</s>
+        <s>Instruments</s>
+        <s>Albums</s>
+        <s>Contact</s> 
+        <s>Dash</s>
+    </a>
+    <tb k="items" >
+        <!--
+        <tb k="Content">
+            <s k="type">list</s>
+            <a k="list">
+                <a>
+                    <s>All</s>
+                    <s>links</s>
+                </a>
+                <a>
+                    <s>Web</s>
+                    <s>links</s>
+                    <s>?k=Remote</s>
+                </a>
+                <a>
+                    <s>Events</s>
+                    <s>links</s>
+                    <s>?k=Event</s>      
+                </a>
+                <a>
+                    <s>Here</s>
+                    <s>links</s>
+                    <s>?k=Blog</s> 
+                </a>
+            </a>
+        </tb>
+        -->
+        <a k="About">
+            <tb>
+            <s k="type">list</s>
+            <a k="list">
+                <a>
+                    <s>History</s>
+                    <s>cat</s>
+                    <s>article/history-20180820</s>
+                </a>
+                <a>
+                    <s>Musical Director</s>
+                    <s>cat</s>
+                    <s>article/musical-director</s>
+                </a>
+                <a>
+                    <s>President</s>
+                    <s>cat</s>
+                    <s>article/president</s>
+                </a>
+                
+                <a>
+                    <s>Orchestra</s>
+                    <s>cat</s>
+                    <s>article/orchestra</s>
+                </a>
+                <a>
+                    <s>-</s>
+                </a>
+                <a>
+                    <s>Contact Us</s>
+                    <s>contact-us</s>
+                </a>
+                <a>
+                    <s>Join the Orchestra</s>
+                    <s>contact/player</s>
+                    <s>new</s>
+                </a>
+            </a>
+            </tb>
+        </a>
+        <a k="Events">
+            <tb>
+                <s k="type">list</s>
+                <a k="list">
+		     <a>
+                        <s>Upcoming Events</s>
+                        <s>events</s>
+                        <s>future</s>
+                    </a>  
+                    <a>
+                        <s>Latest News</s>
+                        <s>cat</s>
+                        <s>linkery/December 2018 Newsletter?show=grid</s>
+                    </a>
+		     <a>
+                        <s>Past Events</s>
+                        <s>events</s>
+                        <s>past</s>
+                    </a>  
+                    <a>
+                        <s>Newsletters</s>
+                        <s>gallery</s>
+                        <s>view/novosti</s>
+                    </a>  
+                </a>  
+            </tb>
+	    
+	    <!--
+            <tb>
+                <s k="type">category</s>
+                <s k="value">news</s>
+                <a k="generate">
+                    <s>{title}</s>
+                    <s>cat</s>
+                    <s>article/{title_clean}</s>
+                </a>
+            </tb>
+	    -->
+        </a>
+        <a k="Media">
+            <tb>
+            <s k="type">list</s>
+            <a k="list">
+                <a>
+                    <s>Orchestra Photos</s>
+                    <s>gallery</s>
+                    <s>view/The Orchestra Photos?show=grid</s>
+                </a>
+                <a>
+                    <s>Tour Of China</s>
+                    <s>gallery</s>
+                    <s>view/Tour of China?show=grid</s>
+                </a>
+                <a>
+                    <s>Performances</s>
+                    <s>gallery</s>
+                    <s>view/Performances?show=grid</s>
+                </a>
+                <a>
+                    <s>Video Links</s>
+                    <s>linkery</s>
+                    <s>view/Video Links</s>
+                </a>
+            </a>
+            </tb>
+        </a>
+        <a k="Instruments">
+            <tb>
+            <s k="type">list</s>
+            <a k="list">
+                <a>
+                    <s>Balalaika</s>
+                    <s>cat</s>
+                    <s>article/balalaika</s>
+                </a>
+                <a>
+                    <s>The Bayan</s>
+                    <s>cat</s>
+                    <s>article/the-bayan</s>   
+                </a>
+                <a>
+                    <s>The Domra</s>
+                    <s>cat</s>
+                    <s>article/the-domra</s>
+                </a>
+                <a>
+                    <s>The Cimbalom</s>
+                    <s>cat</s>
+                    <s>article/the-cimbalom</s>
+                </a>
+            </a>
+            </tb>
+        </a>
+        <a k="Dash">
+            <tb>
+            <s k="type">list</s>
+            <s k="role">Admin</s>
+            <a k="list">
+                <a>
+                    <s>Dashboard</s>
+                    <s>dash</s>
+                </a>
+                <a>
+                    <s>Menus</s>
+                    <s>admin</s>
+                    <s>menu</s>
+                </a>
+                <a>
+                    <s>Articles</s>
+                    <s>admin</s>
+                    <s>blog</s>
+                </a>
+                <a>
+                    <s>Gallery</s>
+                    <s>admin</s>
+                    <s>gallery</s>  
+                </a>
+                <a>
+                    <s>Links</s>
+                    <s>admin</s>
+                    <s>link</s>
+                </a>
+                <a>
+                    <s>Linkery</s>
+                    <s>admin</s>
+                    <s>linkery</s>
+                </a>
+                <a>
+                    <s>Categories</s>
+                    <s>admin</s>
+                    <s>cat</s>
+                </a>
+                <a>
+                    <s>-</s>
+                </a>
+                <a>
+                    <s>Log Out</s>
+                    <s>logout</s>
+                </a>
+            </a>
+            </tb>
+        </a>
+        <a k="Albums">
+            <tb>
+            <s k="type">list</s>
+            <s k="target">_blank</s>
+            <a k="list">
+                <a>
+                    <s>Russian Tapestries</s>
+                    <s>http://balalaika.com.au</s>
+                    <s>purchase-cds/russian-tapestries/</s>
+                </a>
+                <a>
+                    <s>Rassipuha</s>
+                    <s>http://balalaika.com.au</s>
+                    <s>purchase-cds/rassipuha/</s>
+                </a>
+                <a>
+                    <s>Dawn of Russia</s>
+                    <s>http://balalaika.com.au</s>
+                    <s>purchase-cds/dawn-russia/</s>
+                </a>
+                <a>
+                    <s>Mail Troika</s>
+                    <s>http://balalaika.com.au</s>
+                    <s>purchase-cds/mail-troika/</s>
+                </a>
+                <a>
+                    <s>Old Linden Tree</s>
+                    <s>http://balalaika.com.au</s>
+                    <s>purchase-cds/old-linden-tree/</s>
+                </a>
+            </a>
+            </tb>
+        </a>
+        <a k="Contact">
+            <tb>
+            <s k="type">list</s>
+            <a k="list">
+                <a>
+                    <s>Contact Us</s>
+                    <s>contact-us</s>
+                </a>
+                <a>
+                    <s>Join the Orchestra</s>
+                    <s>contact/player</s>
+                    <s>new</s>
+                </a>   
+                <a>
+                    <s>Hire the Orchestra</s>
+                    <s>contact/hire</s>
+                    <s>new</s>
+                </a>     
+            </a>   
+            </tb>   
+        </a>
+    </tb>
+</tb>

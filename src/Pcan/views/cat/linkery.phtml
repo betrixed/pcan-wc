@@ -1,0 +1,26 @@
+{~
+    @view = \Base::instance()->get('view');
+    @linkery = @view->linkery;
+~}
+<style>
+
+div.wrap-item {
+    border-right-style: inset;
+    border-right-color: lightsteelblue;
+    border-right-width: 2px;
+    border-bottom-style: inset;
+    border-bottom-color: lightsteelblue;
+    border-bottom-width: 2px;
+}
+
+div.title-area {
+    font-weight: bold;
+    color: darkgreen;
+}
+</style>
+<div class='container-fluid'>
+<div class="row outerwrap">
+          {{ @linkery.description }}
+</div>
+<include href="{{@view->vname}}"></include>
+</div>

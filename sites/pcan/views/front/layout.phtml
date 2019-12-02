@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <wc:init></wc:init>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ @view->title }}</title>
+    <f3:link></f3:link>
+    <f3:css-header></f3:css-header>    
+</head>
+<body>
+    <style>
+        .site-logo img {
+            height:144px;
+            padding:5px;
+            border-radius:4px;
+            border-width:4px;
+        }
+
+        .panel-wrap {
+            height:144px;
+            background-color:papayawhip;
+            display: table-cell;
+        }
+        .view-title {
+            background-color: white;
+            color:darkslateblue;
+            font-weight:bold;
+            font-size:1.5rem;
+            padding-right:10px;
+        }     
+    </style>
+    <div class="row">
+  
+            <a class="site-logo " href="/"><img style="min-width:400px;max-width:600px; width:100%;" src="/image/gallery/site/site-logo.png" class="panel-wrap"></a>
+
+            <F3:repeat group="{{ @view->topPanels }}" value="{{ @panel }}">
+
+                <div class="panel-wrap">{{ @panel.summary | raw }}</div>
+            </F3:repeat>
+
+    </div>
+    <div class="clear"></div>
+
+<check if="{{ @view->nav }}">
+    <true>
+    <include href="{{ @view->nav }}" />
+    </true>
+</check>
+<check if="{{ !empty(@view->flash) }}"><true>
+    <F3:repeat group="{{ @view->flash }}" value="{{ @msg }}">
+        <div class="alert alert-{{ @msg.status }} alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            {{ @msg.text | esc }}
+        </div>
+    </F3:repeat>
+    </true></check>
+<check if="{{ @view->content }}">
+    <true>
+    <div id="view">
+        <include href="{{ @view->content }}"></include>
+    </div>
+    </true>
+</check>
+<footer class='footer foot-wrap'>
+    <div class="row">
+        <div class="col-2 text-muted">
+            {~
+            echo( "Session as " . UserSession::sessionName() );
+            ~}
+        </div>
+        <div class="col-4 text-muted">&copy;  | 
+            {~
+            @out = " Response time " . sprintf('%.2f ms', (microtime(TRUE) - @_SERVER.REQUEST_TIME_FLOAT) * 1000);
+            @out .= " | Memory " . sprintf('%.2f MiB', memory_get_peak_usage() / 1024 / 1024);
+            echo(@out);
+            ~}
+        </div>
+    </div>
+</footer>
+<f3:js-footer></f3:js-footer>
+</body>
+</html>

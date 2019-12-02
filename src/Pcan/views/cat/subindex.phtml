@@ -1,0 +1,29 @@
+{~ 
+    @view = \Base::instance()->get('view');
+    @blogs = @view->blogs;
+    @cat = @view->catclean;
+~}
+<div class='container-fluid'>
+<check if="{{ count(@blogs) > 0 }}" >
+    <true>
+    <div class="row">
+    <div id="list" class="col catlist">
+          <span class="cattitle">{{ @view->cattitle}}</span>
+          <repeat group="{{ @blogs  }}" value="{{ @blog }}">
+               <div class="row">
+            <div class="catlink">
+                <a class="btn" id="{{'f' . @blog.id}}"  href="{{ '/cat/' . @cat.name_clean .  '?id=' . @blog.id }}" >{{ @blog.title }}</a>
+            </div>
+                </div>
+          </repeat>
+    </div>
+    <div class="col-lg-auto">
+    <div id="article"></div>
+    </div>
+    <div class="hidden">
+        <a id="first_link"  href="{{ @view->firstId }}" onclick="fetchid(this);return false;">#First#</a>
+    </div>
+    </div>
+    </true>
+</check>
+</div>

@@ -1,0 +1,65 @@
+
+{~ @view = Base::instance()->get('view');
+    @url = @view->url;
+    @ubase =  @url . '?orderby=';
+    @ref = @ubase . @view->orderby;
+    @page = @view->page;
+    @orderalt = @view ->orderalt;
+    @col_arrow = @view ->col_arrow;
+~}   
+<div class='container body-wrap'>
+    <div class="row">
+        <div class="col-2">
+            <span><b>Links</b></span> 
+        </div>
+        <div class="col-8">
+&nbsp;&nbsp;[<link-to href="{{ @url . 'new' }}" text='New link record' ></link-to>]
+&nbsp;-&nbsp;[<link-to href="{{ @ref . '&page=1' }}" text='First' ></link-to>]
+&nbsp;-&nbsp;[<link-to href="{{ @ref .  '&page=' . @page->before }}" text='Previous' ></link-to>]
+&nbsp;-&nbsp;[<link-to href="{{ @ref .  '&page=' . @page->next }}" text='Next' ></link-to>]
+&nbsp;-&nbsp;[<link-to href="{{ @ref .  '&page=' . @page->last }}" text='Last' ></link-to>]
+<&nbsp;&nbsp;Page {{ @page->current . " of " .  @page->last }}
+        </div>
+    </div>
+</div>
+<div class='container outerwrap'>
+    <form id="links_form" method="post" >
+<table class='table table-striped'>
+    <thead>
+        <tr>
+            <th><link-to href='{{ @ubase . @orderalt.title }}' text='{{ "Title" . @col_arrow.title }}'></link-to></th>
+            <th><link-to href='{{ @ubase . @orderalt.site }}' text='{{ "Site" . @col_arrow.site }}'></link-to></th>
+            <th><link-to href='{{ @ubase . @orderalt.type }}' text='{{ "Type" . @col_arrow.type }}'></link-to></th>
+            <th><link-to href='{{ @ubase . @orderalt.date }}' text='{{ "Date" . @col_arrow.date }}'></link-to></th>
+            <th><link-to href='{{ @ubase . @orderalt.enabled }}' text='{{ "Enabled" . @col_arrow.enabled }}'></link-to></th>
+        </tr>
+    </thead>
+    <tbody>
+    <repeat group='{{ @page->items }}' value='{{ @link }}' >
+    {~
+        @enabled = @link.enabled ? 'Y' : 'N';
+        @created = substr(@link.date_created, 0, 10);
+        @id = @link.id;
+    ~}
+        <tr>
+            <td class='leftCell'><a href="{{ @url . 'edit/' . @id }}">{{ @link.title }}</a></td>
+            <td>{{ @link.sitename }}</td>
+            <td>{{ @link.urltype }}</td>
+            <td>{{ @created }}</td>
+            <td><label>{{ @enabled }}&nbsp;<input type="checkbox" name="lid{{ @id }}" value="{{ @id}}" /></label></td>
+        </tr>
+    </repeat>
+    </tbody>
+</table>
+        <div class="row center">
+        <div class="form-group">
+            <label for="link_enable">Change Selected</label>
+        <select name="link_enable" id="link_enable">
+            <option value="1">Enable</option>
+            <option value="0">Disable</option>
+        </select>
+            <submit-btn value="Save" class="btn btn-warning"></submit-btn>
+        </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,49 @@
+{~
+@view = \Base::instance()->get('view');
+@hasEvents = !empty(@view->list);
+@hasOld = !empty(@view->old);
+
+~}
+
+<style>
+    div.sidebox {
+        background-color:whitesmoke;
+        border-radius:4px;
+    }
+    div.title-area span.link-sitename {
+        color:darkred;
+        font-size:1.2em;
+    }
+    
+    div.colborder {
+        border-left-style: dotted;
+        border-left-width:1;
+        border-left-color: lightgray;
+    }
+</style>
+<div class="container-fluid">
+    
+        <check if="{{@hasEvents}}">
+              <div class="row">
+                  <h1>Past Events</h1>
+              </div>
+            
+                <repeat group="{{ @view->list }}" value="{{ @box }}">
+                    <div class="row pad10" style="background-color:whitesmoke">
+                    <div class="{{@box.style}}">
+                        {{@box.article | raw }}
+                    </div>
+                    <hr>
+                    </div>
+                </repeat>     
+        </check>
+    <check if="{{@hasOld}}">
+     <repeat group="{{ @view->old }}" value="{{ @box }}">
+                    <div class="row">
+                    <div class="{{@box.style}}">
+                        {{@box.article | raw }}
+                    </div>
+                    </div>
+                </repeat>        
+    </check>
+</div>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tb>
+    <tb k="database">
+        <s k="host">localhost</s>
+        <i k="port">3306</i>
+        <s k="username">xxxxxxxxxx</s>
+        <s k="password">xxxxxxxxxxxxxxxxxxx</s>
+        <s k="dbname">xxxxxxxxxxxxx</s>
+        <s k="adapter">mysql</s>
+        <s k="charset">utf8</s>
+    </tb>
+    <tb k="ReCaptcha">
+        <s k="secret">xxxxxxxxxxxxxxxxxxx</s>
+        <s k="site">xxxxxxxxxxxxxxxxxxx</s>
+    </tb>
+    <tb k="mail">
+        <tb k="to">
+            <s k="name">Silly Billy</s>
+            <s k="email">noone@nodomain.net</s>
+        </tb>
+        <tb k="from">
+            <s k="name">Contact Form</s>
+            <s k="email">admin@nodomain.net</s>
+        </tb>
+    </tb>
+    <tb k="smtp">
+        <s k="server">mail.nodomain.net</s>
+        <s k="security">ssl</s>
+        <i k="port">465</i>
+        <s k="username">admin@nodomain.net</s>
+        <s k="password">xxxxxxxxxxxxxxxxxxx</s>
+    </tb>
+</tb>

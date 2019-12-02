@@ -1,0 +1,55 @@
+<style>
+.carousel-inner,.carousel,.item,.fill {
+  height: {{ @view->maxHeight }}px;
+  width:100%;
+  background-position:center center;
+}   
+
+.carousel-inner {
+    background-color:black;
+}
+.carousel-inner img {
+    margin: auto;
+}
+</style>
+{~ 
+    @images = @view->images;
+    @gallery = @view->gallery;
+~}
+
+<check if="{{ count(@images) > 0}}"><true>
+   
+    <div id="gallery-c" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+ {~     
+    @linkpath = "/" . @gallery.path . "/";
+    @row_id = 0;
+~}
+    
+
+    <repeat group="{{ @images }}" value="{{ @fup }}">
+{~ 
+    @info = @fup.size_str . ' ' . @fup.mime_type;
+    @row_id = @row_id + 1;
+    @chkid = "chk" . @row_id;
+    @idate = strtotime(@fup.date_upload);
+    @itemClass = (@row_id === 1) ? "carousel-item active" : "carousel-item";
+~}
+     <div class="{{ @itemClass }}">
+        <img  class="d-flex align-items-center" src="{{ @linkpath .  @fup.name }}"  title="{{ @info }}" alt="{{ 'slide ' . @row_id }}" >
+    </div>
+    </repeat>
+<a class="carousel-control-prev" href="#gallery-c" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#gallery-c" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+</true>
+        <false>
+            <p>No image files in this gallery yet</p>
+        </false>
+    </check>

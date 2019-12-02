@@ -1,0 +1,102 @@
+<?php
+
+Use \SBO\Cart;
+Use \SBO\CItem;
+?>
+{~
+@items = @view->items;
+@cart = @view->cart;
+~}
+<style>
+    .card-title {
+        color: blue;
+        font-weight:bold;
+    }
+
+
+
+    @media only screen and (min-width: 1024px) {
+        .col-form-label {
+            min-width:90x;
+            text-align:right;
+            padding-right:5px;
+        }
+    }
+
+    @media only screen and (max-width: 1024px) {
+        .col-form-label {
+            text-align:left;
+            padding-right:5px;
+            padding-bottom: 0;
+            padding-top: 10px;
+            margin-top: 5px;
+            margin-bottom: 0;
+        }
+    }
+</style>
+<div class='container'>
+    {~
+
+    ~}
+    <div class='row'>
+        <h4>Your Details</h4>
+    </div>
+    <form id="fromsub" method='post' action='/shop/cart/fromsub'>
+        <div class='row'>
+            <div class='col-8'>
+                <email label="Email" size='45' name='email' value='{{ @cart->email }}'></email>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-5'>
+                <text-field label="First name" name='first_name' value='{{ @cart->first_name }}' ></text-field>
+            </div>
+            <div class='col-6'>
+                <text-field label="Last name" name='last_name' value='{{ @cart->last_name }}' ></text-field>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-5'>
+                <phone label="Phone" name='phone' value='{{ @cart->phone }}' ></phone>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-10'>
+                <text-field label="Address" size='45' name='address' value='{{ @cart->address }}'></text-field>
+            </div>
+
+        </div>
+        <div class='row'>
+            <div class='col-6'>
+                <text-field label="Suburb/City" name='city' value='{{ @cart->city }}'></text-field>
+            </div>
+            <div class='col-5'>
+                <text-field label="Post-code" size="6" name='postcode' value='{{ @cart->postcode }}'></text-field>
+            </div>     
+        </div>
+        <div class='row'>
+            <div class='col-6'>
+                <text-field label="State" name='region' value='{{ @cart->region }}'></text-field>
+            </div>
+            <div class='col-5'>
+                <text-field label="Country" name='country' value='{{ @cart->country }}'></text-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-3">
+                <submit-btn value="Update Details">
+            </div>
+        </div>
+
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        var options = {
+            target: '#fromdiv'
+        };
+        $('#fromsub').ajaxForm(options);
+
+    });
+</script>

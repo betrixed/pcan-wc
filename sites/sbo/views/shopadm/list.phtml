@@ -1,0 +1,31 @@
+{~
+@cditems = @view->cditems;
+~}
+<div class="container outerwrap pad10">
+        <div class="row">
+            <div class='col-3'>Item name</div>
+            <div class='col-1'>#Stock</div>
+            <div class='col-2'>Each</div>
+            <div class="col-2">Article</div>
+        </div>
+        <hr>    
+    <repeat group="{{ @cditems }}" value="{{ @rec }}">
+            <div class="row">
+                <div class='col-3'><a href='{{ "/shop/admin/item/" . @rec.id }}' >{{ @rec.title }}</a></div>
+                <div class='col-1'>{{ @rec.stock }}</div>
+                <div class='col-2'>@ ${{ @rec.cost | price }}</div>
+                <check if="{{ @rec.article_id > 0 }}" >
+                    <true>
+                    <div class='col-2'><a href='{{ "/admin/blog/edit/" . @rec.article_id }}'>Edit</a></div>
+                    </true>
+                    <false>
+                    <div class='col-2'>
+                        <form method="post" action="/shop/admin/article">
+                            <hidden name="id" value='{{ @rec.id }}'></hidden>
+                            <submit-btn value="Create"></submit-btn>
+                        </form></div>    
+                    </false>
+                </check>
+            </div>
+    </repeat>
+</div>

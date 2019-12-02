@@ -1,0 +1,71 @@
+<wc:init></wc:init>
+{~
+@view = \Base::instance()->get('view');
+@eblog = @view->eblog;
+@hasEvent = !empty(@eblog);
+@reg = @view->register;
+~}
+
+<hidden name="id" value="{{@reg.id}}"></hidden>
+<hidden name="eventid" value="{{@eblog.eventid}}"></hidden>
+<check if="{{ !empty(@view->flash) }}">
+        <true>
+        <F3:repeat group="{{ @view->flash }}" value="{{ @msg }}">
+            <div class="alert alert-{{ @msg.status }} alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ @msg.text | raw }}
+            </div>
+        </F3:repeat>
+        </true>
+</check>
+<div class="row">
+    <div class="col-12">
+        <text-field label="First name" name="fname" value="{{@reg.fname}}" size="40"></text-field>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <text-field label="Last name" name="lname" value="{{@reg.lname}}" size="40"></text-field>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <email label="Email" name="email" value="{{@reg.email}}"  size="40"></email>
+        <span>Optional to receive email link for edit or delete registration</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <phone label="Phone" name="phone" value="{{@reg.phone}}"></phone>
+        <span>Optional mobile number</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <label for="people">Addition Persons</label>
+        <input type="number" name="people" value="{{@reg.people}}" size="4">
+    </div>
+</div>
+<div class="row">
+    <div class="col-2">
+
+    </div>
+    
+        <check if="{{ empty(@reg.id) }}">
+            <true>
+            <div class="col-4">
+                <submit-btn name="submit" value="Register"></submit-btn>
+            </div>
+            </true>
+            <false>
+                <div class="col-2">
+                <submit-btn name="submit" value="Update"></submit-btn>
+                </div>
+                <div class="col-2">
+                <submit-btn name="delete" value="Delete"></submit-btn>
+                </div>
+            </false>
+        </check>
+        
+    </div>
+</div>

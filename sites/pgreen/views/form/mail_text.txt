@@ -1,0 +1,16 @@
+{~
+    @view = \Base::instance()->get('view');
+    @rec = @view->rec;
+
+~}
+Thank you for your enquiry.
+
+The following details have been sent using the "Contact" form at {{ @view->link}}
+
+Date: {{ @rec.sendDate }}
+From: {{ @rec.name }}
+Email: {{ @rec.email }}
+Telephone: {{ @rec.telephone }}
+Message:
+{{ @rec.body }}
+

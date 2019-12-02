@@ -1,0 +1,54 @@
+
+{~ 
+@images = @view->images;
+@gallery = @view->gallery;
+~}
+<style>
+    .item-sep {
+        padding:10px;
+        background-color:black;
+        margin:10px;
+    }
+</style>
+
+<check if="{{ count(@images) > 0}}"><true>
+    <div id="mgrid" data-columns>
+        {~     @linkpath = "/" . @gallery.path . "/";
+        @rowId = 0;
+        @isthumb = @gallery.view_thumbs;
+        ~}
+        <repeat group="{{ @images }}" value="{{ @fup }}">
+            {~ 
+            @info = @fup.size_str . ' ' . @fup.mime_type;
+            @row_id = @row_id + 1;
+            @chkid = "chk" . @row_id;
+            @idate = strtotime(@fup.date_upload);
+            ~}
+            <div class='mitem' id="{{ 'lnk' . @fup.id }}">
+                <div style="padding:10px;background-color:black;color:white;">
+                    {~ 
+                    @fname = pathinfo(@fup.name,PATHINFO_FILENAME);
+                    @linkname = @linkpath .  @fup.name; 
+                    if (@isthumb) {
+                    if (!empty(@fup.thumb_ext)) {
+                    @img = @linkpath . 'thumbs/' . @fname . "." . @fup.thumb_ext;   
+                    }
+                    else {
+                    @img = @linkpath . 'thumbs/' . @fname . '.png';  
+                    }
+                    }
+                    else {
+                    @img = @linkname;
+                    }
+                    echo "<p>" . htmlspecialchars(@fup.description) . "</p>";
+                    echo "<a href=\"@linkname\"><img src=\"@img\" style=\"width:100%;\" title=\"@info\"></a>";  
+                    ~}
+                </div>
+            </div>
+        </repeat>
+    </div>
+    </true>
+    <false>
+    <p>No image files in this gallery yet</p>
+    </false>
+</check>

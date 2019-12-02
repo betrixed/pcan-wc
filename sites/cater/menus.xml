@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tb>
+    <a k="list">
+        <s>Home</s>
+        <s>Contact</s>
+        <s>Location</s>
+        <s>Dash</s>
+    </a>
+    <tb k="items" >
+        <tb k="Home">
+            <s k="type">item</s>
+            <s k="value">index</s>
+        </tb>
+        <tb k="Contact">
+            <s k="type">item</s>
+            <s k="value">contact/index</s>
+        </tb>
+        <tb k="Location">
+            <s k="type">item</s>
+            <s k="value">map/index</s>
+        </tb>
+        <tb k="Dash">
+            <s k="type">list</s>
+            <s k="role">Admin</s>
+            <a k="list">
+                <a>
+                    <s>Menus</s>
+                    <s>admin</s>
+                    <s>menu</s>
+                </a>
+                <a>
+                    <s>Articles</s>
+                    <s>admin</s>
+                    <s>blog</s>
+                </a>
+                <a>
+                    <s>Gallery</s>
+                    <s>admin</s>
+                    <s>gallery</s>  
+                </a>
+                <a>
+                    <s>Links</s>
+                    <s>admin</s>
+                    <s>link</s>
+                </a>
+                <a>
+                    <s>Linkery</s>
+                    <s>admin</s>
+                    <s>linkery</s>
+                </a>
+                <a>
+                    <s>Categories</s>
+                    <s>admin</s>
+                    <s>cat</s>
+                </a>
+                <a>
+                    <s>-</s>
+                </a>
+                <a>
+                    <s>Log Out</s>
+                    <s>logout</s>
+                </a>
+            </a>
+        </tb>
+    </tb>
+</tb>

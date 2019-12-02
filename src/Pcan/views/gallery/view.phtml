@@ -1,0 +1,54 @@
+
+{~ 
+    @view = Base::Instance()->get('view');
+    @images = @view->images;
+    @gallery = @view->gallery;
+    if (@view->sub===1) {
+        @url = "?item=" . @view->requri;
+    }
+    else {
+         @url = @view->requri . "?q=0";
+    }
+~}
+
+
+<div class="container-fluid outerwrap">
+    <check if="{{ count(@images) }}" >
+        <true>
+        {~   
+        @linkpath = "/" . @gallery.path . "/";
+        @rowId = 0;
+        ~}
+        
+        <repeat group="{{ @images }}" value="{{ @fup  }}">
+{~ 
+    @info = @fup.size_str . ' ' . @fup.mime_type;
+    @row_id = @row_id + 1;
+    @chkid = "chk" . @row_id;
+    @idate = strtotime(@fup.date_upload);
+    if (!empty(@fup.thumb_ext)) {
+        @fname  = pathinfo( @fup.name , PATHINFO_FILENAME);
+        @thumb = @linkpath . 'thumbs/' . @fname . '.' . @fup.thumb_ext;   
+    }
+    else {
+        @thumb = @linkpath . 'thumbs/' . @fname . '.png';
+    }
+~}
+    <div class="row">
+        <div class="col-7"><span>{{ @fup.name }} <br> {{ @info }}</span>
+            <div class="float-right">
+            <a href="{{ @linkpath .  @fup.name }}"><img src="{{ @thumb }}"  title="{{ @info }}" /></a>
+            </div>
+        </div>
+        <div class="col-2"><p>{{ date('d-M-Y',@idate) .  '</br>' . date('H:i', @idate)  }}</p></div>
+        <div class="col-3"><textarea class="imageDesc" id="img{{@fup.id}}" cols='40' readonly>{{ @fup.description }}</textarea></div>
+    </div>
+<hr>
+        </repeat>
+</tbody>
+ </table></true>
+        <false>
+            <p>No image files in this gallery yet</p>
+        </false>
+    </check>
+</div>

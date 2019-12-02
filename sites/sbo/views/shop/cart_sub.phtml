@@ -1,0 +1,97 @@
+<?php
+?>
+{~
+@items = @view->items;
+@cart = @view->cart;
+~}
+<style>
+    .card-title {
+        color: blue;
+        font-weight:bold;
+    }
+
+    label {
+        min-width:120px;
+        text-align:right;
+        padding-right:10px;
+    }
+    
+    .align-right {
+        text-align:right;
+    }
+    .cart-sum {
+        text-align:right;
+    }
+
+</style>
+
+<div class="container">
+    <div class="row outerwrap pad10">
+        <check if="{{ @cart->totalItems > 0 }}" >
+            <true>
+            <div class='col-4'>
+                <p>Your shopping cart has {{ @cart->totalItems . " " . @cart->itemsStr() }}</p>
+            </div>
+            </true>
+            <false>
+            <p>Your shopping cart is empty</p>
+            </false>
+        </check>
+        <div class="col-2">
+            <a href='/shop/view'>Shop View</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class='col-3'>Item name</div>
+        <div class='col-2'>#Items</div>
+        <div class='col-2'>Each</div>
+        <div class='col-2'><p class="align-right">Cost</p></div>
+    </div>   
+    <hr>
+    <form id='cartsub' method='post' action='/shop/cart/update'>
+        <repeat group="{{ @cart->list }}"  value="{{ @rec }}" > 
+            <div class="row">
+                <div class='col-3'>{{ @rec->name }}</div>
+                <div class='col-2'><input name='{{ "cd" . @rec->id }}' value="{{ @rec->qty }}" size="2"></div>
+                <div class='col-2'><p class="align-right">@ ${{ @rec->cost | price }}</p></div>
+                <div class='col-2'><p class="align-right">{{ @rec->lineTotal | price }}</p></div>
+            </div>    
+        </repeat>
+        <hr>
+        <div class="row">
+            <div class='col-3'><p class='text-info'>Sub-totals</p></div>
+            <div class='col-2'>{{ @cart->totalItems }}</div>
+            <div class='col-2'></div>
+            <div class='col-2'><p class="align-right">{{ @cart->totalCost | price }}</p></div>
+        </div>  
+
+
+        <div class='row'>
+            <div class='col-1'></div>
+            <div class='col-1'></div>
+            <div class='col-5'><p class="align-right">Postage (in Australia)</p></div>
+            <div class='col-2'><p class="cart-sum">{{ @cart->postage | price }}</p></div>
+        </div>
+        <div class='row'>
+            <div class="col-1"></div>
+            <div class='col-1'></div>
+            <div class='col-5'><p class="align-right">Total</p></div>
+            <div class='col-2'><p class="cart-sum">{{ @cart->total | price }}</p></div>
+        </div>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-3">
+                <submit-btn value="Update Cart">
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+$(document).ready(function () {
+    var options = {
+      target: '#cartdiv'
+    };
+    $('#cartsub').ajaxForm(options);
+
+}); 
+</script>

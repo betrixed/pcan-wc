@@ -1,0 +1,831 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tb>
+<tb k="ROUTES" >
+  <a k="/">
+    <tb>
+      <a k="GET">
+        <s>Home->show</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/links">
+    <tb>
+      <a k="GET">
+        <s>Home->links</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/index.php">
+    <tb>
+      <a k="GET">
+        <s>Home->show</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/login">
+    <tb>
+      <a k="GET">
+        <s>Login->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+      <a k="POST">
+        <s>Login->check</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/login/forgot">
+    <tb>
+      <a k="GET">
+        <s>Login->forgot</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/login/forgotPost">
+    <tb>
+      <a k="POST">
+        <s>Login->forgotPost</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/login/changepwd">
+    <tb>
+      <a k="GET">
+        <s>Login->changePwd</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/login/changePwdPost">
+    <tb>
+      <a k="POST">
+        <s>Login->changePwdPost</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/reset-password/@code/@email">
+    <tb>
+      <a k="GET">
+        <s>Login->resetPwd</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/id/signup">
+    <tb>
+      <a k="GET">
+        <s>Login->signup</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/id/signupPost">
+    <tb>
+      <a k="POST">
+        <s>Login->signupPost</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/dash">
+    <tb>
+      <a k="GET">
+        <s>Dash->show</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/info">
+    <tb>
+      <a k="GET">
+        <s>Dash->info</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/redirect">
+    <tb>
+      <a k="GET">
+        <s>Dash->redirect</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/logout">
+    <tb>
+      <a k="GET">
+        <s>Login->checkout</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/denied">
+    <tb>
+      <a k="GET">
+        <s>Dash->denied</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/gallery">
+    <tb>
+      <a k="GET">
+        <s>GalleryCtl->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/gallery/view/@name">
+    <tb>
+      <a k="GET">
+        <s>GalleryCtl->view</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/gallery">
+    <tb>
+      <a k="GET">
+        <s>GalleryAdm->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/article/@title">
+    <tb>
+      <a k="GET">
+        <s>Article->title</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/news/*">
+    <tb>
+      <a k="GET">
+        <s>Article->news</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/gallery/edit/@name">
+    <tb>
+      <a k="GET">
+        <s>GalleryAdm->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/gallery/scan/@name">
+    <tb>
+      <a k="GET">
+        <s>GalleryAdm->scan</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/gallery/sync/@name">
+    <tb>
+      <a k="GET">
+        <s>GalleryAdm->sync</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/gallery/new">
+    <tb>
+      <a k="GET">
+        <s>GalleryAdm->newRec</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/gallery/post">
+    <tb>
+      <a k="POST">
+        <s>GalleryAdm->post</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <tb k="/admin/gallery/imageList">
+    <tb k="2">
+      <a k="POST">
+        <s>GalleryAdm->imageList</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </tb>
+  <tb k="/admin/gallery/upload">
+    <tb k="2">
+      <a k="POST">
+        <s>GalleryAdm->upload</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </tb>
+  <a k="/admin/linkery/new">
+    <tb>
+      <a k="GET">
+        <s>LinkeryAdm->newRec</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/linkery/edit/@lid">
+    <tb>
+      <a k="GET">
+        <s>LinkeryAdm->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/linkery">
+    <tb>
+      <a k="GET">
+        <s>LinkeryAdm->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/linkery/post">
+    <tb>
+      <a k="POST">
+        <s>LinkeryAdm->post</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/linkery/add">
+    <tb>
+      <a k="POST">
+        <s>LinkeryAdm->add</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/linkery/view/@name">
+    <tb>
+      <a k="GET">
+        <s>LinkeryCtl->view</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/link">
+    <tb>
+      <a k="GET">
+        <s>LinksAdm->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/link/edit/@lid">
+    <tb>
+      <a k="GET">
+        <s>LinksAdm->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/link/new">
+    <tb>
+      <a k="GET">
+        <s>LinksAdm->newLink</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/link/post">
+    <tb>
+      <a k="POST">
+        <s>LinksAdm->linkPost</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/export">
+    <tb>
+      <a k="GET">
+        <s>BlogAdm->export</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/exportpost">
+    <tb>
+      <a k="POST">
+        <s>BlogAdm->exportPost</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/new">
+    <tb>
+      <a k="GET">
+        <s>BlogAdm->newRec</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <tb k="/admin/blog/verify">
+    <tb k="2">
+      <a k="POST">
+        <s>BlogAdm->verify</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </tb>
+  <a k="/admin/blog">
+    <tb>
+      <a k="GET">
+        <s>BlogAdm->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/index">
+    <tb>
+      <a k="GET">
+        <s>BlogAdm->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/import">
+    <tb>
+      <a k="GET">
+        <s>BlogAdm->import</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/importpost">
+    <tb>
+      <a k="POST">
+        <s>BlogAdm->importPost</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <tb k="/admin/blog/categorytick">
+    <tb k="2">
+      <a k="POST">
+        <s>BlogAdm->catTick</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </tb>
+  <a k="/admin/blog/edit/@bid">
+    <tb>
+      <a k="GET">
+        <s>BlogAdm->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/post">
+    <tb>
+      <a k="POST">
+        <s>BlogAdm->editPost</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/postnew">
+    <tb>
+      <a k="POST">
+        <s>BlogAdm->postNew</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/postflag">
+    <tb>
+      <a k="POST">
+        <s>BlogAdm->postFlag</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/addevent">
+    <tb>
+      <a k="POST">
+        <s>BlogAdm->addEvent</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/blog/eventUpdate">
+    <tb>
+      <a k="POST">
+        <s>BlogAdm->eventUpdate</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/cat/new">
+    <tb>
+      <a k="GET">
+        <s>CatAdm->newRec</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/cat/edit/@cid">
+    <tb>
+      <a k="GET">
+        <s>CatAdm->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/cat">
+    <tb>
+      <a k="GET">
+        <s>CatAdm->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/cat/post">
+    <tb>
+      <a k="POST">
+        <s>CatAdm->post</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/cat/@catid">
+    <tb>
+      <a k="GET">
+        <s>CatView->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/cat/fetch/@bid">
+    <tb>
+      <a k="GET">
+        <s>CatView->fetch</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/cat/article/@title">
+    <tb>
+      <a k="GET">
+        <s>CatView->article</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/cat/menu/@cap">
+    <tb>
+      <a k="GET">
+        <s>CatView->menu</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact-us">
+    <tb>
+      <a k="GET">
+        <s>EmailForm->email</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/email/new">
+    <tb>
+      <a k="GET">
+        <s>EmailForm->email</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/email/edit/@cid">
+    <tb>
+      <a k="GET">
+        <s>EmailForm->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/email/post">
+    <tb>
+      <a k="POST">
+        <s>EmailForm->post</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/player/new">
+    <tb>
+      <a k="GET">
+        <s>Player->newRec</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/player/post">
+    <tb>
+      <a k="POST">
+        <s>Player->post</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/player/edit/@pid">
+    <tb>
+      <a k="GET">
+        <s>Player->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/hire/new">
+    <tb>
+      <a k="GET">
+        <s>Hire->newRec</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/hire/post">
+    <tb>
+      <a k="POST">
+        <s>Hire->post</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/contact/hire/edit/@pid">
+    <tb>
+      <a k="GET">
+        <s>Hire->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/menu">
+    <tb>
+      <a k="GET">
+        <s>MenuAdm->menuList</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/menu/reset">
+    <tb>
+      <a k="GET">
+        <s>MenuAdm->reset</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/menu/list">
+    <tb>
+      <a k="GET">
+        <s>MenuAdm->listAll</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/menu/edit">
+    <tb>
+      <a k="GET">
+        <s>MenuAdm->editTree</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/menu/submenu">
+    <tb>
+      <a k="GET">
+        <s>MenuAdm->itemNew</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/menu/item/@id">
+    <tb>
+      <a k="GET">
+        <s>MenuAdm->itemEdit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/menu/delete">
+    <tb>
+      <a k="POST">
+        <s>MenuAdm->deleteItem</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/menu/post">
+    <tb>
+      <a k="POST">
+        <s>MenuAdm->postItem</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/user">
+    <tb>
+      <a k="GET">
+        <s>UserAdm->index</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/user/edit/@id">
+    <tb>
+      <a k="GET">
+        <s>UserAdm->edit</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+  <a k="/admin/user/groups/@id">
+    <tb>
+      <a k="GET">
+        <s>UserAdm->groups</s>
+        <i>0</i>
+        <i>0</i>
+        <_n></_n>
+      </a>
+    </tb>
+  </a>
+</tb>
+</tb>

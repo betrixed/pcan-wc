@@ -1,0 +1,171 @@
+<?php
+
+Use WC\Assets,
+    WC\UserSession;
+?>
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Schema</title>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>
+        <?= Assets::instance()->CssHeader(); ?>
+    </head>
+    <body>
+        <style>
+            label {
+                margin-right:15px;
+                min-width:150px;
+                text-align: right;
+            }
+            input[type="submit"] {
+                margin-left:165px;
+            }
+        </style>
+        <?php $fclass = "field is-horizontal"; ?>
+        <section class="hero is-success">
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                    <h1 class="title">
+                        Database Schema Capture and Transfer 
+                    </h1>
+                </div>
+            </div> 
+            <div class="hero-foot">
+                <nav class="tabs is-boxed is-fullwidth is-large">
+                    <div class="container">
+                        <ul>
+                            <li class="tab is-active" onclick="openTab(event, 'Apply')"><a >Apply</a></li>
+                            <li class="tab" onclick="openTab(event, 'Read')"><a >Read</a></li>
+                            <li class="tab" onclick="openTab(event, 'Compare')"><a >Compare</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </section>
+
+        <div class="container section">
+            <div class="content-tab"  id="Apply">
+                <h3>Initialise Database with Schema and Data</h3>
+                <hr>               
+
+                        <form id="fm_init" method="post" action="/schema/initdb">
+                            <div class="<?= $fclass ?>">
+                                <?=
+                                $this->form()->select(
+                                        ['label' => 'Adapter', 'name' => 'adapter',
+                                            'list' => $adapters, 'class' => 'selectpicker'])
+                                ?>
+                            </div>
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Database name', 'name' => 'dbname']) ?>
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'User name', 'name' => 'dbuser']) ?>
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Password', 'name' => 'passwd']) ?>
+
+                            <div class="<?= $fclass ?>">
+                                <?=
+                                $this->form()->select(['label' => 'Schema', 'name' => 'schema', 'list' => $keyed,
+                                    'class' => 'selectpicker'])
+                                ?>
+
+                                <?= $this->form()->checkbox(['name' => 'script', 'checked', 'text' => 'Script only']) ?>
+                            </div> 
+                            <hr>
+                            <div class="field is-grouped">
+                                <div class="control">
+                                    <?= $this->form()->submit(['class' => 'button is-link']) ?>
+                                </div>
+                            </div>        
+                        </form>
+
+            </div>
+            <div id="Read" class="content-tab"  style="display:none">
+
+                <div class="columns">
+                    <div class="column is-two-thirds">
+                        <h3>Dump Schema from existing database</h3>
+                        <hr>
+                        <form id="fmread" method="post" action="/home/read">
+
+                            <div class="<?= $fclass ?>">
+                                <label class="label">Adapter</label>&nbsp;<div class="select">
+                                    <?=
+                                    $this->form()->select(
+                                            ['name' => 'adapter',
+                                                'list' => $adapters])
+                                    ?>
+                                </div>
+                            </div>
+
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Database name', 'name' => 'dbname']) ?>
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'User name', 'name' => 'dbuser']) ?>
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Password', 'name' => 'passwd']) ?>
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Schema version', 'name' => 'version']) ?>
+
+                            <div class="columns">
+                                <div class="column is-one-third">
+                                    <?= $this->form()->submit(['class' => 'is-pulled-right']) ?>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="column is-one-third">
+                        <h5>Stored Schemas</h5>
+                        <hr>
+                        <p>
+                            <?php foreach ($list as $name): ?>
+                                <a href="/schema/script/<?= $name ?>"><?= $name ?></a><br>
+                            <?php endforeach; ?>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="content-tab" id="Compare" style="display:none">
+                <h3>Compare Two Schemas</h3>
+                <form action="/schema/compare" method="post">
+                    <div class="row">
+                        <div class="col-6">
+                            <?=
+                            $this->form()->select(['name' => 'sel1', 'list' => $keyed,
+                                'class' => 'selectpicker'])
+                            ?>
+                        </div>
+                        <div class="col-6">
+                            <?=
+                            $this->form()->select(['name' => 'sel2', 'list' => $keyed,
+                                'class' => 'selectpicker'])
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <?= $this->form()->submit(['class' => 'float-right']) ?>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+
+        <?= Assets::instance()->JsFooter(); ?>
+
+        <script type="text/javascript">
+            function openTab(evt, tabName) {
+                var i, x, tablinks;
+                x = document.getElementsByClassName("content-tab");
+                for (i = 0; i < x.length; i++) {
+                    x[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tab");
+                for (i = 0; i < x.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+                }
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " is-active";
+            }
+        </script>
+    </body>
+</html>

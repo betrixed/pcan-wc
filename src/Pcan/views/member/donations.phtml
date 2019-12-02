@@ -1,0 +1,42 @@
+<wc:init></wc:init>
+{~
+@donations = @view->donations;
+~}
+<div class='container' >
+    <div id='dnwrap' class='row'>
+        <div class='col-2 text-center'>
+            Date
+        </div>
+        <div class='col-2 text-center'>
+            Purpose
+        </div>
+        <div class='col-2 text-right'>
+            Amount
+        </div>
+    </div>
+    <hr>
+    <check if="{{ !empty(@view->flash) }}">
+        <true>
+        <F3:repeat group="{{ @view->flash }}" value="{{ @msg }}">
+            <div class="alert alert-{{ @msg.status }} alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ @msg.text | raw }}
+            </div>
+        </F3:repeat>
+        </true>
+    </check>
+    <repeat group="{{ @donations }}" value="{{@dn}}">
+        <div class="row" id="dnid{{ @dn.donateId }}">
+            <div class="col-2 text-center">
+                <span>{{@dn.member_date}}</span>
+            </div>
+
+            <div class="col-2 text-center">
+                <span>{{@dn.purpose}}</span>
+            </div>
+            <div class="col-2 text-right">
+                <span class="align-right">{{@dn.amount | price}}</span>
+            </div>
+        </div>
+    </repeat>
+</div>

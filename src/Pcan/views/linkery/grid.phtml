@@ -1,0 +1,62 @@
+
+{~ 
+@links = @view->links;
+@linkery = @view->linkery;
+
+~}
+
+
+<div class="container body-wrap">
+    <check if="{{ count(@links) > 0}}"><true>
+        <div id="mgrid"  data-columns>
+            {~  
+            @rowId = 0;
+            ~}
+            <repeat group="{{ @links }}" value="{{ @fup }}">
+                {~
+                    @url = @fup.url;
+                    @lid = 'lnky=' . @linkery.id;
+                    
+                    if (@url !== '/') {
+                        if (strpos( @url, '?')===false):
+                            @url .= '?' . @lid;
+                        else:
+                            @url .= '&' . @lid;
+                        endif;
+                    }
+                ~}
+                <div class='mitem' id="{{ 'lnk' . @fup.id }}">
+                    <div class="wrap-item">
+                    <div style="padding:10px; width:100%; overflow-x:auto;">
+                        <span class="title-area" >
+                            <span class="link-title">
+                                <check if="{{ @url !== '/' }}">
+                                    <true>
+                                <a href="{{ @url }}">{{ @fup.title | raw }}</a>
+                                </true>
+                                <false>
+                                {{ @fup.title | raw }}
+                                </false>
+                                </check>
+                            </span>
+                            <check if="{{ @fup.urltype==='Event' }}">
+                                <div class="float-right">{{ @fup.date_created, 'd F Y' | date }}</div>
+                                <div class='clear'></div>
+                            </check>
+                        </span>    
+                        {{ @fup.summary| raw }}
+                        <div class='clear'></div>
+                        <check if="{{ @url !== '/' }}">
+                        <a href="{{ @url }}">Full article ...</a>
+                        </check>
+                    </div>
+                    </div>
+                </div>
+            </repeat>
+        </div>
+        </true>
+        <false>
+        <p>No Link records here</p>
+        </false>
+    </check>
+</div>

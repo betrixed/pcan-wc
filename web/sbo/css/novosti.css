@@ -1,0 +1,196 @@
+
+/* 
+    Created on : 08/08/2017, 1:16:05 PM
+    Author     : michael
+*/
+
+
+div.novosti {
+	font-size:1.3vmax;
+	font-family:Tahoma, Verdana, Arial, sans-serif;
+        padding : 10px;
+        background-color: whitesmoke;
+        border-color: darkolivegreen;
+        border-width: 3px;
+        border-style: outset;
+}
+
+div.novosti_p {
+	border-width:5px;
+	border-color:lightgrey;
+	border-style:solid;
+	padding: 10px;
+}
+
+
+div.novosti_p p {
+	padding-left:10px;
+}
+
+div.novosti .novosti_p p {
+	padding:10px 10px;
+	width: 95%;
+}
+
+div.novosti .novosti_p img {
+	padding:10px 10px;
+	width: 95%;
+}
+
+div.novosti_p img {
+  padding:0px;
+}
+
+
+div.novosti div.card {
+    border-color: darkgray;
+    border-width: thick;
+    border-style: double;
+}
+div.novosti div.card-title {
+    color: darkgreen;
+    font-weight:bolder;
+    font-size:1.2em;
+}
+div.novosti blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+div.novosti blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+div.novosti blockquote p {
+  display: inline;
+}
+
+div.novosti h2 {
+    font-size:1.6em;
+    color: darkolivegreen;
+    font-style: oblique;
+    font-weight:bolder;
+    text-align:center;
+}
+div.novosti h3 {
+    font-size:1.25em;
+    color:darkslateblue;
+    font-weight:bolder;
+}
+
+
+div.novosti_next {
+	border-width:5px;
+	border-color:#fdb934;
+	border-style:double;
+	text-align:center;
+	background:#fddda0;
+}
+
+div.novosti .bigger {
+	font-size:1.2em;
+}
+div.novosti .red {
+    color:yellow;
+    font-style: italic;
+    font-size: 1.2em;
+}
+
+div.novosti .biggest {
+	font-size:2.5em;
+}
+
+div.novosti .n_title {
+	font-size:1.5em;
+	font-weight:bold;
+        padding-left: 0.5em;
+        color: darkred;
+}
+
+div.novosti div.novosti_head {
+	display:inline-block;
+	background-color:#000;
+	border-width:5px;
+	border-color:#000;
+	border-style:solid;
+	padding: 5px;
+        vertical-align:bottom;
+}
+
+div.novosti .novosti_head img {
+	width:50%;
+	float:left;
+
+}
+
+div.novosti figure {
+	outline-color:black;
+	outline-width:1px;
+        outline-style: solid;
+	border-width : 5px;
+        border-color: lightblue;
+        margin: 10px;
+}
+div.novosti figcaption {
+	background-color:lightgrey;
+	padding-left: 5px;
+        padding-bottom: 5px;
+        font-size:medium;
+}
+
+div.novosti figure img {
+	padding:0;
+        margin: 0;
+}
+
+div.novosti .novosti_edition {
+        padding-top:1.0em;
+	text-align:center;
+	width:30%;
+	line-height:1.1em;
+	float:right;
+	background-color:#024;
+	font-family: Garamond, serif;
+	color:#fff;
+	padding-left:2.0em;
+	padding-right:2.0em;
+        vertical-align: middle;
+}
+
+div.novosti .event {
+    border-color:orange;
+    border-width: 8px;
+    border-style: solid inset;
+    padding: 15px 0 0 0;
+    margin: 5px;
+    line-height:normal;
+    display: block;
+    background-color: oldlace;
+}
+
+
+div.novosti .event h2 {
+    font-size: 1.4em;
+    font-style: normal;
+    color: #111;
+    text-align: left;
+}
+
+div.novosti .event p.time  {
+    font-size: 1.2em;
+    margin: 0;
+    color: #000;
+}
+
+div.novosti .event p.place  {
+    font-size: 1.2em;
+    margin: 0 0 0 8px;
+    color: blue;
+}
+

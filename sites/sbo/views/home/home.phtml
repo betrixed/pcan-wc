@@ -1,0 +1,95 @@
+{~
+@view = \Base::instance()->get('view');
+@hasEvents = !empty(@view->events);
+@hasInfo = !empty(@view->sides);
+@hasSides = @hasEvents || @hasInfo;
+
+if (@hasSides):
+@mainWidth = "col-lg-8";
+else:
+@mainWidth = "col-lg-12";
+endif;
+~}
+
+<style>
+    div.sidebox {
+        background-color:whitesmoke;
+        border-radius:4px;
+        padding:10px;
+    }
+    div.title-area span.link-sitename {
+        color:darkred;
+        font-size:1.2em;
+    }
+    .mitem {
+        padding:10px;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .col-4 .col-8 .col-12 {
+            width: 100%;
+        }
+        body {
+            background-color: black;
+        }
+    }
+
+</style>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class='col-sm-12 {{ @mainWidth }} body-wrap pad10'>
+
+            <check if="{{@hasEvents}}">
+
+                <h2>Events</h2>
+                <repeat group="{{ @view->events }}" value="{{ @box }}">
+                    <div class="mitem {{@box.style}}">
+                        {{@box.article | raw }}
+                    </div>
+                    <hr>
+                </repeat>
+
+            </check>
+            <repeat group="{{ @view->main }}" value="{{ @link }}">
+                {~
+                @url = @link.url;
+                @ulen = strlen(@url);
+                @urlhint = (@ulen > 55) ? substr(@url,0,25) . '...' . substr(@url,@ulen-27) : @url;
+                ~}
+                <div class='mitem' id='lnk{{ @link.id}}'>
+                    <div class="title-area">
+                        <span class="link-title">
+                            <a  href='{{ @url  }}' target='_blank'>{{ @link.title }}</a>
+                        </span>
+                        <span class='link-sitename float-right' >{{ @link.sitename }}</span>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="link-summary">{{ @link.summary }}</div>
+                    <check if="{{ @link.urltype == 'Blog' }}">
+                        <true>
+                        <a href = '{{ @url }}' target='_blank' title="{{ @urlhint }}">&nbsp;.. more</a>
+                        </true>
+                    </check>
+                </div>
+                <div class="clear"></div>
+                <hr>
+            </repeat>
+        </div>
+
+        <check if="{{@hasSides}}">
+            <div class="col-lg-4 col-sm-12 colborder" >
+
+                <repeat group="{{ @view->sides }}" value="{{ @box }}">
+                    <div class="sidebox ">
+                        <span class='link-title'>{{ @box.title }}</span>
+                        <hr>
+                        <span class='link-summary'>{{ @box.summary }}</span>
+                    </div>
+                </repeat>
+            </div>
+        </check>
+    </div>
+</div>
+<div class="clear"></div>

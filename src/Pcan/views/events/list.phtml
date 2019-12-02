@@ -1,0 +1,31 @@
+<wc:init></wc:init>
+{~
+@view = \Base::instance()->get('view');
+@hasEvents = !empty(@view->events);
+~}
+
+<div class="container-fluid">
+    <div class="row body-wrap pad10">
+        <check if="{{@hasEvents}}">
+            <true>
+              
+                  <div class="col-2">
+                  <h1>Events</h1>
+                  </div>
+                <div class="col-10">
+                <repeat group="{{ @view->events }}" value="{{ @box }}">
+                    {~ @href = "/article/" . @box.title_clean; ~}
+                    <div class="{{@box.style}}">
+                        <div class="title"><a href="{{@href}}">{{@box.title}}</a></div>
+                    </div>
+                    <hr>
+                </repeat>
+                </div>
+
+            </true>
+            <false>
+            <p>There are zero upcoming events logged here</p>
+            </false>
+        </check>
+    </div>
+</div>

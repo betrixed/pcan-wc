@@ -1,0 +1,22 @@
+{~
+    @view = \Base::instance()->get('view');
+    @rec = @view->rec;
+~}
+<h3 style="font-size: 14px;font-family:Verdana,Helvetica,Arial,sans-serif;">Email Message to Parramatta Greens</h3>
+            <p style="color:#000;font-size: 16px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;font-weight:normal;">
+
+Sent from link {{ @view->link}}<br>       
+
+Date: {{ @rec.sendDate }}<br>
+From: {{ @rec.name }}<br>
+Email: {{ @rec.email }}<br>
+Telephone: {{ @rec.telephone }}<br>
+
+            </p>
+            <h3>Message</h3>
+<p style="font-size: 14px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;">
+{{ @rec.body }}
+            <br/>
+            </p>
+
+

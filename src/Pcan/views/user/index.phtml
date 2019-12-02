@@ -1,0 +1,42 @@
+{~
+    @page = @view->page;
+    @url = @view->url;
+    
+~}
+
+<div class="container body-wrap">
+    <check if='{{ @page->last > 1 }}'><true>
+    <div class="btn-group">
+        
+        <link-to href="{{ @url . 'new' }}" text="Create New User" class="btn"></link-to>
+        <link-to href="{{ @url  }}" text="First" class="btn" icon='fa fa-fast-backward'></link-to>
+        <link-to href="{{ @url . '?page=' . @page->before }}" text="Previous" class="btn" icon='fa fa-step-backward'></link-to>
+        <link-to href="{{ @url . '?page=' . @page->next }}" text="Next" class="btn" icon='fa fa-step-forward'></link-to>
+        <link-to href="{{ @url . '?page=' . @page->last }}" text="Last" class="btn" icon='fa fa-fast-forward'></link-to>
+ </div>
+        </true></check>
+<span class="help-inline">Page {{ @page->current }}/{{ @page->last }}</span>
+</div>
+<div class='container outerwrap'>
+<table class="table table-bordered table-striped" align="center">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    <repeat group="{{ @page->items }}" value="{{ @item  }}">
+        <tr>
+            <td>{{ @item.id }}</td>
+            <td>{{ @item.name }}</td>
+            <td class='left'><link-to href="{{ @url . 'edit/' . @item.id }}" text='{{ @item.email }}' class= "btn" icon='fa fa-pencil'></link-to></td>
+            <td>{{ @item.status }}</td>
+        </tr>
+          </repeat>
+    </tbody>
+</table>
+</div>

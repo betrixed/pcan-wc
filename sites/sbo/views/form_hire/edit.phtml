@@ -1,0 +1,86 @@
+<wc:init></wc:init>
+{~
+@view = \Base::instance()->get('view');
+@url = @view->url;
+@rec = @view->rec;
+ @google = @view->google;
+~}
+<style>
+    div.form-group  label {
+        font-weight: bold;
+        margin-right:10px;
+        vertical-align: bottom;
+    }
+
+    p {
+        font-size:1.2em;
+    }
+</style>
+
+<div class='container novosti outerwrap'>
+    
+        <h3>Bookings</h3>
+
+        <hr>
+        <p><i>Book an SBO concert for your venue? Or possibly one of smaller size player groups, such as SBO quartet?</i></p>
+        <form id="booking" method='post' action="{{ @url . 'post' }}">
+            <check if="{{ @view->sub === 1 }}">
+                <true><hidden name="sub" value="{{ @view->sub }}" ></hidden></true>
+            </check>
+            <check if="{{ @rec.id }}">
+                <true>            
+                <hidden name="id" value="{{ @rec.id }}" ></hidden>
+                <div class="form-group row">
+                    <div class="col-5">
+                        <datetime label='Date entered' name="created_on" value="{{ @rec.created_on }}" readonly class="form-control" ></datetime>
+                    </div>
+                </div>
+                </true>
+            </check>
+            <div class="form-group row">
+                <div class="col-4">
+                    <text-field  name="fullname" value="{{ @rec.fullname }}"  label='Full Name' size="16" class="form-control"></text-field>
+                </div>
+              
+                <div class="col-4">
+                    <phone name="telephone" value="{{ @rec.telephone }}"  label='Phone number' size="16" class="form-control"></phone>
+                </div>
+            </div>
+             <div class="form-group row">
+              <div class="col-6">
+                    <email name="email" value="{{ @rec.email }}" label="Email"  class="form-control" ></email>
+                </div>
+             </div>
+            <div class="form-group row">
+                <div class="col-6">
+                    <text-field name="venue" value="{{ @rec.venue }}" label="Venue"  class="form-control"></text-field>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-6">
+                    <datetime name="date" value="{{ @rec.date }}" label="Date & Time"  class="form-control"></datetime>
+                </div>
+            </div>
+            <div class="form-group row">
+            
+             <div class="col-11">
+                 <label>Other Details</label>
+                <multiline name="message" cols="70" rows="5" value="{{ @rec.message }}"></multiline>
+             </div>
+            </div>
+            <hr>
+
+    <check if="{{ @google.enabled }}">
+    <true>
+        <captcha-submit site="{{ @google.site }}" id="booking" text="Send"></captcha-submit>
+    </true>
+    <false>
+    <div class="form-group">
+         <submit-btn name='login' value="Send" class='btn btn-primary' />
+    </div>    
+    </false>
+</check>          
+            <f3:xcheck value="{{ @view->xcheck }}"></f3:xcheck>
+        </form>
+
+</div>

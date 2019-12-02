@@ -1,0 +1,73 @@
+{~ 
+    @view = \Base::instance()->get('view');
+    @menulist = @view->menulist;
+    @url = @view->url;
+    @rootid = @view->rootid;
+~}
+
+<style>
+    label.control-label {
+        min-width:110px;
+        text-align:right;
+        margin-right:10px;
+    }
+    
+    span.input-group-addon {
+        display: inline-table;
+    }
+    
+    a.btn {
+        margin-right:10px;
+    }
+</style>
+
+<div class="container-fluid outerwrap">
+    <div class="row">
+        <div class="col-1">
+            <span> <b>{{ @menuName }}</b></span>
+        </div>
+<div class='col-5'>
+    <link-to href="{{ @url  }}" text="Menu Trees" class="btn btn-outline-primary"></link-to>
+    <link-to href="{{ @url .  'reset?m0=' . @rootid }}" text="Clear Cache" class="btn btn-outline-primary"></link-to>
+    <link-to href="{{ @url .  'submenu?m0=' . @rootid  }}" text="New Sub-menu" class="btn btn-outline-primary"></link-to>
+</div>
+    </div>
+<div class="col-md-2">
+<table class="table table-condensed" align="center">
+    <thead>
+        <tr>
+            <th >level</th>
+            <th >caption</th>
+            <th >Id</th>
+            <th >Parent</th>
+            <th >Class</th>
+            <th >Controller</th>
+            <th >Action</th>
+            <th >Role</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    <repeat group="{{ @menulist }}" value="{{ @menu }}" >
+    {~ @name = (empty(@menu.caption)) ? "&lt;NULL&gt;" : @menu.caption; 
+    ~}
+            <tr>
+                <td>{{ @menu.level }}</td>
+                <td><link-to text="{{ @name }}" href="{{ @url. 'item/' . @menu.id }}"></link-to></td>
+                <td>{{ @menu.id }}</td>
+                 <td>{{ @menu.link }}</td>
+                <td>{{ @menu.class }}</td>
+                <td>{{ @menu.controller }}</td>
+                <td>{{ @menu.action }}</td>
+                <td>{{ @menu.user_role }}</td>
+                 
+            </tr>
+    </repeat>
+    </tbody>
+
+</table>
+</div>
+</div>
+
+        
+

@@ -1,0 +1,63 @@
+{~ 
+    @view = \Base::instance()->get('view');
+    @list = @view->list;
+    
+~}
+<style>
+    .color-fill {
+        background-color:paleturquoise;
+        min-height:10px;
+    }
+@media screen and (max-width: 900px){
+    #mgrid[data-columns]::before {
+        content: '3 .column.size-1of1';
+    }
+}
+
+@media screen and (min-width: 901px) and (max-width: 1300px) {
+    #mgrid[data-columns]::before {
+            content: '2 .column.size-1of2';
+    }
+}
+@media screen and (min-width: 1301px) {
+    #mgrid[data-columns]::before {
+            content: '3 .column.size-1of3';
+    }
+}
+
+.column { float:left; }
+.size-1of1 { width: 100%; }
+.size-1of2 { width: 50%; }
+.size-1of3 { width: 33.333%; }
+
+</style>
+<div class='container-fluid artcat-bg'>
+<check if="{{ count(@list) > 0 }}" >
+    <true>
+    <div class="row">
+    <div id="list" class="col-2 catlist ubuntu">
+          <repeat group="{{ @list  }}" value="{{ @menu }}">
+               <div class="row">
+            <div class="catlink">
+                <check if="{{ @menu->caption === '-'}}">
+                    <true>
+                            <div class="color-fill"></div>
+                    </true>
+                    <false>
+                    <a class="btn" id="{{'f' . @menu->id}}" href="{{ @menu->itemUrl }}" onclick="fetch(this);return false;">{{ @menu->caption }}</a>
+                    </false>
+                </check>             
+            </div>
+                </div>
+          </repeat>
+    </div>
+    <div class="col-10">
+    <div id="article"></div>
+    </div>
+    <div class="hidden">
+        <a id="first_link" href="{{ @view->firstId }}" onclick="fetch(this);return false;">#First#</a>
+    </div>
+    </div>
+    </true>
+</check>
+</div>

@@ -1,0 +1,23 @@
+{~
+    @view = \Base::instance()->get('view');
+    @rec = @view->rec;
+
+~}
+
+Receipt of Join Orchestra 
+
+Thank you for your enquiry.
+
+The following details have been emailed from the "Join Orchestra" form.
+
+Date: {{ @rec.created_on }}
+From: {{ @rec.fullname }}
+Email: {{ @rec.email }}
+Telephone: {{ @rec.telephone }}
+
+Venue: {{ @rec.venue }}
+Date: {{ @rec.date }}
+
+Message:
+{{ @rec.message }}
+

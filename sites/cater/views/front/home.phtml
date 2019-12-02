@@ -1,0 +1,103 @@
+<include href="partial/facebook.phtml"></include>
+<div class='fb-like' data-share='true' data-width='450' data-show-faces='true'></div>
+<div class='container'>
+    <style>
+        hr {
+            outline-style: groove;
+        }
+    </style>
+            <div class="bigf boxit2">
+                <p>Twenty years experience at all levels of hospitality.</p>
+                <p>Based at North Rocks, Sydney.</p>
+                <p>Providing service to surrounding suburbs and Parramatta area.</p>         
+            </div>
+            
+            <div class="bigf boxit">
+                <p>Specialising in</p>
+                <ul>
+                    <li><p>Corporate and business events</p></li>
+                    <li><p>High teas</p></li>
+                    <li><p>Funeral services</p></li>
+                    <li><p>Anniversaries, functions</p></li>
+                </ul>
+                <hr/>
+                <div class="centerit">
+                <p>Service personalised for your event</p>
+                <p>Service delivery to your home or business</p>
+                </div>
+            </div>
+<div class="bigf boxit2 centerit">
+           <p>Don't panic, <a href='/contact/index' >Contact Julie</a></p>
+</div>
+            <div class="centerit">
+            <span style='font-size:1.2em;color:darkred;'><p>Food from fresh ingredients,  Vegetarian options</p>
+            </span>
+            </div>
+    <div class="midf">
+            <table>
+                <tr>
+                    <td><img src="/img/wraps.jpg" class="img" style='margin-right:4em;' /></td>
+                    <td><p>Gourmet sandwiches mini rolls and wraps</p><ul class='list-unstyled'>
+                            <li>Avocado capsicum,red onion and tomato</li>
+                            <li>Roast chicken, celery and mayonnaise</li>
+                            <li>Creamed egg and parsley</li>
+                            <li>Leg ham and tomato</li>
+                            <li>Salad</li>
+                            <li>Roast beef and horseradish</li>
+                            <li>Red salmon, shallots and sour cream</li>
+                        </ul></td>
+                </tr>
+                <tr><td colspan='2'><hr /></td></tr>
+                <tr>
+                    <td><ul class='list-unstyled'>
+                            <li>Sausage Rolls and Quiches</li>
+                            <li>Anti-pasta Platters</li>
+                            <li>Cheese Platters</li>
+                            <li>Dips and Pita bread</li>
+                            <li>Salamis and Dolmades</li>
+                            <li>Fresh fruit platter</li>
+                            <li>Cakes</li>
+                        </ul></td>
+                    <td><img src="/img/sausage-rolls.jpg" class="img"/></td>
+                </tr>
+                <tr><td colspan='2'><hr /></td></tr>
+                <tr>
+                    <td><img src="/img/Mini_Christmas_Quiches.jpg" class="img" style='margin-right:4em;'/></td>
+                    <td><ul class='list-unstyled'>
+                            <li>Mini Kebabs</li>
+                            <li>Buffalo style chicken fingers</li>
+                            <li>Vegetarian spring rolls</li>
+                            <li>Chilli potato wedges</li>
+                            <li>Gourmet meat balls</li>
+                            <li>Seafood platters</li>
+                        </ul></td>
+                </tr>
+            </table>
+    </div>
+            <hr />
+            <p>At Julie's Catering we offer three different service options:
+                <ul>
+
+                    <li>We supply food only</li>
+                    <li>We set up, supply food and then clean up after the event</li>
+                    <li>We can also supply a complete home service package where we clean and prepare home for guests, supply food and clean up</li>
+
+                    <li>As a special service we also offer a caring service to look after the needs of bereaved partners and families by cleaning and cooking on a temporary basis.</li>
+                </ul>
+            </p>
+        </div>
+        
+    <hr />
+    <check if="{{ @view->metadata }}">
+        <true>
+        <span style="font-size:0.7em;">
+            <table class="table-bordered">
+        <repeat group="{{ @view->metadata }}" value="{{ @value }}" key="{{ @key }}">
+            <tr>
+                <td>{{ @key }}</td><td>{{ @value }}</td>
+            </tr>
+        </repeat>
+                </table>
+             </span>
+        </true>
+     </check>

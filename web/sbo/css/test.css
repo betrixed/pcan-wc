@@ -1,0 +1,7 @@
+body {
+    min-width:320px;
+    width:60%;
+    margin:0 auto;
+    overflow-y:scroll;
+    background-color:yellow;
+}

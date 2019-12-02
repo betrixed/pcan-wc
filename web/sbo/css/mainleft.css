@@ -1,0 +1,24 @@
+    div.colborder {
+        padding-left:1%;
+    }
+    .float-right {
+        float:right;
+    }
+    .row {
+        
+    }
+    .col-4 {
+        width: 33%;
+        float:left;
+    }
+    .col-8 {
+        width: 65%;
+        float:left;
+    }
+    .col-12 {
+        width: 99%;
+        float:left;
+    }
+    .clear {
+        clear:both;
+    }

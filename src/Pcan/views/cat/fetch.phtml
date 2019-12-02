@@ -1,0 +1,16 @@
+{~ 
+    @view = \Base::instance()->get('view'); 
+    @blog = @view->blog;
+    @sclass = @blog.style;
+    if (is_null(@sclass) || @style==="noclass") {
+        @sclass="outerwrap pad10";
+    }
+~}
+<div class="container">
+
+<div class="{{  @sclass }}">
+<span class="cattitle">{{ @blog.title }}</span>
+<hr>
+{{ @blog.article}}
+</div>
+</div>

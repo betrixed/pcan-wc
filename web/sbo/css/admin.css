@@ -1,0 +1,38 @@
+
+/* 
+    Created on : 18/08/2018, 11:57:20 PM
+    Author     : Michael Rynn
+*/
+   .btn {
+        margin-left:10px;
+    }
+    div.header {
+        padding:10px;
+        background-color:gainsboro;
+        border-width:10px;
+    }
+    div.container {
+        padding: 15px;
+        border-radius: 15px; 
+        border-width: 4px;
+       
+    }
+    label.col-form-label, label.form-check-label {
+        min-width:110px;
+        text-align:right;
+        margin-right:10px;
+        font-weight:bold;
+        
+    }
+
+    span.input-group-addon {
+        display: inline-table;
+    }
+    
+    div.form-group , div.input-group {
+        margin-bottom: 15px;
+        vertical-align:middle;
+    }
+   .date  {
+        max-width: 400px;
+    }

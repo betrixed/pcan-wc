@@ -1,0 +1,63 @@
+{~ 
+    @view = \Base::instance()->get('view');
+    @menulist = @view->menulist;
+    @url = @view->url;
+    
+~}
+
+<style>
+    a.btn {
+        margin-left:30px;
+    }
+</style>
+<div class="container-fluid outerwrap">
+<h1>Menu List</h1>
+
+<div class='row center'>
+    <link-to href="{{ @url  }}" text="Menu Trees", class="btn btn-default"></link-to>
+    <link-to href="{{ @url  . 'submenu' }}" text="New Sub-menu", class="btn btn-default"></link-to>
+    <link-to href="{{ @url  . 'subitem' }}" text="New Menu Item",  class="btn btn-default"></link-to>
+    <link-to href="{{ @url  . 'link' }}" text="New Link",  class="btn btn-default"></link-to>
+     <link-to href="{{ @url  . 'reset' }}" text="Clear Cache",  class="btn btn-default"></link-to>
+</div>
+
+
+<table class="table table-condensed" align="center">
+    <thead>
+        <tr>
+            <th>Parent</th>
+            <th>Order</th>
+            <th>Id</th>
+            <th>Caption</th>
+            <th>Class</th>
+            <th>Controller</th>
+            <th>Action</th>
+            <th>Role</th>
+            
+        </tr>
+    </thead>
+
+    <tbody>
+    <repeat group="{{ @menulist }}" value="{{  @menu }}">
+                    {~
+                @href = @url. 'item/' . @menu.id;
+                @name = empty(trim(@menu.caption)) ? "[ No Caption ]" : @menu.caption;
+            ~}
+            <tr>
+                <td>{{ @menu.parent }}</td>
+                <td>{{ @menu.serial }}</td>
+                <td>{{ @menu.id }}</td>
+                <td><link-to href="{{ @href }}" text="{{ @name  }}"></link-to></td>
+                <td>{{ @menu.class }}</td>
+                <td>{{ @menu.controller }}</td>
+                <td>{{ @menu.action }}</td>
+                <td>{{ @menu.user_role }}</td>
+            </tr>
+    </repeat>
+    </tbody>
+
+</table>
+</div>
+
+        
+

@@ -1,0 +1,105 @@
+{~
+@google = @view->google;
+@email = @view->email;
+@mbr = @view->mbr;
+@message = @view->message;
+@countries = @view->countries;
+@states = @view->states;
+~}
+
+<style>
+    label {
+        font-weight:bold;
+        min-width:100px;
+        text-align: right;
+        margin-top: auto;
+
+    }
+
+    div.fcell label {
+        display: inline-table;
+        vertical-align:top;
+    }
+    .padx {
+        padding:30px;
+    }
+    
+</style>
+<div class='container outerwrap padx'>
+    <p>Sign-up form to receive the emailed ParraCAN Newsletter via Mail Chimp</p>
+    <form id='signup' method='post' action='/id/signupPost'>
+
+        <check if="{{ !empty(@message) }}">
+            <div class="alert alert-primary" role ="alert">
+                <p class="message">{{ @message }}</p>
+            </div>
+        </check>
+        <div id='ctblock'>
+            <div class="row">
+                <div class="col-8">
+                    <text-field label="Email" name="email" value="{{ @email }}" size="50"/>
+                </div>
+            </div>
+            <hr>
+            <p>Contact Details</p>
+            <hr>
+            <div class="row" >
+                <div class="col-6">
+                    <text-field name="fname" label='First Name' size='30' value="{{@mbr.fname}}"></text-field>
+                </div>
+                <div class="col-6">
+
+                    <text-field name="lname" label='Last Name' size='30' value="{{@mbr.lname}}"></text-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class='col'>
+                    <text-field name="addr1" label='Address' size='50' value="{{@mbr.addr1}}"></text-field>
+                    <br>
+                    <text-field name="addr2" label='_' size='50' value="{{@mbr.addr2}}"></text-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class='col'>
+                    <text-field name="city" label='City' size='40' value="{{@mbr.city}}"></text-field>
+                    <select-menu name="state" label='State'  list="{{ @states }}" value="{{@mbr.state}}"></select-menu>
+                </div>
+            </div>
+            <div class="row">
+                <div class='col-8'>
+                    <text-field name="postcode" label='Post-Code' size='8' value="{{@mbr.postcode}}"></text-field>      
+                    <select-menu name="country_code" label='Country' list="{{ @countries }}" value="{{@mbr.country_code}}"></select-menu>
+                </div>
+            </div>
+            <div class="row">
+                <div class='col-5'>
+                    <phone name="phone" label='Phone' size='20' value="{{@mbr.phone}}"></phone>
+                </div>   
+            </div>
+            <div class="row">
+                <div class='fcell col-12'>
+                    <multiline name="source" label='Volunteer info' cols='50' rows='3'  value="{{@mbr.source}}"></multiline>
+                </div>   
+            </div>
+        </div>
+        <hidden name="xcheck" value="{{ @view->xcheck }}" ></hidden>
+        <check if="{{ @google.enabled }}">
+            <true>
+            <script>
+                function onSubmit(token) {
+                    document.getElementById("signup").submit();
+                }
+            </script>
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            <button class ="g-recaptcha" data-sitekey="{{ @google.site }}" data-callback="onSubmit">
+                Signup
+            </button> 
+            </true>
+            <false>
+            <div class="form-group">
+                <submit-btn name='login' value="Signup" class='btn btn-primary btn-large' />
+            </div>    
+            </false>
+        </check>                
+    </form>
+</div>

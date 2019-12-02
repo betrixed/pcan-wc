@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tb>
+    <a k="list">
+        <s>Content</s>
+        <s>About</s>
+        <s>News</s>
+        <s>Contact</s> 
+        <s>Dash</s>
+    </a>
+    <tb k="items" >
+        <a k="Content">
+            <tb>
+                <s k="type">list</s>
+                <a k="list">
+                    <a>
+                        <s>All</s>
+                        <s>links</s>
+                    </a>
+                    <a>
+                        <s>Web</s>
+                        <s>links</s>
+                        <s>?k=Remote</s>
+                    </a>
+                    <a>
+                        <s>Events</s>
+                        <s>events</s>  
+                    </a>
+                    <a>
+                        <s>Here</s>
+                        <s>links</s>
+                        <s>?k=Blog</s> 
+                    </a>
+                </a>
+            </tb>
+        </a>
+        <a k="About">
+            <tb>
+                <s k="type">list</s>
+                <a k="list">
+                    <a>
+                        <s>Who is ParraCAN?</s>
+                        <s>cat</s>
+                        <s>article/who-is-parracan</s>
+                    </a>
+                    <a>
+                        <s>Human industrial world is cause of Global Warming</s>
+                        <s>cat</s>
+                        <s>article/overwhelming-evidence-we-caused-global-warming</s>
+                    </a>
+                    <a>
+                        <s>Why act -- good news</s>
+                        <s>cat</s>
+                        <s>article/why-act-good-news</s>
+                    </a>
+                    <a>
+                        <s>Why act - bad news</s>
+                        <s>cat</s>
+                        <s>article/why-act-bad-news</s>
+                    </a>
+                    <a>
+                        <s>Our vision and associations</s>
+                        <s>cat</s>
+                        <s>article/our-vision-and-associations</s>
+                    </a>
+                    <a>
+                        <s>History of ParraCAN</s>
+                        <s>cat</s>
+                        <s>article/history-of-parracan</s>
+                    </a>
+                    <a>
+                        <s>Help us</s>
+                        <s>cat</s>
+                        <s>article/become-a-member</s>
+                    </a>
+                </a>
+            </tb>
+        </a>
+        <a k="News">
+            <tb>
+                <s k="type">category</s>
+                <s k="value">news</s>
+                <i k="limit">8</i>
+                <a k="generate">
+                    <s>{title}</s>
+                    <s>cat</s>
+                    <s>article/{title_clean}</s>
+                </a>
+            </tb>
+        </a>
+        <a k="Dash">
+            <tb>
+                <s k="type">list</s>
+                <s k="role">Admin</s>
+                <a k="list">
+                    <a>
+                        <s>Dashboard</s>
+                        <s>dash</s>
+                    </a>
+                    <a>
+                        <s>Menus</s>
+                        <s>admin</s>
+                        <s>menu</s>
+                    </a>
+                    <a>
+                        <s>Articles</s>
+                        <s>admin</s>
+                        <s>blog</s>
+                    </a>
+                    <a>
+                        <s>Gallery</s>
+                        <s>admin</s>
+                        <s>gallery</s>  
+                    </a>
+                    <a>
+                        <s>Links</s>
+                        <s>admin</s>
+                        <s>link</s>
+                    </a>
+                    <a>
+                        <s>Linkery</s>
+                        <s>admin</s>
+                        <s>linkery</s>
+                    </a>
+                    <a>
+                        <s>Categories</s>
+                        <s>admin</s>
+                        <s>cat</s>
+                    </a>
+                    <a>
+                        <s>-</s>
+                    </a>
+                    <a>
+                        <s>Log Out</s>
+                        <s>logout</s>
+                    </a>
+                </a>
+            </tb>
+        </a>
+        <a k="Contact">
+            <tb>
+                <s k="type">list</s>
+                <a k="list">
+                    <a>
+                        <s>Contact Us</s>
+                        <s>contact-us</s>
+                    </a>
+                    <a>
+                        <s>Newsletter Subscribe</s>
+                        <s>id/signup</s>
+                    </a>
+                </a>      
+            </tb>
+        </a>
+    </tb>
+</tb>

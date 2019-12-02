@@ -1,0 +1,60 @@
+{~
+@view = Base::instance()->get('view');
+@packs = @view->packs;
+@url = "/admin/blog/";
+@rowid = 0;
+
+~}
+
+<div class="body-wrap">
+    <a href="/dash" class="btn btn-outline-default title">Dash</a> 
+    &nbsp; &#x2609; &nbsp; Import from {{ @view->path }}
+</div>
+<div class="container outerwrap">
+     <form method="post" action="{{ @url . 'importpost' }}" >
+    <table class="table table-bordered table-striped" align="center">
+        <thead>
+            <tr>
+                <th><img src='/image/gallery/site/tick16.png' /></th>
+                <th>Compare</th>
+                <th>Title</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>Here</th>
+            </tr>
+        </thead>
+        <tbody>
+             
+        <repeat group="{{ @packs }}" value="{{ @pack }}" >
+            {~ 
+                @blog = @pack.blog;
+                @pubdate = (new DateTime(@blog.date_published))->format('d M y'); 
+                @update = @blog.date_updated; //(new DateTime(@blog.date_updated))->format('d M y');
+                @match = isset(@pack.match) ? @pack.match.date_updated : null;
+                @rowid += 1;
+            ~}
+            <tr>
+                <td> 
+                <checkbox name="{{ 'op-' . @rowid }}" value="{{@pack.file}}" {{ @checked }}></checkbox></td>
+                <td>{{@pack.compare}}</td>
+                <td class="leftCell">{{ @blog.title }}</td>
+                <td>{{ @pubdate }}</td>
+                <td>{{ @update }}</td>
+                <check if="{{ @match }}">
+                    <true><td>{{ @match }}</td></true>
+                    <false><td>-</td></false>
+                </check>
+                </tr>
+                </repeat>
+        </tbody>
+    </table>
+         <select name="bksel">
+              <option value="new">Import</option>
+              <option value="archive">Import &amp; Archive</option>
+              <option value="replace">Import &amp; Replace</option>
+              <option value="move">Archive the import</option>
+         </select>
+           <submit-btn  value="Execute" />
+           <hidden name="args" value="{{ @view->args }}" ></hidden>
+     </form>
+</div>

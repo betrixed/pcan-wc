@@ -1,0 +1,10 @@
+<wc:init></wc:init>
+<drop-down root='1' title='About' ></drop-down>
+<drop-down root='9' title='Events' ></drop-down>
+<drop-down root='14' title='Media' ></drop-down>
+<drop-down root='19' title='Instruments' ></drop-down>
+<drop-down root='24' title='Albums'  target='_blank'></drop-down>
+<drop-down root='30' title='Contact' ></drop-down>
+<check if="{{ UserSession::isLoggedIn('Admin') }}"><true>
+<drop-down root='34' title='Dash' ></drop-down>
+</true></check>

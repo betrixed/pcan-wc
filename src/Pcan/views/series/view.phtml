@@ -1,0 +1,34 @@
+
+{~ 
+@view = Base::Instance()->get('view');
+@series = @view->series;
+@episodes = @view->episodes;
+~}
+
+<style>
+    p {
+        font-size:1.3em;
+    }
+</style>
+<div class="outerwrap padborder">
+    <div class="row">
+        <div class="col-4">
+            <h2>{{@series.name}}</h2>
+        </div>
+        <div class="col-8">
+            <p>{{@series.description}}</p>
+        </div>
+    </div>
+<check if="{{ count(@episodes) }}" >
+    <hr>
+    <true>
+    <repeat group="{{ @episodes }}" value="{{ @ep  }}">
+        {~ 
+        ~}
+        <div class="row" style="margin-bottom:5px;">
+            <div class="col-12"><p><a href="/gallery/view/{{@ep.name}}">{{@ep.description}}</a></p></div>
+        </div>
+    </repeat>
+    </true>
+</check>
+</div>

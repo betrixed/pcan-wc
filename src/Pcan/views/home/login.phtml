@@ -1,0 +1,44 @@
+{~
+    @google = @view->google;
+~}
+
+<div class='container outerwrap pad10'>
+ 
+<form id="user-login" method='post' action='login'>
+    <fieldset>
+        <check if="{{ isset(@message) }}">
+            <div class="alert alert-primary" role ="alert">
+            <p class="message">{{ @message }}</p>
+            </div>
+        </check>
+        <div class="form-group">
+            <label for="email">Username/Email</label>
+            <div class="controls">
+                <text-field name="email" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="controls">
+                <pwd-field name="password" class="form-control" />
+            </div>
+        </div>
+<check if="{{ @google.enabled }}">
+    <true>
+    <captcha-submit id="user-login" site="{{ @google.site }}" text="Login"></captcha-submit>
+    </true>
+    <false>
+    <div class="form-group">
+         <submit-btn name='login' value="Login" class='btn btn-outline-primary' />
+    </div>    
+    </false>
+</check>                
+
+</fieldset>         
+    <f3:xcheck value="{{ @view->xcheck }}" ></f3:xcheck>
+</form>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-4 pad10"><link-to href="/login/forgot" text="Send password reset token" class="btn btn-outline-info"></link-to></div>
+    </div>
+</div>

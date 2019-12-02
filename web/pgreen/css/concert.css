@@ -1,0 +1,181 @@
+
+/* 
+    Created on : 08/08/2017, 1:16:05 PM
+    Author     : michael
+*/
+div.concertbox {
+	font-size:1.2vmax;
+	font-family: DejaVu, Verdana, Arial, sans-serif;
+        padding : 15px;
+        background-color: white;
+        border-radius: 10px;
+        border-style: solid;
+        border-width: 2px;
+}
+
+div.concertbox div.novosti_p {
+	border-width:5px;
+	border-color:lightgrey;
+	border-style:solid;
+	padding: 10px;
+}
+
+
+div.concertbox .novosti_p p {
+        padding-left:10px;
+	padding:10px 10px;
+	width: 95%;
+}
+
+div.concertbox .novosti_p img {
+	padding:10px 10px;
+	width: 95%;
+}
+
+
+
+
+div.concertbox p {
+    margin:10px;
+}
+
+div.figure-sect figure.blog img {
+    padding:10px;
+}
+div.concertbox blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+div.concertbox blockquote:before {
+  color: #ccc;
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+div.concertbox blockquote p {
+  display: inline;
+}
+
+div.concertbox h2 {
+    font-size:1.6em;
+    color: darkcyan;
+    font-style: oblique;
+    font-weight:bolder;
+    text-align:center;
+}
+div.concertbox h3 {
+    font-size:1.3em;
+    color: darkgreen;
+    font-weight:bold;
+}
+
+
+div.concertbox div.novosti_next {
+	border-width:5px;
+	border-color:#fdb934;
+	border-style:double;
+	text-align:center;
+	background:#fddda0;
+}
+
+div.concertbox p.bigger {
+	font-size:1.4em;
+
+}
+
+div.concertbox p.biggest{
+	font-weight: bolder;
+	font-size:2.8em;
+}
+
+div.concertbox span.n_title {
+	font-size:1.5em;
+	font-weight:bold;
+        color: darkred;
+}
+
+div.concertbox  div.novosti_head {
+	display:inline-block;
+	background-color:#316;
+	border-width:5px;
+	border-color:#001;
+	border-style:solid;
+	padding: 5px;
+        vertical-align:bottom;
+}
+
+div.concertbox .novosti_head img {
+	width:50%;
+	float:left;
+
+}
+
+div.concertbox  .figure-sect {
+    outline-color:black;
+    outline-width:1px;
+    outline-style: solid;
+    border-width : 5px;
+    border-color: lightblue; 
+    padding: 1.0em;
+} 
+
+div.concertbox figure {
+        margin: 10px;
+}
+div.concertbox figcaption {
+	background-color:lightgrey;
+	padding-left: 5px;
+        padding-bottom: 5px;
+        font-size: medium;
+}
+
+div.concertbox .novosti_edition {
+        padding-top:1.0em;
+	text-align:center;
+	width:30%;
+	line-height:1.1em;
+	float:right;
+	background-color:#000;
+	font-family:Garamond, serif;
+	color:#fff;
+	padding-left:0.5%;
+	padding-right:0.5%;
+        vertical-align: middle;
+}
+
+div.concertbox .event {
+    border-color:orange;
+    border-width: 8px;
+    border-style: solid inset;
+    padding: 15px 0 0 0;
+    margin: 5px;
+    line-height:normal;
+    display: block;
+    background-color: oldlace;
+}
+
+
+div.concertbox .event h2 {
+    font-size: 1.4em;
+    font-style: normal;
+    color: #111;
+    text-align: left;
+}
+
+div.concertbox .event p.time  {
+    font-size: 1.2em;
+    margin: 0;
+    color: #000;
+}
+
+div.concertbox .event p.place  {
+    font-size: 1.2em;
+    margin: 0 0 0 8px;
+    color: blue;
+}
+

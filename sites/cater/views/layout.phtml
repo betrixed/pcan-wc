@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ @view->title }}</title>
+    <f3:link></f3:link>
+    <f3:css-header></f3:css-header>    
+</head>
+<body>
+    <img src="/img/roast_kitchen.png" style="width:100%;">
+<check if="{{ @view->nav }}">
+    <true>
+    <include href="{{ @view->nav }}" />
+    </true>
+</check>
+
+<check if="{{ !empty(@view->flash) }}"><true>
+    <F3:repeat group="{{ @view->flash }}" value="{{ @msg }}">
+        <div class="alert alert-{{ @msg.status }} alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            {{ @msg.text | esc }}
+        </div>
+    </F3:repeat>
+    </true></check>
+
+
+    <span style='font-family:georgia;font-size:1.2em;'>
+        <div class='bigf'>
+            <p><a class='splink' data-toggle='tooltip' href='/contact/index' title='Contact Julie' >Tailor your Requirements</a></p>  
+        </div>
+    </span>
+    
+<div id="view"><include href="{{ @content }}"></include></div>
+
+<footer class='footer foot-wrap'>
+    <div class="row">
+        <div class="col-2 text-muted">
+            {~
+            echo( "Session as " . UserSession::sessionName() );
+            ~}
+        </div>
+        <div class="col-4 text-muted">&copy;  | 
+            {~
+            @out = " Response time " . sprintf('%.2f ms', (microtime(TRUE) - @_SERVER.REQUEST_TIME_FLOAT) * 1000);
+            @out .= " | Memory " . sprintf('%.2f MiB', memory_get_peak_usage() / 1024 / 1024);
+            echo(@out);
+            ~}
+        </div>
+    </div>
+</footer>
+<f3:js-footer></f3:js-footer>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,28 @@
+{~
+@view = Base::instance()->get('view');
+@url = @view->url;
+~}
+<div class='container'>
+    <div align="center">
+        <h2>Create Content</h2>
+    </div>
+    <form method='post' action="{{ @url . 'postnew' }}">
+        <table>
+            <tr>
+                <td align="right">
+                    <label for="title">Title</label>
+                </td>
+                <td align="left">
+            <text-field name="title" size="30" ></text-field>
+            </td>
+            </tr>
+            <tr>
+                <td align="right"><submit-btn value="Save"  class="pure-button pure-button-primary"></submit-btn></td>
+            </tr>
+
+        </table>
+
+    </form>
+</div>
+
+

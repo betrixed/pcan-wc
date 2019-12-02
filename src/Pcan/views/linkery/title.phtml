@@ -1,0 +1,49 @@
+{~
+    @view = \Base::instance()->get('view');
+    @linkery = @view->linkery;
+~}
+<style>
+@media screen and (max-width: 900px){
+    #mgrid[data-columns]::before {
+        content: '3 .column.size-1of1';
+    }
+}
+
+@media screen and (min-width: 901px) and (max-width: 1300px) {
+	#mgrid[data-columns]::before {
+		content: '2 .column.size-1of2';
+	}
+}
+@media screen and (min-width: 1301px) {
+	#mgrid[data-columns]::before {
+		content: '3 .column.size-1of3';
+	}
+}
+
+.column { float:left; }
+.size-1of1 { width: 100%; }
+.size-1of2 { width: 50%; }
+.size-1of3 { width: 33.333%; }
+
+
+    div.wrap-item {
+        border-right-style: inset;
+        border-right-color: lightsteelblue;
+        border-right-width: 2px;
+        border-bottom-style: inset;
+        border-bottom-color: lightsteelblue;
+        border-bottom-width: 2px;
+    }
+
+    div.title-area {
+        font-weight: bold;
+        color: darkgreen;
+    }
+
+</style>
+<div class='container-fluid'>
+<div class="row outerwrap">
+          {{ @linkery.description }}
+</div>
+<include href="{{@view->vname}}"></include>
+</div>

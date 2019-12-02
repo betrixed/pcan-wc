@@ -1,0 +1,9 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "^6.0",
+        "mobiledetect/mobiledetectlib": "^2.8",
+        "twig/twig": "^2.0",
+        "bcosca/fatfree": "^3.6",
+        "league/plates": "^3.3"
+    }
+}

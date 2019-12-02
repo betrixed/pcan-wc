@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <wc:init></wc:init>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{{ @view->title }}</title>
+    <f3:link></f3:link>
+    <f3:css-header></f3:css-header>    
+</head>
+<body>
+<check if="{{ @view->nav }}">
+    <true>
+    <include href="{{ @view->nav }}" />
+    </true>
+</check>
+<check if="{{ !empty(@view->flash) }}"><true>
+    <F3:repeat group="{{ @view->flash }}" value="{{ @msg }}">
+        <div class="alert alert-{{ @msg.status }} alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="this.parentElement.style.display='none';">&times;</button>
+            {{ @msg.text | esc }}
+        </div>
+    </F3:repeat>
+    </true></check>
+<check if="{{ @view->content }}">
+    <true>
+    <div id="view">
+        <include href="{{ @view->content }}"></include>
+    </div>
+    </true>
+</check>
+
+<footer class='footer'>
+    <div class="container-fluid">
+            &copy;&nbsp;Sydney Balalaika Orchestra&nbsp;|&nbsp;
+            {~
+            echo( "Session as " . UserSession::sessionName() );
+            ~}
+            &nbsp;|&nbsp;
+            {~
+            @agent = @view->agent;
+            @out = "Agent " . @agent.name  ." ". @agent.version;
+            echo(@out);
+            ~}
+                <a class="float-right" href="/login">Login</a>
+        </div>
+</div>
+</footer>
+<f3:js-footer></f3:js-footer>
+</body>
+</html>

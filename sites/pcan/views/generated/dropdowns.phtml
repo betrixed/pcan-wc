@@ -1,0 +1,8 @@
+<wc:init></wc:init>
+<drop-down root='1' title='Content' ></drop-down>
+<drop-down root='6' title='About' ></drop-down>
+<drop-down root='14' title='News' ></drop-down>
+<drop-down root='23' title='Contact' ></drop-down>
+<check if="{{ UserSession::isLoggedIn('Admin') }}"><true>
+<drop-down root='26' title='Dash' ></drop-down>
+</true></check>

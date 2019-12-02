@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root>
+<tb k="globals">
+    <s k="TEMP">${sitepath}tmp/</s>
+    <s k='TZ'>Australia/Sydney</s>
+    <s k='domain'>hub.test</s>
+    <i k='DEBUG'>3</i>
+    <s k='theme'>/default</s>
+    <s k='gallery'>/default/gallery</s>
+    <s k='navigate'>nav.tpl</s>
+</tb>
+<tb k="routes">
+    <s k="GET /">Home->index</s>
+    <s k="GET /index.php">Home->index</s>
+    <s k="GET / [ajax]">Home->data</s>
+    <s k="GET /@id [ajax]">Home->detail</s>
+</tb>
+</root>

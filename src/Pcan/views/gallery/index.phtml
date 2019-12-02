@@ -1,0 +1,34 @@
+<div class='container body-wrap'>
+{~ 
+    @view = Base::Instance()->get('view');
+    @ubase = "gallery?orderby="; 
+     @link = @ubase . @orderby;  
+     @page = @view->page;
+     @url = "/gallery/view/";
+~}
+      
+   <link-to href="{{@link}}" text="First" /> |
+    <link-to href="{{@link . '&page=' . @page->before  }}" text="Previous" /> |
+ <link-to href="{{@link . '&page=' . @page->next  }}" text="Next" /> |
+ <link-to href="{{@link . '&page=' . @page->last  }}" text="Last" /> |
+ {{@page->current . "/" . @page->last }}
+<table class='table table-striped'>
+    <thead>
+        <tr>
+            <th>Path</th>
+            <th>Description</th>
+            <th>Upload</th>
+        </tr>
+    </thead>
+    <tbody>
+        <repeat group="{{ @page->items }}" value="{{ @gallery }}">
+        {~ @udate = strtotime(@gallery.last_upload); ~}
+<tr>
+    <td class='leftCell'><link-to href="{{ @url . @gallery.name }}" text="{{ @gallery.name }}" /></td>
+            <td class='leftCell'>{{ @gallery.description }}</td>
+             <td><p>{{ date('d-M-Y',@udate) .  ' ' . date('H:i', @udate)  }}</p></td>
+        </tr>
+</repeat>
+    </tbody>
+</table>
+</div>

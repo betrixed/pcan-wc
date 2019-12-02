@@ -1,0 +1,53 @@
+{~
+    @view = \Base::instance()->get('view');
+    @linkery = @view->linkery;
+~}
+<style>
+    label.control-label {
+        min-width:110px;
+        text-align:right;
+        margin-right:10px;
+        font-weight: bold;
+    }
+    
+    .form-control {
+        margin-left:20px;
+        margin-right:20px;
+    }
+</style>
+<div class="container">
+    <div class="outerwrap pad10">
+    <link-to href="\admin\linkery" text="Linkery Index" class="btn-outline"></link-to>
+    >> <span><b>New Links Gallery </b></span>
+            <hr>
+    <form method="post" action="{{ @view->url . 'post' }}">
+        <check if="{{  @linkery.id  }}">
+            <true>
+            <hidden name="id" value="{{  @linkery.id  }}"></hidden>
+            <div class="row">
+            <label for="name" class="control-label">Name</label>
+            <text-field name="name" value="{{ @linkery.name }}" readonly></text-field>
+            </div>
+            </true>
+            <false>
+                <div class="row">
+                    <label for="name" class="control-label">Name</label>
+                <text-field name="name" value="{{ @linkery.name }}"></text-field>
+                </div>
+            </false>
+        </check>
+        <div class="row">
+           
+            <label for="description" class="control-label">Description</label>
+
+            <multiline name="description">{{ @linkery.description }}</multiline>
+
+        </div>
+        <div class="row">
+            <div class="col-3">
+            <submit-btn value="New Links Collection" class="form-control"></submit-btn>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>

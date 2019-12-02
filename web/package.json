@@ -1,0 +1,17 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Michael",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^4.3.1",
+    "flatpickr": "^4.5.2",
+    "glyphicons": "^0.2.0",
+    "jquery": "^3.4.0",
+    "jquery-form": "^4.2.2",
+    "popper.js": "^1.14.4",
+    "salvattore": "^1.0.9",
+    "summernote": "^0.8.10"
+  }
+}

@@ -1,0 +1,45 @@
+{~
+@rec = @view->rec;
+~}
+
+<style>
+    label {
+        min-width:100px;
+        text-align: right;
+        padding-right: 12px;
+    }
+</style>
+<div class="container outerwrap pad10">
+    <div class="row">
+        <div class="col-4">
+        &lt;&lt;--- <a href="/shop/admin/list">List CD Items</a>
+        </div>
+    </div>
+    <form method="post" action="/shop/admin/post">
+        <check if="{{ @rec.id }}">
+            <true>
+                <div class="row">
+                <label>Id</label><text-field name='id' readonly value='{{ @rec.id }}' size='4'></text-field>
+                </div>
+            </true>
+            <false>
+             <div class="row">
+                <label>New Record</label>
+                </div>
+            </false>
+        </check>
+    <div class="row">
+        <label>Title</label><text-field name='title'  value='{{ @rec.title }}'></text-field>
+    </div>
+    <div class="row">
+        <label>Cost</label><text-field name='cost'  value='{{ @rec.cost }}'></text-field>
+    </div>
+    <div class="row">
+        <label>Stock</label><text-field name='stock'  value='{{ @rec.stock }}'></text-field>
+    </div>
+    <div class="row">
+        <label>Article</label><text-field name='article_id'  value='{{ @rec.article_id }}'></text-field>
+    </div>
+    <submit-btn value="Save"></submit-btn>
+    </form>
+</div>

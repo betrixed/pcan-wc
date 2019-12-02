@@ -1,0 +1,76 @@
+<wc:init></wc:init>
+{~
+@view = \Base::instance()->get('view');
+@hasEvents = !empty(@view->events);
+~}
+
+<style>
+    div.sidebox {
+        background-color:whitesmoke;
+        border-radius:4px;
+        overflow-x: hidden;
+    }
+    div.sidebox iframe {
+        width:100%;
+    }
+    div.title-area span.link-sitename {
+        color:darkred;
+        font-size:1.2em;
+    }
+</style>
+<div class="container-fluid">
+    <check if="{{@hasEvents}}">
+        <div class="row body-wrap pad10">
+            <div class="col-2">
+                <h1>Sydney Events</h1>
+            </div>
+            <div class="col-10">
+                <repeat group="{{ @view->events }}" value="{{ @box }}">
+                    {~ @href = "/article/" . @box.title_clean; ~}
+                    <div class="{{@box.style}}">
+                        <div class="title"><a href="{{@href}}">{{@box.title}}</a></div>
+                        <p>{{ @box.content }}</p>
+                    </div>
+                    <hr>
+                </repeat>
+            </div>
+        </div>d
+    </check>
+    <div class="row">
+        <div class="col-lg-5">
+
+            <repeat group="{{ @view->sides }}" value="{{ @box }}">
+                <div class="sidebox">
+                    <span class='link-title'>{{ @box.title }}</span>
+                    <span class='link-summary'>{{ @box.summary }}</span>
+                </div>
+            </repeat>
+        </div>
+        <div class='col-lg-7 body-wrap pad10'>
+            <repeat group="{{ @view->main }}" value="{{ @link }}">
+                {~
+                @url = @link.url;
+                @ulen = strlen(@url);
+                @urlhint = (@ulen > 55) ? substr(@url,0,25) . '...' . substr(@url,@ulen-27) : @url;
+                ~}
+                <div class='mitem' id='lnk{{ @link.id}}'>
+                    <div class="title-area">
+                        <span class="link-title">
+                            <a  href='{{ @url  }}' target='_blank'>{{ @link.title }}</a>
+                        </span>
+                        <span class='link-sitename float-right' >{{ @link.sitename }}</span>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="link-summary">{{ @link.summary }}</div>
+                    <check if="{{ @link.urltype == 'Blog' }}">
+                        <true>
+                        <a href = '{{ @url }}' target='_blank' title="{{ @urlhint }}">&nbsp;.. more</a>
+                        </true>
+                    </check>
+                </div>
+                <div class="clear"></div>
+                <hr>
+            </repeat>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+{~
+    @google = @view->google;
+    @rec = @view->rec;
+    @message = @view->message;
+~}
+
+<div class='container outerwrap pad10'>
+ 
+<form id='signup' method='post' action='/id/signupPost'>
+    <fieldset>
+        <check if="{{ isset(@message) }}">
+            <div class="alert alert-primary" role ="alert">
+            <p class="message">{{ @message }}</p>
+            </div>
+        </check>
+        <div class="form-group">
+            <label for="username">User Name</label>
+            <div class="controls">
+                <text-field name="username" class="form-control" value="{{ @rec.name }}"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <div class="controls">
+                <text-field name="email" class="form-control" value="{{ @rec.email }}"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="controls">
+                <pwd-field name="pass1" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">Verify Password</label>
+            <div class="controls">
+                <pwd-field name="pass2" class="form-control" />
+            </div>
+        </div>
+        <hidden name="xcheck" value="{{ @view->xcheck }}" ></hidden>
+<check if="{{ @google.enabled }}">
+    <true>
+    <script>
+        function onSubmit(token) {
+            document.getElementById("signup").submit();
+        }
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <button class ="g-recaptcha" data-sitekey="{{ @google.site }}" data-callback="onSubmit">
+        New Account
+    </button> 
+    </true>
+    <false>
+    <div class="form-group">
+         <submit-btn name='login' value="New Account" class='btn btn-primary btn-large' />
+    </div>    
+    </false>
+</check>                
+
+</fieldset>         
+        
+</form>
+
+</div>

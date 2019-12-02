@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tb>
+    <a k="list">
+        
+        <s>About</s>
+        <s>Content</s>
+        <s>Candidates</s>
+        <s>Old PG Site</s> 
+        <s>Dash</s>
+    </a>
+    <tb k="items" >
+        <a k="Content">
+            <tb>
+            <s k="type">list</s>
+            <a k="list">
+                <a>
+                    <s>All</s>
+                    <s>links</s>
+                </a>
+                <a>
+                    <s>Web</s>
+                    <s>links</s>
+                    <s>?k=Remote</s>
+                </a>
+                <a>
+                    <s>Events</s>
+                    <s>links</s>
+                    <s>?k=Event</s>      
+                </a>
+                <a>
+                    <s>Here</s>
+                    <s>links</s>
+                    <s>?k=Blog</s> 
+                </a>
+            </a>
+            </tb>
+        </a>
+        <a k="About">
+            <tb>
+            <s k="type">list</s>
+            <a k="list">
+                <a>
+                    <s>About Us</s>
+                    <s>cat</s>
+                    <s>article/about-us</s>
+                </a>
+                <a>
+                    <s>Email Us</s>
+                    <s>contact-us</s>
+                </a>
+                <a>
+                    <s>Signup to Site</s>
+                    <s>id</s>
+                    <s>signup</s>
+                </a>
+            </a>
+            </tb>
+        </a>
+
+        <a k="Dash">
+            <tb>
+            <s k="type">list</s>
+            <s k="role">Admin</s>
+            <a k="list">
+                <a>
+                    <s>Help</s>
+                    <s>cat</s>
+                    <s>name/help</s>
+                </a>
+                <a>
+                    <s>Menus</s>
+                    <s>admin</s>
+                    <s>menu</s>
+                </a>
+                <a>
+                    <s>Articles</s>
+                    <s>admin</s>
+                    <s>blog</s>
+                </a>
+                <a>
+                    <s>Gallery</s>
+                    <s>admin</s>
+                    <s>gallery</s>  
+                </a>
+                <a>
+                    <s>Links</s>
+                    <s>admin</s>
+                    <s>link</s>
+                </a>
+                <a>
+                    <s>Linkery</s>
+                    <s>admin</s>
+                    <s>linkery</s>
+                </a>
+                <a>
+                    <s>Categories</s>
+                    <s>admin</s>
+                    <s>cat</s>
+                </a>
+                <a>
+                    <s>-</s>
+                </a>
+                <a>
+                    <s>Log Out</s>
+                    <s>logout</s>
+                </a>
+            </a>
+            </tb>
+        </a>
+
+    </tb>
+</tb>

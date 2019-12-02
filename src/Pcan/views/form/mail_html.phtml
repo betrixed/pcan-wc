@@ -1,0 +1,22 @@
+{~
+    @view = \Base::instance()->get('view');
+    @rec = @view->rec;
+~}
+<h3 style="font-size: 14px;font-family:Verdana,Helvetica,Arial,sans-serif;">Join SBO Form</h3>
+            <p style="color:#000;font-size: 16px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;font-weight:normal;">
+
+The following details have been sent using the "Contact" form found at {{ @view->link }}<br><br>
+              
+Date: {{ @rec.sendDate }}<br>
+From: {{ @rec.name }}<br>
+Email: {{ @rec.email }}<br>
+Telephone: {{ @rec.telephone }}<br>
+
+            </p>
+            <h3>Message</h3>
+<p style="font-size: 14px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;">
+{{ @rec.body }}
+            <br/>
+            </p>
+
+

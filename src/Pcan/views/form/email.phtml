@@ -1,0 +1,69 @@
+{~
+@view = \Base::instance()->get('view');
+@url = @view->url;
+@rec = @view->rec;
+@google = @view->google;
+~}
+<style>
+    div.form-group  label {
+        font-weight: bold;
+        margin-right:10px;
+        vertical-align: bottom;
+    }
+    
+
+</style>
+
+<div class='container outerwrap novosti pad10'>
+            <h3>Send email message to SBO</h3>
+    <hr>
+        <check if="{{ @view->blog }}">
+            <true>
+                <div class="{{ @blog.style }}" >
+                    {{ @blog.article }}
+                </div>
+            </true>
+        </check>
+        <form id="email" method='post' action="{{ @url . 'post' }}">
+            <check if="{{ @view->sub === 1 }}">
+                <true><hidden name="sub" value="{{ @view->sub }}" ></hidden></true>
+            </check>
+            <check if="{{ @rec.id }}">
+                <true>            
+                <hidden name="id" value="{{ @rec.id }}" ></hidden>
+                <div class="form-group row">
+                    <div class="col-5">
+                        <datetime label='Date sent' name="created_on" value="{{ @rec.sendDate }}" readonly class="form-control" ></datetime>
+                    </div>
+                </div>
+                </true>
+            </check>
+            <div class="form-group row">
+                <div class="col-4">
+                    <text-field  name="name" value="{{ @rec.name }}"  label='Name' size="16" class="form-control"></text-field>
+                </div>
+                <div class="col-4">
+                    <email name="email" value="{{ @rec.email }}" label="Your email address"  class="form-control" ></email>
+                </div>
+                <div class="col-4">
+                    <phone name="telephone" value="{{ @rec.telephone }}"  label='Phone number' size="16" class="form-control"></phone>
+                </div>
+            </div>
+            <div class="form-group">
+            <label>Message</label>
+            <multiline name="body" cols="80" rows="5" value="{{ @rec.body }}"></multiline>
+            </div>
+            <hr>
+            <f3:xcheck value="{{ @view->xcheck }}"></f3:xcheck>
+            <check if="{{ @google.enabled }}">
+            <true>
+                <captcha-submit site="{{ @google.site }}" id="email" text="Send"></captcha-submit>
+            </true>
+            <false>
+            <div class="form-group">
+                 <submit-btn name='login' value="Send" class='btn btn-primary' />
+            </div>    
+            </false>
+        </check>   
+        </form>
+</div>

@@ -1,0 +1,72 @@
+{~
+@view = Base::instance()->get('view');
+@blog = @view->blog;
+@metadata = @view->metadata;
+@back = @view->back;
+~}
+
+<style>
+    div#title-box {
+        padding:10px;
+        background-color:lightcyan;
+    }
+    div#article-box {
+        padding:10px;
+        background-color:lightyellow;
+    }
+</style>
+<div class='container-fluid'>
+    <div  class="row">
+        <div class="col-6">
+        <check if="{{ @back }}">
+            Back to <a href="{{ @back }}">{{ @view->backname }}</a>&nbsp; &nbsp; &nbsp; 
+        </check>
+        </div>
+    </div>
+    <div id='title-box' class="row">
+        <div class="col-9">
+            <h2><mark>{{ @blog.title }}</mark></h2>
+        </div>
+        <div class="col-3">
+        <div class='float-right'>Date published: {{ @blog.date_published | date}}</div>
+        </div>
+    </div>
+    <div id='article-box' class="row">
+        <div class='{{@blog.style}}' id='article'>{{ @blog.article | raw }}</div>
+        <check if='{{ count(@metadata) > 0 }}'><true>
+            <div class='container-fluid' id='tags' style='font-size:0.6em;'>
+                <div class='table'>
+                    <repeat group='{{ @metadata }}' value='{{ @mtag }}' > 
+                        <check if='{{ @mtag.display == 1 && strlen(@mtag.content) >0 }}'><true>
+                           <div class="row">
+                                <div class='col-1'>{{ @mtag.meta_name}}:</div>
+                                <div class='col-8'>{{ @mtag.content}}</div>
+                            </div>
+                            </true>
+                        </check>
+                    </repeat>
+                </div>
+            </div>
+            </true>
+        </check>
+            <hr />
+    </div>
+    <div class='clear'></div>
+    
+    <check if='{{ @metadata }}'><true>
+   <div class="fb-share-button" 
+        data-href="{{ @view->canonical }}" 
+        data-layout="button_count">
+   </div>
+        </true>
+    </check>
+    <check if='{{ @blog.comments }}'><true>
+    <div>
+        <div id="fb-root"></div>
+        <fb:login-button autologoutlink="True" length="short" background="white" size="large"></fb:login-button>
+    <div class="fb-comments" data-href="{{ @view->canonical }}" data-width="900" data-numposts="5"></div>
+    </div>
+        </true>
+    </check>
+    </div>
+</div>

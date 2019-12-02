@@ -1,0 +1,24 @@
+{~
+    @view = \Base::instance()->get('view');
+    @rec = @view->rec;
+~}
+<h3 style="font-size: 14px;font-family:Verdana,Helvetica,Arial,sans-serif;">Join SBO Form</h3>
+            <p style="color:#000;font-size: 16px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;font-weight:normal;">
+
+            
+            
+                Date: {{ @rec.created_on }}<br>
+From: {{ @rec.name }}<br>
+Email: {{ @rec.email }}<br>
+Telephone: {{ @rec.phone }}<br>
+Instrument: {{ @rec.instrument }}<br>
+Experience: {{ @rec.experience }}<br>
+
+            </p>
+            <h3>History:</h3>
+<p style="font-size: 13px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;">
+{{ @rec.history }}
+            <br/>
+            </p>
+
+

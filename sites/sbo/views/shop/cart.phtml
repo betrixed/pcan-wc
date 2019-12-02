@@ -1,0 +1,25 @@
+<?php
+
+Use \SBO\Cart;
+Use \SBO\CItem;
+?>
+{~
+@items = @view->items;
+@cart = @view->cart;
+~}
+<style>
+    .card-title {
+        color: blue;
+        font-weight:bold;
+    }
+
+    label {
+        min-width:120px;
+        text-align:right;
+        padding-right:10px;
+    }
+
+</style>
+<div id='cartdiv'><include href="shop/cart_sub.phtml"></include></div>
+<hr>
+<div id='fromdiv'><include href="shop/from_sub.phtml"></include></div>
