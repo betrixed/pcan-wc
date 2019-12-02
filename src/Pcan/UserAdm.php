@@ -98,11 +98,46 @@ EOD;
         $view->content = 'user/edit.phtml';
         echo $view->render();
     }
-    private function errorPDO($e, $blogid) {
+    private function errorPDO($e) {
         $err = $e->errorInfo;
         $this->flash($err[0] . ": " . $err[1]);
     }
     
+    public function makeNewUser($user_name, $user_email, $user_pwd, $groups) {
+        $user = new User();
+        $user['name'] = $user_name;
+        $user['email'] = $user_email;
+        
+        $crypt = \Bcrypt::instance();
+        $user['password'] = $crypt->hash($user_pwd);
+        
+        $user['status'] = 'C';
+        
+        try {
+            $user->save();
+            $db = Server::db();
+            $pdo = $db->pdo();
+            
+            $grouplist = '(';
+            
+            foreach($groups as $ix => $g) {
+                if ($ix > 0) {
+                    $grouplist .= ',';
+                }
+                $grouplist .= $pdo->quote($g);
+            }
+            $grouplist .= ')';
+$sql = <<<EOS
+insert into user_auth (userid, groupid) select :uid, ug.id from user_group ug
+   where ug.name in $grouplist
+EOS;
+            $db->exec($sql, [':uid' => $use['id']]);
+        }
+        catch(\PDOException $e) {
+            return $this->errorPDO($e);
+        }
+        
+    }
     protected function addUserGroup($userid, $groupid)
     {
         $role = new UserAuth();
@@ -112,7 +147,7 @@ EOD;
             $role->save();
         }
         catch (\PDOException $e) {
-            return $this->errorPDO($e, $blogid);
+            return $this->errorPDO($e);
         }
         return true;
     }

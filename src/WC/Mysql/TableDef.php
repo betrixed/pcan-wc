@@ -8,7 +8,7 @@ namespace WC\Mysql;
 
 use WC\NameDef;
 use WC\DB\Script;
-
+use WC\DB\BatchInsert;
 /**
  * Intermediate class for SQL table definition. 
  * Save and Load from TOML file format.

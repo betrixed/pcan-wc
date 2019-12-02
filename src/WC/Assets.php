@@ -22,8 +22,15 @@ class Assets extends \Prefab {
         $si->addAssets($assets);
     }
 
-    public function addAssets($cfg) {
-        $this->config = array_merge($this->config, $cfg);
+    public function addAssets(array $cfg) {
+        if (is_array($this->config)) {
+            $this->config = array_merge($this->config, $cfg);
+        }
+        else { // is_object
+            foreach($cfg as $key => $value) {
+                $this->config->$key = $value;
+            }
+        }
     }
 
     public function __construct() {
@@ -134,15 +141,17 @@ class Assets extends \Prefab {
                 }
             }
         }
-        if (empty($outs)) {
-            $outs = "<!-- No CSS assets found: {" . $name . "} -->" . PHP_EOL;
-        }
+        //if (empty($outs)) {
+        //    $outs = "<!-- No CSS assets found: {" . $name . "} -->" . PHP_EOL;
+        //}
         return $outs;
     }
-
+    /**
+     * Replace @var1 hive variables in paths
+     */
     protected function unhive($hpath) {
         $f3 = $this->f3;
-        $path = preg_replace_callback('|@(\w[\w\d]*)|',
+        $path = preg_replace_callback('|@([a-zA-Z][\w\d]*)|',
                 function($matches) use ($f3) {
             $subs = $f3->get($matches[1]);
             return $subs;
@@ -164,9 +173,9 @@ class Assets extends \Prefab {
                 }
             }
         }
-        if (empty($outs)) {
-            $outs = "<!-- No JS assets found: {" . $name . "} -->" . PHP_EOL;
-        }
+        //if (empty($outs)) {
+        //    $outs = "<!-- No JS assets found: {" . $name . "} -->" . PHP_EOL;
+        //}
         return $outs;
     }
 

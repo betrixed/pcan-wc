@@ -1,10 +1,11 @@
 <?php
-namespace WC;
+namespace Pcan;
 
-use WC\DB\Blog;
-use WC\DB\Event;
-use WC\DB\RegEvent;
+use Pcan\DB\Blog;
+use Pcan\DB\Event;
+use Pcan\DB\RegEvent;
 use WC\Valid;
+use WC\UserSession;
 
 //! Front-end processorg
 

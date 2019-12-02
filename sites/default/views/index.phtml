@@ -11,6 +11,7 @@ Use WC\Assets,
         <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
         <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>
         <?= Assets::instance()->CssHeader(); ?>
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     </head>
     <body>
         <style>
@@ -47,10 +48,12 @@ Use WC\Assets,
 
         <div class="container section">
             <div class="content-tab"  id="Apply">
-                <h3>Initialise Database with Schema and Data</h3>
+                <h3>Initialise Site Folder and Database with Schema and Data</h3>
                 <hr>               
 
-                        <form id="fm_init" method="post" action="/schema/initdb">
+                <form id="fm_init" method="post" action="/schema/initdb">
+                    <div class="columns">
+                        <div class="column">
                             <div class="<?= $fclass ?>">
                                 <?=
                                 $this->form()->select(
@@ -60,7 +63,7 @@ Use WC\Assets,
                             </div>
                             <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Database name', 'name' => 'dbname']) ?>
                             <?= $this->form()->plainText(['div' => $fclass, 'label' => 'User name', 'name' => 'dbuser']) ?>
-                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Password', 'name' => 'passwd']) ?>
+                            <?= $this->form()->password(['div' => $fclass, 'label' => 'Password', 'name' => 'passwd']) ?>
 
                             <div class="<?= $fclass ?>">
                                 <?=
@@ -68,15 +71,35 @@ Use WC\Assets,
                                     'class' => 'selectpicker'])
                                 ?>
 
-                                <?= $this->form()->checkbox(['name' => 'script', 'checked', 'text' => 'Script only']) ?>
+                                <!--
+                                <?= $this->form()->checkbox(['name' => 'script', 'text' => 'Tables Script only']) ?> 
+                                -->
                             </div> 
-                            <hr>
+                            <div class="<?= $fclass ?>">
+                                <?= $this->form()->plainText(['label' => 'Port', 'name' => 'port', 'size' => 8, 'style' => 'margin-right:15px;',
+                                    'placeholder' => 'standard']) ?> 
+                                <?= $this->form()->checkbox(['name' => 'unix_socket', 'text' => 'Unix socket (postgresql)']) ?>
+                            </div> 
+                             <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Host name', 'name' => 'hostname', 'placeholder' => 'localhost']) ?>
+                            
+                        </div>
+                        <div class="column">
+                           
+                            
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Site folder name', 'name' => 'site_dir'])  ?>
+                            <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Admin login name', 'name' => 'admin_user'])  ?>
+                            <?= $this->form()->email(['div' => $fclass, 'label' => 'Admin email', 'name' => 'admin_email'])  ?>
+                            <?= $this->form()->password(['div' => $fclass, 'label' => 'Admin password', 'name' => 'admin_pwd'])  ?>
+                        </div>
+                        
+                    </div>
+                    <hr>
                             <div class="field is-grouped">
                                 <div class="control">
                                     <?= $this->form()->submit(['class' => 'button is-link']) ?>
                                 </div>
-                            </div>        
-                        </form>
+                            </div>    
+                </form>
 
             </div>
             <div id="Read" class="content-tab"  style="display:none">

@@ -1,7 +1,8 @@
 <?php
 
 namespace WC\DB;
-
+use DB\SQL;
+use WC\App;
 /**
  * @author Michael Rynn
  */
@@ -12,6 +13,7 @@ class Server {
 
     const DB_connect = ['host', 'port', 'charset', 'dbname'];
 
+    
     static function add_params($param) {
         $s = $param['adapter'] . ':';
         foreach (Server::DB_connect as $p) {
@@ -27,7 +29,7 @@ class Server {
      */
     static function connection($cfg) {
         $str = static::add_params($cfg);
-        return new \DB\SQL(
+        return new SQL(
                 $str,
                 $cfg['username'],
                 $cfg['password'],
@@ -40,18 +42,21 @@ class Server {
      * @param type $name
      * @return type
      */
-    static function secrets($name) {
-        $f3 = \Base::instance();
-        $cfg = &$f3->ref('secrets.' . $name);
-        return static::connection($cfg);
+    static function dbconfig($name) {
+        $cfg = App::instance()->get_secrets();
+        return static::connection($cfg[$name]);
     }
 
+    static function setDefault(SQL $db) {
+        static::$srv[static::$defaultName] = $db;
+    }
+    
     static function db($name = null) {
         if (empty($name)) {
             $name = static::$defaultName;
         }
         if (empty(static::$srv)) {
-            $db = static::secrets($name);
+            $db = static::dbconfig($name);
             static::$srv[$name] = $db;
             \Base::instance()->set('DB', $db);
             return $db;

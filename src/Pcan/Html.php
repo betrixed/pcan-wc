@@ -96,9 +96,14 @@ class Html {
       );
     }
 
-    public function __construct($f3) {
+    public function __construct($f3,  $path = null, $ext = null) {
         $this->layout = 'layout.phtml';
         $this->nav = $f3->get('navigate');
+        
+        if (is_null($path)) {
+            $path = $f3->get('sitepath') . 'views';
+        }
+        $f3->set('UI', $path . '/|' . $f3->get('pkg') . 'views/');
         
         //$agent = $f3->get('AGENT');
        

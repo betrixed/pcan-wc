@@ -6,7 +6,7 @@ namespace Pcan;
 /**
  * @author Michael Rynn
  */
-use WC\DB\Event;
+use Pcan\DB\Event;
 use WC\Valid;
 
 class EventEdit extends Controller {

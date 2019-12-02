@@ -1,9 +1,21 @@
-{
+{ 
+    "name": "betrixed/pcan",
+
+    "description": "Class based examples, simple content management to build on fat-free framework!",
+    "homepage": "http://climatebet.me/",
+    "license": "GPL-3.0",
     "require": {
+        "php": ">=7.2",
         "phpmailer/phpmailer": "^6.0",
         "mobiledetect/mobiledetectlib": "^2.8",
-        "twig/twig": "^2.0",
         "bcosca/fatfree": "^3.6",
         "league/plates": "^3.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Chimp\\": "src/Chimp/",
+            "Pcan\\": "src/Pcan/",
+            "WC\\": "src/WC/"
+        }
     }
 }

@@ -10,12 +10,20 @@ class BatchInsert {
     public $cdefs;
     public $nulls;
     public $cols;
+    public $driver;
     
     public function begin($db, $tdef) {
         $this->pdo = $db->pdo();
+        $this->driver = $db->driver();
         $this->cdefs = $tdef->columns;
         $this->fields = array_keys($this->cdefs);
-        $sql = 'INSERT INTO "' . $tdef->name . '" (';
+        if ($this->driver === 'mysql') {
+            $nqt = '`';
+        }
+        else {
+            $nqt = '';
+        }
+        $sql = 'INSERT INTO ' . $nqt . $tdef->name . $nqt . ' (';
         $vsql = ') VALUES (';
         $i = 0;
         $this->nulls = [];
@@ -25,7 +33,7 @@ class BatchInsert {
                 $sql .= ', ';
                 $vsql .= ',';
             }
-            $sql .= strtolower($col);
+            $sql .= $nqt . strtolower($col) . $nqt;
             $vsql .= '?';
             $cdef = $this->cdefs[$col];
             $this->nulls[] = $cdef['null'] ?? false;

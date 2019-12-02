@@ -1,8 +1,4 @@
 <?php
-    require '../private/bootstrap.php';
-    $f3 = init_app(__DIR__, 'pcan');
-    try {
-        $f3->run();
-    } catch (Exception $x) {
-        echo $x->getMessage();
-    }
+require_once '../private/vendor/autoload.php';
+$app = \WC\App::init_app(__DIR__, dirname(__DIR__) . '/private', 'default');
+$app->run();

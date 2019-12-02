@@ -96,6 +96,12 @@ return [
         'GET /admin/user/edit/@id' => 'Pcan\UserAdm->edit',
         'GET /admin/user/groups/@id' => 'Pcan\UserAdm->groups',
         'GET /id/signup' => 'GH\SignUp->signup',
-        'POST /id/signupPost' => 'GH\SignUp->signupPost'
+        'POST /id/signupPost' => 'GH\SignUp->signupPost',
+        'GET /register/@id' => 'Pcan\Register->newReg',
+        'POST /register/regpost [ajax]' => 'Pcan\Register->regPost',
+        'GET /admin/event/@id' => 'Pcan\EventEdit->edit',
+        'POST /admin/eventpost' => 'Pcan\EventEdit->evtpost',
+        'GET /reglink/@code/@id' => 'Pcan\Register->regEdit'
+
     ]
 ];

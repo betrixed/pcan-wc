@@ -15,19 +15,6 @@
             <s>https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css</s>
         </a>
     </tb>
-    <tb k='select'>
-        <a k="css">
-            <s>/node_modules/bootstrap-select/dist/css/bootstrap-select.min.css</s>
-        </a>
-        <a k="js">
-            <s>/node_modules/bootstrap-select/dist/js/bootstrap-select.min.js</s>
-        </a>
-    </tb>
-    <tb k='simplegrid'>
-        <a k='css'>
-            <s>/node_modules/simplegrid/simple-grid.css</s>
-        </a>
-    </tb>
     <tb k='bootstrap'>
         <a k='css'>
             <s>/node_modules/bootstrap/dist/css/bootstrap.min.css</s>

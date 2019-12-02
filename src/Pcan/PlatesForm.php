@@ -60,8 +60,8 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
 
-    static public function label($id, $text) {
-        return "<label for='$id' class='label'>" . $text . "</label>" . PHP_EOL;
+    static public function label($id, $text, $type='') {
+        return "<label for=\"$id\" class=\"$type\">$text</label>" . PHP_EOL;
     }
 
     static public function submit($node = []) {
@@ -89,7 +89,7 @@ class PlatesForm implements ExtensionInterface {
         $out = '<label class=' . "\"checkbox\">";
         $out .= static::getTag($pset, ['type' => 'checkbox']);
         if (!empty($text)) {
-            $out .= $text;
+            $out .= ' ' . $text; // auto space one character
         }
 
         $out .= "</label>" . PHP_EOL;
@@ -99,12 +99,7 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
 
-    /**
-     * 
-     * @param array $pset
-     * @return string
-     */
-    public function plainText(array $pset) {
+    public function inputType(array $pset, $type = '') {
         static::ensureIdValue($pset);
         $id = $pset['id'];
         $out = '';
@@ -115,16 +110,42 @@ class PlatesForm implements ExtensionInterface {
             unset($pset['div']);
         }
         if (isset($pset['label'])) {
-            $out .= static::label($id, $pset['label']);
+            $out .= static::label($id, $pset['label'], $type);
         }
 
         
-        $out .= static::getTag($pset, ['type' => 'text']) . PHP_EOL;
+        $out .= static::getTag($pset, ['type' => $type]) . PHP_EOL;
         
         if ($wrapdiv) {
             $out .= '</div>';
         }
         return $out;
+    }
+    /**
+     * 
+     * @param array $pset
+     * @return string
+     */
+    public function plainText(array $pset) {
+        return $this->inputType($pset,'text');
+    }
+    public function email(array $pset)
+    {
+        if (!isset($pset['placeHolder']))
+        {
+            $pset['placeHolder'] = 'your@email.domain';
+        }
+        if (!isset($pset['aria-describedby'])) {
+            $pset['aria-describedby'] = 'emailHelp';
+        }
+        return $this->inputType($pset,'email');
+    }
+    public function phone(array $pset) {
+        return $this->inputType($pset,'tel');
+    }
+    public function password(array $pset)
+    {
+        return $this->inputType($pset,'password');
     }
 
     static public function addAttr($name, $pset) {

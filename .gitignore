@@ -16,3 +16,4 @@
 /chimpv3/
 /scratch/
 **/schema/
+!**/default/schema
