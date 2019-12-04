@@ -298,7 +298,8 @@ class Schema extends \Pcan\Controller {
             // assets.xml
             copy($setup . 'assets.xml', $sitepath . 'assets.xml');
             // Copy Home.php to src in sitepath
-
+            // duplicate all the existing framework views, for alterations
+            Dos::copyall($pkg . 'views', $php . 'views');
             Dos::makedir($sitepath . 'src');
             copy($setup . 'Home.php', $sitepath . 'src/Home.php');
 

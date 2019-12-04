@@ -10,6 +10,7 @@ use Pcan\DB\User;
 use Pcan\DB\ResetCode;
 use WC\DB\Server;
 use WC\UserSession;
+use WC\Valid;
 
 class Login extends Controller
 {

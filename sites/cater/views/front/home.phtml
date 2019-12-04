@@ -1,11 +1,19 @@
+<wc:init></wc:init>
 <include href="partial/facebook.phtml"></include>
-<div class='fb-like' data-share='true' data-width='450' data-show-faces='true'></div>
+
 <div class='container'>
     <style>
         hr {
             outline-style: groove;
         }
+        
+        .metadata {
+            font-size:0.8em;
+        }
     </style>
+    
+
+    <hr>
             <div class="bigf boxit2">
                 <p>Twenty years experience at all levels of hospitality.</p>
                 <p>Based at North Rocks, Sydney.</p>
@@ -36,7 +44,7 @@
     <div class="midf">
             <table>
                 <tr>
-                    <td><img src="/img/wraps.jpg" class="img" style='margin-right:4em;' /></td>
+                    <td><img src="/cater/gallery/menus/wraps.jpg" class="img" style='margin-right:4em;' /></td>
                     <td><p>Gourmet sandwiches mini rolls and wraps</p><ul class='list-unstyled'>
                             <li>Avocado capsicum,red onion and tomato</li>
                             <li>Roast chicken, celery and mayonnaise</li>
@@ -58,11 +66,11 @@
                             <li>Fresh fruit platter</li>
                             <li>Cakes</li>
                         </ul></td>
-                    <td><img src="/img/sausage-rolls.jpg" class="img"/></td>
+                    <td><img src="/cater/gallery/menus/sausage-rolls.jpg" class="img"/></td>
                 </tr>
                 <tr><td colspan='2'><hr /></td></tr>
                 <tr>
-                    <td><img src="/img/Mini_Christmas_Quiches.jpg" class="img" style='margin-right:4em;'/></td>
+                    <td><img src="/cater/gallery/menus/Mini_Christmas_Quiches.jpg" class="img" style='margin-right:4em;'/></td>
                     <td><ul class='list-unstyled'>
                             <li>Mini Kebabs</li>
                             <li>Buffalo style chicken fingers</li>
@@ -75,7 +83,7 @@
             </table>
     </div>
             <hr />
-            <p>At Julie's Catering we offer three different service options:
+            <p>At Julie's Catering we offer three different service options:<p>
                 <ul>
 
                     <li>We supply food only</li>
@@ -84,20 +92,20 @@
 
                     <li>As a special service we also offer a caring service to look after the needs of bereaved partners and families by cleaning and cooking on a temporary basis.</li>
                 </ul>
-            </p>
+
         </div>
         
     <hr />
     <check if="{{ @view->metadata }}">
         <true>
-        <span style="font-size:0.7em;">
+        
             <table class="table-bordered">
         <repeat group="{{ @view->metadata }}" value="{{ @value }}" key="{{ @key }}">
             <tr>
-                <td>{{ @key }}</td><td>{{ @value }}</td>
+                <td class="metadata">{{ @key }}</span></td><td class="metadata">{{ @value }}</td>
             </tr>
         </repeat>
                 </table>
-             </span>
+             
         </true>
      </check>

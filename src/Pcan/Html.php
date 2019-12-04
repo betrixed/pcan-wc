@@ -103,7 +103,7 @@ class Html {
         if (is_null($path)) {
             $path = $f3->get('sitepath') . 'views';
         }
-        $f3->set('UI', $path . '/|' . $f3->get('pkg') . 'views/');
+        //$f3->set('UI', $path . '/|' . $f3->get('pkg') . 'views/');
         
         //$agent = $f3->get('AGENT');
        

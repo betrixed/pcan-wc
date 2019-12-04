@@ -11,6 +11,7 @@ namespace Pcan;
 use WC\DB\Server;
 use Pcan\DB\Blog;
 use Pcan\DB\Linkery;
+use WC\Valid;
 
 class Article  extends Controller {
     
@@ -55,7 +56,7 @@ EOD;
             $temp = explode("\n", wordwrap( $briefTitle, 30));
             $briefTitle = $temp[0] . "\u{2026}";
         }
-        $v->title =  $briefTitle;
+        $v->title =  Valid::asDate($blog['date_published']);
         $v->blog = $blog;
         $v->analytics = true;
         $meta = [];

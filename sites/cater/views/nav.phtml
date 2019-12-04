@@ -17,18 +17,68 @@
         padding:0 0;
         margin: 0 0;
     }
-    .site-logo img {
+    
+
+ @media screen and (max-width: 1600px)
+ {
+     .site-logo img {
         max-height:150px;
         padding:5px;
     }
-
-    .view-title {
+    
+ .view-title {
         color:darkslateblue;
         font-weight:bold;
         font-size:1.5rem;
         padding-right:10px;
-
+        max-width:300px;
     }
+    
+    .bigf {
+        font-family: georgia;
+        font-size:1.5em;
+        
+    }    
+     
+ }
+ @media screen and (max-width: 1024px) { 
+     .site-logo img {
+        max-height:80px;
+        padding:5px;
+    }
+    
+ .view-title {
+        color:darkslateblue;
+        font-weight:bold;
+        font-size:1.5rem;
+        padding-right:10px;
+        max-width:80x;
+    }
+    
+    .bigf {
+        font-family: georgia;
+        font-size:1.2em;
+        
+    }    
+ }
+ @media screen and (max-width: 800px) { 
+     .site-logo img {
+         display:none;
+    }
+    
+    .view-title {
+        display:none;
+    }
+    
+    .bigf {
+        font-family: georgia;
+        font-size:1.2em;
+        
+    }    
+ }
+ 
+ 
+    
 
 </style>
 <!--
@@ -50,16 +100,19 @@
     }
 
 -->
-<nav class="navbar navbar-expand-lg navbar-light ">
-    <div class="view-title">
-        <a class="site-logo" href="/"><img src="/image/gallery/site/site-logo.png"></a>
+<div class="row justify-content-between"">
+    <div class="col view-title">
+        <a class="site-logo" href="/"><img src="/cater/gallery/site/left_side.jpg"></a>
     </div>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-            <include href="generated/dropdowns.phtml"></include>
-        </ul>
+    <div class="col">
+
+        <div class='bigf'>
+            <p><a class='splink' data-toggle='tooltip' href='/contact/index' title='Contact Julie' >Contact Julie for Requirements</a></p>  
+            <p><a class='splink' data-toggle='tooltip' href='/map/index' title='Map Location' >Our Location</p> 
+             <div class='fb-like' data-share='true' data-width='450' data-show-faces='true'></div>
+        </div>
     </div>
-</nav>
+    <div class="col view-title float-right">
+        <a class="site-logo" href="/"><img src="/cater/gallery/site/right_side.jpg"></a>
+    </div>
+</div>

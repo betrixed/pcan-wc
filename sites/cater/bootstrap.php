@@ -1,6 +1,6 @@
 <?php
 
-(\Models\Assets::instance())->addAssets(
+(\WC\Assets::instance())->addAssets(
         [
             'custom' => ['css' => ['/css/custom.css']]
         ]);

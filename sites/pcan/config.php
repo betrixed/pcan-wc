@@ -11,7 +11,7 @@ return [
         'site' => 'PCAN',
         'organisation' => 'Parramatta Climate Action Network',
         'domain' => 'pcan.test',
-        'UI' => '../private/sites/pcan/views/|../private/src/Pcan/views/'
+        'UI' => '../private/sites/pcan/views/|../private/views/pcan/'
     ],
     'routes' => [
         'GET /' => 'GH\Home->show',

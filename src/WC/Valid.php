@@ -184,6 +184,14 @@ class Valid {
         }
         return filter_var( $sval, FILTER_SANITIZE_STRING);
     }
+    
+    static public function asDate($time, $format = 'Y-m-d')
+    {
+        if (!is_numeric($time))
+            $time = strtotime($time); // convert string dates to unix timestamps
+        return date($format, $time);
+    }
+    
     static public function toDateTime(&$req, $ix) {
         if (!isset($req[$ix])) {
             return static::now();

@@ -1,8 +1,9 @@
 <wc:init></wc:init>
+<!--  url("{{ @theme }}/tile-fog2.png"); -->
 <style>
 nav  {
-    background-image: url("/image/gallery/site/tile-fog2.png");
-    color:lightcoral;
+    background-color:white;
+    color:black;
 }
 ul.navbar-nav a {
     font-size:1.2em;
@@ -19,18 +20,18 @@ ul.navbar-nav a {
     margin: 0 0;
 }
 .site-logo img {
-    max-height:3.0em;
-    padding:5px;
-    border-radius:4px;
-    border-width:4px;
+    max-height: 3.2em;
+    padding: 5px;
+    
 }
 
 .view-title {
     background-color: white;
     color:darkslateblue;
-    font-weight:bold;
     font-size:1.5rem;
     padding-right:10px;
+    border-right-style: solid;
+    border-right-width: 1px;
 }
 
 
@@ -38,10 +39,15 @@ ul.navbar-nav a {
 
 <nav class="navbar navbar-expand-lg navbar-light ">
     <div class="view-title">
-        <a class="site-logo" href="/"><img src="/image/gallery/site/site-logo-small.png"></a>
-        {{ @view->title }}
+        <check if="{{ UserSession::isLoggedIn('User') }}"><false>
+        <a class="site-logo" href="/"><img src="{{ @theme }}/site-logo-small.png"></a>
+         </false>
+        </check>
+        <span>{{ @view->title }}</span>
+        
     </div>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" 
+            data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -49,4 +55,8 @@ ul.navbar-nav a {
             <include href="generated/dropdowns.phtml"></include>
         </ul>
     </div>
+<check if="{{ UserSession::isLoggedIn('User') }}"><false>
+        <a class="site-logo" href="/login"><img src="{{ @theme }}/heat_extinction.png"></a> 
+        </false>
+</check>
 </nav>

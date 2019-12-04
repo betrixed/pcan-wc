@@ -1,3 +1,4 @@
+<wc:init></wc:init>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,7 +8,7 @@
     <f3:css-header></f3:css-header>    
 </head>
 <body>
-    <img src="/img/roast_kitchen.png" style="width:100%;">
+    <img src="/cater/gallery/menus/worry_away.jpg" style="width:100%;">
 <check if="{{ @view->nav }}">
     <true>
     <include href="{{ @view->nav }}" />
@@ -24,13 +25,9 @@
     </true></check>
 
 
-    <span style='font-family:georgia;font-size:1.2em;'>
-        <div class='bigf'>
-            <p><a class='splink' data-toggle='tooltip' href='/contact/index' title='Contact Julie' >Tailor your Requirements</a></p>  
-        </div>
-    </span>
     
-<div id="view"><include href="{{ @content }}"></include></div>
+    
+<div id="view"><include href="{{ @view->content }}"></include></div>
 
 <footer class='footer foot-wrap'>
     <div class="row">
