@@ -39,7 +39,11 @@ ul.navbar-nav a {
 
 <nav class="navbar navbar-expand-lg navbar-light ">
     <div class="view-title">
-        <check if="{{ UserSession::isLoggedIn('User') }}"><false>
+        <check if="{{ UserSession::isLoggedIn('User') }}">
+            <true>
+            <a class="site-logo" href="/"><img src="{{ @theme }}/heat_extinction.png"></a> 
+            </true>
+         <false>
         <a class="site-logo" href="/"><img src="{{ @theme }}/site-logo-small.png"></a>
          </false>
         </check>
