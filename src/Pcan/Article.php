@@ -14,7 +14,8 @@ use Pcan\DB\Linkery;
 use WC\Valid;
 
 class Article  extends Controller {
-    
+use Mixin\ViewF3;
+
     public function news($f3, $args) {
         $server = &$f3->ref('SERVER');
         $req = $args['*'];
@@ -29,7 +30,7 @@ class Article  extends Controller {
  join btContentLocal CL on CL.bID = VB.bID          
 EOD;
         $content = $db->exec($sql, $req);
-        $view = $this->view;
+        $view = $this->getView();
         if (!empty($content)) {
             //$view->article = "Record " . $content[0]['cID'];
            $view->article = $content[0]['content'];

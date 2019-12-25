@@ -102,6 +102,8 @@ class DeleteOp extends ImageOp {
 }
 
 class GalleryAdm extends GalleryCtl {
+use Mixin\Auth;
+use Mixin\ViewF3;
 
     private $syncUrl = 'http://parracan.org';
     private $editList = [];

@@ -92,6 +92,7 @@ class UserSession extends \Prefab {
         $this->keys = [];
     }
 
+    /** Write is performed by fat free hive persist */
     public function write() {
         if ($this->doWrite) {
             $this->doWrite = false;
@@ -182,38 +183,42 @@ class UserSession extends \Prefab {
     }
      /**
       *  Static  read returns and sets instance
-      * @return type
+      * @return UserSession or null
       */
-    static public function read() {
-        $s1 = session_status();
-         $id = session_id();
-         $name = session_name();
+    static public function read() : ?UserSession {
+        //$s1 = session_status();
+        //$id = session_id();
+        //$name = session_name();
+        // Get FatFree request session parameters
         $sess = static::session();
-        $id2 = session_id();
+        //$id2 = session_id();
         $f3 = \Base::instance();
-        
-        $us = $f3->get('SESSION.userdata');
-        
-        if ($us) {
+        // Get stored UserSession if any
+        $us = $f3->get('SESSION.userdata'); 
+        if (!is_null($us)) {
+            $f3->set('JAR.lifetime',30*60);
             \Registry::set( get_class($us), $us);
+            //$cookie = session_get_cookie_params();
         }
-        $s2 = session_status();
-        $f3->set('JAR.lifetime',30*60);
-         $cookie = session_get_cookie_params();
-        
-         
-         
         return $us;
     }
-    static public function activate() {
-        $s1 = session_status();
-        $sess = static::session();
-        if (! \Registry::exists(__CLASS__)) {
+    // Make a UserSession become instance as Guest
+    static public function guestSession() : UserSession {
+            $us = UserSession::instance();
+            $us->setGuest();
+            $us->write();
+            return $us;
+    }
+
+    static public function activate() : UserSession {
+        //$s1 = session_status();
+        //$sess = static::session();
+        //if (! \Registry::exists(__CLASS__)) {
             $us = UserSession::instance();
             $us->doWrite = true;
             $us->write();
-        }
-         $s2 = session_status();
+        //}
+         //$s2 = session_status();
         return $us;
     }
     static public function getURL($f3) {

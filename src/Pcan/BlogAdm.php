@@ -13,21 +13,17 @@ use Pcan\DB\Event;
 
 
 class BlogAdm extends Controller {
+use Mixin\Auth;
+use Mixin\ViewF3;
 
     public $url = '/admin/blog/';
     private $editAssets = ['bootstrap', 'SummerNote', 'DateTime', 'jquery-form', 'blog-edit'];
-    
-    public function beforeRoute() {
-        if (!$this->auth()) {
-            return false;
-        }
-    }
 
     public function edit($f3, $args) {
         $id = $args['bid'];
         $blog = new Blog();
         $active = $blog->load("id = " . $id);
-        $view = $this->view;
+        $view = $this->getView();
         $view->blog = $active;
         $this->editForm();
     }
@@ -158,7 +154,7 @@ class BlogAdm extends Controller {
     }
 
     public function newRec() {
-        $view = $this->view;
+        $view = $this->getView();
         $view->url = $this->url;
         $view->content = 'blog\new.phtml';
         $view->assets($this->editAssets);
@@ -238,7 +234,7 @@ class BlogAdm extends Controller {
      * @return type null
      */
     private function editForm() {
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'blog/edit.phtml';
         $blog = $view->blog;
         $view->isApprover = true; // isApprover()
@@ -271,7 +267,7 @@ class BlogAdm extends Controller {
     public function eventUpdate($f3, $args) {
         $post = &$f3->ref('POST');
         $isAjax = $f3->get('AJAX');
-        $view = $this->view;
+        $view = $this->getView();
         if (!empty($post) && $isAjax) {
             $blog_id = Valid::toInt($post, 'blogid', null);
             $event_op = Valid::toStr($post, 'event_op','');
@@ -327,7 +323,7 @@ class BlogAdm extends Controller {
                     $err = $e->errorInfo;
                     $this->flash('New event fail: ' . $err[0] . ' ' . $err[1]);
                 }
-                $view = $this->view;
+                $view = $this->getView();
                 $view->url = $this->url;
                 $view->events = Blog::getEvents($bid);
                 echo TagViewHelper::render('blog/event_dates.phtml');
@@ -376,7 +372,7 @@ class BlogAdm extends Controller {
                 }
             }
             $db->commit();
-            $view = $this->view;
+            $view = $this->getView();
             $view->content = 'blog/category.phtml';
             $view->catset = Blog::getCategorySet($blog_id);
         }
@@ -385,7 +381,7 @@ class BlogAdm extends Controller {
 
     public function index($f3, $args) {
 
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'blog/index.phtml';
         $request = $f3->get('REQUEST');
 
@@ -586,7 +582,7 @@ class BlogAdm extends Controller {
             }
         }
         closedir($dh);
-        $view = $this->view;
+        $view = $this->getView();
         $view->packs = $packs;
         $view->args = "";
         $view->title = "Import";

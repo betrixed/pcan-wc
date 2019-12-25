@@ -10,6 +10,8 @@ use WC\DB\Server;
 use WC\UserSession;
 
 class GalleryCtl extends Controller {
+use Mixin\ViewF3;
+
     /* navigate the images in a particular folder , or a folder indexed with a name */
 
     /* to start off with, just the images in /image/upload/ */
@@ -19,14 +21,11 @@ class GalleryCtl extends Controller {
 
     public function __construct() {
         parent::__construct();
-        
-        $f3 = \Base::instance();
-        $this->f3 = $f3;
-        $this->us = UserSession::read();
-        $this->php = $f3->get('php');
+
+        $f3 = $this->f3;
         $this->galleryPath = $f3->get('gallery'); // somewhere in site settings
         
-        $view = $this->view;
+        $view = $this->init_View($f3);
         $view->nav = null;
     }
 

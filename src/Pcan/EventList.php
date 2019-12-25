@@ -10,6 +10,8 @@ use WC\Valid;
 
 class EventList extends Controller
 {
+use Mixin\ViewF3;
+
     private function events() {
         $eventSql = <<<EOD
 SELECT A.id, A.title, A.date_updated as sysdate, A.article, A.style, A.title_clean
@@ -22,7 +24,7 @@ EOD;
     
     public function index($f3, $args)
     {
-        $view = $this->view;
+        $view = $this->getView();
 
         $view->title = "Events";
         $view->events = $this->events();

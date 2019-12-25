@@ -14,24 +14,21 @@ use WC\Text;
 use WC\UserSession;
 
 class LinksAdm extends Controller {
+    use Mixin\Auth;
+    use Mixin\ViewF3;
+    
     private $syncUrl = 'http://parracan.org';
     private $editList = [];
     private $url = '/admin/link/';
-
-    public function beforeRoute() {
-         if (!$this->auth()) {
-            return false;
-         }
-    }
 
     public function index($f3, $args) {
         $request = &$f3->ref('REQUEST');
         $numberPage = Valid::toInt($request, "page", 1);
         $orderby = Valid::toStr($request, 'orderby', null);
+        $view = $this->getView();
+        $order_field = Links::indexOrderBy($view, $orderby);
 
-        $order_field = Links::indexOrderBy($this->view, $orderby);
-
-        $view = $this->view;
+        
         $view->content = 'links/index.phtml';
         $view->url = $this->url;
         $view->orderby = $orderby;
@@ -56,7 +53,7 @@ class LinksAdm extends Controller {
     }
 
     private function viewNewLink() {
-        $view = $this->view;
+        $view = $this->getView();
         $view->linkid = 0;
         $this->viewCommon();
         echo $view->render();
@@ -64,7 +61,7 @@ class LinksAdm extends Controller {
     }
 
     public function newLink($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $link = new Links();
         $link['sitename'] = 'Here';
         $link['url'] = '/';
@@ -94,14 +91,14 @@ class LinksAdm extends Controller {
     /* Get link edit form */
 
     private function viewCommon() {
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'links/edit.phtml';
         $view->post = '/admin/link/post';
         $view->url = $this->url;
         $view->assets(['bootstrap','DateTime','SummerNote','links-edit']);
     }
     private function editLink($rec, $id) {
-        $view = $this->view;
+        $view = $this->getView();
 
         $view->link = $rec;
         $view->linkid = $id;

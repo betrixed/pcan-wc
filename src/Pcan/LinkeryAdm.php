@@ -11,6 +11,7 @@ use WC\Valid;
 
 class LinkeryAdm extends LinkeryCtl
 {
+use Mixin\Auth;
 
     private $editList = [];
     protected $url;
@@ -20,13 +21,6 @@ class LinkeryAdm extends LinkeryCtl
         parent::__construct();
         $this->viewPost = '/admin' . $this->viewPost;
         $this->url = '/admin/linkery/';
-    }
-
-    public function beforeRoute()
-    {
-        if (!$this->auth()) {
-            return false;
-        }
     }
 
     public function index($f3, $args)
@@ -112,7 +106,7 @@ class LinkeryAdm extends LinkeryCtl
             return true;
         }
 
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'linkery_adm/new.phtml';
         $view->linkery = $gal;
         $view->assets(['bootstrap']);
@@ -128,7 +122,7 @@ class LinkeryAdm extends LinkeryCtl
 
     public function newRec()
     {
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'linkery_adm/new.phtml';
         $view->linkery = new Linkery();
         $view->assets('bootstrap');
@@ -155,7 +149,7 @@ class LinkeryAdm extends LinkeryCtl
         $id = $args['lid'];
         $gal = Linkery::byId($id);
         if ($gal) {
-            $view = $this->view;
+            $view = $this->getView();
             $view->content = 'linkery_adm/edit.phtml';
 
             $this->constructView($gal);
@@ -196,7 +190,7 @@ class LinkeryAdm extends LinkeryCtl
 
     private function constructView($gal, $op = "edit", $isAjax = false)
     {
-        $view = $this->view;
+        $view = $this->getView();
         $view->linkery = $gal;
         $id = $gal['id'];
         $view->links = Linkery::getAllLinks($gal['id']);
@@ -212,7 +206,7 @@ class LinkeryAdm extends LinkeryCtl
         $select['remove'] = ['Remove', 0];
         $select[$op][1] = 1;
 
-        $view = $this->view;
+        $view = $this->getView();
         $view->select = $select;
 
 

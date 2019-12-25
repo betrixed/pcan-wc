@@ -10,14 +10,11 @@ use Pcan\DB\Event;
 use WC\Valid;
 
 class EventEdit extends Controller {
-    public function beforeRoute() {
-        if (!$this->auth()) {
-            return false;
-        }
-    }
+use Mixin\ViewF3;
+use Mixin\Auth;
     
     function displayEvent($evt) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->assets(['bootstrap','DateTime']);
         $view->content = "events/edit.phtml";
         $view->evt = $evt;

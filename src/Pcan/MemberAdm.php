@@ -13,14 +13,10 @@ use Chimp\DB\ChimpLists;
 
 
 class MemberAdm extends Controller {
+use Mixin\Auth;
+use Mixin\ViewF3;
 
     public $url = "/admin/member/";
-
-    public function beforeRoute() {
-        if (!$this->auth()) {
-            return false;
-        }
-    }
 
     public function index($f3, $args) {
         $db = Server::db();
@@ -53,7 +49,7 @@ EOD;
             $page = 1;
         }
         $paginator = new PageInfo($page, $pgsize, $results, $total);
-        $view = $this->view;
+        $view = $this->getView();
         $view->page = $paginator;
         $view->url = "/admin/member/list";
         $view->pgsize = $pgsize;
@@ -65,7 +61,7 @@ EOD;
     }
 
     private function editForm() {
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'member/fields.phtml';
         $view->url = $this->url;
         $view->assets(['bootstrap','member-js']);
@@ -82,14 +78,14 @@ EOD;
     }
 
     public function newMember($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->rec = new Member();
         $view->title = "New member";
         $this->editForm();
     }
 
     protected function editId($mid) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->rec = Member::byId($mid);
         $view->title = "Member edit";
         $this->editForm();
@@ -228,7 +224,7 @@ EOD;
         } else {
             // redit same record data
             // show any errors
-            $view = $this->view;
+            $view = $this->getView();
             $view->rec = $rec;
             $view->title = "Edit Errors";
             $view->errors = $errorList;
@@ -262,7 +258,7 @@ EOD;
             }
            
         }
-        $view = $this->view;
+        $view = $this->getView();
         $view->donations = Member::getDonations($mid);
         $view->layout = 'member/donations.phtml';
         $view->content = null;

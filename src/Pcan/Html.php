@@ -15,7 +15,8 @@ class Html {
     public $flash;  // list of flash messages
     public $url;    // used as base URL 
     public $content;  // name of included content file
-
+    public $f3;
+    
     static public $browser;
     
     //! Front-end processorg
@@ -99,7 +100,7 @@ class Html {
     public function __construct($f3,  $path = null, $ext = null) {
         $this->layout = 'layout.phtml';
         $this->nav = $f3->get('navigate');
-        
+        $this->f3 = $f3;
         if (is_null($path)) {
             $path = $f3->get('sitepath') . 'views';
         }

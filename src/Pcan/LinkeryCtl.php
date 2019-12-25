@@ -10,6 +10,7 @@ use Pcan\DB\Linkery;
 use Pcan\DB\PageInfo;
 
 class LinkeryCtl extends Controller {
+use Mixin\ViewF3;
     /* navigate the images in a particular folder , or a folder indexed with a name */
 
     /* to start off with, just the images in /image/upload/ */
@@ -28,7 +29,7 @@ class LinkeryCtl extends Controller {
         
         $params = &$f3->ref('REQUEST');
         $vname = 'linkery/view.phtml';
-        $view = $this->view;
+        $view = $this->getView();
         $sub = isset($params['sub']) ? intval($params['sub']) : 0;
         $view->params = "";
         $show = isset($params['show']) ? $params['show'] : 'grid';
@@ -108,7 +109,7 @@ EOD;
             $numberPage = intval($numberPage);
         }
 
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = $template;
         $view->orderby = $orderby;
         $view->page = $this->listPageNum($numberPage, 12, $order_field);

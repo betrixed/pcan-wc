@@ -12,20 +12,16 @@ use WC\Valid;
 
 class MenuAdm extends Controller
 {
+use Mixin\Auth;
+use Mixin\ViewF3;
 
     protected $url = '/admin/menu/';
 
     protected function setView($action)
     {
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = $action . ".phtml";
         $view->url = $this->url;
-    }
-
-    public function beforeRoute() {
-        if (!$this->auth()) {
-            return false;
-        }
     }
     
     protected function buildAssets()
@@ -77,7 +73,7 @@ class MenuAdm extends Controller
             return false;
         }
 
-        $view = $this->view;
+        $view = $this->getView();
         $view->item = $item;
         $this->setView('menu/submenu');
         $this->buildAssets();
@@ -91,7 +87,7 @@ class MenuAdm extends Controller
     {
         $request = &$f3->ref('REQUEST');
         $rootid = Valid::toInt($request, 'm0', null);
-        $view = $this->view;
+        $view = $this->getView();
         $view->rootid = $rootid;
         $this->setView('menu/submenu');
         $view->item = new MenuItem();
@@ -106,7 +102,7 @@ class MenuAdm extends Controller
     public function subitem()
     {
 
-        $view = $this->view;
+        $view = $this->getView();
 
         if ($this->request->isPost()) {
             $req = $this->request;
@@ -175,7 +171,7 @@ select distinct  caption as name,  id from menu_item M
    where parent = -1 and id <> -1 order by name
 DOD;
         $qres = $db->exec($sql);
-        $view = $this->view;
+        $view = $view = $this->getView();
         $view->menulist = $qres;
         $this->setView('menu/index');
         $this->buildAssets();
@@ -265,7 +261,7 @@ EOD;
     public function linkAction()
     {
         $this->buildAssets();
-        $view = $this->view;
+        $view = $this->getView();
         $this->setView('menu/link');
 
         $view->allowUnlink = false;
@@ -361,7 +357,7 @@ DOD;
         $params = [':r1' => $rootid, ':r2' => $rootid, ':r3' => $rootid, ':r4' => $rootid];
 
         $results = $db->exec($sql, $params);
-        $view = $this->view;
+        $view = $this->getView();
         if (count($results) > 0) {
             $view->menuName = $results[0]->caption;
         }
@@ -381,7 +377,7 @@ select * from menu_item
 FOD;
         $db = Server::db();
         $results = $db->exec($menu_sql);
-        $view = $this->view;
+        $view = $this->getView();
         $view->menulist = $results;
         $this->setView('menu/list');
         $this->buildAssets();
@@ -394,7 +390,7 @@ FOD;
         $item = MenuItem::findById($id);
         if ($item) {
             $isMenu = is_null($item->controller);
-            $view = $this->view;
+            $view = $this->getView();
             $view->item = $item;
             $this->setView('menu/submenu');
             $this->buildAssets();

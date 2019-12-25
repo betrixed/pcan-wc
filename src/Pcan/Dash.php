@@ -9,12 +9,11 @@ namespace Pcan;
 use WC\UserSession;
 
 class Dash extends Controller {
-    function show($f3, $args) {
-        if (!$this->auth($f3)) {
-            return false;
-        }
-        
-        $view = $this->view;
+    use Mixin\Auth;
+    use Mixin\ViewF3;
+    
+    function show($f3, $args) {  
+        $view = $this->getView();
         $view->assets('bootstrap');
         $view->content = 'home/dash.phtml';
         $view->title = "Dash";
@@ -29,9 +28,6 @@ class Dash extends Controller {
     }
     
     function redirect($f3, $args) {
-        if (!$this->auth($f3)) {
-            return false;
-        }
         $this->flash('Redirected');
         UserSession::reroute('/dash');
     }

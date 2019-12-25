@@ -13,10 +13,10 @@ use Pcan\Models\MenuTree;
 use WC\Valid;
 
 class CatView extends Controller {
-
+use Mixin\ViewF3;
     public function index($f3, $args) {
         $catclean = BlogCat::bySlug($args['catid']);
-        $view = $this->view;
+        $view = $this->getView();
         if (!empty($catclean)) {
             $req = &$f3->ref("REQUEST");
             $isSub = Valid::toInt($req, 'sub', 0);
@@ -45,7 +45,7 @@ class CatView extends Controller {
     }
 
     private function menuView($mit) {
-        $view = $this->view;
+        $view = $this->getView();
         $menu = empty($mit) ? null : MenuTree::getIdParent($mit);
         if (!empty($menu)) {
             $items = $menu->submenu;
@@ -77,7 +77,7 @@ class CatView extends Controller {
         $isSub = Valid::toInt($req, 'sub', 0);
         $show = isset($req['show']) ? $req['show'] : 'grid';
 
-        $view = $this->view;
+        $view = $this->getView();
         if ($isSub > 0) {
 
             $view->layout = "cat/linkery.phtml";
@@ -134,7 +134,7 @@ EOD;
         return Server::db()->exec($sql);
     }
     public function pastEvents($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->list = $this->past();
         $view->old = $this->eventArticle();
         
@@ -152,7 +152,7 @@ EOD;
         }   
     }
     public function events($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->list = $this->future();
         if (count($view->list) <= 0) {
             $this->flash('No events returned');
@@ -197,7 +197,7 @@ EOD;
 
     public function fetch($f3, $args) {
         $blog = Blog::findFirstByid($args['bid']);
-        $view = $this->view;
+        $view = $this->getView();
         $view->blog = $blog;
         $view->layout = 'cat/fetch.phtml';
         echo $view->render();
@@ -206,7 +206,7 @@ EOD;
     public function menu($f3, $args) {
         $menuCaption = $args['cap'];
 
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'cat/menu.phtml';
         $tree = \Models\MenuTree::getMainMenu($menuCaption);
         $q = null;

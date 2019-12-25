@@ -8,15 +8,12 @@ use WC\DB\Server;
  * @author Michael Rynn
  */
 class SeriesAdm extends Controller {
-    public function beforeRoute() {
-        if (!$this->auth()) {
-            return false;
-        }
-    }
-    
+use Mixin\ViewF3;
+use Mixin\Auth;
+
     public function index($f3,$args) {
         $db = Server::db();
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'series/index.phtml';
         $view->assets(['bootstrap']);
         $view->series = $db->exec('select * from series');

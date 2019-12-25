@@ -10,16 +10,18 @@ use WC\Valid;
 use WC\SwiftMail;
 
 class EmailForm extends Controller {
+use Mixin\ViewF3;
+use Mixin\Captcha;
 
     protected $url = '/contact/email/';
 
     private function render($isSub = false) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->title = "Email";
         $view->url = $this->url;
         
         $view->assets(['bootstrap']);
-        $this->captchaView();
+        $this->captchaView($view);
         $this->xcheckView();
         
         if ($isSub) {
@@ -34,7 +36,7 @@ class EmailForm extends Controller {
     }
     
     private function readonly() {
-        $view = $this->view;
+        $view = $this->getView();
         $view->title = "Email";
         $view->url = $this->url;
         $view->content = 'form/sent.phtml';
@@ -46,7 +48,7 @@ class EmailForm extends Controller {
             return;
         }
 
-        $view = $this->view;
+        $view = $this->getView();
 
         $view->rec = new Contact();
         $req = &$f3->ref('REQUEST');
@@ -59,7 +61,7 @@ class EmailForm extends Controller {
         }
 
         $id = intval($args['cid']);
-        $view = $this->view;
+        $view = $this->getView();
         $view->rec = Contact::byId($id);
         $req = &$f3->ref('REQUEST');
         
@@ -76,7 +78,7 @@ class EmailForm extends Controller {
     }
     public function errorEmail($msg, &$rec) {
         $this->flash($msg);
-        $view = $this->view;
+        $view = $this->getView();
         $view->rec = &$rec;
         echo $this->render();
     }
@@ -113,7 +115,7 @@ class EmailForm extends Controller {
             }
             $errors = [];
             
-            $view = $this->view;
+            $view = $this->getView();
             $view->rec = $rec;
             $view->link = UserSession::getURL($f3);
             $textMsg = TagViewHelper::render('form/mail_text.txt');

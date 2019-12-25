@@ -14,6 +14,8 @@ use WC\Valid;
 
 class Login extends Controller
 {
+use Mixin\Captcha;
+use Mixin\ViewF3;
 
     private $username;
 
@@ -22,7 +24,8 @@ class Login extends Controller
         if (!UserSession::https($f3)) {
             return;
         }
-        $this->captchaView();
+        $view = $this->init_View($f3);
+        $this->captchaView($view);
         $this->xcheckView();
         
         $view = $this->view;

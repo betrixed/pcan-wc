@@ -3,13 +3,17 @@ namespace Pcan;
 /**
  * @author Michael Rynn
  */
-use WC\DB\PageInfo;
-use WC\DB\BlogCat;
+use Pcan\DB\PageInfo;
+use Pcan\DB\BlogCat;
+
 use WC\DB\Server;
 use WC\UserSession;
+use WC\Valid;
 
 class CatAdm extends Controller
 {
+use Mixin\ViewF3;
+use Mixin\Auth;
 
     public $url = '/admin/cat/';
 
@@ -49,7 +53,7 @@ class CatAdm extends Controller
 
     public function newRec($f3, $args)
     {
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'cat_adm/edit.phtml';
         $view->title = 'New Category';
         $view->cat = new BlogCat();
@@ -63,7 +67,7 @@ class CatAdm extends Controller
     {
 
         $id = $args['cid'];
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'cat_adm/edit.phtml';
         $view->cat = BlogCat::byId($id);
         $view->url = $this->url;
@@ -80,7 +84,7 @@ class CatAdm extends Controller
         $grabsize = 16;
         $start = ($numberPage - 1) * $grabsize;
         
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'cat_adm/index.phtml';
         $view->title = "Category Index";
         $view->url = '/admin/cat/';
@@ -93,13 +97,6 @@ class CatAdm extends Controller
         $view->page = $paginator;
         $view->assets('bootstrap');
         echo $view->render();
-    }
-
-    public function beforeRoute()
-    {
-        if (!$this->auth()) {
-            return false;
-        }
     }
 
 }

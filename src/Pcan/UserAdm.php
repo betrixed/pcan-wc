@@ -17,6 +17,8 @@ use WC\Valid;
 
 class UserAdm extends Controller
 {
+use Mixin\ViewF3;
+use Mixin\Auth;
 
     public $url = '/admin/user/';
 
@@ -61,7 +63,7 @@ EOD;
         $results = $db->exec($sql, [':start' => $start, ':ct' => $grabsize ]);
         $maxrows = !empty($results) ? $results[0]['full_count'] : 0;
         $paginator = new PageInfo($numberPage, $grabsize, $results, $maxrows);
-        $view = $this->view;
+        $view = $this->getView();
         $view->page = $paginator;
         $view->title = "User Index";
         $view->url = $this->url;
@@ -72,7 +74,7 @@ EOD;
     
     public function edit($f3, $args) 
     {
-        $view = $this->view;
+        $view = $this->getView();
         $req = &$f3->ref('REQUEST');
         
         $id = $args['id'];
@@ -180,7 +182,7 @@ EOS;
     
     protected function showUserGroups($userid) {
         $user = User::byId($userid);
-        $view = $this->view;
+        $view = $this->getView();
         if (!$user)
         {
             $view->user = null;
@@ -198,7 +200,7 @@ EOS;
     }
     public function groups($f3, $args) 
     {
-        $view = $this->view;
+        $view = $this->getView();
         $req = &$f3->ref('REQUEST');
         
         $id = $args['id'];

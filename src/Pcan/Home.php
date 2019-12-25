@@ -7,7 +7,7 @@ use WC\DB\Server;
 
 
 class Home extends Controller {
-
+use Mixin\ViewF3;
 
     private function main() {
         $sql = <<<EOD
@@ -36,7 +36,7 @@ EOD;
 
     function show($f3, $args) {
 
-        $view = $this->view;
+        $view = $this->getView();
         $view->sides = $this->sides();
         $view->main = $this->main();
 
@@ -56,7 +56,7 @@ EOD;
     }
 
     function links($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $req = &$f3->ref('REQUEST');
 
 

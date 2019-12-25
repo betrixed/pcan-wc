@@ -10,6 +10,7 @@ use WC\UserSession;
 //! Front-end processorg
 
 class Register extends Controller {
+use Mixin\ViewF3;
     // Display Event blog with new register info
     function newReg($f3, $args) {
         
@@ -18,7 +19,7 @@ class Register extends Controller {
         }
         $this->captchaView();
         
-        $view = $this->view;
+        $view = $this->getView();
         $eventId = $args['id'];
         
         if (is_numeric($eventId)) {
@@ -59,7 +60,7 @@ class Register extends Controller {
         $regid = $args['id'];
         $code = $args['code'];
         $this->captchaView();
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'events/register.phtml';
         $view->assets(['bootstrap', 'register-js']);
         $view->eblog = null;
@@ -80,7 +81,7 @@ class Register extends Controller {
         echo $view->render();
     }
     function regPost($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $post = &$f3->ref('POST');
         
         $eventid = Valid::toInt($post,'eventid');
