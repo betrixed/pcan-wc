@@ -3,11 +3,13 @@
 use \WC\Assets;
 
 class Front extends \Pcan\Controller {
+use \Pcan\Mixin\ViewF3;
+
         function show($f3, $args) {
 
 
         
-        $view = $this->view;
+        $view = $this->getView();
         
         $view->metadata = array(
             "Description" => "Servicing the Greater Sydney area with a large range of mouth watering catering options is Julie’s Catering. We offer catering services for any event including christenings, funerals, birthdays and other functions.",

@@ -8,11 +8,12 @@ use Pcan\DB\Contact;
 use WC\UserSession;
 
 class EmailForm extends \Pcan\Controller {
+use \Pcan\Mixin\ViewF3;
 
     protected $url = '/contact/email/';
 
     private function render($isSub = false) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->title = "Email";
         $view->url = $this->url;
         $view->assets(['bootstrap','custom']);
@@ -32,7 +33,7 @@ class EmailForm extends \Pcan\Controller {
     }
     
     private function readonly() {
-        $view = $this->view;
+        $view = $this->getView();
         $view->title = "Email";
         $view->url = $this->url;
         $view->assets(['bootstrap']);
@@ -43,7 +44,7 @@ class EmailForm extends \Pcan\Controller {
         if (!UserSession::https($f3)) {
             return;
         }
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'form/email.phtml';
         
         $view->rec = new Contact();
@@ -56,7 +57,7 @@ class EmailForm extends \Pcan\Controller {
             return;
         }
         $id = intval($args['cid']);
-        $view = $this->view;
+        $view = $this->getView();
         $view->rec = Contact::byId($id);
         $req = &$f3->get('REQUEST');
         
@@ -73,7 +74,7 @@ class EmailForm extends \Pcan\Controller {
     }
     public function errorEmail($msg, &$rec) {
         $this->flash($msg);
-        $view = $this->view;
+        $view = $this->getView();
         $view->rec = &$rec;
         echo $this->render();
     }
@@ -103,7 +104,7 @@ class EmailForm extends \Pcan\Controller {
             }
             $errors = [];
             
-            $view = $this->view;
+            $view = $this->getView();
             $view->rec = &$rec;
             $textMsg = TagViewHelper::render('form/mail_text.txt');
             $htmlMsg = TagViewHelper::render('form/mail_html.phtml');

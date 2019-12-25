@@ -10,6 +10,7 @@ use WC\Valid;
 
 
 class Home extends \Pcan\Controller {
+use \Pcan\Mixin\ViewF3;
 
     private function query($qry) {
         $pdo = Server::db()->pdo();
@@ -58,8 +59,8 @@ EOQ;
     }
 
     function show($f3, $args) {
+        $view = $this->init_View($this->f3);
 
-        $view = $this->view;
         $view->sides = $this->sides();
         $view->main = $this->main();
         $view->events = $this->events();
@@ -80,7 +81,7 @@ EOQ;
     }
 
     function links($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $req = &$f3->ref('REQUEST');
 
 

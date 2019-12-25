@@ -7,9 +7,10 @@
  */
 
 class Location extends \Pcan\Controller {
+use \Pcan\Mixin\ViewF3;
 
     public function index($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->title = 'Julie\'s Catering';
         $view->assets(['bootstrap']);
         $view->content = 'map/index.phtml';

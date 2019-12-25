@@ -16,6 +16,7 @@ use Chimp\DB\ChimpEntry;
 
 
 class SignUp extends \Pcan\Controller {
+use \Pcan\Mixin\ViewF3;
 
     function errorSignup($msg)
     {
@@ -27,7 +28,7 @@ class SignUp extends \Pcan\Controller {
 
     function signupPost($f3, $args)
     {
-        $view = $this->view;
+        $view = $this->getView();
         $post = &$f3->ref('POST');
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
@@ -93,7 +94,7 @@ class SignUp extends \Pcan\Controller {
         else {
             // re-edit same data
             // show any errors
-            $view = $this->view;
+            $view = $this->getView();
             $view->email = $email;
             $view->title = "Edit Errors";
             $view->mbr = $member;
@@ -132,7 +133,7 @@ class SignUp extends \Pcan\Controller {
         if (!UserSession::https($f3)) {
             return;
         }
-        $view = $this->view;
+        $view = $this->getView();
         $view->title = "New Subscribe";
         $states = [
                 '' => '',
@@ -161,7 +162,7 @@ class SignUp extends \Pcan\Controller {
         if (!UserSession::https($f3)) {
             return;
         }
-        $view = $this->view;
+        $view = $this->getView();
         $view->email = '';
         $mbr = new Member();
         $mbr['state'] = 'NSW';
