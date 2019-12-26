@@ -43,6 +43,7 @@ class Controller {
         echo $this->view->render();
     }
 
+    
     function afterRoute() {
         // session becomes read only
         UserSession::shutdown();
@@ -60,9 +61,11 @@ class Controller {
     }
 
     public function __construct() {
+        $ctrl_time = microtime(true);
         $f3 = \Base::instance();
         $this->f3 = $f3;
         $this->php = $f3->get('php');
+        $f3->set('ctrl_time', $ctrl_time);
         $this->getUserSession();
     }
 
