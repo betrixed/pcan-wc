@@ -50,8 +50,12 @@ EOD;
         if (!$active) {
              $blog['title'] = "Not found { /$title }";
             $blog['article'] = "Missing link { /$title }";
+            $style_class = 'noclass';
         }
-        $v = $this->view;
+        else {
+            $style_class = $blog['style'];
+        }
+        $v = $this->getView();
         $briefTitle = $blog['title'];
         if (strlen($briefTitle) > 30) {
             $temp = explode("\n", wordwrap( $briefTitle, 30));
@@ -86,7 +90,7 @@ EOD;
         else {
              $v->content = 'blog/article.phtml';
         }
-        $v->assets(['bootstrap']);
+        $v->assets(['bootstrap', $style_class]);
         echo $v->render();
     }
 }

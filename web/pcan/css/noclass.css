@@ -6,13 +6,11 @@
 
 
 div.noclass {
-	font-size:1.3vmax;
+	
 	font-family:Tahoma, Verdana, Arial, sans-serif;
+        font-size:18pt;
         padding : 10px;
         background-color: whitesmoke;
-        border-color: darkolivegreen;
-        border-width: 3px;
-        border-style: outset;
 }
 
 div.noclass_p {
