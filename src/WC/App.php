@@ -106,10 +106,10 @@ class App extends \Prefab {
 
         // check for pre-processed routes cache
         $cache_routes =  $cfg->globals['routes_cache'] ?? true;
-        $routes_config = $sitepath . "/routes.php";
+        $routes_config = $sitepath . "routes.php";
         if ($cache_routes) {
             
-            $routes_cache = $temp . "/routes_cache.dat";
+            $routes_cache = $temp . "routes_cache.dat";
             if (!file_exists($routes_cache) || (filemtime($routes_config) > filemtime($routes_cache))) {
                 static::load_routes($f3, $routes_config);
                 file_put_contents($routes_cache, $f3->get('ROUTES'));
