@@ -109,10 +109,10 @@ class App extends \Prefab {
         $routes_config = $sitepath . "routes.php";
         if ($cache_routes) {
             
-            $routes_cache = $temp . "routes_cache.dat";
+            $routes_cache = $temp . "/routes_cache.dat";
             if (!file_exists($routes_cache) || (filemtime($routes_config) > filemtime($routes_cache))) {
                 static::load_routes($f3, $routes_config);
-                file_put_contents($routes_cache, $f3->get('ROUTES'));
+                file_put_contents($routes_cache, serialize($f3->get('ROUTES')));
             } else {
                 $start_time = microtime(true);
                 // seems to be factor of 10x faster, 0.08 ms vs 0.8 ms for routes parse
