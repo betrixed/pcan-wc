@@ -1,23 +1,5 @@
-<?php Use WC\Assets, WC\UserSession; ?>
-<!DOCTYPE html>
-<html>
-    <style>
-        label {
-            min-width:150px;
-            text-align:right;
-        }
-    </style>
-    <head>
-        <title>Schema View</title>
-        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
-        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>
-        <?= Assets::instance()->CssHeader(); ?>
-    </head>
-    <body>
-        <h3>Schema Script</h3>
-        <pre>
-<?= $script ?>
-        </pre>
-        <?= Assets::instance()->JsFooter(); ?>
-    </body>
-</html>
+<?php $this->layout('layout') ?>
+<h3>Schema Script</h3>
+<pre>
+    <?= $script ?>
+</pre>

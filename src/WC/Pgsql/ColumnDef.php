@@ -167,20 +167,20 @@ class ColumnDef extends NameDef {
         $this->translateType();
         
         $outs = '"' . strtolower($name) . '" ' . $this->type;
-        $size = is_null($this->size) ? 0 : $this->size;
+        $size = !isset($this->size) ? 0 : $this->size;
         if ($size > 0) {
             $outs .= '(' . $size . ')';
         }
-        $unsigned = is_null($this->unsigned) ? false : $this->unsigned;
+        $unsigned = !isset($this->unsigned) ? false : $this->unsigned;
         if ($unsigned) {
             //$outs .= ' unsigned';
         }
         
-        $collate = $this->collate ?? false;
+        $collate = !isset($this->collate) ? false : $this->collate;
         if (!empty($collate)) {
             //$outs .= ' COLLATE ' . $collate;
         }
-        $allow_null = $this->null ?? false;
+        $allow_null = !isset($this->null) ? false : $this->null;
         if (!$allow_null) {
             $outs .= ' NOT NULL';
         }
@@ -194,7 +194,7 @@ class ColumnDef extends NameDef {
          
          */
         
-        $default = $this->default ?? null;
+        $default = !isset($this->default) ? null : $this->default;
         if (is_string($default) && static::quotedType($this->type) 
                 && (strrpos($default, '()') === false)
                 && (strpos($default,'::') === false)

@@ -15,11 +15,6 @@ Use WC\Assets,
     </head>
     <body>
         <style>
-            label {
-                margin-right:15px;
-                min-width:150px;
-                text-align: right;
-            }
             input[type="submit"] {
                 margin-left:165px;
             }
@@ -190,5 +185,22 @@ Use WC\Assets,
                 evt.currentTarget.className += " is-active";
             }
         </script>
+        <footer class="page-footer">
+            <div class="columns" >
+       <div class="col-3">
+            <?php
+            $f3 = \Base::Instance();
+            echo( "Session as " . UserSession::sessionName() );
+            ?>
+        </div>
+        <div class="col-3"> 
+            &copy;&nbsp;<?= $f3->get('organization')?>
+
+        </div>
+        <div class="col-6">            
+            <?= \WC\App::end_stats($f3); ?>
+        </div>
+    </div>
+        </footer>
     </body>
 </html>

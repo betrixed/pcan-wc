@@ -1,0 +1,316 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Cont",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/michael/www/hub/private/vendor/betrixed/pcan",
+		"/home/michael/www/hub/private/vendor/betrixed/pcan/src",
+		"/home/michael/www/hub/private/vendor/betrixed/pcan/src/WC",
+		"/home/michael/www/hub/private/vendor/betrixed/pcan/src/WC/Mysql",
+		"/home/michael/www/hub/private/vendor/betrixed/pcan/src/WC/Pgsql"
+	],
+	"file_history":
+	[
+		"/home/michael/www/hub/private/vendor/betrixed/pcan/src/WC/Pgsql/ColumnDef.php",
+		"/home/michael/www/hub/private/vendor/betrixed/pcan/src/WC/Pgsql/IndexDef.php",
+		"/home/michael/www/sbo/web/index.php",
+		"/home/michael/www/sbo/private/vendor/betrixed/pcan/src/Pcan/Controller.php",
+		"/home/michael/www/sbo/private/vendor/betrixed/pcan/src/WC/UserSession.php",
+		"/home/michael/www/sbo/private/lib/bcrypt.php",
+		"/home/michael/www/sbo/private/app/wc/valid.php",
+		"/home/michael/www/sbo/private/vendor/betrixed/pcan/src/Pcan/Mixin/ViewF3.php",
+		"/home/michael/www/sbo/private/vendor/betrixed/pcan/src/WC/WConfig.php",
+		"/home/michael/www/sbo/private/vendor/betrixed/pcan/src/WC/App.php",
+		"/home/michael/www/sbo/private/vendor/bcosca/fatfree/lib/base.php",
+		"/home/michael/www/sbo/private/vendor/composer/ClassLoader.php",
+		"/home/michael/www/sbo/sbo.sublime-project",
+		"/home/michael/dev/php-src/Zend/zend_object_handlers.c",
+		"/home/michael/.cache/evolution/tmp/evolution-michael-xukwmt/attachment.dat",
+		"/home/michael/Documents/Getup/web-bot-preventer.txt",
+		"/home/michael/www/pcan-hide/web/index.php",
+		"/home/michael/www/pcan-hide/private/.gitignore",
+		"/home/michael/www/pcan-hide/private/src/WC/App.php",
+		"/home/michael/www/pcan-hide/private/src/WC/Dos.php",
+		"/home/michael/www/pcan-hide/private/web/index.php",
+		"/home/michael/www/pcan/private/vendor/composer/ClassLoader.php",
+		"/home/michael/www/pcan/private/composer.json",
+		"/home/michael/www/pcan/private/vendor/composer/autoload_namespaces.php",
+		"/home/michael/www/pcan/private/vendor/composer/autoload_psr4.php",
+		"/home/michael/www/pcan/private/vendor/composer/autoload_real.php",
+		"/home/michael/www/pcan/private/vendor/betrixed/pcan-fatfree/index.php",
+		"/home/michael/www/pcan/private/vendor/betrixed/pcan-fatfree/bootstrap.php",
+		"/home/michael/www/pcan/web/index.php",
+		"/home/michael/www/pcan/private/vendor/betrixed/pcan-fatfree/composer.json",
+		"/home/michael/www/pcan/private/vendor/composer/installed.json",
+		"/home/michael/www/pcan/private/vendor/composer/autoload_classmap.php",
+		"/home/michael/dev/insert into user_auth.sql",
+		"/home/michael/dev/testdb.txt",
+		"/home/michael/Documents/fossil-fuels/The alarming failure of climate change economics.txt",
+		"/home/michael/dev/recurive_query.sql",
+		"/home/michael/Documents/fossil-fuels/Simple_clear_wrong.txt",
+		"/home/michael/dev/dovecot.conf",
+		"/home/michael/dev/pgsql/recent_links.sql",
+		"/home/michael/dev/pgsql/upcoming_events.sql",
+		"/home/michael/Documents/fossil-fuels/Turn off the machines.txt",
+		"/home/michael/Documents/fossil-fuels/error_html_2.html",
+		"/home/michael/Documents/fossil-fuels/Cassandra_html_error.html",
+		"/home/michael/Documents/Getup/Dear Prime Minister (Mr Scott Morrison).txt",
+		"/home/michael/Documents/Getup/Magic Media Mirror of your scream.txt",
+		"/home/michael/Documents/Getup/Super wicked problem.txt",
+		"/home/michael/dev/pgsql/pgsql.sql",
+		"/home/michael/Documents/parracan/Goals_2019.txt",
+		"/home/michael/Documents/parracan/I don't approve of Origin's plans to frack NT.txt",
+		"/home/michael/Documents/parracan/Since civilisation supervises its own demise.html",
+		"/home/michael/Documents/parracan/world-can-meet-growing-food-demand.txt",
+		"/home/michael/Documents/russian/BetterThanUs/Every coin is sacred.txt",
+		"/home/michael/Documents/russian/BetterThanUs/S1E1_translation.txt",
+		"/home/michael/Documents/parracan/Since civilisation supervises its own demise.txt",
+		"/home/michael/dev/pcan_tables_indexes.sql",
+		"/home/michael/dev/mysql/upcoming_events.sql",
+		"/home/michael/dev/upcoming_events.sql",
+		"/home/michael/dev/pcandump.sql",
+		"/home/michael/dev/recent_links.sql",
+		"/home/michael/Documents/fossil-fuels/typical.txt",
+		"/home/michael/Documents/fossil-fuels/conversation.txt",
+		"/home/michael/Documents/fossil-fuels/Directed anger at Greta is a measure of her success.txt",
+		"/usr/include/php72/Zend/zend_iterators.h",
+		"/usr/include/php72/Zend/zend.h",
+		"/home/michael/dev/PHP-CPP/zend/objectimpl.h",
+		"/home/michael/Documents/fossil-fuels/Extra-extra.txt",
+		"/home/michael/Documents/fossil-fuels/my.html",
+		"/home/michael/Downloads/Avengers Endgame (2019) [1080p] [BDRIP][SUBPL]/Avengers Endgame (2019) [1080p] [BDRIP][SUBPL].txt",
+		"/home/michael/abs/php70-phalcon/PKGBUILD",
+		"/home/michael/Documents/Getup/School Strikers under attack.txt",
+		"/home/michael/Documents/russian/BetterThanUs/Robodebt.txt",
+		"/home/michael/Documents/fossil-fuels/Developed Nations at war with nearly everything.txt",
+		"/home/michael/Documents/fossil-fuels/Australia agreed to “recognise” but not “endorse”",
+		"/home/michael/Documents/Getup/Why would a university educated retired profession.txt",
+		"/home/michael/www/brick/private/app/schema/init_database.sql",
+		"/home/michael/.cache/.fr-oW0IjE/grid/simple-grid.css",
+		"/home/michael/dev/sbo.sql",
+		"/home/michael/www/phalcon-pcan/private/Pcan/Controllers/UserControlController.php",
+		"/home/michael/www/phalcon-pcan/private/Pcan/Controllers/UsersController.php",
+		"/home/michael/Documents/Greens/ClimateStrike.txt",
+		"/home/michael/Documents/Greens/We are the sharks.txt",
+		"/home/michael/Documents/Greens/NEPM for Environmental Justice Australia.txt",
+		"/home/michael/bin/screens.lua",
+		"/home/michael/Documents/U3A/Certainty and memory.txt",
+		"/home/michael/Documents/U3A/JulianAssangeAndTheEmpireOfLies.txt",
+		"/home/michael/linux_backup/michael/dev/lua/screens.lua",
+		"/home/michael/bin/home3.lua",
+		"/home/michael/www/pcan/private/app/schema/upgrades_2019_07.sql",
+		"/home/michael/Documents/fossil-fuels/No future for more.txt",
+		"/home/michael/Documents/fossil-fuels/No to GHD",
+		"/home/michael/Documents/fossil-fuels/Final Rapture.txt",
+		"/home/michael/Documents/fossil-fuels/Robo-debt family crusher.txt",
+		"/home/michael/Documents/Getup/people-smugglers.txt",
+		"/home/michael/Documents/Getup/Parracan Meeting 2019-06-27.txt",
+		"/home/michael/Documents/Getup/Richest Countries in the world.txt",
+		"/home/michael/Documents/Getup/reason in a dark time.txt",
+		"/home/michael/Documents/Getup/moonlanding_hoax_not.txt",
+		"/home/michael/Documents/Getup/NSW ALP in thrall of Right Wing Unions.txt",
+		"/home/michael/Documents/Getup/Fall of Australia.txt",
+		"/home/michael/Documents/Getup/Very energy intensive and polluting rare earth mining.txt",
+		"/home/michael/Documents/Getup/flat tax.txt",
+		"/home/michael/Documents/fossil-fuels/Trump as ringmaster.txt",
+		"/home/michael/Documents/fossil-fuels/Bioeconomics.txt",
+		"/home/michael/Documents/Getup/Parracan Planning meeting - 2019-07-21.txt",
+		"/home/michael/.cache/evolution/tmp/evolution-michael-VP4uyz/Removed_Attachment.txt",
+		"/home/michael/.cache/evolution/tmp/evolution-michael-cOOo3H/July_Account_Statement.htm",
+		"/home/michael/Documents/fossil-fuels/Every economic process degrades the Earth.txt",
+		"/home/michael/Documents/Getup/Samantha Mackay  2019_07_19.txt",
+		"/home/michael/Documents/Getup/swarm plague.txt",
+		"/home/michael/Documents/Getup/To the attention of the Emissions Reduction Assurance.txt",
+		"/home/michael/Documents/fossil-fuels/Bristling the world with cancerous bases.txt",
+		"/home/michael/Documents/fossil-fuels/Companies List.txt",
+		"/home/michael/Documents/Getup/Andrew Gaines & Geoff Hollway.txt",
+		"/home/michael/Documents/fossil-fuels/Apology for Adani campaign.txt",
+		"/home/michael/Documents/fossil-fuels/RichGettingAway.txt",
+		"/home/michael/Documents/parracan/I watched the \"Leadership\" debate live on 7.txt",
+		"/home/michael/pcan-2019-03-12.sql",
+		"/home/michael/Documents/russian/carbon law.txt",
+		"/home/michael/Documents/fossil-fuels/Ethnoi and Motherhood.txt",
+		"/home/michael/Documents/parracan/vm machine.com",
+		"/home/michael/Documents/russian/StPetersburg_detective.txt",
+		"/home/michael/Documents/parracan/accelaration.html",
+		"/home/michael/Documents/parracan/H2-meeting.txt",
+		"/home/michael/Documents/parracan/tiptxt.html",
+		"/home/michael/seeing like a state.txt",
+		"/home/michael/Documents/Getup/The Prime Ministers Prayer.txt",
+		"/home/michael/Documents/Getup/Australia is in Afghanistan.txt",
+		"/home/michael/Documents/Getup/Extinction = Global population X Human Irrationality.txt"
+	],
+	"find":
+	{
+		"height": 37.0
+	},
+	"find_in_files":
+	{
+		"height": 259.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 37.0
+	},
+	"input":
+	{
+		"height": 52.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 144.0
+	},
+	"output.xdebug":
+	{
+		"height": 145.0
+	},
+	"pinned_build_system": "",
+	"project": "pcan.sublime-project",
+	"replace":
+	{
+		"height": 70.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 291.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

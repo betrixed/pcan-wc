@@ -77,11 +77,11 @@ class PlatesForm implements ExtensionInterface {
             $out .= '<div class="' . $wrapdiv . '">';
             unset($pset['div']);
         }
-        $text = $pset['label'] ?? '';
+        $text = isset($pset['label']) ?  $pset['label'] : '';
         if (!empty($text)) {
             unset($pset['label']);
         } else {
-            $text = $pset['text'] ?? '';
+            $text = isset($pset['text']) ?  $pset['text'] : '';
         }
         if (!empty($text)) {
             unset($pset['text']);

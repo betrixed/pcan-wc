@@ -16,6 +16,8 @@ class Html {
     public $url;    // used as base URL 
     public $content;  // name of included content file
     public $f3;
+    public $path;
+    public $ext;
     
     static public $browser;
     
@@ -104,15 +106,18 @@ class Html {
         if (is_null($path)) {
             $path = $f3->get('sitepath') . 'views';
         }
+        if (is_null($ext)) {
+            $ext = 'phtml';
+        }
+        $this->path = $path;
+        $this->ext = $ext;
         //$f3->set('UI', $path . '/|' . $f3->get('pkg') . 'views/');
         
         //$agent = $f3->get('AGENT');
        
     }
-    /**
-     * @return string  rendered browser HTML content
-     */
-    public function render() {
+    public function final_headers() {
+        $this->f3->set('render_time', microtime(true));
         // see if UserSession exists, and has flash messages
         if (UserSession::hasInstance()) {
             $us = UserSession::instance();
@@ -120,8 +125,12 @@ class Html {
             $this->flash = $us->getMessages(); // clears messages
             $us->write(); // finalize session now
         }
-
-        $this->f3->set('render_time', microtime(true));
+    }
+    /**
+     * @return string  rendered browser HTML content
+     */
+    public function render() {
+        $this->final_headers();
         $plate = \Template::instance();
         TagViewHelper::register($plate);
         $result = $plate->render($this->layout);

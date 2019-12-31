@@ -10,13 +10,16 @@ namespace Pcan\Mixin;
 use \WC\UserSession;
 
 trait Auth {
-
     /**
      * 
      * @return string
      */
-    public function getAllowRole() {
-        return 'Editor';
+    function denied() {
+        // Assume a view trait exists
+        $view = $this->getView();
+        $view->content = 'home/error.phtml';
+        $view->title = 'Error';
+        echo $this->view->render();
     }
     /**
      * 

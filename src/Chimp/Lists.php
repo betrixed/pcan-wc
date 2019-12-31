@@ -61,16 +61,14 @@ function gen_object(string &$outs, $prop, $obj) {
     }
     $outs .= "</ul>" . PHP_EOL;
 }
-class Lists extends \WC\Controller {
+class Lists extends \Pcan\Controller {
+use \Pcan\Mixin\Auth;
+use \Pcan\Mixin\ViewF3;
     //put your code here
     public function getAllowRole() {
         return 'Chimp';
     }
-    public function beforeRoute() {
-        if (!$this->auth()) {
-            return false;
-        }
-    }
+
     public function index($f3, $args) {
         
 
@@ -81,7 +79,7 @@ class Lists extends \WC\Controller {
 
         $total = $stats->member_count + $stats->unsubscribe_count + $stats->cleaned_count;*/
 
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'chimp/lists.phtml';
         $view->data = ChimpLists::allLists();
         $view->assets(['bootstrap']);
@@ -89,7 +87,7 @@ class Lists extends \WC\Controller {
     }
     
     private function member_list($f3, $args) {
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'chimp/members.phtml';
         $view->assets(['bootstrap']);
        
@@ -133,7 +131,7 @@ EOD;
             $page = 1;
         }
         $paginator = new PageInfo($page, $pgsize, $results, $total);
-        $view = $this->view;
+        $view = $this->getView();
         $view->page = $paginator;
         $view->url = "/chimp/mlist/$id";
         $view->pgsize = $pgsize;

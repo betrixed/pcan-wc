@@ -5,42 +5,15 @@ namespace Pcan;
 use WC\UserSession;
 
 class Controller {
-
+    // fat-free provides for __constructor
     public $f3;
-    protected $php;
-    protected $ui;
-    private $webdir;
-    private $us;
+    public $args;
 
-
-    /*
-      function reroute($url) {
-      if ( \Registry::exists('UserSession')) {
-      $us = UserSession::instance();
-      $us->write(); // finalize session now
-      }
-      $this->f3->reroute($url);
-      }
-     */
-
-    /**
-     * Try to return existing UserSession object
-     * @return type
-     */
-    public function getUserSession()  {
-        if (is_null($this->us)) {
-            $this->us = UserSession::read();
-        }
-        return $this->us;
+    public function getAllowRole() {
+        return 'Editor';
     }
 
-    function denied() {
-        $view = $this->getView();
-        $view->content = 'home/error.phtml';
-        $view->title = 'Error';
-        $view->assets('bootstrap');
-        echo $this->view->render();
-    }
+    
 
     
     function afterRoute() {
@@ -59,13 +32,11 @@ class Controller {
         UserSession::flash($msg, $extra, $status);
     }
 
-    public function __construct() {
+    public function __construct($f3, $args) {
         $ctrl_time = microtime(true);
-        $f3 = \Base::instance();
         $this->f3 = $f3;
-        $this->php = $f3->get('php');
+        $this->args = $args;
         $f3->set('ctrl_time', $ctrl_time);
-        $this->getUserSession();
     }
 
 }

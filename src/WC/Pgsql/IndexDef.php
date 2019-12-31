@@ -171,7 +171,7 @@ class IndexDef extends NameDef {
      * @return string 
      */
     public function getIndexType() {
-        return $this->type ?? null;
+        return !isset($this->type) ? null : $this->type;
     }
 
     /**
@@ -179,7 +179,7 @@ class IndexDef extends NameDef {
      * @return array
      */
     public function getIndexColumns() {
-        return $this->columns ?? null;
+        return !isset($this->columns) ? null : $this->columns;
     }
 
 }

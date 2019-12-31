@@ -12,7 +12,7 @@
     </tb>
     <tb k='bulma'>
         <a k='css'>
-            <s>https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css</s>
+            <s>/node_modules/bulma/css/bulma.min.css</s>
         </a>
     </tb>
     <tb k='select'>
@@ -31,9 +31,6 @@
     <tb k='bootstrap'>
         <a k='css'>
             <s>/node_modules/bootstrap/dist/css/bootstrap.min.css</s>
-            <s>@theme/css/elyxir.css</s>
-            <s>@theme/css/novosti.css</s>
-            <s>@theme/css/concert.css</s>
             <s>@theme/css/sbo.css</s>
         </a>
         <a k='js'>
@@ -42,6 +39,9 @@
         </a>
     </tb>
     <tb k='default'>
+        <a k='css'>
+        <s>@theme/css/sbo.css</s>
+        </a>
         <a k='requires'>
             <s>bulma</s>
         </a>

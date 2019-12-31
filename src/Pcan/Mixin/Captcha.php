@@ -24,7 +24,7 @@ trait Captcha {
         if ($captcha['enabled']) {
             return Valid::recaptcha($google['secret'], $post['g-recaptcha-response']);
         }
-        else { // fake it
+        else { // fake it, already logged in verified
             return ['success' => true, 'errorcode' => 0];
         }
     }
@@ -41,7 +41,7 @@ trait Captcha {
     public function xcheckView() {
         $f3 = $this->f3;
         $view = $this->view;
-        $us = $this->getUserSession();
+        $us = UserSession::read();
         if (is_null($us)) {
             $us = UserSession::guestSession();
         }
@@ -51,7 +51,10 @@ trait Captcha {
     }
     // check result of form submission for cross scripting
     public function xcheckResult(&$post) {
-        $us = $this->getUserSession(); 
+        $us = UserSession::read();
+        if (is_null($us)) {
+            return false;
+        }
         $xcheck = $us->getKey("signup-xcheck");
         if (!empty($xcheck)) {
             return ($xcheck === $post['xcheck']);

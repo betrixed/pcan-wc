@@ -1,0 +1,37 @@
+<?php
+
+Use WC\Assets,
+    WC\UserSession;
+?>
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Schema</title>
+        <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>
+        <?= Assets::instance()->CssHeader(); ?>
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    </head>
+    <body>
+        <?= $this->section('content'); ?>
+        <footer class="page-footer">
+            <div class="columns" >
+       <div class="column">
+            <?php
+            $f3 = \Base::Instance();
+            echo( "Session as " . UserSession::sessionName() );
+            ?>
+        </div>
+        <div class="column"> 
+            &copy;&nbsp;<?= $f3->get('organization')?>
+        </div>
+        <div class="column is-half">            
+            <?= \WC\App::end_stats($f3); ?>
+        </div>
+    </div>
+        </footer>
+        <?= Assets::instance()->JsFooter(); ?>
+
+    </body>
+</html>

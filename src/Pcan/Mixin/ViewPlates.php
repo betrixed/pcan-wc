@@ -13,9 +13,15 @@ use Pcan\HtmlPlates;
  *
  * @author michael rynn
  */
-class ViewPlates {
+trait ViewPlates {
    public $view;
-    
+   
+    public function getView() {
+        if (is_null($this->view)) {
+            $this->init_View($this->f3);
+        }
+        return $this->view;
+    }
     public function init_View($f3, $path = null, $ext = null) {
         $view = new HtmlPlates($f3, $path, $ext);
         $f3->set('view', $view);

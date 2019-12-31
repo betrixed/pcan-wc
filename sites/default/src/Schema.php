@@ -1,38 +1,20 @@
 <?php
 
-use League\Plates\Engine;
 use WC\DB\Server;
 use WC\DB\Script;
 use WC\Dos;
 use WC\XmlPhp;
-use iamcal\SQLParser;
 use WC\App;
 use WC\Assets;
 use WC\Valid;
-use Pcan\HtmlPlates;
 use Pcan\DB\UserAuth;
 
-class AdaptXml extends XmlPhp {
-
-    public $orig;
-    public $adapt;
-
-    public function __construct($orig, $adapt) {
-        $this->orig = $orig;
-        $this->adapt = $adapt;
-    }
-
-    public function makeClass($c) {
-        $c = str_replace($this->orig, $this->adapt, $c);
-        return new $c();
-    }
-
-}
+use WC\AdaptXml;
 
 class Schema extends \Pcan\Controller {
-
+use \Pcan\Mixin\ViewPlates;
     public $sitedir;
-    public $engine;
+
 
     public function getSchemaList() {
         $files = [];
@@ -52,10 +34,8 @@ class Schema extends \Pcan\Controller {
         }
         $adapters = ['Mysql' => 'Mysql', 'Pgsql' => 'Pgsql'];
 
-        Assets::instance()->add('bulma');
-
-        $view = new HtmlPlates($f3);
-        $view->layout = 'index';
+        $view = $this->getView();
+        $view->layout = 'input';
         $view->add(['list' => $list, 'keyed' => $keyed, 'adapters' => $adapters]);
 
         echo $view->render();
@@ -116,15 +96,18 @@ class Schema extends \Pcan\Controller {
         $report = new DiffReport();
         $report->doCompareSchema($s1, $s2);
 
-        $engine = $this->init($f3);
-        echo $engine->render('compare', ['script' => $report->log]);
+        $view = $this->getView();
+        $view->layout = 'compare';
+        $view->add(['script' => $report->log]);
+        
+        echo $view->render();
     }
 
     public function generate($f3, $params) {
-        $view = new HtmlPlates($f3);
+        $view = $this->getView();
         $view->layout = 'schema';
 
-        $version = $params['v'] ?? null;
+        $version = isset($params['v']) ? $params['v'] : null;
 
         $path = App::instance()->getSchemaDir() . $version . '.schema';
 
@@ -137,7 +120,7 @@ class Schema extends \Pcan\Controller {
 
         $cfg->generate($script, ['alter' => true, 'references' => true]);
 
-        $view->values['script'] = $script;
+        $view->add(['script' => $script]);
 
         echo $view->render();
     }
@@ -246,7 +229,7 @@ class Schema extends \Pcan\Controller {
      * @param type $params
      */
     public function initdb($f3, $params) {
-        $view = new HtmlPlates($f3);
+        $view = $this->getView();
         $view->layout = 'schema';
 
         $p = &$f3->ref('POST');
@@ -321,7 +304,7 @@ class Schema extends \Pcan\Controller {
             
             // make a new user (email is essential)
         
-        $view->values['script'] = $msg;
+        $view->add(['script' => $msg]);
 
         echo $view->render();
     }
