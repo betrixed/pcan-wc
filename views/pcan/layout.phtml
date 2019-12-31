@@ -33,19 +33,21 @@
     </div>
     </true>
 </check>
-<footer class='footer foot-wrap' style="font-size:12pt;">
+
+<footer class='page-footer font-small indigo' >
     <div class="row" >
-        <div class="col-2 text-muted" >
+       <div class="col text-muted">
             {~
+            @f3 = \Base::Instance();
             echo( "Session as " . UserSession::sessionName() );
             ~}
         </div>
-        <div class="col-4 text-muted">&copy;  | 
-            {~
-            @out = " Response time " . sprintf('%.2f ms', (microtime(TRUE) - @_SERVER.REQUEST_TIME_FLOAT) * 1000);
-            @out .= " | Memory " . sprintf('%.2f MiB', memory_get_peak_usage() / 1024 / 1024);
-            echo(@out);
-            ~}
+        <div class="col text-muted"> 
+            &copy;&nbsp;{{@f3->get('organisation')}}
+
+        </div>
+        <div class="col text-muted">            
+            {{ \WC\App::end_stats(@f3) }}
         </div>
     </div>
 </footer>

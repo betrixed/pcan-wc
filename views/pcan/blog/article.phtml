@@ -14,8 +14,10 @@
         margin:10px;
     }
     div#article-box {
-        margin:10px;
-        background-color:lightyellow;
+        border-width:0;
+    }
+    div#metadata {
+        background-image: url( "{{ @theme }}/tile-fog.png" );
     }
 </style>
 <div class='container-fluid'>
@@ -41,7 +43,7 @@
     </div>
     </div>
     <check if='{{ count(@metadata) > 0 }}'><true>
-        <div class='container-fluid' id='tags' style='font-size:0.6em;'>
+        <div class='container-fluid' id='metadata' style='font-size:0.6em;'>
             <div class='table'>
                 <repeat group='{{ @metadata }}' value='{{ @mtag }}' > 
                     <check if='{{ @mtag.display == 1 && strlen(@mtag.content) >0 }}'><true>

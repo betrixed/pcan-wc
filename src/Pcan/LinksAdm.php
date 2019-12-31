@@ -131,9 +131,10 @@ class LinksAdm extends Controller {
         $link = new Links();
         $post = &$f3->ref('POST');
         $this->assignFromPost($post, $link);
-
+        
         try {
-            $this->view->link = $link;
+            $view = $this->getView();
+            $view->link = $link;
             $id = $link['id'];
             if (isset($id) && $id !== 0) {
                 $link->update();

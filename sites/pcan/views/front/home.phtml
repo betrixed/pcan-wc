@@ -1,6 +1,7 @@
 <wc:init></wc:init>
 {~
-@view = \Base::instance()->get('view');
+@f3 = \Base::instance();
+@view = @f3->get('view');
 @hasEvents = !empty(@view->events);
 ~}
 

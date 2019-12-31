@@ -59,7 +59,7 @@ EOQ;
     }
 
     function show($f3, $args) {
-        $view = $this->init_View($this->f3);
+        $view = $this->getView();
 
         $view->sides = $this->sides();
         $view->main = $this->main();

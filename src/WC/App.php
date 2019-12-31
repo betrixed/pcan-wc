@@ -59,8 +59,10 @@ class App extends \Prefab {
     public function __construct() {
         $this->f3 = \Base::Instance();
     }
+
     // Load routes from .php config file and pre-process for cache
-    static public function load_routes($f3, $path) {   
+    static public function load_routes($f3, $path) {
+
         $routes = include $path;
         if (isset($routes)) {
             foreach ($routes as $k => $v) {
@@ -71,6 +73,7 @@ class App extends \Prefab {
             throw new Exception('No Routes were loaded');
         }
     }
+
     public function init($f3, $sitepath) {
         $this->f3 = $f3;
         $cli = php_sapi_name();
@@ -109,6 +112,7 @@ class App extends \Prefab {
             $dsn = "folder=" . $temp . 'cache/';
             $f3->set('CACHE', $dsn);
         }
+
         self::clear_cache($f3, '@');
         
         $start_time = microtime(true);
@@ -129,14 +133,17 @@ class App extends \Prefab {
             } else {
                 // seems to be factor of 10x faster, 0.08 ms vs 0.8 ms for routes parse
                 $f3->set('ROUTES',unserialize(file_get_contents($routes_cache)));
-                $f3->set('sorted_routes', true); // flag as pre-sorted
+                // flag as pre-sorted
+                $f3->set('sorted_routes', true); 
             }
         }
         else {
             static::load_routes($f3, $routes_config);
+            // delay sorting for fatfree
         }
         $end_time = microtime(true);
         $f3->set('routes_load_time', $end_time - $start_time);    
+
         $site_init = $sitepath . "/bootstrap.php";
         if (file_exists($site_init)) {
             require $site_init;
@@ -159,7 +166,8 @@ class App extends \Prefab {
         $sitepath = $php . "sites/" . $folder . '/';
 
         // If running from composer vendor path, pkg_path !== php 
-        $pkg_path = dirname(dirname(__DIR__)) . '/';  //  <path>/src/WC
+        // PHP5 has no depth parameter
+        $pkg_path = dirname(dirname(__DIR__)) . '/';  //  <path>/src/
 
         if (!file_exists($sitepath)) {
             // assume a setup scenario, from inside a composer package
@@ -179,6 +187,31 @@ class App extends \Prefab {
         return $app;
     }
 
+    /**
+     * String for timing stats during request response
+     * LR - load routes
+     * R - Routing till controller called
+     * C - Render view called
+     * V - View render
+     * Total -  request to end render
+     * @return string
+     * 
+     */
+    static public function end_stats($f3) : string
+    {
+        $end_time = microtime(true);
+        $render_start = $f3->get('render_time');
+        $ctrl_time = $f3->get('ctrl_time');
+        $request_start = $f3->get('SERVER.REQUEST_TIME_FLOAT');
+        $route_time = ($ctrl_time - $request_start)*1000.0;
+        $ctrl = ($render_start - $ctrl_time) * 1000.0;
+        $render = ($end_time - $render_start) * 1000.0;
+        $total = ($end_time - $request_start) * 1000.0;
+        $routes = $f3->get('routes_load_time')*1000.0;
+        return sprintf('%.2f MB, ', memory_get_peak_usage() / 1024 / 1024) 
+            . sprintf('Time LR %.2f R %.2f C %.2f V %.2f Total %.2f ms',  $routes, $route_time, $ctrl, $render, $total);
+        
+    }
     /** For hiding try-catch for run */
     public function run() {
         try {

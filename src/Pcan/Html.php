@@ -120,9 +120,13 @@ class Html {
             $this->flash = $us->getMessages(); // clears messages
             $us->write(); // finalize session now
         }
+
+        $this->f3->set('render_time', microtime(true));
         $plate = \Template::instance();
         TagViewHelper::register($plate);
-        return $plate->render($this->layout);
+        $result = $plate->render($this->layout);
+        return $result;
+        
     }
     public function assets($items) {
         $bundles = Assets::instance();
