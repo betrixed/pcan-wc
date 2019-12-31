@@ -3,7 +3,6 @@
 namespace Pcan;
 
 use WC\UserSession;
-use League\Plates\Engine;
 
 class Controller {
 
@@ -36,8 +35,9 @@ class Controller {
     }
 
     function denied() {
-        $view = $this->view;
+        $view = $this->getView();
         $view->content = 'home/error.phtml';
+        $view->title = 'Error';
         $view->assets('bootstrap');
         echo $this->view->render();
     }

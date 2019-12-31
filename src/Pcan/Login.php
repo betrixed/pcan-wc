@@ -39,7 +39,7 @@ use Mixin\ViewF3;
     function checkout($f3, $args)
     {
         $ud = UserSession::read();
-        $view = $this->view;
+        $view = $this->getView();
         if (!empty($ud)) {
             $ud->wipe();
             $view->content = 'home/logout.phtml';

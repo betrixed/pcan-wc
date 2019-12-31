@@ -197,7 +197,7 @@ class App extends \Prefab {
      * @return string
      * 
      */
-    static public function end_stats($f3) : string
+    static public function end_stats($f3) 
     {
         $end_time = microtime(true);
         $render_start = $f3->get('render_time');

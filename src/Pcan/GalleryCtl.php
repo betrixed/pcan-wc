@@ -25,8 +25,8 @@ use Mixin\ViewF3;
         $f3 = $this->f3;
         $this->galleryPath = $f3->get('gallery'); // somewhere in site settings
         
-        $view = $this->init_View($f3);
-        $view->nav = null;
+        $view = $this->getView();
+        //$view->nav = null;
     }
 
     protected function getGalleryPath() {
@@ -56,7 +56,7 @@ use Mixin\ViewF3;
     
     
 
-    public function view($f3, $args) {
+    public function show($f3, $args) {
         $path = $args['name'];
         $params = &$f3->ref('REQUEST');
         $vname = 'gallery/view.phtml';
