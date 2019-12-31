@@ -5,7 +5,12 @@ use WC\NameDef;
 
 class ColumnDef extends NameDef {
 
-    static public function get_type_size($type) : array
+    /**
+     * 
+     * @param type $type
+     * @return array
+     */
+    static public function get_type_size($type) 
     {
         $match = null;
         $test = strtolower($type);
@@ -25,8 +30,12 @@ class ColumnDef extends NameDef {
         return $def;
     }
     
-     
-    static public function quotedType($type) : bool
+     /**
+      * 
+      * @param type $type
+      * @return bool
+      */
+    static public function quotedType($type) 
     {
         $typ = strtoupper($type);
         switch($typ) {
@@ -158,11 +167,11 @@ class ColumnDef extends NameDef {
         $this->translateType();
         
         $outs = '"' . strtolower($name) . '" ' . $this->type;
-        $size = $this->size ?? 0;
+        $size = is_null($this->size) ? 0 : $this->size;
         if ($size > 0) {
             $outs .= '(' . $size . ')';
         }
-        $unsigned = $this->unsigned ?? false;
+        $unsigned = is_null($this->unsigned) ? false : $this->unsigned;
         if ($unsigned) {
             //$outs .= ' unsigned';
         }

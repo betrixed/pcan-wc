@@ -28,19 +28,24 @@ class NameDef implements \ArrayAccess {
         $this->name = $val;
     }
 
-    public function offsetExists($offset): bool {
+    /**
+     * 
+     * @param type $offset
+     * @return bool
+     */
+    public function offsetExists($offset) {
         return isset($this->$offset);
     }
 
     public function offsetGet($offset) {
-        return $this->$offset ?? null;
+        return is_null($this->$offset) ?  null : is_null($this->$offset);
     }
 
     public function offsetSet($offset, $value) {
         $this->$offset = $value;
     }
 
-    public function offsetUnset($offset): void {
+    public function offsetUnset($offset)  {
         $this->$offset = null;
     }
 
@@ -101,7 +106,7 @@ class NameDef implements \ArrayAccess {
      * @param type $key
      * @return array
      */
-    static public function keyval($input, $key): array {
+    static public function keyval($input, $key)  {
         $result = [];
         foreach ($input as $val) {
             $result[] = $val[$key];

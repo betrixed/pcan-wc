@@ -195,7 +195,7 @@ EOS;
         return $outs;
     }
 
-    public function generate(Script $script, array $stage) {
+    public function generate( $script,  $stage) {
         if (array_key_exists('drop-tables', $stage)) {
             $script->add('DROP TABLE IF EXISTS `' . $this->name . '`' );
             return;
@@ -208,7 +208,7 @@ EOS;
             if (!empty($this->options)) {
                 foreach ($this->options as $key => $value) {
                     if ($key === 'auto_increment') {
-                        $allow = $stage['auto_inc'] ?? false;
+                        $allow = is_null($stage['auto_inc']) ? false : $stage['auto_inc'];
                         if (!$allow)
                             continue;
                     }

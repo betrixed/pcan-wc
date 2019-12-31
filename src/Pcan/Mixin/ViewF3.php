@@ -18,7 +18,7 @@ trait ViewF3 {
         }
         return $this->view;
     }
-    public function init_View($f3) : Html {
+    public function init_View($f3)  {
         $view = new Html($f3);
         $f3->set('view', $view);
         $view->usrSess = $this->getUserSession();

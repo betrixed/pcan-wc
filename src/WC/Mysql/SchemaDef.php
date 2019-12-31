@@ -49,7 +49,7 @@ class SchemaDef extends \WC\DB\AbstractDef {
         }
     }
 
-    public function generate(Script $script, array $stage) {
+    public function generate( $script,  $stage) {
         $tables = $this->tables;
 
         uksort($tables, self::SORT_FN);

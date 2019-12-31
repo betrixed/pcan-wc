@@ -14,5 +14,5 @@ namespace WC\DB;
  * @author michael
  */
 abstract class  AbstractDef extends \WC\NameDef {
-    abstract public function generate(Script $script, array $stages);
+    abstract public function generate( $script, $stages);
 }

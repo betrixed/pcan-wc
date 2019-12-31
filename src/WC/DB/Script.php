@@ -58,6 +58,7 @@ class Script {
         try {
             foreach($this->log as $text) {
                 if (substr($text,0,2) === '--') {
+                    $i++;
                     continue;
                 }
                 $db->exec($text);

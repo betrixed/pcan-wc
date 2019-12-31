@@ -185,7 +185,7 @@ class UserSession extends \Prefab {
       *  Static  read returns and sets instance
       * @return UserSession or null
       */
-    static public function read() : ?UserSession {
+    static public function read()  {
         //$s1 = session_status();
         //$id = session_id();
         //$name = session_name();
@@ -202,15 +202,19 @@ class UserSession extends \Prefab {
         }
         return $us;
     }
-    // Make a UserSession become instance as Guest
-    static public function guestSession() : UserSession {
+    /**
+        @return UserSession
+    */
+    static public function guestSession()  {
             $us = UserSession::instance();
             $us->setGuest();
             $us->write();
             return $us;
     }
-
-    static public function activate() : UserSession {
+/**
+        @return UserSession
+    */
+    static public function activate()  {
         //$s1 = session_status();
         //$sess = static::session();
         //if (! \Registry::exists(__CLASS__)) {

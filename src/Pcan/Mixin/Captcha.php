@@ -15,9 +15,9 @@ use WC\UserSession;
  */
 trait Captcha {
 /// Retrieve google recaptch result from post array reference
-    public function captchaResult(&$post) : array {
+    public function captchaResult(&$post) {
         $f3 = $this->f3;
-        $captcha = &$f3->ref('secrets.Recaptcha');
+        $captcha = $f3->get('secrets.Recaptcha');
         if (UserSession::isLoggedIn('User')) {
             $captcha['enabled'] = false;
         }

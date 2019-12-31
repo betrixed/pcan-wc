@@ -8,15 +8,25 @@ namespace Pcan;
 use WC\DB\Server;
 use WC\UserSession;
 use WC\WConfig;
+use WC\AdaptXml;
+
 use Pcan\DB\MenuItem;
 use Pcan\DB\BlogCat;
 use Pcan\Models\MenuTree;
 
-
-class InitMenus
+/**
+ * Use in CLI mode, 
+ * pre-configure menu views
+ */
+class InitMenus extends \Pcan\Controller
 {
 
     private $navbar;
+
+    public function configure($f3, $args) {
+        $path = $f3->get('sitepath');
+        $this->doAll($path);
+    }
 
     /**
      * Create a new menu item, provided array values, return new record key
@@ -76,8 +86,17 @@ class InitMenus
 
     function create_menu_table()
     {
+        $db = Server::db();
+        $adapter = $db->driver();
+        
+        if ($adapter === 'mysql') {
+            $rdr = new AdaptXml('Pgsql', 'Mysql');
+        } else {
+            $rdr = new AdaptXml('Mysql', 'Pgsql');
+        }
+
         $path = \Base::Instance()->get('sitepath') . 'schema/phub_v1.schema';
-        $schema = WConfig::fromXml($path);
+        $schema = $rdr->parseFile($path);
         
         $tdef = $schema->getTable('menu_item');
         $script = new \WC\DB\Script();
@@ -87,7 +106,7 @@ class InitMenus
                 ['alter' => true, 'indexes' => true, 'auto_inc' => true]
         ];
         foreach( $actions as $stage) {
-            $tdef->toSql($script, $stage);
+            $tdef->generate($script, $stage);
         }
         echo $script;
         $script->run(Server::db());

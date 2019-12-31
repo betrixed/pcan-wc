@@ -30,31 +30,31 @@ class WConfig extends \stdClass implements \ArrayAccess {
     }
 
     // create 
-    static public function fromPhp(string $filename) {
+    static public function fromPhp( $filename) {
         $values = require $filename;
         return self::fromArray($values);
     }
-    static public function fromArray(array $a) {
+    static public function fromArray( $a) {
         $cfg = new WConfig();
         return $cfg->addArray($a);
     }
-    static public function fromXml(string $filename)
+    static public function fromXml( $filename)
     {
         $xml = new XmlPhp();
         return $xml->parseFile($filename);
     }
-    public function addXml(string $filename) {
+    public function addXml( $filename) {
         $xml = new XmlPhp($this);
         return $xml->parseFile($filename);
     }
-    public function addArray(array $root) {
+    public function addArray( $root) {
         foreach($root as $key => $val) {
             $this->$key = $val;
         }
         return $this;
     }
     
-    public function offsetExists( $offset ) : bool {
+    public function offsetExists( $offset ) {
         return isset($this->$offset);
     }
     
@@ -66,7 +66,7 @@ class WConfig extends \stdClass implements \ArrayAccess {
         $this->$offset = $value;
     }
     
-    public function offsetUnset($offset) : void {
+    public function offsetUnset($offset) {
         $this->$offset = null;
     }
 }

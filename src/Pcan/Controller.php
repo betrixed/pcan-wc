@@ -7,7 +7,6 @@ use League\Plates\Engine;
 
 class Controller {
 
-    public $view;
     public $f3;
     protected $php;
     protected $ui;
@@ -29,7 +28,7 @@ class Controller {
      * Try to return existing UserSession object
      * @return type
      */
-    public function getUserSession() : ?UserSession {
+    public function getUserSession()  {
         if (is_null($this->us)) {
             $this->us = UserSession::read();
         }

@@ -7,7 +7,12 @@ use WC\DB\AbstractDef;
 
 class ColumnDef extends NameDef  {
 
-    static public function get_type_size($type) : array
+    /**
+     * 
+     * @param type $type
+     * @return array
+     */
+    static public function get_type_size($type) 
     {
         $match = null;
         $test = strtolower($type);
@@ -27,8 +32,12 @@ class ColumnDef extends NameDef  {
         return $def;
     }
     
-     
-    static public function quotedType($type) : bool
+     /**
+      * 
+      * @param type $type
+      * @return bool
+      */
+    static public function quotedType($type) 
     {
         $typ = strtoupper($type);
         switch($typ) {
@@ -81,40 +90,63 @@ class ColumnDef extends NameDef  {
     public function toSql(array $stage) {
         $name = $this->name;
         $outs = '`' . $name . '` ' . $this->type;
-        $size = $this->size ?? 0;
+        $size = !isset($this->size) ? 0 : $this->size;
         if ($size > 0) {
             $outs .= '(' . $size . ')';
         }
-        $unsigned = $this->unsigned ?? false;
+        $unsigned = !isset($this->unsigned) ? false : $this->unsigned;
         if ($unsigned) {
             $outs .= ' unsigned';
         }
         
-        $collate = $this->collate ?? false;
+        $collate = !isset($this->collate ) ? false : $this->collate;
         if (!empty($collate)) {
             $outs .= ' COLLATE ' . $collate;
         }
-        $allow_null = $this->null ?? false;
+        $allow_null = !isset($this->null) ? false : $this->null;
         if (!$allow_null) {
             $outs .= ' NOT NULL';
         }
+        $auto_inc = false;
         if (array_key_exists('auto_inc', $stage)) {
-            $auto_inc = $this->auto_inc ?? false;
-            if ($auto_inc) {
-                $outs .= ' AUTO_INCREMENT';
-            }
+            $auto_inc = isset($this->auto_inc) ? false : $this->auto_inc;
+            
         }
+
+        $default = !isset($this->default) ? null : $this->default;
         
-        $default = $this->default ?? null;
-        if (is_string($default) && static::quotedType($this->type) && (strrpos($default, '()') === false)) 
+        if (is_string($default) && !empty($default)) 
         {
-            if ($default !== 'NULL' || !$allow_null) 
+             /** Filter out some PgSQL nextval into AUTO_INCREMENT 
+              */
+        // ^([\w]*)\((\'[\w]*\'::\w*)\)
+            $matches = null;
+            // a function
+            if (preg_match('/^([\w]*)\((\'[\w]*\'::\w*)\)/', $default, $matches)===1) {
+                if ($matches[1] === 'nextval') {
+                    $auto_inc = true;
+                    $default = null;
+                }
+                
+            }
+            // a quoted type value
+            else if (preg_match('/^\'(.+)\'::(.*)/', $default, $matches) ===1){
+                $default = $matches[1];
+                if ( strpos($matches[2],'char') !== false ) {
+                    // a character constant type, double any inner single quotes.
+                    $default = '\'' . str_replace('\'','\'\'',$default) . '\'';
+                }
+            }
+            else if ($default !== 'NULL' || !$allow_null) 
             {
                 $default = '\'' . str_replace('\'','\'\'',$default) . '\'';
             }
         }
         if (!is_null($default)) {
             $outs .= ' DEFAULT ' . $default;
+        }
+        else if ($auto_inc) {
+                $outs .= ' PRIMARY KEY AUTO_INCREMENT';
         }
         return $outs;
     }

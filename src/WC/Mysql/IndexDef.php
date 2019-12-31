@@ -80,7 +80,7 @@ class IndexDef extends \WC\DB\AbstractDef {
         }
     }
     
-    public function generate(Script $script, array $stage) {
+    public function generate( $script, $stage) {
         $outs = '';
         $name = $this->name;
         switch($this->type) {
@@ -103,7 +103,7 @@ class IndexDef extends \WC\DB\AbstractDef {
      * @return string 
      */
     public function getIndexType() {
-        return $this->type ?? null;
+        return !isset($this->type) ? null : $this->type;
     }
 
     /**
@@ -111,7 +111,7 @@ class IndexDef extends \WC\DB\AbstractDef {
      * @return array
      */
     public function getIndexColumns() {
-        return $this->columns ?? null;
+        return !isset($this->columns) ? null : $this->column;
     }
 
 }

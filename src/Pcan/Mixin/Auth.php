@@ -11,19 +11,29 @@ use \WC\UserSession;
 
 trait Auth {
 
-    public function getAllowRole(): string {
+    /**
+     * 
+     * @return string
+     */
+    public function getAllowRole() {
         return 'Editor';
     }
-
-    public function auth():  bool {
+    /**
+     * 
+     * @return boolean
+     */
+    public function auth() {
         if (!UserSession::auth($this->getAllowRole())) {
             $this->denied();
             return false;
         }
         return true;
     }
-
-    public function beforeRoute() : bool {
+    /**
+     * 
+     * @return boolean
+     */
+    public function beforeRoute() {
         return $this->auth();
     }
 }
