@@ -9,12 +9,14 @@ class Controller {
     public $f3;
     public $args;
 
+    /**
+     * Override this and use Mixin\Auth
+     * to limit access to UserSession role name.
+     * @return string
+     */
     public function getAllowRole() {
         return 'Editor';
     }
-
-    
-
     
     function afterRoute() {
         // session becomes read only

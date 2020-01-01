@@ -178,7 +178,17 @@ class App extends \Prefab {
         $f3->set('pkg', $pkg_path);
         $f3->set('web', $webpath . '/');
         $f3->set('php', $php);
-        $f3->set('is_vendor', ($php !== $pkg_path));
+        if ($php === $pkg_path) {
+            // running site folder from vendor path
+            $f3->set('is_vendor',true);
+            $f3->set('vendor_path', dirname(dirname($pkg_path)) . '/');
+        }
+        else {
+            // presume composer layout
+            $f3->set('is_vendor',false);
+            $f3->set('vendor_path', $php . 'vendor/' );
+        }
+
         $f3->set('sitepath', $sitepath);
         $f3->set('AUTOLOAD', $php . 'src/|' . $sitepath . 'src/');
 
