@@ -73,7 +73,18 @@ class App extends \Prefab {
             throw new Exception('No Routes were loaded');
         }
     }
-
+    // return bare error message page
+    static public function error_page($msg) {
+        $page = <<<EDOC
+<!DOCTYPE html>
+<html>
+<body>
+<p>$msg</p>
+</body>
+</html>
+EDOC;
+        return $page;
+    }
     public function init($f3, $sitepath) {
         $this->f3 = $f3;
         $cli = php_sapi_name();

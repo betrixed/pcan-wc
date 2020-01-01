@@ -8,6 +8,7 @@ namespace Pcan\Mixin;
  * @author michael rynn
  */
 use \WC\UserSession;
+use \WC\App;
 
 trait Auth {
     /**
@@ -16,10 +17,7 @@ trait Auth {
      */
     function denied() {
         // Assume a view trait exists
-        $view = $this->getView();
-        $view->content = 'home/error.phtml';
-        $view->title = 'Error';
-        echo $this->view->render();
+        echo App::error_page("Page access is not authorized");
     }
     /**
      * 
