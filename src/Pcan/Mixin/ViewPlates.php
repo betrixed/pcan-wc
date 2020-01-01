@@ -8,6 +8,7 @@
 
 namespace Pcan\Mixin;
 use Pcan\HtmlPlates;
+use WC\UserSession;
 /**
  * Template Views using League\Plates\Engine
  *
@@ -25,7 +26,7 @@ trait ViewPlates {
     public function init_View($f3, $path = null, $ext = null) {
         $view = new HtmlPlates($f3, $path, $ext);
         $f3->set('view', $view);
-        $view->usrSess = $this->getUserSession();
+        $view->usrSess = UserSession::read();
         $this->view = $view;
     }
 }
