@@ -100,8 +100,8 @@ class Html {
     }
 
     public function __construct($f3,  $path = null, $ext = null) {
-        $this->layout = 'layout.phtml';
-        $this->nav = $f3->get('navigate');
+        $this->layout = 'layout';
+        $this->nav = $f3->get('nav_f3');
         $this->f3 = $f3;
         if (is_null($path)) {
             $path = $f3->get('sitepath') . 'views';

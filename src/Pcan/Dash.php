@@ -10,12 +10,12 @@ use WC\UserSession;
 
 class Dash extends Controller {
     use Mixin\Auth;
-    use Mixin\ViewF3;
+    use Mixin\ViewPlates;
     
     function show($f3, $args) {  
         $view = $this->getView();
         $view->assets('bootstrap');
-        $view->content = 'home/dash.phtml';
+        $view->layout = 'path0::home/dash';
         $view->title = "Dash";
         echo $view->render();
     }

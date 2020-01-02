@@ -3,6 +3,7 @@
 namespace Pcan;
 use League\Plates\Engine;
 use League\Plates\Extension\ExtensionInterface;
+use Pcan\Models\MenuTree;
 
 class PlatesForm implements ExtensionInterface {
 
@@ -99,6 +100,7 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
 
+
     public function inputType(array $pset, $type = '') {
         static::ensureIdValue($pset);
         $id = $pset['id'];
@@ -154,7 +156,26 @@ class PlatesForm implements ExtensionInterface {
         } else
             return "";
     }
+    static public function dropDown(array $pset) {
+       static::ensureIdValue($pset);
 
+        $out = "<li class=\"nav-item dropdown\">" . PHP_EOL;
+        $menuName = isset($pset['root']) ? $pset['root'] : -1;
+        $mid = "dd_m" . $menuName;
+        
+        $out .= "<a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"$mid\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">";
+        $title = isset($pset['title']) ? $pset['title'] : null;
+        $out .= PHP_EOL . $title . PHP_EOL;
+        $out .= "</a>" . PHP_EOL;
+        $out .= "<div class=\"dropdown-menu\" aria-labelledby=\"$mid\">" . PHP_EOL;
+
+        $tree = MenuTree::getMenuSet($menuName);
+        $out .= MenuTree::generateSubMenu($pset, $tree);
+        
+        $out .= PHP_EOL . "</div>" . PHP_EOL;
+        $out .= "</li>" . PHP_EOL;
+        return $out;   
+    }
     static public function select($pset) {
         $out = "";
         if (isset($pset['label'])) {

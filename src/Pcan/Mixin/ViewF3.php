@@ -3,12 +3,13 @@
 namespace Pcan\Mixin;
 
 use Pcan\Html;
-
+use \WC\UserSession;
 /**
- * Setup Fat Free View for Controller
+ * Fat Free Template Views for Controller
  *
  * @author michael rynn
  */
+
 trait ViewF3 {
     public $view;
     
@@ -21,7 +22,7 @@ trait ViewF3 {
     public function init_View($f3)  {
         $view = new Html($f3);
         $f3->set('view', $view);
-        $view->usrSess = $this->getUserSession();
+        $view->usrSess = UserSession::read();
         $this->view = $view;
         return $view;
     }

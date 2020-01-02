@@ -21,8 +21,15 @@ use Pcan\Models\MenuTree;
 class InitMenus extends \Pcan\Controller
 {
 
-    private $navbar;
-
+    private $navbar_f3;
+    private $navbar_plates;
+    private $drop_down_params;
+    
+    /**
+     * CLI complete menu reset
+     * @param type $f3
+     * @param type $args
+     */
     public function configure($f3, $args) {
         $path = $f3->get('sitepath');
         $this->doAll($path);
@@ -121,14 +128,15 @@ class InitMenus extends \Pcan\Controller
         $pid = static::create_record(
                         ['parent' => -1, 'caption' => $caption]);
 
-        if (!empty($logid)) {
-            $this->navbar .= "<check if=\"{{ UserSession::isLoggedIn('$logid') }}\"><true>" . PHP_EOL;
+        // defer drop_down_generation
+        $params = ['root'=>$pid,'title'=>$caption];
+        if (!empty($target)) {
+            $params['target'] = $target;
         }
-        $atarget = empty($target) ? '' : " target='$target'";
-        $this->navbar .= "<drop-down root='$pid' title='$caption' $atarget></drop-down>" . PHP_EOL;
         if (!empty($logid)) {
-            $this->navbar .= "</true></check>" . PHP_EOL;
+            $params['role'] = $logid;
         }
+        $this->drop_down_params[] = $params;
         return $pid;
     }
 
@@ -183,8 +191,7 @@ EOD;
     }
     function doAll($templatePath)
     {
-        echo "Reset Menus . . ." . PHP_EOL;
-        $this->navbar = "<wc:init></wc:init>" . PHP_EOL;
+        
         $this->create_menu_table();
 
         $data = WConfig::fromXml($templatePath . "/menus.xml");
@@ -227,15 +234,37 @@ EOD;
                 }
             }
         }
-        $viewPath = $templatePath . '/views/generated';
+        $code = TagViewHelper::init() . PHP_EOL;
         
-        if (!file_exists($viewPath)) {
-            mkdir($viewPath,0755,true);
+        $this->navbar_f3 = $code;
+        $this->navbar_plates = $code;
+        
+        foreach($this->drop_down_params as $params) {
+            $logid = isset($params['role']) ? $params['role'] : null;
+            if (!empty($logid)) {
+                $code = "<?php if(UserSession::isLoggedIn('$logid')): ?>" . PHP_EOL;
+                $this->navbar_f3 .= $code;
+                $this->navbar_plates .= $code;
+                unset($params['role']);
+            }
+            $this->navbar_f3 .= TagViewHelper::dropDown($params) . PHP_EOL;
+            $this->navbar_plates .= PlatesForm::dropDown($params) . PHP_EOL;
+            if (!empty($logid)) {
+                $code = "<?php endif ?>" . PHP_EOL;
+                $this->navbar_f3 .= $code;
+                $this->navbar_plates .= $code;
+            }       
         }
-        file_put_contents($viewPath . '/dropdowns.phtml', $this->navbar);
-
+        $jobs = ['/views/generated' => $this->navbar_f3, '/views/plates_generated' => $this->navbar_plates];
+        foreach( $jobs as $dir => $content)
+        {
+            $viewPath = $templatePath . $dir;
+            if (!file_exists($viewPath)) {
+                mkdir($viewPath,0755,true);
+            }    
+            file_put_contents($viewPath . '/dropdowns.phtml', $content);
+        }
         MenuTree::resetMenuCache('');
-        echo "OK" . PHP_EOL;
     }
 
 }

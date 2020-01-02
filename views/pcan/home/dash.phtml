@@ -1,7 +1,6 @@
-{~
-    @view = \Base::instance()->get('view');
-    @info = @view->info;
-~}
+<?php 
+    $this->layout('layout_plates',$this->data); 
+?>
 <div style="font-size:24px;">
 <div class="container outerwrap pad10">
     <div class="row">
@@ -46,7 +45,4 @@
             <a href="/chimp/lists">Mail Chimp Lists</a>
         </div>
     </div>
-    <div class='row'>
-  
-</div>
 </div>

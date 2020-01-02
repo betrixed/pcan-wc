@@ -7,14 +7,14 @@
     "require": {
         "php": ">=7.2",
         "phpmailer/phpmailer": "^6.0",
-        "mobiledetect/mobiledetectlib": "^2.8",
-        "league/plates": "^3.3"
+        "mobiledetect/mobiledetectlib": "^2.8"
     },
     "autoload": {
         "psr-4": {
             "Chimp\\": "src/Chimp/",
             "Pcan\\": "src/Pcan/",
-            "WC\\": "src/WC/"
+            "WC\\": "src/WC/",
+            "Plates\\":"src/Plates"
         }
     }
 }

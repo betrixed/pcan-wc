@@ -4,7 +4,7 @@ namespace Pcan;
  * User rendering object as controller->view
  */
 use WC\UserSession;
-use League\Plates\Engine;
+use Plates\Engine;
 
 
 class HtmlPlates extends Html   {
@@ -16,8 +16,27 @@ class HtmlPlates extends Html   {
     {
         parent::__construct($f3, $path, $ext);
 
-        $this->values = ['f3' => $f3];
-        $this->engine = new Engine($this->path, $this->ext);
+        // setup fall back paths
+        
+        
+        $this->engine = new Engine();
+        $this->engine->setFileExtension('phtml');
+        $paths = $f3->get('UI');
+        if (isset($paths)) {
+            $backups = explode('|', $paths);
+            $realpaths = [];
+            foreach($backups as $id => $folder)  {
+                $realpaths[] = realpath($folder);
+                $this->engine->addFolder('path' .  $id, $realpaths[$id]);
+            }
+            // Only seems to support 1 backup so far
+            if (count($backups) > 0) {
+                $this->engine->setDirectory($realpaths[0]);
+            }
+        }
+        $this->values['view'] = $this;
+        $this->values['f3'] = $f3;
+        $this->values['nav'] = 'path0::' . $f3->get('nav_lp');
         $this->engine->loadExtension(new PlatesForm());
     }
     
