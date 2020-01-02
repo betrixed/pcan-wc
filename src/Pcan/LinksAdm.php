@@ -15,7 +15,7 @@ use WC\UserSession;
 
 class LinksAdm extends Controller {
     use Mixin\Auth;
-    use Mixin\ViewF3;
+    use Mixin\ViewPlates;
     
     private $syncUrl = 'http://parracan.org';
     private $editList = [];
@@ -29,11 +29,15 @@ class LinksAdm extends Controller {
         $order_field = Links::indexOrderBy($view, $orderby);
 
         
-        $view->content = 'links/index.phtml';
-        $view->url = $this->url;
-        $view->orderby = $orderby;
-        $view->page = $this->listPageNum($numberPage, 12, $order_field);
+        $view->content = 'links/index';
         $view->assets(['bootstrap']);
+                
+        $m = $view->model;
+        
+        $m->url = $this->url;
+        $m->orderby = $orderby;
+        $m->page = $this->listPageNum($numberPage, 12, $order_field);
+
         echo $view->render();
     }
 
@@ -54,7 +58,8 @@ class LinksAdm extends Controller {
 
     private function viewNewLink() {
         $view = $this->getView();
-        $view->linkid = 0;
+        $m = $view->model;
+        $m->linkid = 0;
         $this->viewCommon();
         echo $view->render();
         return null;
@@ -92,21 +97,25 @@ class LinksAdm extends Controller {
 
     private function viewCommon() {
         $view = $this->getView();
-        $view->content = 'links/edit.phtml';
+        $view->content = 'links/edit';
         $view->post = '/admin/link/post';
-        $view->url = $this->url;
         $view->assets(['bootstrap','DateTime','SummerNote','links-edit']);
+        
+        $m = $view->model;
+        $m->url = $this->url;
+        
     }
     private function editLink($rec, $id) {
         $view = $this->getView();
-
-        $view->link = $rec;
-        $view->linkid = $id;
+        $m = $view->model;
+        $m->link = $rec;
+        $m->linkid = $id;
+        $m->collections = Linkery::byLink($id);
         $view->title = 'Edit link ' . $id;
 
-        $view->collections = Linkery::byLink($id);
+        
         $us = $this->us;
-        $view->linkery = is_null($us) ? null : $us->getKey('linkery');
+        $m->linkery = is_null($us) ? null : $us->getKey('linkery');
 
         $this->viewCommon();
         echo $view->render();

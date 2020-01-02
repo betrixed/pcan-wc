@@ -88,6 +88,13 @@ class PlatesForm implements ExtensionInterface {
             unset($pset['text']);
         }
         $out = '<label class=' . "\"checkbox\">";
+        if (isset($pset['checked'])) {
+            $val = $pset['checked'];
+            unset($pset['checked']);
+            if ($val) {
+                $pset[] = 'checked'; //back as integer index  
+            }
+        }
         $out .= static::getTag($pset, ['type' => 'checkbox']);
         if (!empty($text)) {
             $out .= ' ' . $text; // auto space one character
@@ -131,6 +138,11 @@ class PlatesForm implements ExtensionInterface {
     public function plainText(array $pset) {
         return $this->inputType($pset,'text');
     }
+    
+    public function number(array $pset) {
+        return $this->inputType($pset,'number');
+    }
+    
     public function email(array $pset)
     {
         if (!isset($pset['placeHolder']))
@@ -141,6 +153,10 @@ class PlatesForm implements ExtensionInterface {
             $pset['aria-describedby'] = 'emailHelp';
         }
         return $this->inputType($pset,'email');
+    }
+    public function hidden($node)
+    {
+        return $this->inputType($node,  'hidden');
     }
     public function phone(array $pset) {
         return $this->inputType($pset,'tel');
@@ -190,6 +206,7 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
     
+
     static public function dropDown(array $pset) {
        static::ensureIdValue($pset);
 
@@ -238,8 +255,34 @@ class PlatesForm implements ExtensionInterface {
             return $out;
         }
     }
+    public function datetime($pset)
+    {
+        static::ensureIdValue($pset);
+        $id = $pset['id'];
+        $dateid = 'pick' . $pset['id'];
+        $out = "<div class='input-group date' id='$dateid' data-target='nearest'>" . PHP_EOL;
+
+        if (isset($pset['label'])) {
+            $label = $pset['label'];
+            $out .= "<label for='$id'>" . $label . "</label>" . PHP_EOL;
+        }
+        $out .= static::getTag($pset, ['type' => 'text',
+                    'class' => "datetimepicker-input",
+                    'data-target' => '#' . $dateid,
+                    'size' => "15",
+                    'maxlength' => "15"
+        ]);
+        $out .= PHP_EOL . "<div class=\"input-group-append\" data-target=\"#$dateid\" data-toggle=\"datetimepicker\">" . PHP_EOL;
+        $out .= '<div class="input-group-text"><img src="/font/glyphicons_free/glyphicons/png/glyphicons-46-calendar.png"></div>' . PHP_EOL;
+        $out .= "</div>" . PHP_EOL;
+        $out .= "</div>" . PHP_EOL;
+        $javaid = $id;
+        if (strpos($javaid,'<?=') === 0) {
+            $javaid = substr($id,3,strlen($id)-5 );
+        }
+        return $out;
+    }
 
 }
 
-;
 

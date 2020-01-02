@@ -34,9 +34,15 @@ class HtmlPlates  extends Html    {
                 $this->engine->setDirectory($realpaths[$last-1]);
             }
         }
+        // view defaults
+        $this->layout = $f3->get('layout_view');
+        $this->nav = $f3->get('nav_view');
+        
+        // values which will be auto-extracted into the view
+        $this->values['m'] = $this->model;
         $this->values['view'] = $this;
         $this->values['f3'] = $f3;
-        $this->values['nav'] = 'path0::' . $f3->get('nav_lp');
+
         $this->engine->loadExtension(new PlatesForm());
     }
 

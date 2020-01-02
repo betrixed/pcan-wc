@@ -10,17 +10,18 @@ use Pcan\DB\Event;
 use WC\Valid;
 
 class EventEdit extends Controller {
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
 use Mixin\Auth;
     
     function displayEvent($evt) {
         $view = $this->getView();
         $view->assets(['bootstrap','DateTime']);
-        $view->content = "events/edit.phtml";
-        $view->evt = $evt;
+        $view->content = "events/edit";
+        $model = $view->model;
+        $model->evt = $evt;
         $id = $evt['id'];
         if ($id > 0) {
-            $view->rego = Event::getRego($id);
+            $model->rego = Event::getRego($id);
         }
         echo $view->render();      
     }

@@ -1,14 +1,18 @@
-<wc:init></wc:init>
-{~
-@view = Base::instance()->get('view');
-@link = @view->link;
-@url = @view->url;
-@linkery = @view->linkery;
-@collections = @view->collections;
+<?php
 
-@display = \Pcan\DB\Links::display();
-@urltypes = @link->getUrlTypes();
-~}
+$link = $m->link;
+$url = $m->url;
+$linkery = $m->linkery;
+$collections = $m->collections;
+
+$display = \Pcan\DB\Links::display();
+$urltypes = $link->getUrlTypes();
+
+if ($view->layout) {
+    $this->layout($view->layout, $this->data);
+}
+$fm = $this->form();
+?>
 
 <style>
     label {
@@ -29,85 +33,82 @@
 </style>
 
 <div class="container-fluid outerwrap pad10">
-
-
     <div class="row">
         <div class="col-4">
             <a href="/dash">Dash</a> &nbsp; >> &nbsp; 
             <a href="/admin/link">Links</a> &nbsp; >> &nbsp; 
-            <span>{{ @view->title }}</span>
+            <span><?= $view->title ?></span>
         </div>
-
-        <check if="{{ @link.refid }}">
-            <true>
+<?php if($link['refid']): ?>
             <div class="col-2">
-                <link-to href="{{ '/admin/blog/edit/' . @link.refid }}" text="Edit Target Blog" target="_blank" class="btn btn-default"></link-to>
+                <?= $fm->linkTo(['href' => '/admin/blog/edit/' . $link['refid'], 
+                    'text' =>"Edit Target Blog", 'target' =>"_blank", 'class' => "btn btn-default"]) ?>
             </div>
-            </true>
-        </check>
-        <check if="{{ isset(@linkery) }}"><true>
+<?php endif ?>
+<?php if(isset($linkery)): ?>
             <div class="col-2">
                 <form id="addLinkery" action="/admin/linkery/add" method="post">
-                    <hidden name="linkid" value="{{ @link.id }}"></hidden>
-                    <hidden name="gallid" value="{{ @linkery.id }}"></hidden>
-                    <submit-btn value="{{ 'Add to linkery ' . @linkery.name }}" class="btn btn-primary"></submit-btn>
+                    <hidden name="linkid" value="<?= $link['id'] ?>"></hidden>
+                    <hidden name="gallid" value="<?= $linkery['id'] ?>"></hidden>
+                <?= $fm->submit(['value' => 'Add to linkery ' . $linkery['name'],
+                    'class'=> "btn btn-primary"]) ?>
                 </form>
             </div>
-            </true></check>
-
+<?php endif ?>
     </div>
-    <check if="{{ count(@collections) }}"><true>
+    <?php if(!empty($collections)): ?>
         <div class="row" >
             <div class="col-1">
                 <label><b>Collections</b></label>
             </div>
             <div class="col-11">
-                <p>
-                <repeat group="{{ @collections }}" value="{{ @coll  }}">
-                    {{ @coll.name . "&nbsp[" . @coll.id . "]&nbsp; | &nbsp;" }}
-                </repeat>
-                </p>
+                <p><?php foreach($collections as $coll): 
+                    echo ($coll['name'] . "&nbsp[" . $coll['id'] . "]&nbsp; | &nbsp;<br>");
+                endforeach ?></p>
             </div>
         </div>
-        </true></check>
+<?php endif ?>
     <hr />
     <div class="clear"></div>
-    <form id="linkform" name="linkform" method="post" action="{{ @view->post }}" onsubmit="smotePost()">
-        <check if="{{ @link.refid }}">
+    <form id="linkform" name="linkform" method="post" action="<?= $view->post ?>" onsubmit="smotePost()">
+        <check if="<?= $link['refid'] ?>">
             <true>
-            <hidden name="refid" value="{{ @link.refid }}" />
+            <hidden name="refid" value="<?= $link['refid'] ?>" />
             </true>
         </check>
         <div class='row'>
             <label class="col-form-label" for='sitename'>Site Name</label>
-            <text-field name='sitename' value="{{ @link.sitename }}" maxlength="{{  @display.sitename.max }}" ></text-field>
+            <?= $fm->plainText(['name' => 'sitename' , 'value' => $link['sitename'],
+              'maxlength' =>  $display['sitename.max'] ]) ?>
         </div>
         <div class='row'>
             <label class="col-form-label" for='title'>Title</label>
-            <text-field class="col-restrict" name='title' value="{{ @link.title }}" maxlength="{{  @display.title.max }}" size="80"  ></text-field>
+            <?= $fm->plainText(['name' => 'title' , 'value' => $link['title'], 'size'=>80,
+              'maxlength' =>  $display['title.max'], 'class' =>  "col-restrict"]) ?>
         </div>
 
         <div class="row">
             <label class="col-form-label" for='url'>URL</label>
-            <text-field class="col-restrict" name='url'  value="{{ @link.url }}" maxlength="{{  @display.url.max }}" size="80"  ></text-field>
+            <?= $fm->plainText(['name' => 'url' , 'value' => $link['url'], 'size'=>80,
+              'maxlength' =>  $display['url.max'], 'class' =>  "col-restrict"]) ?>
         </div>
         <div class='row pad10'>
-            <div class="col-3">
-                <label class="col-form-label">Enabled</label>
-                <checkbox name='enabled' checked="{{ @link.enabled }}"  ></checkbox>
+            <div class="col-4">
+                <?= $fm->checkbox(['label' => 'Enabled', 'name' => 'enabled', 
+                    'checked' => $link['enabled'] ]) ?>
             </div>
-            <check if="{{ @view->linkid > 0 }}">
-                <true>
+            <?php if ($view->linkid > 0): ?>
                 <div class="col-5">
-                    <datetime size="20" label="Created at" name="date_created" id="date_created" value="{{ @link.date_created }}"></datetime>
-                    
-                </div>
-                </true>
-            </check>
-            <hidden name="id" value="{{ @link.id }}" />
+                    <?= $fm->datetime(['name' => 'date_created', 'size'=>20, 
+                        'label' => "Created at",
+                        'value' => $link['date_created'] ]) ?>
+                 </div>
+            <?php endif ?>
+            <hidden name="id" value="<?= $link['id'] ?>" />
             <div>
                 <label class="col-4" for='url'>URL Type</label>
-                <select-menu name="urltype"  list="{{ @urltypes }}" value="{{ @link.urltype }}"></select-menu>
+                <?= $fm->select(['name' => 'urltype', 'list' => $urltypes,
+                    'value' => $link['urltype'] ]) ?>
             </div>
         </div>
         <div>
@@ -117,14 +118,13 @@
         </div>
         <div class="clear"></div>
         <div class="form-group">
-            <textarea id='summary' name='summary' cols='100' rows='25'>{{ @link.summary }}</textarea>
+            <textarea id='summary' name='summary' cols='100' rows='25'><?= $link['summary'] ?></textarea>
             <hr>
-            <check if="{{ @view->linkid==0 }}"><true>
+            <?php if ($view->linkid==0): ?>
                 <div class="col-sm-2">
                     <input name='btnUpdate' class='btn btn-success' type='submit' id='btnupdate' value="Create">
                 </div>
-                </true>
-                <false>
+            <?php else: ?>
                 <div class="form-group row" >
                     <div class="col-sm-3">
                         <input name='btnDelete' class='btn btn-danger' type='button' id='btndelete' value="Delete" onclick="return doDelete(this.form);"/>
@@ -133,8 +133,7 @@
                         <input name='btnUpdate' class='btn btn-success' type='submit' id='btnupdate' value="Update">
                     </div>
                 </div>
-                </false>
-            </check>
+            <?php endif ?>
         </div>
     </form>
 </div>

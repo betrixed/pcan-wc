@@ -24,7 +24,7 @@ use Mixin\ViewPlates;
         $blog = new Blog();
         $active = $blog->load("id = " . $id);
         $view = $this->getView();
-        $view->blog = $active;
+        $view->model->blog = $active;
         $this->editForm();
     }
 
@@ -236,7 +236,9 @@ use Mixin\ViewPlates;
     private function editForm() {
         $view = $this->getView();
         $view->content = 'blog/edit';
-        $blog = $view->blog;
+        $view->layout = 'layout_plates';
+        $blog = $view->model->blog;
+        
         $view->isApprover = true; // isApprover()
         
         /* if (!$this->canEdit) {
@@ -255,11 +257,12 @@ use Mixin\ViewPlates;
         }
         $id = $blog['id'];
         $view->title = '#' . $id;
-        $view->stylelist = &$stylelist;
-        $view->catset = Blog::getCategorySet($id);
-        $view->events = Blog::getEvents($id);
-        $view->metatags = Blog::getMetaTags($id);
-        $view->url = $this->url;
+        $model = $view->model;
+        $model->stylelist = $stylelist;
+        $model->catset = Blog::getCategorySet($id);
+        $model->events = Blog::getEvents($id);
+        $model->metatags = Blog::getMetaTags($id);
+        $model->url = $this->url;
         $view->assets($this->editAssets);
         echo $view->render();
     }
