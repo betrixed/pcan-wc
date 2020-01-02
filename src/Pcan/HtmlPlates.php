@@ -7,31 +7,31 @@ use WC\UserSession;
 use Plates\Engine;
 
 
-class HtmlPlates extends Html   {
+class HtmlPlates  extends Html    {
     
     public $engine;
-    public $values;
     
-    public function __construct($f3, $path = null, $ext = null)
+    
+    public function __construct($f3)
     {
-        parent::__construct($f3, $path, $ext);
-
         // setup fall back paths
+        parent::__construct($f3);
         
         
         $this->engine = new Engine();
         $this->engine->setFileExtension('phtml');
-        $paths = $f3->get('UI');
+        $paths = $f3->get('UI'); // path string from hive
         if (isset($paths)) {
             $backups = explode('|', $paths);
             $realpaths = [];
             foreach($backups as $id => $folder)  {
-                $realpaths[] = realpath($folder);
-                $this->engine->addFolder('path' .  $id, $realpaths[$id]);
+                $rp = realpath($folder);
+                $realpaths[] = $rp;
+                $this->engine->addFolder('path' .  $id, $rp);
             }
-            // Only seems to support 1 backup so far
-            if (count($backups) > 0) {
-                $this->engine->setDirectory($realpaths[0]);
+            $last = count($backups);
+            if ($last > 0) {
+                $this->engine->setDirectory($realpaths[$last-1]);
             }
         }
         $this->values['view'] = $this;
@@ -39,7 +39,12 @@ class HtmlPlates extends Html   {
         $this->values['nav'] = 'path0::' . $f3->get('nav_lp');
         $this->engine->loadExtension(new PlatesForm());
     }
-    
+
+    /**
+     * Add array of items to the values array.
+     * Overwrites existing key => values
+     * @param array $items
+     */
     public function add(array $items) {
         foreach($items as $key => $val) {
             $this->values[$key] = $val;
@@ -47,7 +52,7 @@ class HtmlPlates extends Html   {
     }
     public function render() {
         $this->final_headers();
-        return $this->engine->render($this->layout, $this->values);
+        return $this->engine->render($this->content, $this->values);
     }
 
 }

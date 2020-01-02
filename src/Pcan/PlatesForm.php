@@ -1,8 +1,8 @@
 <?php
 
 namespace Pcan;
-use League\Plates\Engine;
-use League\Plates\Extension\ExtensionInterface;
+use Plates\Engine;
+use Plates\Extension\ExtensionInterface;
 use Pcan\Models\MenuTree;
 
 class PlatesForm implements ExtensionInterface {
@@ -156,6 +156,40 @@ class PlatesForm implements ExtensionInterface {
         } else
             return "";
     }
+    
+    static public function linkTo($pset)
+    {
+        if (isset($pset['href'])):
+            $href = $pset['href'];
+            unset($pset['href']);
+        else:
+            $href = '#';
+        endif;
+
+        if (isset($pset['icon'])):
+            $icon = $pset['icon'];
+            unset($pset['icon']);
+        else:
+            $icon = null;
+        endif;
+        if (isset($pset['text'])):
+            $text = $pset['text'];
+            unset($pset['text']);
+        else:
+            $text = $href;
+        endif;
+        $out = '<a href="' . $href . '"';
+        foreach ($pset as $arg => $val):
+            $out .= ' ' . $arg . '="' . $val . '"';
+        endforeach;
+        $out .= '>';
+        if (!empty($icon)) {
+            $out .= "<i class='$icon' ></i> ";
+        }
+        $out .= $text . '</a>';
+        return $out;
+    }
+    
     static public function dropDown(array $pset) {
        static::ensureIdValue($pset);
 

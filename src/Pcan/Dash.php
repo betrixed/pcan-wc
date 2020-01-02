@@ -15,7 +15,7 @@ class Dash extends Controller {
     function show($f3, $args) {  
         $view = $this->getView();
         $view->assets('bootstrap');
-        $view->layout = 'path0::home/dash';
+        $view->content = 'path0::home/dash';
         $view->title = "Dash";
         echo $view->render();
     }

@@ -14,7 +14,7 @@ use Pcan\DB\Linkery;
 use WC\Valid;
 
 class Article  extends Controller {
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
 
     public function news($f3, $args) {
         $server = &$f3->ref('SERVER');
