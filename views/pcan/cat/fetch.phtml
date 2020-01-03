@@ -1,16 +1,12 @@
-{~ 
-    @view = \Base::instance()->get('view'); 
-    @blog = @view->blog;
-    @sclass = @blog.style;
-    if (is_null(@sclass) || @style==="noclass") {
-        @sclass="outerwrap pad10";
-    }
-~}
+<?php 
+$blog = $m->blog;
+$sclass = $blog['style'];
+// No Layout wrap
+?>
 <div class="container">
-
-<div class="{{  @sclass }}">
-<span class="cattitle">{{ @blog.title }}</span>
+<div class="<?= $sclass  ?>">
+<span class="cattitle"><?= @blog['title'] ?></span>
 <hr>
-{{ @blog.article}}
+<?= @blog['article'] ?>
 </div>
 </div>

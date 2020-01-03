@@ -141,13 +141,14 @@ class Name
                 'The template name cannot be empty.'
             );
         }
-
-        $this->file = $file;
-
-        if (!is_null($this->engine->getFileExtension())) {
-            $this->file .= '.' . $this->engine->getFileExtension();
+        /* first of all, check if a file extension is already present */
+        $info = pathinfo($file,PATHINFO_EXTENSION);
+        if (empty($info)) {
+            if (!is_null($this->engine->getFileExtension())) {
+                $file .= '.' . $this->engine->getFileExtension();
+            }
         }
-
+        $this->file = $file;
         return $this;
     }
 

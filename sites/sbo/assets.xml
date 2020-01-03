@@ -10,6 +10,11 @@
             <s k='crossorigin'>anonymous</s>
         </tb>
     </tb>
+    <tb k='cartjs'>
+        <a k='js'>
+            <s>/js/cart.js</s>
+        </a>
+    </tb>
     <tb k='simple'>
         <a k='css'>
             <s>@theme/css/page.css</s>

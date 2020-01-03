@@ -42,10 +42,15 @@ class HtmlPlates  extends Html    {
         $this->values['m'] = $this->model;
         $this->values['view'] = $this;
         $this->values['f3'] = $f3;
-
+        $this->values['sess'] = UserSession::read();
         $this->engine->loadExtension(new PlatesForm());
     }
 
+    /** any object, there are two references to it */
+    public function setModel($model) {
+        $this->model;
+        $this->values['m'] =$model;
+    }
     /**
      * Add array of items to the values array.
      * Overwrites existing key => values
@@ -55,10 +60,27 @@ class HtmlPlates  extends Html    {
         foreach($items as $key => $val) {
             $this->values[$key] = $val;
         }
+    }   
+    
+    /** 
+     * Generate text from templates.
+     * Calls render($writeHeaders = false)
+     */
+    public function renderView() {
+        return $this->render(false);
     }
-    public function render() {
-        $this->final_headers();
+    /**
+     * Render the content view, with data values.
+     * Pass false, if no headers are to be written before render
+     * @param bool $writeHeaders default true
+     * @return type
+     */
+    public function render($writeHeaders = true) {
+        if ($writeHeaders) {
+            $this->final_headers();
+        }
         return $this->engine->render($this->content, $this->values);
     }
+
 
 }

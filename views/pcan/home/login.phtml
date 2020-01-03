@@ -1,44 +1,52 @@
-{~
-    @google = @view->google;
-~}
+<?php
+
+    if ($view->layout) {
+        $this->layout($view->layout, $this->data);
+    }
+    $google = $m->google;
+    $fm = $this->form();
+?>
 
 <div class='container outerwrap pad10'>
  
 <form id="user-login" method='post' action='login'>
     <fieldset>
-        <check if="{{ isset(@message) }}">
+        <?php if(isset($m->message)): ?>
             <div class="alert alert-primary" role ="alert">
-            <p class="message">{{ @message }}</p>
+                <p class="message"><?= $m->message ?></p>
             </div>
-        </check>
+        <?php endif ?>
         <div class="form-group">
             <label for="email">Username/Email</label>
             <div class="controls">
-                <text-field name="email" class="form-control" />
+                <?= $fm->email(['name' => 'email', 'class' => 'form-control']) ?>
             </div>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
             <div class="controls">
-                <pwd-field name="password" class="form-control" />
+                <?= $fm->password(['name' => 'password', 'class' => 'form-control']) ?>
             </div>
         </div>
-<check if="{{ @google.enabled }}">
-    <true>
-    <captcha-submit id="user-login" site="{{ @google.site }}" text="Login"></captcha-submit>
-    </true>
-    <false>
+        <?php 
+          if($google['enabled']): 
+           echo ($fm->recaptcha(['id' => 'user-login', 
+               'site' => $google['site'],
+               'text' => 'Login']) );
+           else: ?>
     <div class="form-group">
-         <submit-btn name='login' value="Login" class='btn btn-outline-primary' />
+        <?= $fm->submit(['name' => 'login', 'value' => 'Login',
+            'class' => 'btn btn-outline-primary' ]) ?>
     </div>    
-    </false>
-</check>                
+        <?php endif ?>
 
-</fieldset>         
-    <f3:xcheck value="{{ @view->xcheck }}" ></f3:xcheck>
+</fieldset>       
+     <?= $fm->xcheck(['value' => $m->xcheck ]) ?>
 </form>
     <div class="row">
         <div class="col-3"></div>
-        <div class="col-4 pad10"><link-to href="/login/forgot" text="Send password reset token" class="btn btn-outline-info"></link-to></div>
+        <div class="col-4 pad10"><?= $fm->linkTo(['href' => '/login/forgot', 
+            'text' => 'Send password reset token', 
+            'class' => 'btn btn-outline-info']) ?></div>
     </div>
 </div>

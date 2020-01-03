@@ -1,6 +1,9 @@
-{~
-    @view = \Base::instance()->get('view');
-~}
+<?php
+
+    if ($view->layout) {
+        $this->layout($view->layout, $this->data);
+    }
+?>
 <div  class="container  outerwrap pad10" style="max-width:50em" >
-     <p> Email sent with password reset link to {{ @view->email }}</p>
+     <p> Email sent with password reset link to <?= $m->email ?></p>
 </div>

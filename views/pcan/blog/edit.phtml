@@ -9,6 +9,7 @@ $fm = $this->form();
 if (!empty($view->layout)) {
     $this->layout($view->layout, $this->data);
 }
+$btn_class = 'btn btn-outline-secondary';
 ?>
 
 <style>
@@ -43,13 +44,13 @@ if (!empty($view->layout)) {
 </style>
 <div class='row center' style="padding-top:15px; padding-bottom:0; ">
     <div class="col-2">
-        <span><?= $fm->linkTo(['text'=>"Articles", 'href'=> $module . 'blog',  'class' => 'btn btn-secondary']) ?></span>
+        <span><?= $fm->linkTo(['text'=>"Articles", 'href'=> $module . 'blog',  'class' => $btn_class]) ?></span>
     </div>
     <div class="col-2">
-        <?= $fm->linkTo(['href'=>$module ."links/blog/" . $blog['id'], 'text'=>"Generate Link" , 'target' => '_blank',  'class' => 'btn btn-secondary']) ?> 
+        <?= $fm->linkTo(['href'=>$module ."links/blog/" . $blog['id'], 'text'=>"Generate Link" , 'target' => '_blank',  'class' => $btn_class]) ?> 
     </div>
     <div class="col-2">
-        <?= $fm->linkTo(['href' => $module . "gallery", 'text' => "Galleries",  'target' => '_blank',  'class' => 'btn btn-secondary']) ?>
+        <?= $fm->linkTo(['href' => $module . "gallery", 'text' => "Galleries",  'target' => '_blank',  'class' => $btn_class]) ?>
     </div>
 </div>
 

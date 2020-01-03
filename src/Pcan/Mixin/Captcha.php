@@ -28,28 +28,39 @@ trait Captcha {
             return ['success' => true, 'errorcode' => 0];
         }
     }
-/// Setup view google variable with recaptcha data
-    public function captchaView($view) {
+
+    /**
+     * Install initial details  of google recaptcha in passed object properties 
+     */
+    public function captchaView($model) {
         $f3 = $this->f3;
         $captcha = &$f3->ref('secrets.ReCaptcha');
         if (UserSession::isLoggedIn('User')) {
             $captcha['enabled'] = false;
         }
-        $view->google = &$captcha;
+        $model->google = $captcha;
     }
-    
-    public function xcheckView() {
+    /**
+     * Install cross script attack protection string
+     * in passed object properties, write to a user session.
+     * Make a Guest Session if no current session.
+     */
+    public function xcheckView($model) {
         $f3 = $this->f3;
-        $view = $this->view;
         $us = UserSession::read();
         if (is_null($us)) {
             $us = UserSession::guestSession();
         }
-        $view->us = $us;
-        $view->xcheck = UserSession::session()->csrf();
-        $us->setKey("signup-xcheck", $view->xcheck);
+        $model->us = $us;
+        $model->xcheck = UserSession::session()->csrf();
+        $us->setKey("signup-xcheck", $model->xcheck);
     }
-    // check result of form submission for cross scripting
+    /** 
+     * Check result of form submission for cross scripting
+     * against value stored in current persisted session
+     * @param type $post Reference to Fat Free Post array
+     * @return boolean
+     */
     public function xcheckResult(&$post) {
         $us = UserSession::read();
         if (is_null($us)) {

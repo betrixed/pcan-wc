@@ -13,17 +13,15 @@ use Pcan\Models\MenuTree;
 use WC\Valid;
 
 class CatView extends Controller {
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
     public function index($f3, $args) {
         $catclean = BlogCat::bySlug($args['catid']);
         $view = $this->getView();
         if (!empty($catclean)) {
             $req = &$f3->ref("REQUEST");
             $isSub = Valid::toInt($req, 'sub', 0);
-
             $results = Blog::listCategoryId($catclean->id);
             $view->blogs = $results;
-
             $reqid = Valid::toInt($req, 'id', 0);
 
             if ($reqid)
@@ -43,28 +41,32 @@ use Mixin\ViewF3;
             echo $view->render();
         }
     }
-
+   /** Do not get a new view here, use the existing one
+    * Menu id passed
+    * @param type $mit
+    */
     private function menuView($mit) {
-        $view = $this->getView();
+        $view = $this->view; // current controller view
+        $m = $view->model;
         $menu = empty($mit) ? null : MenuTree::getIdParent($mit);
         if (!empty($menu)) {
             $items = $menu->submenu;
-            $view->title = $menu->caption;
+            $m->title = $menu->caption;
             foreach ($items as $item) {
                 $item->itemUrl = '/' . $item->controller . '/' . $item->action;
             }
-            $view->list = $items;
+            $m->list = $items;
         }
         else {
             $this->flash("Menu not found: " . $mit);
-            $view->list = null;
+            $m->list = null;
         }
-        if (!empty($view->list)) {
+        if (!empty($m->list)) {
             // The id is used by javascript as 'f' + id to identify the DOM element
             // used first item to return, since it must be visible,
             // and the 'first_link' is hidden, and has no visual properties
 
-            $view->firstId = $mit;
+            $m->firstId = $mit;
         }
         $view->content = 'cat/menu.phtml';
         $view->assets(['bootstrap','grid', 'cat-menu']);
@@ -135,14 +137,16 @@ EOD;
     }
     public function pastEvents($f3, $args) {
         $view = $this->getView();
-        $view->list = $this->past();
-        $view->old = $this->eventArticle();
+        $m = $view->model;
+        
+        $m->list = $this->past();
+        $m->old = $this->eventArticle();
         
         $req = &$f3->ref("REQUEST");
         $isSub = Valid::toInt($req, 'sub', 0);
         
         if ($isSub > 0) {
-            $view->layout = 'home/past.phtml';
+            $view->content = 'home/past.phtml';
             echo $view->render();   
         }
         else {
@@ -153,15 +157,16 @@ EOD;
     }
     public function events($f3, $args) {
         $view = $this->getView();
-        $view->list = $this->future();
-        if (count($view->list) <= 0) {
+        $m = $view->model;
+        $m->list = $this->future();
+        if (count($m->list) <= 0) {
             $this->flash('No events returned');
         }
         $req = &$f3->ref("REQUEST");
         $isSub = Valid::toInt($req, 'sub', 0);
         
         if ($isSub > 0) {
-            $view->layout = 'home/future.phtml';
+            $view->content = 'home/future.phtml';
             echo $view->render();   
         }
         else {
@@ -180,13 +185,18 @@ EOD;
             $blog['article'] = "The link was incorrect";
         }
 
-        $v = $this->view;
-        $v->blog = $blog;
+        $v = $this->getView();
+        $v->layout = null;
+        $m = $v->model;
+        
+        $m->blog = $blog;
 
         $req = &$f3->ref("REQUEST");
         $isSub = Valid::toInt($req, 'sub', 0);
+         
         if ($isSub > 0) {
-            $v->layout = "cat/fetch.phtml";
+            $v->content = "cat/fetch.phtml";
+           
             echo $v->render();
         } else {
             $mit = Valid::toInt($req, 'mit', null);
@@ -198,8 +208,10 @@ EOD;
     public function fetch($f3, $args) {
         $blog = Blog::findFirstByid($args['bid']);
         $view = $this->getView();
-        $view->blog = $blog;
-        $view->layout = 'cat/fetch.phtml';
+        $m = $view->model;
+        $m->blog = $blog;
+        $view->content = 'cat/fetch.phtml';
+        $view->layout = null;
         echo $view->render();
     }
 

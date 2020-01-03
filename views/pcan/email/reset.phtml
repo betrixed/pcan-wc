@@ -1,19 +1,19 @@
 
-{~ 
-    @view = \Base::instance()->get('view');
-    @domain = @view->publicUrl;
-    @link = @domain . @view->confirmUrl;
-~}
 <p style="color:#000;font-size: 16px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;font-weight:normal;">
 
 <h2 style="font-size: 14px;font-family:Verdana,Helvetica,Arial,sans-serif;">Reset Your Password</h2>
 
-<p style="font-size: 13px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;">To reset the password for the parracan.org account associated with your email, click on the button below. If you don't want to reset your password, please disregard this email.
+<p style="font-size: 13px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;">
+    Hi, <br>
 
-<br>
-This is temporary reset link sent on {{ @view->sendDate }} from {{ @site }} at {{ @domain }}.
-<br>  
-<a style="background:#E86537;color:#fff;padding:10px" href="{{ @link }}">{{ @link }}</a>
+You asked for a reset password from <?= $m->site ?> site<br> 
+at <?= $m->domain ?> at local timestamp of  <?= $m->sendDate ?>.<br>
+Below is a temporary password reset link.<br><br>
+
+Copy and paste it onto your browser URL to get new password dialog.
+
+Link: <br>
+<?= $m->link ?><br>  
 <br>
 </p>
 

@@ -107,7 +107,35 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
 
-
+    public function recaptcha($pset)
+    {
+        $text = $pset['text'];
+        $id = $pset['id'];
+        $site = $pset['site'];
+        if (!empty($pset['class'])) {
+            $class = $pset['class'];
+        } else {
+            $class = "btn btn-primary";
+        }
+        $out = <<<EOD
+    <script>
+        function cformSubmit(token) {
+            document.getElementById("$id").submit();
+        }
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <button class ="g-recaptcha $class" data-sitekey="$site" data-callback="cformSubmit">
+        $text
+    </button>
+EOD;
+        return $out;
+    }
+    
+    public function xcheck($node)
+    {
+        return static::getTag($node, ['name' => 'xcheck', 'type' => 'hidden']);
+    }
+    
     public function inputType(array $pset, $type = '') {
         static::ensureIdValue($pset);
         $id = $pset['id'];
