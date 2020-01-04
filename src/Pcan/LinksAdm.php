@@ -26,7 +26,7 @@ class LinksAdm extends Controller {
         $numberPage = Valid::toInt($request, "page", 1);
         $orderby = Valid::toStr($request, 'orderby', null);
         $view = $this->getView();
-        $order_field = Links::indexOrderBy($view, $orderby);
+        $order_field = Links::indexOrderBy($view->model, $orderby);
 
         
         $view->content = 'links/index';
@@ -52,12 +52,11 @@ class LinksAdm extends Controller {
         $db = Server::db();
         $results = $db->exec($sql);
 
-        $maxrows = !empty($results) ? $results[0]['fullcount'] : 0;
+        $maxrows = !empty($results) ? $results[0]['full_count'] : 0;
         return new PageInfo($numberPage, $pageRows, $results, $maxrows);
     }
 
-    private function viewNewLink() {
-        $view = $this->getView();
+    private function viewNewLink($view) {
         $m = $view->model;
         $m->linkid = 0;
         $this->viewCommon();
@@ -67,7 +66,9 @@ class LinksAdm extends Controller {
 
     public function newLink($f3, $args) {
         $view = $this->getView();
+        $m = $view->model;
         $link = new Links();
+        $m->link = $link;
         $link['sitename'] = 'Here';
         $link['url'] = '/';
         $link['urltype'] = 'Front';
@@ -87,10 +88,9 @@ class LinksAdm extends Controller {
         else {
              $link['urltype'] = 'Front';
         }
-        $view->link = $link;
        
         $view->collections = [];
-        return $this->viewNewLink();
+        return $this->viewNewLink($view);
     }
 
     /* Get link edit form */
@@ -157,7 +157,7 @@ class LinksAdm extends Controller {
             $err = $e->errorInfo;
             $this->flash($err[0] . ": " . $err[1]);
         }
-        return $this->viewNewLink();
+        return $this->viewNewLink($view);
     }
 
     private function assignFromPost(&$post, $link) {

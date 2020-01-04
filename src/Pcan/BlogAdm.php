@@ -80,8 +80,8 @@ use Mixin\ViewPlates;
     }
 
     private function errorPDO($e, $blogid) {
-        $err = $e->errorInfo;
-        $this->flash($err[0] . ": " . $err[1]);
+        $err = implode(PHP_EOL, $e->errorInfo);
+        $this->flash($err);
         UserSession::reroute('/admin/blog/edit/' . $blogid);
         return false;
     }
@@ -109,8 +109,9 @@ use Mixin\ViewPlates;
         } catch (\PDOException $e) {
             return $this->errorPDO($e, $blogid);
         }
-
-        $this->view->blog = $blog;
+        $view = $this->getView();
+        $m = $view->model;
+        $m->blog = $blog;
         $blogid = $blog['id'];
         if ($update_link) 
         {
@@ -153,10 +154,13 @@ use Mixin\ViewPlates;
         //$this->editForm();
     }
 
-    public function newRec() {
+    public function newRec($f3, $args) {
         $view = $this->getView();
-        $view->url = $this->url;
-        $view->content = 'blog\new';
+        $view->content = 'blog/new';
+        $m = $view->model;
+        
+        $m->url = $this->url;
+
         $view->assets($this->editAssets);
         echo $view->render();
     }
@@ -392,7 +396,7 @@ use Mixin\ViewPlates;
         $numberPage = Valid::toInt($request, 'page', 1);
         $category = Valid::toInt($request, 'catId', 0);
         $orderby = Valid::toStr($request, 'orderby', null);
-        $order_field = Blog::viewOrderBy($this->view, $orderby);
+        $order_field = Blog::viewOrderBy($m, $orderby);
         $grabsize = 12;
         $start = ($numberPage - 1) * $grabsize;
 

@@ -1,10 +1,12 @@
-{~
-@view = Base::instance()->get('view');
-@blog = @view->article;
-~}
+<?php
+if ($view->layout):
+    $this->layout($view->layout, $this->data);
+endif;
+$article = $m->blog->article;
+?>
 
 <div class='container outerwrap'>
     <div id='article-box'>
-       {{ @blog | raw }} 
+      <?= $article ?>
     </div>
 </div>

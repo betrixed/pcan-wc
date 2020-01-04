@@ -1,7 +1,10 @@
-{~
-    @view = \Base::instance()->get('view');
-    @gallery = @view->gallery;
-~}
+<?php
+    if ($view->layout):
+        $this->layout($view->layout, $this->data);
+    endif;
+    $gallery = $m->gallery;
+    $fm = $this->form();
+?>
 <style>
     textarea.form-control {
         margin:20px;
@@ -20,28 +23,31 @@
 <div class="container-fluid">
     <div class="outerwrap pad10">
     <h1>Create Image Gallery</h1>
-    <form method="post" action="{{ @view->url . 'post' }}">
-        <check if="{{  @gallery.id  }}">
-            <true>
-            <hidden name="id" value="{{  @gallery.id  }}"></hidden>
+    <form method="post" action="<?= $view->url . 'post' ?>">
+        <?php 
+            $name = $gallery['name'];
+            if($gallery['id']):
+                $sval = 'Create new gallery';
+            ?>
+            <hidden name="id" value="<?= $gallery['id'] ?>"></hidden>
             <div class="row">
             <label for="name" class="control-label">Name</label>
-            <text-field name="name" value="{{ @gallery.name }}" readonly></text-field>
+            <text-field name="name" value="<?= $name ?>" readonly></text-field>
             </div>
-            </true>
-            <false>
+            <?php else: 
+                $sval = 'Update gallery';
+                ?>
                 <div class="row">
                     <label for="name" class="control-label">Name</label>
-                <text-field name="name" value="{{ @gallery.name }}"></text-field>
+                <text-field name="name" value="<?= $name ?>"></text-field>
                 </div>
-            </false>
-        </check>
+            <?php endif ?>
         <div class="row">
             <label for="description" class="control-label">Description</label>
-            <multiline cols="50" name="description" value="{{ @gallery.description }}"></multiline>
+            <multiline cols="50" name="description" value="<?= $gallery['description'] ?>"></multiline>
         </div>
         <div class="row">
-            <submit-btn value="Create new gallery" class="form-control"></submit-btn>
+            <?php $fm->submit(['value' => $sval, 'class'=>'form-control']) ?>
         </div>
     </form>
     </div>

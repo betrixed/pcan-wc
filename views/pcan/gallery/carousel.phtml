@@ -1,6 +1,11 @@
+<?php 
+    $images = $m->images;
+    $gallery = $m->gallery;
+?>
+
 <style>
 .carousel-inner,.carousel,.item,.fill {
-  height: {{ @view->maxHeight }}px;
+  height: <?=$m->maxHeight ?>px;
   width:100%;
   background-position:center center;
 }   
@@ -12,33 +17,24 @@
     margin: auto;
 }
 </style>
-{~ 
-    @images = @view->images;
-    @gallery = @view->gallery;
-~}
 
-<check if="{{ count(@images) > 0}}"><true>
-   
+<?php if (!empty($images)): 
+  $linkpath = "/" . $gallery['path'] . "/";
+  $row_id = 0;
+  ?>   
     <div id="gallery-c" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
- {~     
-    @linkpath = "/" . @gallery.path . "/";
-    @row_id = 0;
-~}
-    
-
-    <repeat group="{{ @images }}" value="{{ @fup }}">
-{~ 
-    @info = @fup.size_str . ' ' . @fup.mime_type;
-    @row_id = @row_id + 1;
-    @chkid = "chk" . @row_id;
-    @idate = strtotime(@fup.date_upload);
-    @itemClass = (@row_id === 1) ? "carousel-item active" : "carousel-item";
-~}
-     <div class="{{ @itemClass }}">
-        <img  class="d-flex align-items-center" src="{{ @linkpath .  @fup.name }}"  title="{{ @info }}" alt="{{ 'slide ' . @row_id }}" >
+    <?php foreach($images as $fup): 
+      $info = $fup['size_str'] . ' ' . $fup['mime_type'];
+      $row_id = $row_id + 1;
+      $chkid = "chk" . $row_id;
+      $idate = strtotime($fup['date_upload']);
+      $itemClass = ($row_id === 1) ? "carousel-item active" : "carousel-item";
+    ?>
+     <div class="<?=$itemClass ?>">
+        <img  class="d-flex align-items-center" src="<?=$linkpath .  $fup['name'] ?>"  title="<?=$info ?>" alt="<?='slide ' . $row_id ?>" >
     </div>
-    </repeat>
+    <?php endforeach ?>
 <a class="carousel-control-prev" href="#gallery-c" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="sr-only">Previous</span>
@@ -48,8 +44,6 @@
     <span class="sr-only">Next</span>
   </a>
 </div>
-</true>
-        <false>
+<?php else: ?>
             <p>No image files in this gallery yet</p>
-        </false>
-    </check>
+<?php endif ?>

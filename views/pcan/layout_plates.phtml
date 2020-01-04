@@ -31,11 +31,7 @@ if (!empty($view->flash)):
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button
             <?= $msg['text'] ?>
             </div>
-            <?php
-            
-        endforeach;
-    endif;
-    ?>
+            <?php endforeach; endif; ?>
     <?= $this->section('content', $this->data); ?>
 
 <footer class="page-footer">

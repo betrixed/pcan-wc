@@ -1,11 +1,15 @@
-<wc:init></wc:init>
-{~ 
-@view = Base::Instance()->get('view');
-@images = @view->images;
-@gallery = @view->gallery;
-@series = @view->series;
-@post = @view->post;
-~}
+<?php 
+if ($view->layout):
+    $this->layout($view->layout);
+endif;
+    $images = $m->images;
+    $gallery = $m->gallery;
+    $series = $m->series;
+    $post = $m->post;
+    $name = $gallery['name'];
+    $fm = $this->form();
+    $btnclass = 'btn btn-lg btn-outline-info';
+?>
 <style>
     textarea.form-control {
         margin-left:10px;
@@ -19,51 +23,55 @@
         font-weight: bold;
     }
 </style>
-<include href="gallery_adm/title.phtml" />
+<?php $this->insert("gallery_adm/title.phtml" , $this->data) ?>
 
 <div class="container-fluid outerwrap">
     <form id="galedit" action="/admin/gallery/post" method="post">
-        <hidden name="id" value="{{@gallery.id}}"></hidden>
+        <?= $fm->hidden([ 'name' => 'id', 'value' => $gallery['id'] ]) ?>
         <div class="row">
             <div class="col-10">
                 <label for="description" class="control-label">Description</label>
-                <multiline cols="80" name="description" value="{{ @gallery.description }}"></multiline>
+                <?= $fm->multiline([ 'name' => 'description', 'value' => $gallery['description'], 'cols' => 80 ]) ?>
             </div>
             <div class="col-1">
-                <submit-btn value="Update Gallery" class="btn btn-danger "></submit-btn>
+                 <?= $fm->submit([ 'class' => 'btn btn-danger', 'value' => 'Update Gallery' ]) ?>
             </div>
         </div>
         <div class="row">
             <div class="col-3">
-                <select-menu name="seriesid" label="Series" list="{{@series}}" value="{{@gallery.seriesid}}"></select-menu>
+                <?= $fm->select([ 'name' => 'seriesid', 'label' => 'Series',  
+                    'list' => $series, 'value' => $gallery['seriesid'] ]) ?>
             </div>
             <div class="col-4">
                 <label for="leva_path" class="control-label">Previous</label>
-                <text-field size="30" name="leva_path" value="{{ @gallery.leva_path }}"></text-field>
+                 <?= $fm->plainText([ 'size'=>30, 'name' => 'leva_path', 
+                            'value' => $gallery['leva_path'] ]) ?>
             </div>
             <div class="col-4">
                 <label for="prava_path" class="control-label">Next</label>
-                <text-field size="30" name="prava_path" value="{{ @gallery.prava_path }}"></text-field>
+                <?= $fm->plainText([ 'size'=>30, 'name' => 'prava_path', 
+                            'value' => $gallery['prava_path'] ]) ?>
             </div>
         </div>
         <div class="row">
             <div class="col-2">
-                <checkbox name="view_thumbs" text="View Thumbs" checked="{{@gallery.view_thumbs}}"></checkbox>
+                 <?= $fm->plainText([   'name' => 'view_thumbs',  'checked' =>$gallery['view_thumbs'],
+                            'text' => 'View Thumbs'  ]) ?>
             </div>
             <div class="col-6">
-                
-                <datetime label="Last upload" name="last_upload" size="20" value="{{@gallery.last_upload}}" ></datetime>
+                <?= $fm->plainText([  'label' => 'Last upload',  'size' => 20, 
+                            'name' => 'last_upload',  'value' =>$gallery['last_upload'] ]) ?>
             </div>
-            
         </div>
     </form>
     <hr>
-    <span class="pull-right"><link-to href="{{ @post }}" class="btn btn-warning" text="{{ 'Galleries'}}"/></span>
-    <span class="pull-right"><link-to href="{{ @post  . 'scan/' . @gallery.name }}" class="btn btn-warning" text="{{ 'Scan ' . @gallery.name}}"/></span>
-    <span class="pull-right"><link-to href="{{ @post  . 'sync/' . @gallery.name }}" class="btn btn-warning" text="{{ 'Sync ' . @gallery.name}}"/></span>
+    <span class="pull-right"><?= $fm->linkTo([  'href' => $post  . 'scan/' . $name, 
+        'class' =>$btnclass,   'text' => 'Scan ' . $name   ]) ?></span>
+    <span class="pull-right"><?= $fm->linkTo([  'href' => $post  . 'sync/' . $name, 
+        'class' => $btnclass,   'text' => 'Sync ' . $name   ]) ?></span>
 
-    <form id='upfile' action="{{@post  . 'upload'}}" method="post" enctype="multipart/form-data">
-        <input type="hidden" id="galleryid" name="galleryid" value="{{ @gallery.id }}" />
+    <form id='upfile' action="<?=$post  . 'upload'?>" method="post" enctype="multipart/form-data">
+        <input type="hidden" id="galleryid" name="galleryid" value="<?= $gallery['id'] ?>" />
         <div style='outline: 1px dotted orange;width:50em;'>
             <table class='table table-condensed table-borderless' >
                 <tr>
@@ -79,6 +87,6 @@
         </div>
         <div id="targetLayer" style="display:none;"></div>
     </form>
-    <div id="image_status"><include href="gallery_adm/file.phtml" /></div>
+    <div id="image_status"><?php $this->insert("gallery_adm/file.phtml", $this->data) ?></div>
 </div>
 

@@ -121,11 +121,11 @@ EOD;
     }
     /**
      * 
-     * @param type $view    - View to set
+     * @param type $model    - model object to set
      * @param string $orderby  - Handles null case for ordered column name
      * @return string    - table field to order by.
      */
-    static public function indexOrderBy($view, $orderby)
+    static public function indexOrderBy($model, $orderby)
     {
         if (is_null($orderby))
         {
@@ -192,12 +192,13 @@ EOD;
             default:
                 $col_arrow['date'] = '&#8593;';
                 $order_field = 'b.date_created desc';
+                $orderby = 'date-alt';
                 break;             
                 
         }
-        $view->orderalt = $alt_list;
-        $view->orderby = $orderby;
-        $view->col_arrow = $col_arrow;
+        $model->orderalt = $alt_list;
+        $model->orderby = $orderby;
+        $model->col_arrow = $col_arrow;
         return $order_field;
     }
     

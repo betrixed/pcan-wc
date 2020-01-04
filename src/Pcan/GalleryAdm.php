@@ -108,8 +108,8 @@ use Mixin\Auth;
     private $editList = [];
     protected $url;
 
-    public function __construct() {
-        parent::__construct();
+    public function __construct($f3,$args) {
+        parent::__construct($f3,$args);
         $this->viewPost = '/admin' . $this->viewPost;
         $this->url = '/admin/gallery/';
     }
@@ -468,31 +468,34 @@ use Mixin\Auth;
     private function constructView($galrec, $op = "edit", $isAjax = false) {
 
         $image_set = Gallery::getImages($galrec->id);
-        $select = [];
-        $select['edit'] = ['Edit', 0];
-        $select['show'] = ['Show', 0];
-        $select['hide'] = ['Hide', 0];
-        $select['remove'] = ['Remove', 0];
-        $select[$op][1] = 1;
+        $select['noop'] = ' ';
+        $select['edit'] = 'Edit';
+        $select['show'] = 'Show';
+        $select['hide'] = 'Hide';
+        $select['remove'] = 'Remove';
 
         $view = $this->view;
-        $view->select = $select;
-
-        $view->series = $this->getSerieSelect();
-        $view->gallery = $galrec;
-        $view->images = &$image_set;
-        $view->post = $this->viewPost;
+        $m  = $view->model;
+        $m->select = $select;
+        $m->select_op = 'edit';
+        $m->series = $this->getSerieSelect();
+        $m->gallery = $galrec;
+        $m->images = &$image_set;
+        $m->post = $this->viewPost;
+         $elist = [];
         if ($op == "edit" && count($this->editList) > 0) {
             $tindex = [];
-            $elist = [];
+           
             foreach ($image_set as $img) {
                 $tindex[$img->id] = $img;
             }
             foreach ($this->editList as $imgid) {
                 $elist[] = $tindex[$imgid];
             }
-            $view->elist = $elist;
+        
         }
+        $m->elist = $elist;
+        return $view;
     }
 
     /**
@@ -540,11 +543,11 @@ use Mixin\Auth;
                     }
                 }
             }
-            $this->constructView(Gallery::byId($galleryid), "edit", true);
-            echo TagViewHelper::render('gallery_adm/file.phtml', $this->view);
-        } else {
+            $view = $this->constructView(Gallery::byId($galleryid), "edit", true);
+            echo $view->render();
+        } else {                                                                                                     
             $this->flash->error('No Ajax');
-            $this->view->events = array();
+            $this->view->model->events = [];
         }
     }
 
@@ -592,9 +595,11 @@ use Mixin\Auth;
             }
         }
         // reconstruct gallery file list render
-        $this->constructView(Gallery::byId($galleryid), $image_op, true);
-        echo TagViewHelper::render('gallery_adm/file.phtml', $this->view);
-        $this->view->reply = $reply;
+        $view = $this->constructView(Gallery::byId($galleryid), $image_op, true);
+        $view->content = 'gallery_adm/file.phtml';
+        $view->model->reply = $reply;
+        echo $view->render();
+        
     }
 
     static private function crimp_thumb($square, $width_o, $height_o, &$width_t, &$height_t) {
@@ -680,13 +685,14 @@ use Mixin\Auth;
         ));
         return $image;
     }
-
+/*
     public function galleryEditAction() {
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
         if (!$this->request->isPost()) {
             $idstr = $this->request->getQuery('id', 'string');
             $galid = intval(substr($idstr, 3));
             $gal = Gallery::byId($galid);
+            
             $this->view->gallery = $gal;
         } else {
             $f3 = $this->f3;
@@ -705,6 +711,6 @@ use Mixin\Auth;
                 $this->view->gallery = $gal;
             }
         }
-    }
+    } */
 
 }

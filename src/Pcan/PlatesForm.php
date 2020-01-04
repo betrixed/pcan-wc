@@ -62,7 +62,13 @@ class PlatesForm implements ExtensionInterface {
     }
 
     static public function label($id, $text, $type='') {
-        return "<label for=\"$id\" class=\"$type\">$text</label>" . PHP_EOL;
+        if (!empty($type)) {
+            $class = " class=\"" . $type . "\"";
+        }
+        else {
+            $class = '';
+        }
+        return "<label for=\"$id\"  $class>$text</label>" . PHP_EOL;
     }
 
     static public function submit($node = []) {
@@ -310,7 +316,26 @@ EOD;
         }
         return $out;
     }
-
+    
+     public function multiline($pset)
+     {
+       static::ensureIdValue($pset);
+        $id = $pset['id'];
+        //$out = "<div class='" . static::FORMDIV . "'>" . PHP_EOL;
+        if (isset($pset['label'])) {
+            $out .= static::label($id, $pset['label']);
+        }
+        if (isset($pset['value'])) {
+            $value = $pset['value'];
+            unset($pset['value']);
+        } else {
+            $value = '';
+        }
+        //$pset['class'] = 'form-control';
+        $out .= static::generateTag('textarea', $pset) . $value . '</textarea>' . PHP_EOL;
+        //$out .= "</div>" . PHP_EOL;
+        return $out;
+    }
 }
 
 

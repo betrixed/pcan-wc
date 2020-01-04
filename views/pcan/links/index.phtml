@@ -1,7 +1,7 @@
 <?php 
 $url = $m->url;
 $ubase = $url . '?orderby=';
-$ref = $url . $m->orderby;
+$ref = $ubase . $m->orderby;
 $page = $m->page;
 $orderalt = $m->orderalt;
 $col_arrow = $m->col_arrow;
@@ -19,9 +19,9 @@ $fm = $this->form();
         <div class="col-8">
 &nbsp;&nbsp;&#x27E8;<?= $fm->linkTo(['href' => $url . 'new', 'text' => 'New link record']) ?>&#x3009;
 &nbsp;-&nbsp;&#x27E8;<?= $fm->linkTo(['href' => $ref . '&page=1', 'text' => 'First']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= $fm->linkTo(['href' => $ref . $page->before, 'text' => 'Previous']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= $fm->linkTo(['href' => $ref . $page->next, 'text' => 'Next']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= $fm->linkTo(['href' => $ref . $page->last, 'text' => 'Last']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= $fm->linkTo(['href' => $ref . '&page='. $page->before, 'text' => 'Previous']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= $fm->linkTo(['href' => $ref . '&page='. $page->next, 'text' => 'Next']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= $fm->linkTo(['href' => $ref . '&page='. $page->last, 'text' => 'Last']) ?>&#x3009;
 &nbsp;&nbsp;Page <?= $page->current . " of " .  $page->last ?>
         </div>
     </div>
