@@ -13,23 +13,23 @@ $index = $m->indexlink;
 
 <!-- title.phtml -->
 <style>
-    $media screen and (max-width: 900px){
+    @media screen and (max-width: 900px){
         #mgrid[data-columns]::before {
             content: '1 .column.size-1of1';
         }
     }
 
-    $media screen and (min-width: 901px) and (max-width: 1300px) {
+    @media screen and (min-width: 901px) and (max-width: 1300px) {
         #mgrid[data-columns]::before {
             content: '2 .column.size-1of2';
         }
     }
-    $media screen and (min-width: 1301px) and (max-width: 1600px){
+    @media screen and (min-width: 1301px) and (max-width: 1600px){
         #mgrid[data-columns]::before {
             content: '3 .column.size-1of3';
         }
     }
-    $media screen and (min-width: 1601px) {
+    @media screen and (min-width: 1601px) {
         #mgrid[data-columns]::before {
             content: '4 .column.size-1of4';
         }

@@ -18,6 +18,11 @@ use \WC\UserSession;
     <?= Assets::instance()->CssHeader(); ?>  
 	</head>
 	<body>
+            <?php
+if (!empty($view->nav)):
+    $this->insert($view->nav, ['view' => $view]);
+endif;
+?>
 <?php if (!empty($view->flash)):
     foreach ($view->flash as $msg):
         ?>

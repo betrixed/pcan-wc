@@ -1,11 +1,11 @@
 <?php
 if ($view->layout):
-    $this->layout($view->layout);
+    $this->layout($view->layout, $this->data);
 endif;
 $ubase = "gallery?orderby="; 
 $link =  $ubase . $m->orderby;  
 $page = $m->page;
-$url =  "/admin/gallery/edit/";
+$url =  "/admin/gallery/images/";
 $fm = $this->form();
 ?>
 <a href="/dash" class="title">Dash</a> &nbsp; &gt;&gt; &nbsp;

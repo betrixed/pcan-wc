@@ -62,7 +62,6 @@ class App extends \Prefab {
 
     // Load routes from .php config file and pre-process for cache
     static public function load_routes($f3, $path) {
-
         $routes = include $path;
         if (isset($routes)) {
             foreach ($routes as $k => $v) {
@@ -127,6 +126,7 @@ EDOC;
         self::clear_cache($f3, '@');
         
         $start_time = microtime(true);
+        $f3->set('start_routes',$start_time);
         if (isset($cfg->globals['cache_routes'])) {
             $cache_routes = $cfg->globals['cache_routes'];
         }
@@ -223,14 +223,15 @@ EDOC;
         $end_time = microtime(true);
         $render_start = $f3->get('render_time');
         $ctrl_time = $f3->get('ctrl_time');
-        $request_start = $f3->get('SERVER.REQUEST_TIME_FLOAT');
-        $route_time = ($ctrl_time - $request_start)*1000.0;
-        $ctrl = ($render_start - $ctrl_time) * 1000.0;
+        $handler_time = $f3->get('handler_found');
+        $start_routes = $f3->get('start_routes');
+        $route_time = ($handler_time - $start_routes)*1000.0;
+        $ctrl = ($render_start - $handler_time) * 1000.0;
         $render = ($end_time - $render_start) * 1000.0;
-        $total = ($end_time - $request_start) * 1000.0;
+        $total = ($end_time - $start_routes) * 1000.0;
         $routes = $f3->get('routes_load_time')*1000.0;
         return sprintf('%.2f MB, ', memory_get_peak_usage() / 1024 / 1024) 
-            . sprintf('Time LR %.2f R %.2f C %.2f V %.2f Total %.2f ms',  $routes, $route_time, $ctrl, $render, $total);
+            . sprintf('Time LR %.2f H %.2f C %.2f V %.2f Total %.2f ms',  $routes, $route_time, $ctrl, $render, $total);
         
     }
     /** For hiding try-catch for run */

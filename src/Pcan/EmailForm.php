@@ -10,37 +10,38 @@ use WC\Valid;
 use WC\SwiftMail;
 
 class EmailForm extends Controller {
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
 use Mixin\Captcha;
 
     protected $url = '/contact/email/';
 
-    private function render($isSub = false) {
+    public function __construct($f3, $args) {
+        parent::__construct($f3,$args);
         $view = $this->getView();
-        $view->title = "Email";
-        $view->url = $this->url;
-        
         $view->assets(['bootstrap']);
-        $this->captchaView($view);
-        $this->xcheckView();
+        $m = $view->model;
+        $m->url = $this->url;
+        $m->title = "Email";
+    }
+    private function render($isSub = false) {
+        $view = $this->view;
+        $this->captchaView($view->model);
+        $this->xcheckView($view->model);
         
         if ($isSub) {
              $view->sub = 1;
-             $view->layout = 'form/email.phtml';
+             $view->layout = null;
         }
         else {
             $view->sub = 0;
-            $view->content = 'form/email.phtml';
+            $view->content = 'form/email';
         }
         echo $view->render();
     }
     
     private function readonly() {
-        $view = $this->getView();
-        $view->title = "Email";
-        $view->url = $this->url;
-        $view->content = 'form/sent.phtml';
-        $view->assets(['bootstrap']);
+        $view = $this->view;
+        $view->content = 'form/sent';
         echo $view->render();
     }
     public function email($f3, $args) {
@@ -48,9 +49,9 @@ use Mixin\Captcha;
             return;
         }
 
-        $view = $this->getView();
-
-        $view->rec = new Contact();
+        $view = $this->view;
+        $m = $view->model;
+        $m->rec = new Contact();
         $req = &$f3->ref('REQUEST');
         
         $this->render(isset($req['sub']));
@@ -61,8 +62,9 @@ use Mixin\Captcha;
         }
 
         $id = intval($args['cid']);
-        $view = $this->getView();
-        $view->rec = Contact::byId($id);
+        $view = $this->view;
+        $m = $view->model;
+        $m->rec = Contact::byId($id);
         $req = &$f3->ref('REQUEST');
         
         $this->render();
@@ -76,10 +78,10 @@ use Mixin\Captcha;
         $rec['telephone'] = Valid::toStr($post, 'telephone', '');
         $rec['senddate'] = Valid::now();
     }
-    public function errorEmail($msg, &$rec) {
+    public function errorEmail($msg,  $rec) {
         $this->flash($msg);
-        $view = $this->getView();
-        $view->rec = &$rec;
+        $view = $this->view;
+        $view->model = $rec;
         echo $this->render();
     }
     public function post($f3, $args) {
@@ -115,9 +117,10 @@ use Mixin\Captcha;
             }
             $errors = [];
             
-            $view = $this->getView();
-            $view->rec = $rec;
-            $view->link = UserSession::getURL($f3);
+            $view = $this->view;
+            $m = $view->model;
+            $m->rec = $rec;
+            $m->link = UserSession::getURL($f3);
             $textMsg = TagViewHelper::render('form/mail_text.txt');
             $htmlMsg = TagViewHelper::render('form/mail_html.phtml');
             $mailer = new SwiftMail($f3);

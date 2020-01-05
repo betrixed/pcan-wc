@@ -8,7 +8,7 @@
 ?>
 
 
-<form id='imageList' action="<?=$post?> . 'imageList' " method="post">
+<form id='imageList' action="<?=$post. 'imageList'  ?>  " method="post">
     <?php if( isset($reply) ): ?>
     <?php foreach($reply as $line): ?>
             <p><?= $line ?> </p>
@@ -19,7 +19,7 @@
             $rowId = 0;
             $select = $m->select;
         ?>
-<table class="table-condensed table-striped"><tbody>
+
         
            <div class="row">
             <div class="col-2">
@@ -70,6 +70,7 @@
         </div>
     <hr>
 <?php   endforeach ?>
+    <table class="table-condensed table-striped"><tbody>
     <tr><td><label>Perform</label></td>
     <td class="leftCell">
             <?= $fm->select([ 'name' => 'image_op',  'id' => 'image_op',  'list' => $m->select, 'value' =>$m->select_op ]) ?>

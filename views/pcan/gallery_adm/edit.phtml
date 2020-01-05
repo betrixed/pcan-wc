@@ -1,6 +1,6 @@
 <?php 
 if ($view->layout):
-    $this->layout($view->layout);
+    $this->layout($view->layout, $this->data);
 endif;
     $images = $m->images;
     $gallery = $m->gallery;
@@ -15,55 +15,43 @@ endif;
         margin-left:10px;
         margin-right:10px;
     }
-
-    label{
+    label {
+         font-weight: bold;
+    }
+    form.label {
         text-align: right;
         margin-right:10px;
         min-width: 120px;
-        font-weight: bold;
+       
     }
 </style>
 <?php $this->insert("gallery_adm/title.phtml" , $this->data) ?>
 
 <div class="container-fluid outerwrap">
-    <form id="galedit" action="/admin/gallery/post" method="post">
-        <?= $fm->hidden([ 'name' => 'id', 'value' => $gallery['id'] ]) ?>
         <div class="row">
-            <div class="col-10">
-                <label for="description" class="control-label">Description</label>
-                <?= $fm->multiline([ 'name' => 'description', 'value' => $gallery['description'], 'cols' => 80 ]) ?>
-            </div>
-            <div class="col-1">
-                 <?= $fm->submit([ 'class' => 'btn btn-danger', 'value' => 'Update Gallery' ]) ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-3">
-                <?= $fm->select([ 'name' => 'seriesid', 'label' => 'Series',  
-                    'list' => $series, 'value' => $gallery['seriesid'] ]) ?>
-            </div>
-            <div class="col-4">
-                <label for="leva_path" class="control-label">Previous</label>
-                 <?= $fm->plainText([ 'size'=>30, 'name' => 'leva_path', 
-                            'value' => $gallery['leva_path'] ]) ?>
-            </div>
-            <div class="col-4">
-                <label for="prava_path" class="control-label">Next</label>
-                <?= $fm->plainText([ 'size'=>30, 'name' => 'prava_path', 
+            <div class="col">
+                 <?= $fm->linkTo([ 'href' => '/admin/gallery/edit/'.$name,
+                 'class' => $btnclass, 'text' => 'Edit Gallery Record' ]) ?>
+             
+                <?= $fm->text_value([ 'label' => 'Name', 'value' => $name ]) ?>
+                
+                <?= $fm->text_value([  'label' => 'Series',  
+                     'value' => $gallery['seriesid'] ]) ?>
+        
+                 <?= $fm->text_value([  'label' => 'Previous', 
+                            'value' => $gallery['leva_path']  ]) ?>
+            
+                
+                <?= $fm->text_value([ 'label' => 'Next',  
                             'value' => $gallery['prava_path'] ]) ?>
+
+                 <?= $fm->check_value([  'checked' =>$gallery['view_thumbs'],
+                            'label' => 'View Thumbs']) ?>
+
+                <?= $fm->datetime_value([  'label' => 'Last upload',  
+                             'value' =>$gallery['last_upload']]) ?>
             </div>
         </div>
-        <div class="row">
-            <div class="col-2">
-                 <?= $fm->plainText([   'name' => 'view_thumbs',  'checked' =>$gallery['view_thumbs'],
-                            'text' => 'View Thumbs'  ]) ?>
-            </div>
-            <div class="col-6">
-                <?= $fm->plainText([  'label' => 'Last upload',  'size' => 20, 
-                            'name' => 'last_upload',  'value' =>$gallery['last_upload'] ]) ?>
-            </div>
-        </div>
-    </form>
     <hr>
     <span class="pull-right"><?= $fm->linkTo([  'href' => $post  . 'scan/' . $name, 
         'class' =>$btnclass,   'text' => 'Scan ' . $name   ]) ?></span>

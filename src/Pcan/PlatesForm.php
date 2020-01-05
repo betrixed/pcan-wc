@@ -112,7 +112,52 @@ class PlatesForm implements ExtensionInterface {
         }
         return $out;
     }
-
+    // display bool in simple span
+    public function check_value($pset) {
+        $out = '';
+        if (isset($pset['label'])) {
+            $out .= '<label>' . $pset['label'] . '</label>';
+        }
+        $checked = isset($pset['checked']) ? $pset['checked'] : false;
+        if ($checked) {
+            $out  .= "&nbsp;&#x2713;&nbsp;";
+        }
+        else {
+            $out  .= "&nbsp;&#x2205;&nbsp;";
+        }
+        return $out;
+    }
+    // display datetime in simple span
+    public function datetime_value($pset) {
+        $out = '';
+        if (isset($pset['label'])) {
+            $out .= '<label>' . $pset['label'] . '</label>';
+        }
+        $value = isset($pset['value']) ? $pset['value'] : false;
+        if ($value) {
+            $out  .= "&nbsp;" . $value . "&nbsp;";
+        }
+        else {
+            $out  .= "&nbsp;&#x2205;&nbsp;";
+        }
+        return $out;
+    }
+    // display text in simple span
+    public function text_value($pset) {
+        $out = '';
+        if (isset($pset['label'])) {
+            $out .= '<label>' . $pset['label'] . '</label>';
+        }
+        $value = isset($pset['value']) ? $pset['value'] : false;
+        if ($value) {
+            $out  .= "&nbsp;" . $value . "&nbsp;";
+        }
+        else {
+            $out  .= "&nbsp;&#x2205;&nbsp;";
+        }
+        return $out;
+ 
+    }
     public function recaptcha($pset)
     {
         $text = $pset['text'];
@@ -121,7 +166,7 @@ class PlatesForm implements ExtensionInterface {
         if (!empty($pset['class'])) {
             $class = $pset['class'];
         } else {
-            $class = "btn btn-primary";
+            $class = "btn btn-outline-primary";
         }
         $out = <<<EOD
     <script>
