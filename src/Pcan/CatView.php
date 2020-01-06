@@ -80,9 +80,11 @@ use Mixin\ViewPlates;
         $show = isset($req['show']) ? $req['show'] : 'grid';
 
         $view = $this->getView();
+        $view->content = "cat/linkery.phtml";
         if ($isSub > 0) {
 
-            $view->layout = "cat/linkery.phtml";
+            //$view->layout = "cat/linkery.phtml";
+            $view->layout = null;
             $view->vname = "linkery/grid.phtml";
 
 
@@ -91,12 +93,12 @@ use Mixin\ViewPlates;
             } else {
                 $gal = Linkery::byName($title);
             }
-
+            $m = $view->model;
 
             if ($gal) {
-                $view->links = Linkery::getAllLinks($gal['id']);
-                $view->linkery = $gal;
-                $view->title = $gal->name;
+                $m->links = Linkery::getAllLinks($gal['id']);
+                $m->linkery = $gal;
+                $m->title = $gal->name;
             }
             echo $view->render();
         } else {
@@ -144,9 +146,11 @@ EOD;
         
         $req = &$f3->ref("REQUEST");
         $isSub = Valid::toInt($req, 'sub', 0);
+        $view->content = 'home/past.phtml';
         
         if ($isSub > 0) {
-            $view->content = 'home/past.phtml';
+            $view->layout = null;
+            
             echo $view->render();   
         }
         else {
@@ -186,7 +190,7 @@ EOD;
         }
 
         $v = $this->getView();
-        $v->layout = null;
+        
         $m = $v->model;
         
         $m->blog = $blog;
@@ -196,7 +200,7 @@ EOD;
          
         if ($isSub > 0) {
             $v->content = "cat/fetch.phtml";
-           
+           $v->layout = null;
             echo $v->render();
         } else {
             $mit = Valid::toInt($req, 'mit', null);

@@ -1,7 +1,6 @@
-{~
-    @view = \Base::instance()->get('view');
-    @linkery = @view->linkery;
-~}
+<?php
+    $linkery = $m->linkery;
+?>
 <style>
 
 div.wrap-item {
@@ -20,7 +19,7 @@ div.title-area {
 </style>
 <div class='container-fluid'>
 <div class="row outerwrap">
-          {{ @linkery.description }}
+          <?= $linkery['description'] ?>
 </div>
-<include href="{{@view->vname}}"></include>
+    <?php $this->insert($view->vname, $this->data); ?>
 </div>

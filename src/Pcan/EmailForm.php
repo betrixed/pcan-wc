@@ -27,14 +27,14 @@ use Mixin\Captcha;
         $view = $this->view;
         $this->captchaView($view->model);
         $this->xcheckView($view->model);
-        
+        $view->content = 'form/email';
         if ($isSub) {
              $view->sub = 1;
              $view->layout = null;
         }
         else {
             $view->sub = 0;
-            $view->content = 'form/email';
+
         }
         echo $view->render();
     }

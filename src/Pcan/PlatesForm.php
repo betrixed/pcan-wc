@@ -127,13 +127,23 @@ class PlatesForm implements ExtensionInterface {
         }
         return $out;
     }
-    // display datetime in simple span
+    /**
+     *  display datetime , optional label and forma
+     * @param array $pset
+     * @return string
+     */
     public function datetime_value($pset) {
         $out = '';
         if (isset($pset['label'])) {
             $out .= '<label>' . $pset['label'] . '</label>';
         }
         $value = isset($pset['value']) ? $pset['value'] : false;
+        $fmt = isset($pset['format']) ? $pset['format'] : null;
+        if ($fmt) {
+             if (!is_numeric($value))
+                $time = strtotime($value); // convert string dates to unix timestamps
+            $value = date($fmt, $value);
+        }
         if ($value) {
             $out  .= "&nbsp;" . $value . "&nbsp;";
         }

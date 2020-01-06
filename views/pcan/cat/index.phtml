@@ -1,4 +1,7 @@
 <?php
+if ($view->layout):
+    $this->layout($view->layout, $this->data);
+endif;
     $blogs = $m->blogs;
     $cat = $view->catclean;
 ?>
