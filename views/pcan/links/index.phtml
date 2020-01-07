@@ -46,10 +46,14 @@ $fm = $this->form();
         $enabled = $link['enabled'] ? 'Y' : 'N';
         $created = substr($link['date_created'], 0, 10);
         $id = $link['id'];
+        $title = trim($link['title']);
+        if (empty($title)) {
+            $title = '[NULL]';
+        }
         ?>
         <tr>
             <td><label><?= $enabled ?>&nbsp;<input type="checkbox" name="lid<?= $id ?>" value="<?= $link['enabled' ] ?>" ?></label></td>
-            <td class='leftCell'><a href="<?= $url . 'edit/' . $id ?>"><?= $link['title'] ?></a></td>
+            <td class='leftCell'><a href="<?= $url . 'edit/' . $id ?>"><?= $title ?></a></td>
             <td><?= $link['sitename'] ?></td>
             <td><?= $link['urltype'] ?></td>
             <td><?= $created ?></td>
