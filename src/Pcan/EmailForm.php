@@ -121,7 +121,7 @@ use Mixin\Captcha;
             $m = $view->model;
             $m->rec = $rec;
             $m->link = UserSession::getURL($f3);
-            $textMsg = TagViewHelper::render('form/mail_text.txt');
+            $textMsg = TagViewHelper::render('form/mail_text.phtml');
             $htmlMsg = TagViewHelper::render('form/mail_html.phtml');
             $mailer = new SwiftMail($f3);
             $msg = [
