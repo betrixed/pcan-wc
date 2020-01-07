@@ -138,6 +138,32 @@ class LinksAdm extends Controller {
         }
     }
 
+    public function ableItems($f3, $args) {
+           $post = &$f3->ref('POST');
+           $op = Valid::toInt($post, 'link_enable',1);
+           
+           foreach($post as $key => $item) {
+               if (strpos( $key, 'lid') === 0):
+                   $id =  intval(substr($key,3));
+                  if ($id > 0) {
+                       if ($op !== intval($item)) {
+                           Links::setEnableId($id, $op);
+                       }
+                    }
+               endif;
+           }
+           $page = Valid::toInt($post,'page',1);
+           $orderby = Valid::toStr($post,'orderby');
+           $f3->reroute($this->url  . '?orderby='.$orderbypage.'&page=' .$page );
+    }
+    public function deleteItem($f3, $args) {
+           $post = &$f3->ref('POST');
+           $id = Valid::toInt($post, "id", 0);
+           if ($id > 0) {
+               Links::deleteId($id);
+           }
+           $this->f3->reroute('admin/link');
+    }
     public function linkPost($f3, $args) {
         $link = new Links();
         $post = &$f3->ref('POST');

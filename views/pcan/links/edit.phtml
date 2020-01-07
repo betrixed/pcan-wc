@@ -48,8 +48,8 @@ $fm = $this->form();
 <?php if(isset($linkery)): ?>
             <div class="col-2">
                 <form id="addLinkery" action="/admin/linkery/add" method="post">
-                    <hidden name="linkid" value="<?= $link['id'] ?>"></hidden>
-                    <hidden name="gallid" value="<?= $linkery['id'] ?>"></hidden>
+                    <?= $fm->hidden(['name' => 'linkid', 'value' => $link['id'] ]) ?>
+                    <?= $fm->hidden(['name' => 'gallid', 'value' => $linkery['id'] ]) ?>
                 <?= $fm->submit(['value' => 'Add to linkery ' . $linkery['name'],
                     'class'=> "btn btn-primary"]) ?>
                 </form>
@@ -71,11 +71,9 @@ $fm = $this->form();
     <hr />
     <div class="clear"></div>
     <form id="linkform" name="linkform" method="post" action="<?= $m->post ?>" onsubmit="smotePost()">
-        <check if="<?= $link['refid'] ?>">
-            <true>
-            <hidden name="refid" value="<?= $link['refid'] ?>" />
-            </true>
-        </check>
+        <?php if ( $link['refid']): ?>
+            <?= $fm->hidden(['name'=> "refid",  'value'=>  $link['refid'] ]) ?>
+<?php endif ?>
         <div class='row'>
             <label class="col-form-label" for='sitename'>Site Name</label>
             <?= $fm->plainText(['name' => 'sitename' , 'value' => $link['sitename'],
@@ -104,7 +102,7 @@ $fm = $this->form();
                         'value' => $link['date_created'] ]) ?>
                  </div>
             <?php endif ?>
-            <hidden name="id" value="<?= $link['id'] ?>" />
+            <?= $fm->hidden( [ 'name' => 'id',  'value' => $m->linkid ]) ?>
             <div>
                 <label class="col-4" for='url'>URL Type</label>
                 <?= $fm->select(['name' => 'urltype', 'list' => $urltypes,

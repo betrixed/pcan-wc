@@ -27,15 +27,15 @@ $fm = $this->form();
     </div>
 </div>
 <div class='container outerwrap'>
-    <form id="links_form" method="post" >
+    <form id="links_form" method="post", action="<?= $url . 'enabler' ?>" >
 <table class='table table-striped'>
     <thead>
         <tr>
-            <th><?= $fm->linkTo(['href' => $ubase . $orderalt['title'], 'text' => "Title" . $col_arrow['title']]) ?></th>
+             <th><?= $fm->linkTo(['href' => $ubase . $orderalt['enabled'], 'text' => "Enabled" . $col_arrow['enabled']]) ?></th>
+           <th><?= $fm->linkTo(['href' => $ubase . $orderalt['title'], 'text' => "Title" . $col_arrow['title']]) ?></th>
             <th><?= $fm->linkTo(['href' => $ubase . $orderalt['site'], 'text' => "Site" . $col_arrow['site']]) ?></th>
             <th><?= $fm->linkTo(['href' => $ubase . $orderalt['type'], 'text' => "Type" . $col_arrow['type']]) ?></th>
             <th><?= $fm->linkTo(['href' => $ubase . $orderalt['date'], 'text' => "Date" . $col_arrow['date']]) ?></th>
-            <th><?= $fm->linkTo(['href' => $ubase . $orderalt['enabled'], 'text' => "Enabled" . $col_arrow['enabled']]) ?></th>
         </tr>
     </thead>
     <tbody>
@@ -48,15 +48,19 @@ $fm = $this->form();
         $id = $link['id'];
         ?>
         <tr>
+            <td><label><?= $enabled ?>&nbsp;<input type="checkbox" name="lid<?= $id ?>" value="<?= $link['enabled' ] ?>" ?></label></td>
             <td class='leftCell'><a href="<?= $url . 'edit/' . $id ?>"><?= $link['title'] ?></a></td>
             <td><?= $link['sitename'] ?></td>
             <td><?= $link['urltype'] ?></td>
             <td><?= $created ?></td>
-            <td><label><?= $enabled ?>&nbsp;<input type="checkbox" name="lid<?= $id ?>" value="<?= $id?>" /></label></td>
+            
         </tr>
     <?php endforeach ?>
     </tbody>
 </table>
+        <?= $fm->hidden(['name' => 'page', 'value' => $page->current ]) ?>
+          <?= $fm->hidden(['name' => 'orderby', 'value' => $m->orderby ]) ?>
+        
         <div class="row center">
         <div class="form-group">
             <label for="link_enable">Change Selected</label>
