@@ -113,7 +113,7 @@ $btn_class = 'btn btn-outline-secondary';
              <div class="row">
                  <div class="col-3">
                     <label for="author_id">Author</label>
-                    <?= $fm->number(['name'=>'author_id', 'value' => $blog['issue'],  readonly=>'readonly' ]) ?>
+                    <?= $fm->number(['name'=>'author_id', 'value' => $blog['issue'],  'readonly'=>'readonly' ]) ?>
                  </div>
                  <div class="col-4"> 
                      <?= $fm->datetime(['name'=>'date_published', 'value' => $blog['date_published'],  'label' => 'Date', 'class'=>"form-control" ]) ?>

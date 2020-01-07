@@ -22,7 +22,7 @@ $chkct = count($catList);
              <?php  endif;   
              $rowid += 1;
              $catid = "cat" . $rowid;   
-             $checked = ($cat.blog_id > 0) ? 1 : 0;
+             $checked = ($cat['blog_id'] > 0) ? 1 : 0;
              ?>
                         
          <td class='leftCell'><?= $this->form()->checkbox(['name'=>$catid, 'value'=> $cat['id'], 'checked' => $checked]) ?>
