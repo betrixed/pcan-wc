@@ -37,7 +37,7 @@ $fm = $this->form();
         <div class="col-4">
             <a href="/dash">Dash</a> &nbsp; >> &nbsp; 
             <a href="/admin/link">Links</a> &nbsp; >> &nbsp; 
-            <span><?= $view->title ?></span>
+            <span><?= $m->title ?></span>
         </div>
 <?php if($link['refid']): ?>
             <div class="col-2">
@@ -70,7 +70,7 @@ $fm = $this->form();
 <?php endif ?>
     <hr />
     <div class="clear"></div>
-    <form id="linkform" name="linkform" method="post" action="<?= $view->post ?>" onsubmit="smotePost()">
+    <form id="linkform" name="linkform" method="post" action="<?= $m->post ?>" onsubmit="smotePost()">
         <check if="<?= $link['refid'] ?>">
             <true>
             <hidden name="refid" value="<?= $link['refid'] ?>" />
@@ -97,7 +97,7 @@ $fm = $this->form();
                 <?= $fm->checkbox(['label' => 'Enabled', 'name' => 'enabled', 
                     'checked' => $link['enabled'] ]) ?>
             </div>
-            <?php if ($view->linkid > 0): ?>
+            <?php if ($m->linkid > 0): ?>
                 <div class="col-5">
                     <?= $fm->datetime(['name' => 'date_created', 'size'=>20, 
                         'label' => "Created at",
@@ -120,7 +120,7 @@ $fm = $this->form();
         <div class="form-group">
             <textarea id='summary' name='summary' cols='100' rows='25'><?= $link['summary'] ?></textarea>
             <hr>
-            <?php if ($view->linkid==0): ?>
+            <?php if ($m->linkid==0): ?>
                 <div class="col-sm-2">
                     <input name='btnUpdate' class='btn btn-success' type='submit' id='btnupdate' value="Create">
                 </div>

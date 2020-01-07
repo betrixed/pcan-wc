@@ -35,9 +35,14 @@ class HtmlPlates  extends Html    {
             }
         }
         // view defaults
-        $this->layout = $f3->get('layout_view');
-        $this->nav = $f3->get('nav_view');
-        
+        if (UserSession::isLoggedIn('Admin')) {
+            $this->layout = 'layout_admin';
+            $this->nav = 'nav_admin';
+        }
+        else {
+            $this->layout = $f3->get('layout_view');
+            $this->nav = $f3->get('nav_view');
+        }
         // values which will be auto-extracted into the view
         $this->values['m'] = $this->model;
         $this->values['view'] = $this;

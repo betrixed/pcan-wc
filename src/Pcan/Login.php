@@ -29,9 +29,10 @@ class Login extends Controller {
         $view = $this->getView();
         $view->assets('bootstrap');
         $view->content = 'home/login';
-        $view->title = 'Login';
-        $this->captchaView($view->model);
-        $this->xcheckView($view->model);
+        $m = $view->model;
+        $m->title = 'Login';
+        $this->captchaView($m);
+        $this->xcheckView($m);
 
         echo $view->render();
     }

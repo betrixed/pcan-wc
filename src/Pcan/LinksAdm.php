@@ -97,11 +97,13 @@ class LinksAdm extends Controller {
 
     private function viewCommon() {
         $view = $this->getView();
-        $view->content = 'links/edit';
-        $view->post = '/admin/link/post';
         $view->assets(['bootstrap','DateTime','SummerNote','links-edit']);
-        
+        $view->content = 'links/edit';
         $m = $view->model;
+        
+        $m->post = '/admin/link/post';
+        
+
         $m->url = $this->url;
         
     }
@@ -111,7 +113,7 @@ class LinksAdm extends Controller {
         $m->link = $rec;
         $m->linkid = $id;
         $m->collections = Linkery::byLink($id);
-        $view->title = 'Edit link ' . $id;
+        $m->title = 'Edit link ' . $id;
 
         
         $us = $this->us;
