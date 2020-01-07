@@ -174,7 +174,7 @@ class LinksAdm extends Controller {
         $link['date_created'] = Valid::toDateTime($post, 'date_created');
         $link['title'] = Valid::toStr($post, 'title', "");
         $link['summary'] = $post['summary'];
-        $link['enabled'] = Valid::toInt($post, 'enabled', 0);
+        $link['enabled'] = Valid::toBool($post, 'enabled', 0);
 
         if (!isset($post['date_created'])) {
             $link->date_created = Valid::now();
