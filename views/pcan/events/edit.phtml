@@ -37,7 +37,7 @@ $fm = $this->form();
                 <?= $fm->plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt['slug']]) ?>
             </div>
             <div class="col-4">
-                <checkbox  text="Enabled" name="enabled" value="1" checked="<?= $evt['enabled'] ?>"></checkbox>
+                <?= $fm->checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt['enabled']]) ?>
             </div>
         </div>
         <div class="row">
