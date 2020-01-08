@@ -1,15 +1,14 @@
-{~
-    @view = \Base::instance()->get('view');
-    @domain = @view->publicUrl;
-    @link = "https://" . @domain . @view->editUrl;
-~}
+<?php
+    $domain =$m->publicUrl;
+    $link = "https://" . $domain . $m->editUrl;
+?>
 <h3 style="font-size: 14px;font-family:Verdana,Helvetica,Arial,sans-serif;">Event Registration Link</h3>
             <p style="color:#000;font-size: 16px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;font-weight:normal;">
-Hi {{ @view->userName }},<br>
-This email has been sent by a registration event form on {{ @domain }}<br>
+Hi <?= $m->userName ?>,<br>
+This email has been sent by a registration event form on<?= $domain ?><br>
 
 Use the following link to change or delete your registration : <br>
-<a href="{{ @link }}">{{ @link }}</a>
+<a href="<?= $link ?>"><?= $link ?></a>
             </p>
 
 

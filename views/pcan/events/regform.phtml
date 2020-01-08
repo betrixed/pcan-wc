@@ -1,38 +1,47 @@
 <?php
+if (isset($m->layout)) {
+    $this->layout($m->layout, $this->data);
+}
 $eblog = $m->eblog;
 $hasEvent = !empty($eblog);
 $reg = $m->register;
 $fm = $this->form();
+
 ?>
+
 <?= $fm->hidden(['name' => 'id', 'value' => $reg['id']]) ?>
 <?= $fm->hidden(['name' => 'eventid', 'value' => $eblog['eventid']]) ?>
 
 <div class="row">
     <div class="col-12">
-        <text-field label="First name" name="fname" value="<?= $reg['fname'] ?>" size="40"></text-field>
+        <?= $fm->plainText(['label' => 'First name', 'name' => 'fname', 
+                                'value' => $reg['fname'], 'size' => 40]) ?>    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <?= $fm->plainText(['label' => 'Last name', 'name' => 'lname', 
+                                'value' => $reg['lname'], 'size' => 40]) ?>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-        <text-field label="Last name" name="lname" value="<?= $reg['lname'] ?>" size="40"></text-field>
-    </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        <email label="Email" name="email" value="<?= $reg['email'] ?>"  size="40"></email>
+         <?= $fm->email(['label' => 'Email', 'name' => 'email', 
+                                'value' => $reg['email'], 'size' => 40]) ?>
         <span>Optional to receive email link for edit or delete registration</span>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-        <phone label="Phone" name="phone" value="<?= $reg['phone'] ?>"></phone>
+                 <?= $fm->phone(['label' => 'Phone', 'name' => 'phone', 
+                                'value' => $reg['phone'] ]) ?>
         <span>Optional mobile number</span>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
         <label for="people">Addition Persons</label>
-        <input type="number" name="people" value="<?= $reg['people'] ?>" size="4">
+                         <?= $fm->number(['name' => 'people', 
+                                'value' => $reg['people'], 'size' => 4 ]) ?>
     </div>
 </div>
 <div class="row">

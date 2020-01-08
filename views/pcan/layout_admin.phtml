@@ -9,12 +9,14 @@ use \WC\UserSession;
     <meta charset="UTF-8" >
     <meta name="viewport" content="width=device-width, initial-scale=1" >
     <?php
-    if ($view->metaloaf): 
-        foreach($view->metaloaf as $meta):
+    if ($m->metaloaf): 
+        foreach($m->metaloaf as $meta):
             echo($meta) . PHP_EOF;
         endforeach;
     endif; ?>
-    <title><?= $view->title ?></title>
+    <?php if (isset($m->title)): ?>
+    <title><?= $m->title ?></title>
+    <?php endif; ?>
     <?= Assets::instance()->CssHeader(); ?> 
 </head>
 <body>

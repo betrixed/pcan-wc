@@ -7,7 +7,11 @@
    $fm = $this->form();
 ?>
 
-
+<style>
+    .restrict {
+        max-width:400px;
+    }
+</style>
 <form id='imageList' action="<?=$post. 'imageList'  ?>  " method="post">
     <?php if( isset($reply) ): ?>
     <?php foreach($reply as $line): ?>
@@ -57,7 +61,7 @@
                 <input name='<?= $chkid ?>' id='<?= $chkid ?>' type='checkbox' value='<?= $fup['id'] ?>' />
                 <span><?= $name ?></span>
                 <div class="float-right">
-                <a href="<?= $linkpath .  $name ?>"><img src="<?= $thumb ?>"  title="<?= $info ?>" /></a>
+                <a href="<?= $linkpath .  $name ?>"><img class = "restrict" src="<?= $thumb ?>"  title="<?= $info ?>" /></a>
                 </div>
             </div>
             <div class="col-2">

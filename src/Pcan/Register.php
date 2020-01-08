@@ -6,7 +6,7 @@ use Pcan\DB\Event;
 use Pcan\DB\RegEvent;
 use WC\Valid;
 use WC\UserSession;
-
+use WC\SwiftMail;
 //! Front-end processorg
 
 class Register extends Controller {
@@ -19,12 +19,12 @@ use Mixin\Captcha;
             return;
         }
          $view = $this->getView();
-                 
+          
         $view->content = 'events/register.phtml';
         $view->assets(['bootstrap', 'register-js']);
         
         
-         $m = $view->model;
+             $m = $view->model;  
         $this->captchaView($m);
 
         $eventId = $args['id'];
@@ -63,23 +63,27 @@ use Mixin\Captcha;
         }
         $regid = $args['id'];
         $code = $args['code'];
-        $this->captchaView();
         $view = $this->getView();
-        $view->content = 'events/register.phtml';
+         $view->content = 'events/register.phtml';
         $view->assets(['bootstrap', 'register-js']);
-        $view->eblog = null;
+        
+        $m = $view->model;
+        
+        $this->captchaView($m);
+
+        $m->eblog = null;
         if (!empty($regid)) {
             $rec = RegEvent::byId($regid);
             // Get the record 
           
             $eventId = $rec['eventid'];
             if ($code !== $rec['linkcode']) {
-                $view->register = new RegEvent();
-                $view->register['people'] = 0;
+                $m->register = new RegEvent();
+                $m->register['people'] = 0;
             } else {
                 $result = Event::getEventBlog($eventId);
-                $view->eblog = count($result) > 0 ? $result[0] : null;
-                $view->register = $rec;
+                $m->eblog = count($result) > 0 ? $result[0] : null;
+                $m->register = $rec;
             }
         }
         echo $view->render();
@@ -109,6 +113,7 @@ use Mixin\Captcha;
         else {
             $rec = new RegEvent();
             $rec['eventid'] = $eventid;
+            $rec['created_at'] = Valid::now();
         }
         
         if ($worked) {
@@ -149,13 +154,16 @@ use Mixin\Captcha;
         if ($worked) {
             if (!empty($email)) {
                 $name = $fname . ' ' . $lname;
-                $view->userName = $name;
-                $view->publicUrl = $f3->get('domain');
-                $view->editUrl = '/reglink/' . $rec['linkcode'] . '/' . $rec['id'];
+                
+                $model = new \WC\WConfig();
+                
+                $model->userName = $name;
+                $model->publicUrl = $f3->get('domain');
+                $model->editUrl = '/reglink/' . $rec['linkcode'] . '/' . $rec['id'];
 
-                $textMsg = TagViewHelper::render('events/signup_text.txt');
-                $htmlMsg = TagViewHelper::render('events/signup_html.phtml');
-                $mailer = new SwiftMail();
+                $textMsg = static::renderView($model, 'events/signup_text.phtml');
+                $htmlMsg = static::renderView($model, 'events/signup_html.phtml');
+                $mailer = new  SwiftMail($this->f3);
                 $msg = [
                     "subject" => 'Event registration for ' . $view->publicUrl,
                     "text" => $textMsg,
@@ -168,6 +176,7 @@ use Mixin\Captcha;
                 $isValid = $mailer->send($msg);
                 if ($isValid['success']) {
                     $this->flash('Link sent to your email');
+                    $this->f3->reroute($model->editUrl);
                 } else {
                     $this->errorSignup($isValid['errors']);
                     return;
@@ -175,10 +184,12 @@ use Mixin\Captcha;
             }
         }
         $result = Event::getEventBlog($eventId);
-        $view->eblog = count($result) > 0 ? $result[0] : null;
-        $view->register = $rec;
-        $view->layout = 'events/regform.phtml';
-
+        $m = $view->model;
+        $m->eblog = count($result) > 0 ? $result[0] : null;
+        $m->register = $rec;
+        $m->layout = $view->layout;
+        $view->content = 'events/regform.phtml';
+        
         echo $view->render();
     }
 }

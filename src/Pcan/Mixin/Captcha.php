@@ -14,17 +14,31 @@ use WC\UserSession;
  * @author michael
  */
 trait Captcha {
-/// Retrieve google recaptch result from post array reference
-    public function captchaResult(&$post) {
-        $f3 = $this->f3;
-        $captcha = $f3->get('secrets.Recaptcha');
+/**
+ * Retrieve site settings for recaptcha result from post as array
+ * @return array 
+ */
+    public function captchaSettings() {
         if (UserSession::isLoggedIn('User')) {
-            $captcha['enabled'] = false;
+             return ['enabled' => false];
         }
-        if ($captcha['enabled']) {
+        $cfg = \WC\App::get_secrets();
+        if ( isset($cfg) && isset($cfg['ReCaptcha'])) {
+           return $cfg['ReCaptcha'];
+        }
+        return ['enabled' => false];
+    }
+    /**
+      * verify form post for recaptcha OK
+     * @param array $post
+     * @return array ['success', 'errorcode']
+     */
+    public function captchaResult(&$post) {
+        $google = $this->captchaSettings();
+        if ($google['enabled']) {
             return Valid::recaptcha($google['secret'], $post['g-recaptcha-response']);
         }
-        else { // fake it, already logged in verified
+        else { // return everything OK
             return ['success' => true, 'errorcode' => 0];
         }
     }
@@ -33,12 +47,7 @@ trait Captcha {
      * Install initial details  of google recaptcha in passed object properties 
      */
     public function captchaView($model) {
-        $f3 = $this->f3;
-        $captcha = &$f3->ref('secrets.ReCaptcha');
-        if (UserSession::isLoggedIn('User')) {
-            $captcha['enabled'] = false;
-        }
-        $model->google = $captcha;
+        $model->google = $this->captchaSettings();
     }
     /**
      * Install cross script attack protection string

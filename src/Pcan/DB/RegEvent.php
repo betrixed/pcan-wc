@@ -9,7 +9,7 @@ class RegEvent extends \DB\SQL\Mapper {
         $db = Server::db();
         parent::__construct($db, 'register', NULL, 1.0e8); // 100 second
         $this->beforesave(function($self,$pkeys) {
-            $code = md5($self['email'] . $self['eventid'] . $self['fname'] . $self['lname']);
+            $code = md5(strtolower($self['email']) . $self['eventid'] . strtolower($self['fname']) . strtolower($self['lname']));
             $self->set('linkcode', $code);
         });
     }
