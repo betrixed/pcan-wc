@@ -10,16 +10,22 @@ use WC\UserSession;
 //! Front-end processorg
 
 class Register extends Controller {
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
     // Display Event blog with new register info
     function newReg($f3, $args) {
         
         if (!UserSession::https($f3)) {
             return;
         }
-        $this->captchaView();
+         $view = $this->getView();
+                 
+        $view->content = 'events/register.phtml';
+        $view->assets(['bootstrap', 'register-js']);
         
-        $view = $this->getView();
+        
+         $m = $view->model;
+        $this->captchaView($m);
+
         $eventId = $args['id'];
         
         if (is_numeric($eventId)) {
@@ -34,18 +40,15 @@ use Mixin\ViewF3;
                 $result=[];
             }
         }
-        $view->eblog = count($result) > 0 ? $result[0] : null;
+        $m->eblog = count($result) > 0 ? $result[0] : null;
 
         /* if event in the past don't allow */
-        
-        $view->content = 'events/register.phtml';
-        $view->assets(['bootstrap', 'register-js']);
-        
-        if ((count($result) > 0) && (Valid::now() > $view->eblog['fromTime'])){
-            $view->eblog = null;
+
+        if ((count($result) > 0) && (Valid::now() > $m->eblog['fromTime'])){
+            $m->eblog = null;
         }
-        $view->register = new RegEvent();
-        $view->register['people'] = 0;
+        $m->register = new RegEvent();
+        $m->register['people'] = 0;
         echo $view->render();
     }
     
