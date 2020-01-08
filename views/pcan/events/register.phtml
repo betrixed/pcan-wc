@@ -13,6 +13,9 @@ $reg = $m->register;
         text-align:right;
         padding-right:10px;
     }
+    .eblog {
+        background-color: antiquewhite;
+    }
 </style>
 
 <div class="container-fluid body-wrap">
@@ -28,9 +31,11 @@ $reg = $m->register;
             </div>
         </form>
     <hr>
+    <div class="eblog">
         <div class="<?= $eblog['style'] ?>">
             <?= $eblog['article'] ?>
         </div>
+    </div>
 <?php else: ?>
         <p>Event Page not found</p>
 <?php endif; ?>
