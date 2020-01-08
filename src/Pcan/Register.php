@@ -11,6 +11,7 @@ use WC\UserSession;
 
 class Register extends Controller {
 use Mixin\ViewPlates;
+use Mixin\Captcha;
     // Display Event blog with new register info
     function newReg($f3, $args) {
         
