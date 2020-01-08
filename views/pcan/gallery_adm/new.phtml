@@ -22,32 +22,37 @@
 </style>
 <div class="container-fluid">
     <div class="outerwrap pad10">
-    <h1>Create Image Gallery</h1>
+    
     <form method="post" action="<?= $view->url . 'post' ?>">
         <?php 
             $name = $gallery['name'];
-            if($gallery['id']):
-                $sval = 'Create new gallery';
+            if(empty($gallery['id'])):
+                $sval = 'Create';
             ?>
-            <hidden name="id" value="<?= $gallery['id'] ?>"></hidden>
+           <h1>Create Image Gallery</h1>
+            <?= $fm->hidden(['name' => 'id', 'value' =>  $gallery['id'] ]) ?>
             <div class="row">
             <label for="name" class="control-label">Name</label>
-            <text-field name="name" value="<?= $name ?>" readonly></text-field>
+            <?= $fm->plainText(['name' => 'name', 'value' =>  $name  ]) ?>
             </div>
             <?php else: 
-                $sval = 'Update gallery';
+                $sval = 'Update';
                 ?>
+ 
+            <h1>Update Image Gallery</h1>
                 <div class="row">
                     <label for="name" class="control-label">Name</label>
-                <text-field name="name" value="<?= $name ?>"></text-field>
+                    <?= $fm->plainText(['name' => 'name', 'value' =>  $name, 'readonly'  ]) ?>
                 </div>
             <?php endif ?>
         <div class="row">
             <label for="description" class="control-label">Description</label>
-            <multiline cols="50" name="description" value="<?= $gallery['description'] ?>"></multiline>
-        </div>
+            <?= $fm->multiline(['cols' => 50, 'name' => 'description', 'value' =>  $gallery['description']   ]) ?>
+         </div>
         <div class="row">
-            <?php $fm->submit(['value' => $sval, 'class'=>'form-control']) ?>
+            <div class="col">
+            <?= $fm->submit(['value' => $sval, 'class'=>'btn btn-warning btn-lg']) ?>
+            </div>
         </div>
     </form>
     </div>

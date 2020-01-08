@@ -92,5 +92,4 @@ return [
         'GET /admin/event/@id' => 'Pcan\EventEdit->edit',
         'POST /admin/eventpost' => 'Pcan\EventEdit->evtpost',
         'GET /reglink/@code/@id' => 'Pcan\Register->regEdit'
-
     ];

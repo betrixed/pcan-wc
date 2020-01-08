@@ -450,7 +450,7 @@ use Mixin\Auth;
             $view->content = 'gallery_adm/editgal.phtml';
             $m = $view->model;
             $m->gallery = $gal;
-    
+            $m->series = $this->getSerieSelect();
 
             $view->assets(['bootstrap', 'grid', 'jquery-form', 'gallery-progress', 'imagelist']);
             echo $view->render();

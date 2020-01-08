@@ -21,15 +21,16 @@ $reg = $m->register;
             <h4>Registration Page for Event</h4>
         </div>
     </div>
-    <?php if ($hasEvent): ?>
-        <div class="<?= $eblog['style'] ?>">
-            <?= $eblog['article'] ?>
-        </div>
-        <form id="regevt" method="post" action="/register/regpost">
+        <?php if ($hasEvent): ?>
+            <form id="regevt" method="post" action="/register/regpost">
             <div id="regform">
                 <?php $this->insert('events/regform' , $this->data) ?>
             </div>
         </form>
+    <hr>
+        <div class="<?= $eblog['style'] ?>">
+            <?= $eblog['article'] ?>
+        </div>
 <?php else: ?>
         <p>Event Page not found</p>
 <?php endif; ?>
