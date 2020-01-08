@@ -275,6 +275,7 @@ use Mixin\ViewPlates;
         $post = &$f3->ref('POST');
         $isAjax = $f3->get('AJAX');
         $view = $this->getView();
+        $m = $view->model;
         if (!empty($post) && $isAjax) {
             $blog_id = Valid::toInt($post, 'blogid', null);
             $event_op = Valid::toStr($post, 'event_op','');
@@ -302,13 +303,16 @@ use Mixin\ViewPlates;
                     }
                 }
             }
-            $view->events = Blog::getEvents($blog_id);
+            
+            $m->events = Blog::getEvents($blog_id);
         } else {
             $this->flash('No Ajax');
-            $view->events = [];
+            $m->events = [];
         }
-        $view->url = $this->url;
-        echo TagViewHelper::render('blog/event_dates');
+        $m->url = $this->url;
+         $view->layout = null;
+        $view->content = 'blog/event_dates';
+        echo TagViewHelper::render();
     }
     
     public function addEvent($f3, $args) {
@@ -323,6 +327,7 @@ use Mixin\ViewPlates;
                 $event['blogId'] = $bid;
                 $event['fromTime'] = Valid::toDateTime($post,'fromDate');
                 $event['toTime'] = Valid::toDateTime($post,'toDate');
+                $event['slug'] = Valid::toStr($post,'slug');
                 $event['enabled'] = 1;
                 $event->save();
                 }
@@ -331,9 +336,12 @@ use Mixin\ViewPlates;
                     $this->flash('New event fail: ' . $err[0] . ' ' . $err[1]);
                 }
                 $view = $this->getView();
-                $view->url = $this->url;
-                $view->events = Blog::getEvents($bid);
-                echo TagViewHelper::render('blog/event_dates');
+                $m = $view->model;
+                $m->url = $this->url;
+                $m->events = Blog::getEvents($bid);
+                $view->layout = null;
+                $view->content = 'blog/event_dates';
+                echo $view->render();
             }  
         }
         

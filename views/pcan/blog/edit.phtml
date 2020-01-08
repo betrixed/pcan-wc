@@ -167,7 +167,7 @@ $btn_class = 'btn btn-outline-secondary';
 </div>
 <div class='container outerwrap pad10'>
     <div id="event_dates" ><?php $this->insert('blog/event_dates', $this->data) ?></div>
-    <form id='eventForm' action="<?= @url  . 'addevent'?>" method="post" autocomplete="off">
+    <form id='eventForm' action="<?= $url  . 'addevent'?>" method="post" autocomplete="off">
         <input type="hidden" name="event_blogid" value="<?= $blog['id'] ?>" />
         <span class="heading">Add Event</span>
         <div class="form-group">
