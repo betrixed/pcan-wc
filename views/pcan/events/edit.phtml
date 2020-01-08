@@ -23,7 +23,7 @@ $fm = $this->form();
 <div class="container-fluid body-wrap">
     <hr>
     <form id="edtevt" method="post" action="/admin/eventpost">
-        <hidden name="id" value="<?= $evt['id'] ?>"></hidden>
+        <?= $fm->hidden( ['name'=>'id', 'value'=> $evt['id'] ]) ?> 
         <div class="row">
             <div class="col-4">
                 <?= $fm->datetime(['label' => "From", 'name' => "fromTime", 'size' => 20, 'value' => $evt['fromTime']]) ?>
