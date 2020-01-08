@@ -16,8 +16,8 @@ use Chimp\DB\ChimpEntry;
 
 
 class SignUp extends \Pcan\Controller {
-use \Pcan\Mixin\ViewF3;
-
+use \Pcan\Mixin\ViewPlates;
+use \Pcan\Mixin\Captcha;
     function errorSignup($msg)
     {
         $logger = new \Log('login.log');
@@ -29,6 +29,8 @@ use \Pcan\Mixin\ViewF3;
     function signupPost($f3, $args)
     {
         $view = $this->getView();
+        $m = $view->model;
+        
         $post = &$f3->ref('POST');
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
@@ -51,8 +53,8 @@ use \Pcan\Mixin\ViewF3;
         if ($isNew) {
             list($mbr, $mbr_email) = Member::byEmail($email);
             if ($mbr !== false) {
-                $view->mbr = $member;
-                $view->email = $email;
+                $m->mbr = $member;
+                $m->email = $email;
                 $this->errorSignup('Email already registered');
                 return;
             }
@@ -94,10 +96,9 @@ use \Pcan\Mixin\ViewF3;
         else {
             // re-edit same data
             // show any errors
-            $view = $this->getView();
-            $view->email = $email;
-            $view->title = "Edit Errors";
-            $view->mbr = $member;
+            $m->email = $email;
+            $m->title = "Edit Errors";
+            $m->mbr = $member;
             $this->signupView();
             return;
         }
@@ -133,8 +134,13 @@ use \Pcan\Mixin\ViewF3;
         if (!UserSession::https($f3)) {
             return;
         }
-        $view = $this->getView();
-        $view->title = "New Subscribe";
+        $view = $this->view;
+        $view->content = 'home/signup.phtml';
+        $view->assets('bootstrap');
+        
+        $m  = $view->model;
+        
+        $m->title = "New Subscribe";
         $states = [
                 '' => '',
                 'NSW' => 'New South Wales', 
@@ -147,12 +153,11 @@ use \Pcan\Mixin\ViewF3;
                 'SA' => 'South Australia'
             ];
         ksort($states);
-        $view->states = $states;
-        $view->countries = ['AU' => 'Australia'];
-        $this->captchaView();
-        $this->xcheckView();
-        $view->content = 'home/signup.phtml';
-        $view->assets('bootstrap');
+        $m->states = $states;
+        $m->countries = ['AU' => 'Australia'];
+        $this->captchaView($m);
+        $this->xcheckView($m);
+        
 
         echo $view->render();
     }
@@ -163,13 +168,14 @@ use \Pcan\Mixin\ViewF3;
             return;
         }
         $view = $this->getView();
-        $view->email = '';
+        $m = $view->model;
+        $m->email = '';
         $mbr = new Member();
         $mbr['state'] = 'NSW';
         $mbr['country'] = 'AU';
-        $view->mbr = $mbr;
+        $m->mbr = $mbr;
 
-        $view->message = '';
+        $m->message = '';
         $this->signupView();
     }   
 

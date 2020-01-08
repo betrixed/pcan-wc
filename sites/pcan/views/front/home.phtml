@@ -1,9 +1,9 @@
-<wc:init></wc:init>
-{~
-@f3 = \Base::instance();
-@view = @f3->get('view');
-@hasEvents = !empty(@view->events);
-~}
+<?php
+if ( $view->layout):
+    $this->layout( $view->layout, $this->data);
+endif;
+$hasEvents = !empty($m->events);
+?>
 
 <style>
     div.sidebox {
@@ -20,58 +20,55 @@
     }
 </style>
 <div class="container-fluid">
-    <check if="{{@hasEvents}}">
+    <?php if ($hasEvents): ?>
         <div class="row body-wrap pad10">
             <div class="col-2">
                 <h1>Sydney Events</h1>
             </div>
             <div class="col-10">
-                <repeat group="{{ @view->events }}" value="{{ @box }}">
-                    {~ @href = "/article/" . @box.title_clean; ~}
-                    <div class="{{@box.style}}">
-                        <div class="title"><a href="{{@href}}">{{@box.title}}</a></div>
-                        <p>{{ @box.content }}</p>
+                <?php foreach($m->events as $box): 
+                    $href = "/article/" . $box['title_clean'];
+                    ?>
+                    <div class="<?= $box['style'] ?>">
+                        <div class="title"><a href="<?= $href ?>"><?= $box['title'] ?></a></div>
+                        <p><?= $box['content'] ?> </p>
                     </div>
                     <hr>
-                </repeat>
+              <?php endforeach; ?>
             </div>
-        </div>d
-    </check>
+        </div>
+   <?php endif; ?>
     <div class="row">
         <div class="col-lg-5">
-
-            <repeat group="{{ @view->sides }}" value="{{ @box }}">
+            <?php foreach($m->sides as $box): ?>
                 <div class="sidebox">
-                    <span class='link-title'>{{ @box.title }}</span>
-                    <span class='link-summary'>{{ @box.summary }}</span>
+                    <span class='link-title'><?= $box['title'] ?></span>
+                    <span class='link-summary'><?= $box['summary'] ?></span>
                 </div>
-            </repeat>
+            <?php endforeach; ?>
         </div>
         <div class='col-lg-7 body-wrap pad10'>
-            <repeat group="{{ @view->main }}" value="{{ @link }}">
-                {~
-                @url = @link.url;
-                @ulen = strlen(@url);
-                @urlhint = (@ulen > 55) ? substr(@url,0,25) . '...' . substr(@url,@ulen-27) : @url;
-                ~}
-                <div class='mitem' id='lnk{{ @link.id}}'>
+            <?php foreach($m->main as $link): 
+                 $url = $link['url'];
+                $ulen = strlen($url);
+                $urlhint = ($ulen > 55) ? substr($url,0,25) . '...' . substr($url,$ulen-27) : $url;
+?>
+                <div class='mitem' id='lnk<?= $link['id'] ?>'>
                     <div class="title-area">
                         <span class="link-title">
-                            <a  href='{{ @url  }}' target='_blank'>{{ @link.title }}</a>
+                            <a  href='<?= $url  ?>' target='_blank'><?= $link['title'] ?></a>
                         </span>
-                        <span class='link-sitename float-right' >{{ @link.sitename }}</span>
+                        <span class='link-sitename float-right' ><?= $link['sitename'] ?></span>
                     </div>
                     <div class="clear"></div>
-                    <div class="link-summary">{{ @link.summary }}</div>
-                    <check if="{{ @link.urltype == 'Blog' }}">
-                        <true>
-                        <a href = '{{ @url }}' target='_blank' title="{{ @urlhint }}">&nbsp;.. more</a>
-                        </true>
-                    </check>
+                    <div class="link-summary"><?= $link['summary'] ?></div>
+                    <?php if ($link['urltype'] == 'Blog'): ?>
+                        <a href = '<?= $url ?>' target='_blank' title="<?= $urlhint ?>">&nbsp;.. more</a>
+                        <?php endif; ?>
                 </div>
                 <div class="clear"></div>
                 <hr>
-            </repeat>
+           <?php    endforeach; ?>
         </div>
     </div>
 </div>
