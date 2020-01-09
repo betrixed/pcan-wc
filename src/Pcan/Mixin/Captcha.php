@@ -8,6 +8,7 @@
 
 namespace Pcan\Mixin;
 use WC\UserSession;
+use WC\App;
 /**
  * Captcha validation of forms for Controller
  *
@@ -22,7 +23,7 @@ trait Captcha {
         if (UserSession::isLoggedIn('User')) {
              return ['enabled' => false];
         }
-        $cfg = \WC\App::get_secrets();
+        $cfg =  App::instance()->get_secrets();
         if ( isset($cfg) && isset($cfg['ReCaptcha'])) {
            return $cfg['ReCaptcha'];
         }
