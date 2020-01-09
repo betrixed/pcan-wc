@@ -9,6 +9,7 @@
 namespace Pcan\Mixin;
 use WC\UserSession;
 use WC\App;
+use WC\Valid;
 /**
  * Captcha validation of forms for Controller
  *
