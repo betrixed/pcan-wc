@@ -44,7 +44,7 @@ use Mixin\ViewPlates;
         $titleChanged = ($oldTitle !== $newTitle);
         $blog['title'] = $newTitle;
         $newUrl = '';
-        $lock_url = filter_var($POSTDATA['lock_url'], FILTER_VALIDATE_INT);
+        $lock_url = Valid::toBool($POSTDATA, 'lock_url');
 
         $oldUrl = $blog['title_clean'];
         $autoUrl = (!empty($lock_url) || strlen($oldUrl) == 0) ? true : false;
@@ -297,7 +297,7 @@ use Mixin\ViewPlates;
                 $db = Server::db();
                 for ($ix = 1; $ix <= $chkct; $ix++) {
                     $chkname = "chk" . $ix;
-                    $chkvalue = Valid::toInt($post, $chkname, 0);
+                    $chkvalue = Valid::toBool($post, $chkname);
                     if (!empty($chkvalue)) {
                         $db->exec($sql, $chkvalue);
                     }
