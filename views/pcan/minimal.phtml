@@ -20,7 +20,7 @@ use \WC\UserSession;
 	<body>
             <?php
 if (!empty($view->nav)):
-    $this->insert($view->nav, ['view' => $view]);
+    $this->insert($view->nav,$this->data);
 endif;
 ?>
 <?php if (!empty($view->flash)):

@@ -1,6 +1,6 @@
 <?php
 if ($view->layout):
-    $this->layout($view->layout);
+    $this->layout($view->layout, $this->data);
 endif;
 $ubase = "gallery?orderby="; 
 $link =  $ubase . $m->orderby;  
