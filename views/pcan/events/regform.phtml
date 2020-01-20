@@ -1,17 +1,26 @@
 <?php
-if (isset($m->layout)) {
-    $this->layout($m->layout, $this->data);
-}
 $eblog = $m->eblog;
 $hasEvent = !empty($eblog);
 $reg = $m->register;
 $fm = $this->form();
 
 ?>
-
+<?php 
+    if (empty($view->layout) && !empty($view->flash)):
+        $this->insert('flash',$this->data);
+    endif;
+        ?>
 <?= $fm->hidden(['name' => 'id', 'value' => $reg['id']]) ?>
 <?= $fm->hidden(['name' => 'eventid', 'value' => $eblog['eventid']]) ?>
-
+<?php if (!empty($reg['linkcode'])): ?>
+    <div class="row">
+    <div class="col">
+        <p> Your RSVP edit link  is <a href="<?= $m->editUrl  ?>"><?= $m->editUrl  ?></a></p>
+        <?= $fm->hidden([ 'name' => 'linkcode', 
+                                'value' => $reg['linkcode'] ]) ?>  
+</div>
+</div>
+<?php endif; ?>
 <div class="row">
     <div class="col-12">
         <?= $fm->plainText(['label' => 'First name', 'name' => 'fname', 

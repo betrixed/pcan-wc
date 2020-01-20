@@ -90,6 +90,7 @@ use Mixin\Captcha;
     }
     function regPost($f3, $args) {
         $view = $this->getView();
+        $m = $view->model;
         $post = &$f3->ref('POST');
         
         $eventid = Valid::toInt($post,'eventid');
@@ -152,14 +153,14 @@ use Mixin\Captcha;
         }
         
         if ($worked) {
+             $m->editUrl = '/reglink/' . $rec['linkcode'] . '/' . $rec['id'];
             if (!empty($email)) {
                 $name = $fname . ' ' . $lname;
                 
-                $model = new \WC\WConfig();
-                
+                $model = new \WC\WConfig(); 
+                $model->editUrl = $m->editUrl;
                 $model->userName = $name;
                 $model->publicUrl = $f3->get('domain');
-                $model->editUrl = '/reglink/' . $rec['linkcode'] . '/' . $rec['id'];
 
                 $textMsg = static::renderView($model, 'events/signup_text.phtml');
                 $htmlMsg = static::renderView($model, 'events/signup_html.phtml');
@@ -176,7 +177,6 @@ use Mixin\Captcha;
                 $isValid = $mailer->send($msg);
                 if ($isValid['success']) {
                     $this->flash('Link sent to your email');
-                    $this->f3->reroute($model->editUrl);
                 } else {
                     $this->errorSignup($isValid['errors']);
                     return;
@@ -184,10 +184,9 @@ use Mixin\Captcha;
             }
         }
         $result = Event::getEventBlog($eventId);
-        $m = $view->model;
         $m->eblog = count($result) > 0 ? $result[0] : null;
         $m->register = $rec;
-        $m->layout = $view->layout;
+        $view->layout = $f3->get('AJAX') ? null : $view->layout;
         $view->content = 'events/regform.phtml';
         
         echo $view->render();
