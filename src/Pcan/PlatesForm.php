@@ -168,6 +168,23 @@ class PlatesForm implements ExtensionInterface {
         return $out;
  
     }
+    public function invisiCaptcha($pset) {
+        $site = $pset['site'];
+        $out = <<<EOD
+   <input type="hidden" id="captcha-response" name="captcha-response" >
+   <script>
+        function startCaptcha() {
+           
+        }
+        function storeToken(token){
+            document.getElementById('captcha-response').value = token; 
+        }
+    </script>
+   <div class="g-recaptcha" data-sitekey="$site" data-callback="storeToken" data-size="invisible" data-badge="inline"></div>
+   <script src="https://google.com/recaptcha/api.js?onload=startCaptcha" async defer></script>
+EOD;
+        return $out;
+    }
     public function recaptcha($pset)
     {
         $text = $pset['text'];

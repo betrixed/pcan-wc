@@ -3,68 +3,20 @@ if ($view->layout) {
     $this->layout($view->layout, $this->data);
 }
 $url = $m->url;
-$rec = $m->rec;
-$google = $m->google;
 $blog = $m->blog;
-$recid = $rec['id'];
-$fm = $this->form();
+
 ?>
 
-<style>
-    div.form-group  label {
-        font-weight: bold;
-        margin-right:10px;
-        vertical-align: bottom;
-    }
-</style>
-
 <div class='container outerwrap novosti pad10'>
-    <h3>Send email message to <?= $f3->get('organization') ?></h3>
-    <hr>
+    
     <?php  if (!empty($blog)): ?>
                 <div class="<?= $blog['style ']?>" >
                     <?= $blog['article'] ?>
         </div>
 <?php endif ?>
-        <form id="email" method='post' action="<?= $url . 'post' ?>">
-            <?php if ($m->sub === 1): ?>
-            <?= $fm->hidden([ 'name' => 'sub', 'value' =>  $m->sub]) ?>
-            <?php endif ?>
-           <?php if ($recid): ?>         
-               <?= $fm->hidden([ 'name' => 'id', 'value' =>  $recid]) ?>
-            <div class="form-group row">
-                <div class="col-5">
-                        <?= $fm->datetime([ 'label' =>'Date sent' ,'name' => 'created_on', 
-                                        'value' => $rec['senddate'] , "readonly", 'class' => 'form-control']) ?>
-                </div>
+        <form id="regevt" method='post' action="<?= $url . 'post' ?>">
+        <div id="regform">
+                <?php $this->insert('form/email_form' , $this->data) ?>
             </div>
-            <?php endif ?>
-        <div class="form-group row">
-            <div class="col-4">
-                     <?= $fm->plainText([ 'label' =>'Name' ,'name' => 'created_on', 'size' => 16,
-                                        'value' => $rec['name'] , 'class' => 'form-control']) ?>
-            </div>
-            <div class="col-4">
-                    <?= $fm->email([ 'label' =>'Your email address' ,'name' => 'email',
-                                        'value' => $rec['email'] , 'class' => 'form-control']) ?>
-            </div>
-            <div class="col-4">
-                     <?= $fm->phone([ 'label' =>'Phone number' ,'name' => 'telephone', 'size' => 16,
-                                        'value' => $rec['telephone'] , 'class' => 'form-control']) ?>
-            </div>
-        </div>
-            <div class="form-group">
-                <label>Message</label>
-             <?= $fm->multiline([ 'name' => 'body', 'cols' => 80, 'rows' => 5,'value' => $rec['body'] ]) ?>
-            </div>
-        <hr>
-            <?= $fm->xcheck([ 'value' =>  $m->xcheck ]) ?>
-           <?php if (!is_null($google) && $google['enabled']): ?>
-               <?= $fm->recaptcha([ 'id' => 'email', 'site' => $google['site'], 'text' => 'Send' ]) ?>
-            <?php else: ?>
-            <div class="form-group">
-                <?= $fm->submit([ 'name' => 'login', 'value' => 'Send', 'class' => 'btn btn-primary' ]) ?>
-            </div>    
-            <?php endif ?>
-    </form>
+       </form>
 </div>

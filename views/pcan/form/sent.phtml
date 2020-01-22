@@ -1,46 +1,36 @@
 <?php
-if ($view->layout):
-    $this->layout($view->layout, $this->data);
-endif;
-$url = $m->url;
 $rec = $m->rec;
-$google = $m->google;
+if (empty($view->layout) && !empty($view->flash)):
+    $this->insert('flash',$this->data);
+endif;
+$fm = $this->form();
 ?>
 <style>
     div.form-group  label {
         font-weight: bold;
         margin-right:10px;
-        vertical-align: bottom;
+        vertical-align: top;
     }
 </style>
 
 <div class='container pad10'>
     <div class="outerwrap pad10">
-    <?php  if (!empty($blog)): ?>
-                <div class="<?= $blog['style ']?>" >
-                    <?= $blog['article'] ?>
-        </div>
-<?php endif ?>
-        
-            <?php if ($m->sub === 1): ?>
-            <?= $fm->hidden([ 'name' => 'sub', 'value' =>  $m->sub]) ?>
-            <?php endif ?>
-<?php if ($recid): ?>         
-               <?= $fm->hidden([ 'name' => 'id', 'value' =>  $recid]) ?>
+
+<?php if (!empty($rec)): ?>         
             <div class="form-group row">
                 <div class="col-5">
-                        <?= $fm->datetime([ 'label' =>'Date sent' ,'name' => 'created_on', 
+                        <?= $fm->plainText([ 'label' =>'Date sent' ,'name' => 'created_on', 
                                         'value' => $rec['senddate'] , "readonly", 'class' => 'form-control']) ?>
                 </div>
             </div>
             <?php endif ?>
                     <div class="form-group row">
             <div class="col-4">
-                     <?= $fm->plainText([ 'label' =>'Name' ,'name' => 'created_on', 'size' => 16,
+                     <?= $fm->plainText([ 'label' =>'Name' ,'name' => 'name', 'size' => 16,
                                         'value' => $rec['name'] , 'class' => 'form-control', "readonly"]) ?>
             </div>
             <div class="col-4">
-                    <?= $fm->email([ 'label' =>'Your email address' ,'name' => 'email',
+                    <?= $fm->email([ 'label' =>'Your email' ,'name' => 'email',
                                         'value' => $rec['email'] , 'class' => 'form-control', "readonly"]) ?>
             </div>
             <div class="col-4">
@@ -48,7 +38,7 @@ $google = $m->google;
                                         'value' => $rec['telephone'] , 'class' => 'form-control', "readonly"]) ?>
             </div>
         </div>
-            <<div class="form-group">
+            <div class="form-group">
                 <label>Message</label>
              <?= $fm->multiline([ 'name' => 'body', 'cols' => 80, 'rows' => 5,'value' => $rec['body'], "readonly" ]) ?>
             </div>

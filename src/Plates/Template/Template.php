@@ -139,10 +139,10 @@ class Template
         $this->data($data);
         unset($data);
         extract($this->data);
-
-        if (!$this->exists()) {
+        $mypath = $this->path();
+        if (!file_exists($mypath)) {
             throw new LogicException(
-                'The template "' . $this->name->getName() . '" could not be found at "' . $this->path() . '".'
+                'The template "' . $this->name->getName() . '" could not be found at "' . $mypath. '".'
             );
         }
 
@@ -150,7 +150,7 @@ class Template
             $level = ob_get_level();
             ob_start();
 
-            include $this->path();
+            include $mypath;
 
             $content = ob_get_clean();
 
