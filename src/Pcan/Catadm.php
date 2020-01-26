@@ -12,7 +12,7 @@ use WC\Valid;
 
 class CatAdm extends Controller
 {
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
 use Mixin\Auth;
 
     public $url = '/admin/cat/';
@@ -54,25 +54,30 @@ use Mixin\Auth;
     public function newRec($f3, $args)
     {
         $view = $this->getView();
-        $view->content = 'cat_adm/edit.phtml';
-        $view->title = 'New Category';
-        $view->cat = new BlogCat();
+        $view->content = 'cat_adm/edit';
+         $view->assets('bootstrap');
+         
+        $m = $view->model;
+        $m->title = 'New Category';
+        $m->cat = new BlogCat();
 
-        $view->url = $this->url;
-        $view->assets('bootstrap');
+        $m->url = $this->url;
+       
         echo $view->render();
     }
 
     public function edit($f3, $args)
     {
 
-        $id = $args['cid'];
+        $id = $args['id'];
         $view = $this->getView();
-        $view->content = 'cat_adm/edit.phtml';
-        $view->cat = BlogCat::byId($id);
-        $view->url = $this->url;
-        $view->title = 'Edit Category';
-        $view->assets('bootstrap');
+        $view->content = 'cat_adm/edit';
+          $view->assets('bootstrap');
+        $m = $view->model;
+        $m->cat = BlogCat::byId($id);
+        $m->url = $this->url;
+        $m->title = 'Edit Category';
+      
         echo $view->render();
     }
 
@@ -85,17 +90,21 @@ use Mixin\Auth;
         $start = ($numberPage - 1) * $grabsize;
         
         $view = $this->getView();
-        $view->content = 'cat_adm/index.phtml';
-        $view->title = "Category Index";
-        $view->url = '/admin/cat/';
+        $view->content = 'cat_adm/index';
+          $view->assets('bootstrap');
+        $m = $view->model;
+        
+        $m->title = "Category Index";
+        $m->url = '/admin/cat/';
         $db = Server::db();
         $sql = "select *, count(*) over() as full_count from blog_category" . 
                 " limit :grab offset :start";
         $results = $db->exec($sql, [':start' => $start, ':grab' => $grabsize]);
         $maxrows = !empty($results) ? $results[0]['fullcount'] : 0;
         $paginator = new PageInfo($numberPage, $grabsize, $results, $maxrows);
-        $view->page = $paginator;
-        $view->assets('bootstrap');
+        $m->page = $paginator;
+        
+      
         echo $view->render();
     }
 

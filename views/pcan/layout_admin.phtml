@@ -1,57 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php 
-use \WC\Assets; 
-use \WC\App;  
-use \WC\UserSession; 
-?>
-<head>
-    <meta charset="UTF-8" >
-    <meta name="viewport" content="width=device-width, initial-scale=1" >
-    <?php
-    if ($m->metaloaf): 
-        foreach($m->metaloaf as $meta):
-            echo($meta) . PHP_EOF;
-        endforeach;
-    endif; ?>
-    <?php if (isset($m->title)): ?>
-    <title><?= $m->title ?></title>
-    <?php endif; ?>
-    <?= Assets::instance()->CssHeader(); ?> 
-</head>
-<body>
-<?php
-if (!empty($view->nav)):
-    $this->insert($view->nav, $this->data);
-endif;
-?>
-<?php
-if (!empty($view->flash)):
-    foreach ($view->flash as $msg):
-        ?>
-        <div class="alert alert-<?= $msg['status'] ?> alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button
-            <?= $msg['text'] ?>
-            </div>
-            <?php endforeach; endif; ?>
-    <?= $this->section('content', $this->data); ?>
-
-<footer class="page-footer">
-            <div class="row" >
-       <div class="col-3">
-            <?php
-            $f3 = \Base::Instance();
-            echo( "Session: " . UserSession::sessionName() );
-            ?>
-        </div>
-        <div class="col-3"> 
-            &copy;&nbsp;<?= $f3->get('organization')?>
-        </div>
-        <div class="col-6">            
-            <?= \WC\App::end_stats($f3); ?>
-        </div>
-    </div>
-        </footer>
-        <?= Assets::instance()->JsFooter(); ?>
-</body>
+    <?php $this->insert('std_head', $this->data); ?>
+    <body>
+        <?php if (!empty($view->nav)):
+            $this->insert($view->nav, $this->data);
+        endif; ?>
+        <?php if (!empty($view->flash)):
+            $this->insert('flash', $this->data);
+        endif; ?>
+        <?= $this->section('content', $this->data); ?>
+        <div class="clear"></div>
+<?php $this->insert('std_foot', $this->data); ?>
+    </body>
 </html>

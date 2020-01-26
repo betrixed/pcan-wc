@@ -1,42 +1,47 @@
-{~
-    @view = \Base::instance()->get('view');
-    @cat = @view->cat;
-    @url = @view->url;
-~}
+<?php
+if ($view->layout) {
+    $this->layout($view->layout, $this->data);
+}
+    $cat = $m->cat;
+    $url = $m->url;
+    $fm = $this->form();
+?>
 
+<style>
+     label.col-form-label {
+        min-width: 100px;
+        text-align: right;
+        margin-right:20px;
+    }
+</style>
 <div class='header row'>
     <div class="outerwrap pad10">
-    <link-to href="{{ @url  }}" text="Category List"  class="btn btn-warning"></link-to><span class="btn">{{ @view->title }}</span>
+        <?= $fm->linkTo(['href' =>$url , 'text' =>"Category List", 'class' => "btn btn-outline-warning"]) ?><span class="btn"><?= $m->title ?></span>
     </div>
 </div>
-<div class="container pad10">
+<div class="container pad10 outerwrap">
     
-<form action="{{ @url . 'post' }}" method="post">
-    <check if="{{ isset(@cat.id) && @cat.id > 0 }}">
-        <true>
+<form action="<?= $url . 'post' ?>" method="post">
+    <?php if ( isset($cat['id']) && $cat['id'] > 0 ): ?>
     <div class="form-group row">
         <label class="col-form-label" >Id</label>
-        <text-field name="id" value="{{ @cat.id }}" readonly="readonly"></text-field>
+        <?= $fm->plainText(['name' => 'id', 'value' => $cat['id'], "readonly"]) ?>
     </div>
-    </true>
-    </check>
+    <?php endif; ?>
      <div class="form-group row">
         <label class="col-form-label" >Name</label>
-        <text-field name="name" value="{{ @cat.name }}" ></text-field>
-        <?php echo $form->render("name"); ?>
+        <?= $fm->plainText([ 'name' => 'name', 'value' => $cat['name'] ]) ?>
    </div>
     <div class="form-group row">
         <label class="col-form-label" >Name Clean</label>
-        <text-field name="name_clean" value="{{ @cat.name_clean }}" ></text-field>
+        <?= $fm->plainText([ 'name' => 'name_clean', 'value' => $cat['name_clean'] ]) ?>
   </div>
    <div class="form-check row">
         <label class="col-form-label" >Enabled</label>
-        <checkbox name="enabled" checked="{{ @cat.enabled }}"></checkbox>
+         <?= $fm->checkbox([ 'name' => 'enabled', 'value' => $cat['enabled'] ]) ?>
       </div>
     <p>
         <input type="submit" value="Save" />
     </p>
-
 </form>
 </div>
-<F3:asset src="/css/admin.css" priority="5"></F3:asset>
