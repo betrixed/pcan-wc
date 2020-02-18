@@ -1,6 +1,6 @@
 <?php
 
-namespace WC\Mysql;
+namespace WC\Sqlite;
 use WC\NameDef;
 use WC\DB\Script;
 use WC\DB\AbstractDef;

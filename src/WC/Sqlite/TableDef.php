@@ -4,7 +4,7 @@
  * @author Michael Rynn
  */
 
-namespace WC\Mysql;
+namespace WC\Sqlite;
 
 use WC\NameDef;
 use WC\DB\Script;
