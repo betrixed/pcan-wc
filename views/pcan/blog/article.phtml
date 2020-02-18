@@ -1,9 +1,15 @@
-{~
-@view = Base::instance()->get('view');
-@blog = @view->blog;
-@metadata = @view->metadata;
-@back = @view->back;
-~}
+<?php
+if (!empty($view->layout)) {
+    $this->layout($view->layout, $this->data);
+}
+
+$blog = $m->blog;
+$metadata = $m->metadata;
+$back = $m->back;
+$theme = $f3->get('theme');
+$fm = $this->form();
+
+?>
 
 <style>
     div#title-box {
@@ -17,63 +23,59 @@
         border-width:0;
     }
     div#metadata {
-        background-image: url( "{{ @theme }}/tile-fog.png" );
+        background-image: url( "<?= $theme ?>/tile-fog.png" );
     }
 </style>
 <div class='container-fluid'>
     <div  class="row">
         <div class="col-6">
-            <check if="{{ @back }}">
-                Back to <a href="{{ @back }}">{{ @view->backname }}</a>&nbsp; &nbsp; &nbsp; 
-            </check>
+            <?php if($back): ?>
+                Back to <a href="<?= $back ?>"><?= $m->backname ?></a>&nbsp; &nbsp; &nbsp; 
+            <?php endif; ?>
         </div>
     </div>
     <div id="article-box">
-    <div class='{{@blog.style}}' >
+    <div class='<?=$blog['style'] ?>' >
         <div id="title-box" class="row">
              <div class="col">
-            <span>{{ @blog.title }}</span>
+            <span><?= $blog['title'] ?></span>
              </div>
         </div>
         <div class="row">
             <div class="col">
-                {{ @blog.article | raw }}
+                <?= $blog['article'] ?>
             </div>
         </div>
     </div>
     </div>
-    <check if='{{ count(@metadata) > 0 }}'><true>
+    <?php if ( !empty($metadata) ): ?>
         <div class='container-fluid' id='metadata' style='font-size:0.6em;'>
             <div class='table'>
-                <repeat group='{{ @metadata }}' value='{{ @mtag }}' > 
-                    <check if='{{ @mtag.display == 1 && strlen(@mtag.content) >0 }}'><true>
+                <?php foreach($metadata as $mtag): ?>
+                   <?php if ($mtag['display'] == 1 && strlen($mtag['content'] ) >0): ?>
                         <div class="row">
-                            <div class='col-1'>{{ @mtag.meta_name}}:</div>
-                            <div class='col-8'>{{ @mtag.content}}</div>
+                            <div class='col-1'><?= $mtag['meta_name'] ?>:</div>
+                            <div class='col-8'><?= $mtag['content'] ?></div>
                         </div>
-                        </true>
-                    </check>
-                </repeat>
+                <?php endif; ?>
+                <?php endforeach; ?>
             </div>
         </div>
-        </true>
-    </check>
+ <?php endif; ?>
     <hr />
 </div>
 <div class='clear'></div>
 
-<check if='{{ @metadata }}'><true>
+<?php if ( !empty($metadata) ): ?>
     <div class="fb-share-button" 
-         data-href="{{ @view->canonical }}" 
+         data-href="<?= $m->canonical ?>" 
          data-layout="button_count">
     </div>
-    </true>
-</check>
-<check if='{{ @blog.comments }}'><true>
+<?php endif; ?>
+<?php if ( $blog['comments'] ): ?>
     <div>
         <div id="fb-root"></div>
         <fb:login-button autologoutlink="True" length="short" background="white" size="large"></fb:login-button>
-        <div class="fb-comments" data-href="{{ @view->canonical }}" data-width="900" data-numposts="5"></div>
+        <div class="fb-comments" data-href="<?= $m->canonical ?>" data-width="900" data-numposts="5"></div>
     </div>
-    </true>
-</check>
+<?php endif; ?>

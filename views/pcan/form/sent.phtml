@@ -1,55 +1,46 @@
-<wc:init></wc:init>
-{~
-@view = \Base::instance()->get('view');
-@url = @view->url;
-@rec = @view->rec;
-@google = @view->google;
-~}
+<?php
+$rec = $m->rec;
+if (empty($view->layout) && !empty($view->flash)):
+    $this->insert('flash',$this->data);
+endif;
+$fm = $this->form();
+?>
 <style>
     div.form-group  label {
         font-weight: bold;
         margin-right:10px;
-        vertical-align: bottom;
+        vertical-align: top;
     }
 </style>
 
 <div class='container pad10'>
     <div class="outerwrap pad10">
-        <check if="{{ @view->blog }}">
-            <true>
-                <div class="{{ @blog.style }}" >
-                    {{ @blog.article }}
-                </div>
-            </true>
-        </check>
-        
-            <check if="{{ @view->sub === 1 }}">
-                <true><hidden name="sub" value="{{ @view->sub }}" ></hidden></true>
-            </check>
-            <check if="{{ @rec.id }}">
-                <true>            
-                <hidden name="id" value="{{ @rec.id }}" ></hidden>
-                <div class="form-group row">
-                    <div class="col-5">
-                        <datetime label='Date sent' name="created_on" value="{{ @rec.sendDate }}" readonly class="form-control" ></datetime>
-                    </div>
-                </div>
-                </true>
-            </check>
+
+<?php if (!empty($rec)): ?>         
             <div class="form-group row">
-                <div class="col-4">
-                    <text-field  name="name" value="{{ @rec.name }}" readonly label='Name' size="16" class="form-control"></text-field>
-                </div>
-                <div class="col-4">
-                    <email name="email" value="{{ @rec.email }}" readonly label="Your email address"  class="form-control" ></email>
-                </div>
-                <div class="col-4">
-                    <phone name="telephone" value="{{ @rec.telephone }}" readonly label='Phone number' size="16" class="form-control"></phone>
+                <div class="col-5">
+                        <?= $fm->plainText([ 'label' =>'Date sent' ,'name' => 'created_on', 
+                                        'value' => $rec['senddate'] , "readonly", 'class' => 'form-control']) ?>
                 </div>
             </div>
+            <?php endif ?>
+                    <div class="form-group row">
+            <div class="col-4">
+                     <?= $fm->plainText([ 'label' =>'Name' ,'name' => 'name', 'size' => 16,
+                                        'value' => $rec['name'] , 'class' => 'form-control', "readonly"]) ?>
+            </div>
+            <div class="col-4">
+                    <?= $fm->email([ 'label' =>'Your email' ,'name' => 'email',
+                                        'value' => $rec['email'] , 'class' => 'form-control', "readonly"]) ?>
+            </div>
+            <div class="col-4">
+                     <?= $fm->phone([ 'label' =>'Phone number' ,'name' => 'telephone', 'size' => 16,
+                                        'value' => $rec['telephone'] , 'class' => 'form-control', "readonly"]) ?>
+            </div>
+        </div>
             <div class="form-group">
-            <label>Message</label>
-            <multiline name="body" cols="80" rows="5" value="{{ @rec.body }}" readonly></multiline>
+                <label>Message</label>
+             <?= $fm->multiline([ 'name' => 'body', 'cols' => 80, 'rows' => 5,'value' => $rec['body'], "readonly" ]) ?>
             </div>
             <hr>
     </div>

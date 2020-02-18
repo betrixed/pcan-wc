@@ -1,0 +1,61 @@
+<?php
+$url = $m->url;
+$rec = $m->rec;
+$google = $m->google;
+$blog = $m->blog;
+$recid = $rec['id'];
+$fm = $this->form();
+?>
+<style>
+    div.form-group  label {
+        font-weight: bold;
+        margin-right:10px;
+        vertical-align: top;
+    }
+</style>
+<h3>Send email message to <?= $f3->get('organization') ?></h3>
+    <hr>
+        <?php if ($m->sub === 1): ?>
+            <?= $fm->hidden([ 'name' => 'sub', 'value' =>  $m->sub]) ?>
+            <?php endif ?>
+           <?php if ($recid): ?>         
+               <?= $fm->hidden([ 'name' => 'id', 'value' =>  $recid]) ?>
+            <div class="form-group row">
+                <div class="col-5">
+                        <?= $fm->datetime([ 'label' =>'Date sent' ,'name' => 'created_on', 
+                                        'value' => $rec['senddate'] , "readonly", 'class' => 'form-control']) ?>
+                </div>
+            </div>
+            <?php endif ?>
+        <div class="form-group row">
+            <div class="col-4">
+                     <?= $fm->plainText([ 'label' =>'Name' ,'name' => 'created_on', 'size' => 16,
+                                        'value' => $rec['name'] , 'class' => 'form-control']) ?>
+            </div>
+            <div class="col-4">
+                    <?= $fm->email([ 'label' =>'Your email address' ,'name' => 'email',
+                                        'value' => $rec['email'] , 'class' => 'form-control']) ?>
+            </div>
+            <div class="col-4">
+                     <?= $fm->phone([ 'label' =>'Phone number' ,'name' => 'telephone', 'size' => 16,
+                                        'value' => $rec['telephone'] , 'class' => 'form-control']) ?>
+            </div>
+        </div>
+            <div class="d-flex form-group">
+                <label>Message</label>
+             <?= $fm->multiline([ 'name' => 'body', 'cols' => 80, 'rows' => 5,'value' => $rec['body'] ]) ?>
+            </div>
+        <hr>
+            <?= $fm->xcheck([ 'value' =>  $m->xcheck ]) ?>
+            <div class="d-flex  justify-content-center"">
+                <?= $fm->submit(['id' => 'submit',  'name' => 'submit', 'value' => 'Send', 'class' => 'btn btn-outline-primary btn-lg' ]) ?>
+                <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
+            </div>    
+        <hr>
+        
+         <?php if (!is_null($google) && $google['enabled']): ?>
+            <div class="d-flex  justify-content-center"">
+               <?= $fm->invisiCaptcha([ 'site' => $google['site'] ]) ?>
+            </div>
+            <?php endif ?>
+            

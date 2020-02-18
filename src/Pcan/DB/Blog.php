@@ -269,7 +269,15 @@ EOD;
             libxml_clear_errors();
         }
     }
-    static public function viewOrderBy($view, $orderby)
+    /**
+     * Fill $model  query order information
+     * 
+     * @param object $model
+     * @param string $orderby - key index
+     * @return string
+     * return sql order fields clause
+     */
+    static public function viewOrderBy($model, $orderby)
     {
         if (is_null($orderby))
         {
@@ -325,12 +333,13 @@ EOD;
             default:
                 $col_arrow['date'] = '&#8593;';
                 $order_field = 'b.date_published desc';
+                $orderby = 'date-alt';
                 break;             
                 
         }
-        $view->orderalt = $alt_list;
-        $view->orderby = $orderby;
-        $view->col_arrow = $col_arrow;
+        $model->orderalt = $alt_list;
+        $model->orderby = $orderby;
+        $model->col_arrow = $col_arrow;
         return $order_field;
     }
     static  public function byTitleClean($tc) {

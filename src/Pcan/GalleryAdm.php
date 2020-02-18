@@ -103,15 +103,20 @@ class DeleteOp extends ImageOp {
 
 class GalleryAdm extends GalleryCtl {
 use Mixin\Auth;
-
+     private $layout = "layout_admin";
     private $syncUrl = 'http://parracan.org';
     private $editList = [];
     protected $url;
-
-    public function __construct() {
-        parent::__construct();
+                    
+    public function __construct($f3,$args) {
+        parent::__construct($f3,$args);
+        
         $this->viewPost = '/admin' . $this->viewPost;
         $this->url = '/admin/gallery/';
+        
+        $view = $this->view;
+        $view->nav = "nav_admin";
+        $view->layout = $this->layout;
     }
 
     public function beforeRoute() {
@@ -122,6 +127,7 @@ use Mixin\Auth;
 
     public function index($f3, $args) {
         $view = $this->galleryIndex($f3, 'gallery_adm/index.phtml');
+        $view->layout = $this->layout;
         $view->assets(['bootstrap', 'grid']);
         echo $view->render();
     }
@@ -209,6 +215,7 @@ use Mixin\Auth;
         $dpath = $this->getDirPath($gal);
         if (file_exists($dpath) && is_dir($dpath)) {
             //$fileset = $this->scanImages($dpath);
+
             $fileset = static::dirFileList($dpath);
             $imglist = Gallery::getImages($gal->id); //should be empty?
 
@@ -228,9 +235,9 @@ use Mixin\Auth;
                     }
                 }
             }
-            // check for null thumb_ext, but existing thumb file
+            // check for null, or incorrect thumb_ext, but existing thumb file
             foreach ($imglist as $r) {
-                $thumb_ext = static::findThumbExt($dpath, $file);
+                $thumb_ext = static::findThumbExt($dpath, $r['name']);
                 if ($r['thumb_ext'] !== $thumb_ext) {
                     Image::updateThumbExt($r['id'], $thumb_ext);
                 }
@@ -270,7 +277,8 @@ use Mixin\Auth;
             if ($isnew) {
                 $view = $this->view;
                 $view->content = 'gallery_adm/new.phtml';
-                $view->gallery = $gal;
+                $m = $view->model;
+                $m->gallery = $gal;
                 $view->assets(['bootstrap', 'grid', 'DateTime']);
                 echo $view->render();
             }
@@ -335,8 +343,12 @@ use Mixin\Auth;
         $gal['view_thumbs'] = Valid::toBool($post, 'view_thumbs');
         
     }
-
-    public function newRec() {
+                    /**
+                     * Make new gallery record
+                     * @param type $f3
+                     * @param type $args
+                     */
+    public function newRec($f3, $args) {
         $view = $this->view;
         $view->content = 'gallery_adm/new.phtml';
         $view->gallery = new Gallery();
@@ -358,15 +370,6 @@ use Mixin\Auth;
         $this->view->gal = $gal;
     }
 
-    /**
-     * Make an edit form for blog $id
-     * @param type $id
-     * @return type null
-     */
-    private function editForm($id) {
-
-        $this->getView($id);
-    }
 
     /**
      * 
@@ -436,8 +439,29 @@ use Mixin\Auth;
         }
         UserSession::reroute($this->viewPost . 'edit/' . $name);
     }
-
+    /**
+     * Edit just the gallery record
+     */
     public function edit($f3, $args) {
+        $name = $args['name'];
+        $gal = $this->getGalleryFiles($name);
+        if ($gal) {
+            $view = $this->view;
+            $view->content = 'gallery_adm/editgal.phtml';
+            $m = $view->model;
+            $m->gallery = $gal;
+            $m->series = $this->getSerieSelect();
+
+            $view->assets(['bootstrap', 'grid', 'jquery-form', 'gallery-progress', 'imagelist']);
+            echo $view->render();
+        } else {
+            $this->flash("Gallery not found: " . $name);
+        }
+
+    }
+    /** Edit the gallery image list */
+
+    public function images($f3, $args) {
         $name = $args['name'];
         $gal = $this->getGalleryFiles($name);
         if ($gal) {
@@ -468,35 +492,39 @@ use Mixin\Auth;
     private function constructView($galrec, $op = "edit", $isAjax = false) {
 
         $image_set = Gallery::getImages($galrec->id);
-        $select = [];
-        $select['edit'] = ['Edit', 0];
-        $select['show'] = ['Show', 0];
-        $select['hide'] = ['Hide', 0];
-        $select['remove'] = ['Remove', 0];
-        $select[$op][1] = 1;
+        $select['noop'] = ' ';
+        $select['edit'] = 'Edit';
+        $select['show'] = 'Show';
+        $select['hide'] = 'Hide';
+        $select['remove'] = 'Remove';
 
         $view = $this->view;
-        $view->select = $select;
-
-        $view->series = $this->getSerieSelect();
-        $view->gallery = $galrec;
-        $view->images = &$image_set;
-        $view->post = $this->viewPost;
+       
+        $m  = $view->model;
+        $m->select = $select;
+        $m->select_op = 'edit';
+        $m->series = $this->getSerieSelect();
+        $m->gallery = $galrec;
+        $m->images = &$image_set;
+        $m->post = $this->viewPost;
+         $elist = [];
         if ($op == "edit" && count($this->editList) > 0) {
             $tindex = [];
-            $elist = [];
+           
             foreach ($image_set as $img) {
                 $tindex[$img->id] = $img;
             }
             foreach ($this->editList as $imgid) {
                 $elist[] = $tindex[$imgid];
             }
-            $view->elist = $elist;
+        
         }
+        $m->elist = $elist;
+        return $view;
     }
 
     /**
-     * Process post from gallery/edit
+     * Process post for Image List Operation
      * @param type $f3
      * @param type $args
      */
@@ -540,11 +568,13 @@ use Mixin\Auth;
                     }
                 }
             }
-            $this->constructView(Gallery::byId($galleryid), "edit", true);
-            echo TagViewHelper::render('gallery_adm/file.phtml', $this->view);
-        } else {
+            $view = $this->constructView(Gallery::byId($galleryid), "edit", true);
+            $view->layout = null;
+            $view->content = 'gallery_adm/file.phtml';
+            echo $view->render();
+        } else {                                                                                                     
             $this->flash->error('No Ajax');
-            $this->view->events = array();
+            $this->view->model->events = [];
         }
     }
 
@@ -592,9 +622,11 @@ use Mixin\Auth;
             }
         }
         // reconstruct gallery file list render
-        $this->constructView(Gallery::byId($galleryid), $image_op, true);
-        echo TagViewHelper::render('gallery_adm/file.phtml', $this->view);
-        $this->view->reply = $reply;
+        $view = $this->constructView(Gallery::byId($galleryid), $image_op, true);
+        $view->content = 'gallery_adm/file.phtml';
+        $view->model->reply = $reply;
+        echo $view->render();
+        
     }
 
     static private function crimp_thumb($square, $width_o, $height_o, &$width_t, &$height_t) {
@@ -680,13 +712,14 @@ use Mixin\Auth;
         ));
         return $image;
     }
-
+/*
     public function galleryEditAction() {
         $this->view->setRenderLevel(View::LEVEL_ACTION_VIEW);
         if (!$this->request->isPost()) {
             $idstr = $this->request->getQuery('id', 'string');
             $galid = intval(substr($idstr, 3));
             $gal = Gallery::byId($galid);
+            
             $this->view->gallery = $gal;
         } else {
             $f3 = $this->f3;
@@ -705,6 +738,6 @@ use Mixin\Auth;
                 $this->view->gallery = $gal;
             }
         }
-    }
+    } */
 
 }

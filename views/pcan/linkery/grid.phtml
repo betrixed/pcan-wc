@@ -1,62 +1,50 @@
-
-{~ 
-@links = @view->links;
-@linkery = @view->linkery;
-
-~}
+<?php
+$links = $m->links;
+$linkery = $m->linkery;
+$fm = $this->form();
+?>
 
 
 <div class="container body-wrap">
-    <check if="{{ count(@links) > 0}}"><true>
+    <?php if (!empty($links)): 
+        $rowId = 0;
+
+?>
         <div id="mgrid"  data-columns>
-            {~  
-            @rowId = 0;
-            ~}
-            <repeat group="{{ @links }}" value="{{ @fup }}">
-                {~
-                    @url = @fup.url;
-                    @lid = 'lnky=' . @linkery.id;
+            <?php foreach($links as $fup):
+                 $url = $fup['url'];
+                    $lid = 'lnky=' . $linkery['id'];
                     
-                    if (@url !== '/') {
-                        if (strpos( @url, '?')===false):
-                            @url .= '?' . @lid;
+                    if ($url !== '/') :
+                        if (strpos( $url, '?')===false):
+                            $url .= '?' . $lid;
                         else:
-                            @url .= '&' . @lid;
+                            $url .= '&' . $lid;
                         endif;
-                    }
-                ~}
-                <div class='mitem' id="{{ 'lnk' . @fup.id }}">
+                   endif;   ?>
+            
+                <div class='mitem' id="<?= 'lnk' . $fup['id'] ?>">
                     <div class="wrap-item">
                     <div style="padding:10px; width:100%; overflow-x:auto;">
                         <span class="title-area" >
                             <span class="link-title">
-                                <check if="{{ @url !== '/' }}">
-                                    <true>
-                                <a href="{{ @url }}">{{ @fup.title | raw }}</a>
-                                </true>
-                                <false>
-                                {{ @fup.title | raw }}
-                                </false>
-                                </check>
+                                <a href="<?= $url ?>"><?= $fup['title'] ?></a>
                             </span>
-                            <check if="{{ @fup.urltype==='Event' }}">
-                                <div class="float-right">{{ @fup.date_created, 'd F Y' | date }}</div>
+                            <?php if ($fup['urltype']==='Event' ): ?>                         
+                                <div class="float-right"><?= $fm->datetime_value(['value' => $fup['date_created'],
+                                    'format' => 'd F Y' ]) ?></div>
                                 <div class='clear'></div>
-                            </check>
+                           <?php endif; ?>
                         </span>    
-                        {{ @fup.summary| raw }}
+                        <?= $fup['summary'] ?>
                         <div class='clear'></div>
-                        <check if="{{ @url !== '/' }}">
-                        <a href="{{ @url }}">Full article ...</a>
-                        </check>
+                        <a href="<?= $url ?>">Full article ...</a>
                     </div>
                     </div>
                 </div>
-            </repeat>
+                <?php endforeach; ?>
         </div>
-        </true>
-        <false>
+<?php else: ?>
         <p>No Link records here</p>
-        </false>
-    </check>
+<?php endif;  ?>
 </div>

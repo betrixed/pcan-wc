@@ -1,7 +1,10 @@
-{~
-    @view = \Base::instance()->get('view');
-    @gallery = @view->gallery;
-~}
+<?php
+    if ($view->layout):
+        $this->layout($view->layout, $this->data);
+    endif;
+    $gallery = $m->gallery;
+    $fm = $this->form();
+?>
 <style>
     textarea.form-control {
         margin:20px;
@@ -19,29 +22,37 @@
 </style>
 <div class="container-fluid">
     <div class="outerwrap pad10">
-    <h1>Create Image Gallery</h1>
-    <form method="post" action="{{ @view->url . 'post' }}">
-        <check if="{{  @gallery.id  }}">
-            <true>
-            <hidden name="id" value="{{  @gallery.id  }}"></hidden>
+    
+    <form method="post" action="<?= $view->url . 'post' ?>">
+        <?php 
+            $name = $gallery['name'];
+            if(empty($gallery['id'])):
+                $sval = 'Create';
+            ?>
+           <h1>Create Image Gallery</h1>
+            <?= $fm->hidden(['name' => 'id', 'value' =>  $gallery['id'] ]) ?>
             <div class="row">
             <label for="name" class="control-label">Name</label>
-            <text-field name="name" value="{{ @gallery.name }}" readonly></text-field>
+            <?= $fm->plainText(['name' => 'name', 'value' =>  $name  ]) ?>
             </div>
-            </true>
-            <false>
+            <?php else: 
+                $sval = 'Update';
+                ?>
+ 
+            <h1>Update Image Gallery</h1>
                 <div class="row">
                     <label for="name" class="control-label">Name</label>
-                <text-field name="name" value="{{ @gallery.name }}"></text-field>
+                    <?= $fm->plainText(['name' => 'name', 'value' =>  $name, 'readonly'  ]) ?>
                 </div>
-            </false>
-        </check>
+            <?php endif ?>
         <div class="row">
             <label for="description" class="control-label">Description</label>
-            <multiline cols="50" name="description" value="{{ @gallery.description }}"></multiline>
-        </div>
+            <?= $fm->multiline(['cols' => 50, 'name' => 'description', 'value' =>  $gallery['description']   ]) ?>
+         </div>
         <div class="row">
-            <submit-btn value="Create new gallery" class="form-control"></submit-btn>
+            <div class="col">
+            <?= $fm->submit(['value' => $sval, 'class'=>'btn btn-warning btn-lg']) ?>
+            </div>
         </div>
     </form>
     </div>

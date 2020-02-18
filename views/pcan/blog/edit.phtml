@@ -1,12 +1,17 @@
-<wc:init></wc:init>
-{~
-@view = Base::instance()->get('view');
-@blog = @view->blog;
-@metatags = @view->metatags;
-@url = @view->url;
-@stylelist = &@view->stylelist;
-@module = '/admin/';
-~}
+<?php
+
+$blog = $m->blog;
+$metatags = $m->metatags;
+$url = $m->url;
+$stylelist = $m->stylelist;
+$module = '/admin/';
+$fm = $this->form();
+if (!empty($view->layout)) {
+    $this->layout($view->layout, $this->data);
+}
+$btn_class = 'btn btn-outline-secondary';
+?>
+
 <style>
     .form-check label {
         padding-left:10px;
@@ -26,7 +31,7 @@
     }
 
     .date label {
-        min-width:100px;
+        min-width:150px;
         font-weight:bold;
         text-align:right;
         padding-right:10px;
@@ -37,52 +42,50 @@
         max-width:300px;
     }
 </style>
-<div class='row center outerwrap'>
+<div class='row center' style="padding-top:15px; padding-bottom:0; ">
     <div class="col-2">
-        <span><link-to text="Articles" href="{{ @module . 'blog' }}"></link-to></span>
+        <span><?= $fm->linkTo(['text'=>"Articles", 'href'=> $module . 'blog',  'class' => $btn_class]) ?></span>
     </div>
     <div class="col-2">
-        <link-to href='{{ @module ."links/blog/" . @blog.id }}' text="Generate Link"  target='_blank'  class='btn btn-default' />
+        <?= $fm->linkTo(['href'=>$module ."links/blog/" . $blog['id'], 'text'=>"Generate Link" , 'target' => '_blank',  'class' => $btn_class]) ?> 
     </div>
     <div class="col-2">
-        <link-to href='{{ @module ."gallery"  }}' text="Galleries"  target='_blank'  class='btn btn-default' />
+        <?= $fm->linkTo(['href' => $module . "gallery", 'text' => "Galleries",  'target' => '_blank',  'class' => $btn_class]) ?>
     </div>
 </div>
 
-<form action="{{  @url . 'post'  }}"
+<form action="<?=$url.'post'?>"
       id="postForm"
       method='post'
       onsubmit='smotePost()'>
-    <hidden name='id' value='{{ @blog.id }}' ></hidden>
+    <?= $this->form()->hidden(["name" => 'id', "value" => $blog['id']]) ?>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class='row'>
             <div class='col-7 outerwrap'>
                 <div class='form-group'>
+                    
                     <label class='col-form-label' for="title">Title</label>
-                    <text-field name='title' size='40' value='{{ @blog.title }}' /><br>
+                    <?= $fm->plainText(['name'=>'title', 'size'=>40, 'value'=> $blog['title']]) ?><br>
                     <label class=' col-form-label' for="issue">Issue</label>
-                    <text-field name='issue' size='4' type='number' value='{{ @blog.issue }}'/>
+                    <?= $fm->plainText(['name'=>'issue', 'size'=>4, 'value'=> $blog['issue']]) ?>
                 </div>
                 <div class='form-group'>
                     <label class='col-form-label' for="lock_url">Unlock URL</label>
-                    <checkbox name='lock_url' size='5'  class="form-check-input"/><br>
-
+                    <?= $fm->checkbox(['name'=>'lock_url', 'size'=>5, 'class'=> "form-check-input"]) ?>
+                   
                     <label class='col-form-label' for="title_clean">Unique URL</label>
-                    <text-field name='title_clean' size='40' value='{{ @blog.title_clean }}'/>
+                     <?= $fm->plainText(['name'=>'title_clean', 'size'=>40, 'value'=> $blog['title_clean']]) ?>
                 </div>
-
-
-
             </div>
             <div class='col-5 outerwrap'>
                 <div class='form-group'>
-                    {{ 'Updated ' .  @blog.date_updated . ' &nbsp;'  }}
-                    <submit-btn name='save' value='Save' class='btn btn-primary' ></submit-btn>
+                    <?= 'Updated ' .  $blog['date_updated'] . ' &nbsp;'  ?>
+                    <?= $fm->submit(['name'=>'save', 'size'=>40, 'value'=> "Save", 'class'=>"btn btn-primary" ]) ?>
                 </div>
                 <div class='form-group'>
                     <label for="class_select">Select style wrapper</label>
-                    <select-menu name='style' list='{{@stylelist}}' empty='false' onChange='wrapStyle()'  value="{{ @blog.style }}"></select-menu>
+                    <?= $fm->select(['name'=>'style', 'list'=>$stylelist, 'value'=> $blog['style'], 'empty' => 'false', 'onChange' =>'wrapStyle()' ]) ?>
                 </div>
 
                 <div class='form-group'>
@@ -95,35 +98,41 @@
     </div>
 
     <div class="clear"></div>
+    <!--
     <div class="row body-wrap pad10">
         <button onclick="smoteVerify(); return false;">Verify HTML</button>
         <textarea id="analysis" cols="80"></textarea>
     </div>
-    <div id='wrap_style' class="{{ @blog.style }}">
-        <textarea id='article' name='article' style='display:none;' cols='100' rows='25'>{{ @blog.article }}</textarea>
+    -->
+    <div id='wrap_style' class="<?= $blog['style'] ?>">
+        <textarea id='article' name='article' style='display:none;' cols='100' rows='25'><?= $blog['article'] ?></textarea>
     </div>
     <div class='container outerwrap'>
         <span class="heading">Author / Flags</span>
         <div class='body-wrap'>
              <div class="row">
                  <div class="col-3">
-                    <label for="author_id">Author</label><text-field name='author_id' type='number' readonly='readonly' />
+                    <label for="author_id">Author</label>
+                    <?= $fm->number(['name'=>'author_id', 'value' => $blog['issue'],  'readonly'=>'readonly' ]) ?>
                  </div>
-                 <div class="col-4"> <!-- value="{{ @blog.date_published }}"  -->
-                     <datetime label="Date" name="date_published" class="form-control" value="{{ @blog.date_published }}" ></datetime>
+                 <div class="col-4"> 
+                     <?= $fm->datetime(['name'=>'date_published', 'value' => $blog['date_published'],  'label' => 'Date', 'class'=>"form-control" ]) ?>
                  </div>
              </div>
             
             <div class="row">
                 <div class="col-2">
-                     <checkbox  name='enabled' value='1'  checked="{{ @blog.enabled }}"></checkbox><label for="enabled">Enabled</label>
+                    <?= $fm->checkbox(['name'=>'enabled',   'checked'=>$blog['enabled'], 'value'=>1 ]) ?>
+                    <label for="enabled">Enabled</label>
                 </div>
 
             <div class="col-2">
-                <checkbox name='featured' value='1' checked="{{ @blog.featured }}"/></checkbox><label for="featured">Featured</label>
+                <?= $fm->checkbox(['name'=>'featured',   'checked'=>$blog['featured'], 'value'=>1 ]) ?>
+                <label for="featured">Featured</label>
             </div>
             <div class="col-2">
-                <checkbox name='comments' value='1' checked="{{ @blog.comments }}"/></checkbox><label for="comments">Comments</label>
+                <?= $fm->checkbox(['name'=>'comments',   'checked'=>$blog['comments'], 'value'=>1 ]) ?>
+               <label for="comments">Comments</label>
             </div>
             </div>
         </div>
@@ -132,46 +141,47 @@
         <span class="heading">Meta-Tags for Search Engines</span>
         <table class='table table-striped'>
             <tbody>
-            <repeat group='{{ @metatags }}' value='{{ @meta }}'>
-                {~
-                @label = @meta.meta_name;
-                @name = 'metatag-' .  @meta.id;
-                @value = @meta.content;
-                ~}
+            <?php foreach($metatags as $meta):
+                $label = $meta['meta_name'];
+                $name = 'metatag-' .  $meta['id'];
+                $value = $meta['content'];
+            ?>
                 <tr>
-                    <td class='rightCell'><label for='{{ @name }}'> {{ @label }}</label></td>
+                    <td class='rightCell'><label for='<?= $name ?>'> <?= $label ?></label></td>
                     <td class='leftCell'>
-                <check if='{{ @meta.data_limit <= 80 }}' ><true>
-                    <text-field name='{{ @name }}' value='{{ @value }}' size='60' cols='60' maxlength='{{ @meta.data_limit }}' />
-                    </true><false>
-                    <textarea name='{{ @name }}' id='{{ @name }}'  size='60' cols='60' maxlength='{{ @meta.data_limit }}' >{{ @value }}</textarea>
-                    </false>
-                </check>
+                        <?php if($meta['data_limit'] <= 80): ?>
+                        <?= $fm->plainText(['name'=>$name, 'size'=>65, 'cols'=>65, 'value'=> $value, 'maxlength' => $meta['data_limit'] ]) ?>
+                    <text-field  maxlength='<?= $meta['data_limit'] ?>' />
+                    <?php else: ?>
+                    <textarea name="<?= $name ?>" id="<?= $name ?>"  size="60" cols="60" maxlength="<?= $meta['data_limit'] ?>" ><?= $value ?></textarea>
+                    <?php endif ?>
                 </td>
                 </tr>
-            </repeat>
+           <?php endforeach ?>
             </tbody>
         </table>
     </div>
 </form>
 <div class='container outerwrap pad10' >
-    <div class="body-wrap">
-        <div id="category_status" ><include href='blog/category.phtml' /></div>
-    </div>
+    <div class="body-wrap"><?php $this->insert('blog/category', $this->data) ?></div>
 </div>
 <div class='container outerwrap pad10'>
-    <div id="event_dates" ><include href='blog/event_dates.phtml' /></div>
-    <form id='eventForm' action="{{ @url  . 'addevent'}}" method="post">
-        <input type="hidden" name="event_blogid" value="{{ @blog.id }}" />
+    <div id="event_dates" ><?php $this->insert('blog/event_dates', $this->data) ?></div>
+    <form id='eventForm' action="<?= $url  . 'addevent'?>" method="post" autocomplete="off">
+        <input type="hidden" name="event_blogid" value="<?= $blog['id'] ?>" />
         <span class="heading">Add Event</span>
         <div class="form-group">
-            <datetime label="From " name="fromDate" class="form-control"></datetime>
+            <?= $fm->datetime(['label'=> "From Date", 'name' => "fromDate", 'class' => "form-control"]) ?>
+            
         </div>
         <div class="form-group">
-            <datetime label="To " name="toDate" class="form-control"></datetime>
+            <?= $fm->datetime(['label'=> "To Date", 'name' => "To", 'class' => "form-control"]) ?>
+            
         </div>
-        <div class="form-group">
-            <text-field label="Slug" name="slug" class="form-control" size="30"></text-field>
+        <div class="row">
+            <div class="col" style="max-width:200px;" >
+            <?= $fm->plainText(['label' => 'Slug', 'name' => "slug", 'maxlength' => 12, 'size'=>12, 'class' => "form-control", 'autocomplete'=>'off']) ?>
+            </div>
         </div>
         <input type="submit" class='btn-danger' value='Add Event'></input>
     </form>

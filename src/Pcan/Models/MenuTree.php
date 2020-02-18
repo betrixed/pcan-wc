@@ -161,4 +161,71 @@ EOD;
         }
         return $topItem;
     }
+    
+    static public function getMenuSet($root)
+    {
+        $f3 = \Base::instance();
+        if ($f3->exists('MenuSet')) {
+            $menus = &$f3->ref('MenuSet');
+        } else {
+            $f3->set('MenuSet', []);
+            $menus = &$f3->ref('MenuSet');
+        }
+        if (isset($menus[$root])) {
+            $tree = $menus[$root];
+        } else {
+            $tree = MenuTree::getMainMenu($root);
+            $menus[$root] = $tree;
+        }
+        return $tree;
+    }
+
+    // implement menu-links tag
+
+    static public function generateSubMenu($pset, $tree)
+    {
+        if (isset($pset['prefix'])) {
+            $prefix = $pset['prefix'];
+            unset($pset['prefix']);
+        } else {
+            $prefix = "";
+        }
+        if (!empty($tree) && !empty($tree->submenu)) {
+            $out = "";
+            $aclass = "dropdown-item";
+            if (isset($pset['item-class'])) {
+                $aclass .= " " . $pset['item-class'];
+                unset($pset['item-class']);
+            }
+            if (isset($pset['root']))
+                unset($pset['root']);
+            if (isset($pset['title']))
+                unset($pset['title']);
+            foreach ($tree->submenu as $menu) {
+                if ($menu->caption === "-") {
+                    $out .= "<div class=\"dropdown-divider\"></div>" . PHP_EOL;
+                    continue;
+                }
+
+                if (substr($menu->controller, 0, 4) === 'http') {
+                    $link = $menu->controller . '/' . $menu->action;
+                } else {
+                    $qchar = (strpos($menu->action, '?') !== false) ? '&' : '?';
+                    $link = $prefix . '/' . $menu->controller . '/' . $menu->action;
+                    $link .= $qchar . 'mit=' . $menu->id;
+                }
+
+                $out .= "<a href=\"" . $link . "\"";
+                if (!empty($aclass)) {
+                    $out .= " class=\"" . $aclass . "\"";
+                }
+                foreach ($pset as $attr => $val) {
+                    $out .= ' ' . $attr . "='" . $val . "'";
+                }
+                $out .= ">" . $menu->caption . "</a>" . PHP_EOL;
+            }
+            return $out;
+        }
+        return "<!-- No menu items found -->" . PHP_EOL;
+    }
 };

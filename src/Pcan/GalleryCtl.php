@@ -10,7 +10,7 @@ use WC\DB\Server;
 use WC\UserSession;
 
 class GalleryCtl extends Controller {
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
 
     /* navigate the images in a particular folder , or a folder indexed with a name */
 
@@ -19,11 +19,10 @@ use Mixin\ViewF3;
  
     protected $viewPost = "/gallery/"; // url path root
 
-    public function __construct() {
-        parent::__construct();
+    public function __construct($f3, $args) {
+        parent::__construct($f3, $args);
 
-        $f3 = $this->f3;
-        $this->galleryPath = $f3->get('gallery'); // somewhere in site settings
+        $this->galleryPath = $this->f3->get('gallery'); // somewhere in site settings
         
         $view = $this->getView();
         //$view->nav = null;
@@ -60,11 +59,12 @@ use Mixin\ViewF3;
         $path = $args['name'];
         $params = &$f3->ref('REQUEST');
         $vname = 'gallery/view.phtml';
-        $view = $this->view;
+       
         $sub = isset($params['sub']) ? intval($params['sub']) : 0;
-        $view->params = "";
         $show = isset($params['show']) ? $params['show'] : 'grid';
-        $view->params = "?show=" . $show;
+        $view = $this->view;
+         $m = $view->model;
+        $m->params = "?show=" . $show;
 
         switch($show) {
             case 'grid' : $vname = 'gallery/grid.phtml';
@@ -76,53 +76,53 @@ use Mixin\ViewF3;
             default: ;
                 break;
         }
-        $view->vname = $vname;
-        $view->show = $show;
-        $view->title = 'Gallery';
+        $m->vname = $vname;
+        $m->show = $show;
+        $m->title = 'Gallery';
         $gal = $this->getGalleryName($path);
         if ($gal) {
-            $view->images = Gallery::getImages($gal->id);
-            $view->gallery = $gal;
+            $m->images = Gallery::getImages($gal->id);
+            $m->gallery = $gal;
             $prevlink = $gal['leva_path'];
             $nextlink = $gal['prava_path'];
-            $view->prevlink = empty($prevlink) ? null : $this->getGalleryName($prevlink);
-            $view->nextlink = empty($nextlink) ? null : $this->getGalleryName($nextlink);
+            $m->prevlink = empty($prevlink) ? null : $this->getGalleryName($prevlink);
+            $m->nextlink = empty($nextlink) ? null : $this->getGalleryName($nextlink);
             if (!empty($gal['seriesid'])) {
                 $series = Series::byId($gal['seriesid']);
-                $view->indexlink = '/series/' . $series['tinytag'];
+                $m->indexlink = '/series/' . $series['tinytag'];
             }
             else {
-                $view->indexlink = '/gallery/';
+                $m->indexlink = '/gallery/';
             }
             // Get maxHeight for slider
             $maxHeight = 0;
-            foreach($view->images as $img) {
+            foreach($m->images as $img) {
                 $hi = intval($img['height']);
                 if ($maxHeight < $hi) {
                     $maxHeight = $hi;
                 }
             }
             
-            $view->maxHeight = $maxHeight;
+            $m->maxHeight = $maxHeight;
         }
         
-        $view->requri = $f3->get('SERVER.REQUEST_URI');
-        $view->sub = $sub;
+        $m->requri = $f3->get('SERVER.REQUEST_URI');
+        $m->sub = $sub;
         $url = "/gallery/view/" . $path;
-        $view->url = $url;
+        $m->url = $url;
         switch($sub) {
             case 1:
             case 2:
                 $vid = ($sub===1) ? "article" : "gview";
-                $view->subjs = "relayout(this,'$vid');return false;";
-                $view->suburl = $url . "?sub=" . $sub;
-                $view->layout = $vname;
+                $m->subjs = "relayout(this,'$vid');return false;";
+                $m->suburl = $url . "?sub=" . $sub;
+                $view->content = $vname;
                 echo $view->render();
                 break;
             default:
                 $view->content = 'gallery/title.phtml';
-                $view->subjs = "relayout(this,'gview');return false;";
-                $view->suburl = $url . "?sub=2";
+                $m->subjs = "relayout(this,'gview');return false;";
+                $m->suburl = $url . "?sub=2";
                 $view->layout = 'minimal.phtml';
                 $view->assets(['bootstrap','grid']);
                 echo $view->render();
@@ -159,10 +159,11 @@ EOD;
 
         $view = $this->view;
         $view->content = $template;
-        $view->title = 'Gallery Index';
-        $view->orderby = $orderby;
-        $view->page = $this->listPageNum($numberPage, 12, $order_field);
-        $view->url = $this->viewPost . 'edit/';
+        $m = $view->model;
+        $m->title = 'Gallery Index';
+        $m->orderby = $orderby;
+        $m->page = $this->listPageNum($numberPage, 12, $order_field);
+        $m->url = $this->viewPost . 'edit/';
         return $view;
     }
     public function index($f3, $args) {

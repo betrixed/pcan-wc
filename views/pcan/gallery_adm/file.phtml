@@ -1,43 +1,29 @@
-<wc:init></wc:init>
-{~
-    @view = Base::Instance()->get('view');
-    @images = @view->images;
-    @gallery = @view->gallery;
-    @post = @view->post;
-    @reply = @view->reply;
-    @imgCount = isset(@images) ? count(@images) : 0;
-~}
+<?php
+    $images = $m->images;
+    $gallery = $m->gallery;
+    $post = $m->post;
+    $reply = $m->reply;
+    $imgCount = isset($images) ? count($images) : 0;
+   $fm = $this->form();
+?>
 
-<form id='imageList' action="{{@post . 'imageList' }}" method="post">
-    <check if="{{ isset(@reply)  }}"><true>
-        <repeat group="{{ @reply }}" value="{{ @line }} ">
-            <p>{{ @line }}</p>
-        </repeat>
-        </true></check>
-<check if="{{ @imgCount }}" ><true>
-        {~   
-        @linkpath = "/" . @gallery.path . "/";
-        @rowId = 0;
-        @select = @view->select;
-        ~}
-<table class="table-condensed table-striped"><tbody>
-        <!-- <tr>
-            <th>select</th>
-            <th>visible</th>
-            <th>name</th>
-            <th>thumb</th>
-            <th>date</th>
-            <th>description</th>
-        </tr> 
-        <tr>
-    <td><input name='{{ @chkid }}' id='{{ @chkid }}' type='checkbox' value='{{ @fup.id }}' /></td>
-    <td>{{ @fup.visible }}</td>
-    <td class="leftCell">{{ @fup.name }}</td>
-    <td><a href="{{ @linkpath .  @fup.name }}"><img src="{{ @thumb }}"  title="{{ @info }}" /></a></td>
-    <td><datetime id="{{@dateid}}"  name="{{@dateid}}" class="form-control" value="{{@fup.date_upload}}"></datetime></td>
-    <td><textarea class='imageDesc' name='{{ @descid }}' id='{{ @descid }}' cols='40'>{{ @fup.description }}</textarea></td>
-</tr>
-        -->
+<style>
+    .restrict {
+        max-width:400px;
+    }
+</style>
+<form id='imageList' action="<?=$post. 'imageList'  ?>  " method="post">
+    <?php if( isset($reply) ): ?>
+    <?php foreach($reply as $line): ?>
+            <p><?= $line ?> </p>
+     <?php endforeach ?>
+      <?php endif ?>
+            <?php if ($imgCount): 
+            $linkpath = "/" . $gallery['path'] . "/";
+            $rowId = 0;
+            $select = $m->select;
+        ?>
+
         
            <div class="row">
             <div class="col-2">
@@ -53,66 +39,58 @@
                 <span>description</span>
             </div>
         </div>     
- <repeat group="{{ @images }}" value="{{ @fup  }}">
-{~ 
-    @info = @fup.size_str . ' ' . @fup.mime_type;
-     @odate = strtotime( @fup.date_upload );
-    @row_id = @row_id + 1;
-    @chkid = "chk" . @row_id;
-    @descid = "desc" . @row_id;
-    @dateid = "date" . @row_id;
-    if (!empty(@fup.thumb_ext)) {
-        @fname  = pathinfo( @fup.name , PATHINFO_FILENAME);
-        @thumb = @linkpath . 'thumbs/' . @fname . "." . @fup.thumb_ext;   
-    }
-    else {
-        @thumb = @fup.name;
-    }
-~}
+    <?php foreach($images as $fup ): 
+        $info = $fup['size_str'] . ' ' . $fup['mime_type'];
+         $odate = strtotime( $fup['date_upload'] );
+        $row_id = $row_id + 1;
+        $chkid = "chk" . $row_id;
+        $descid = "desc" . $row_id;
+        $dateid = "date" . $row_id;
+        $name = $fup['name'];
+        if (!empty($fup['thumb_ext'])) {
+            $fname  = pathinfo(  $name, PATHINFO_FILENAME);
+            $thumb = $linkpath . 'thumbs/' . $fname . "." . $fup['thumb_ext'];   
+        }
+        else {
+            $thumb = $name;
+        }    
+?>
+
 <div class="row">
             <div class="col-7">
-                <input name='{{ @chkid }}' id='{{ @chkid }}' type='checkbox' value='{{ @fup.id }}' />
-                <span>{{ @fup.name }}</span>
+                <input name='<?= $chkid ?>' id='<?= $chkid ?>' type='checkbox' value='<?= $fup['id'] ?>' />
+                <span><?= $name ?></span>
                 <div class="float-right">
-                <a href="{{ @linkpath .  @fup.name }}"><img src="{{ @thumb }}"  title="{{ @info }}" /></a>
+                <a href="<?= $linkpath .  $name ?>"><img class = "restrict" src="<?= $thumb ?>"  title="<?= $info ?>" /></a>
                 </div>
             </div>
             <div class="col-2">
-                <datetime id="{{@dateid}}"  name="{{@dateid}}" class="form-control" value="{{@fup.date_upload}}"></datetime>
-            </div>
+                <?= $fm->datetime(['id' =>$dateid,  'name' => $dateid, 'class' => "form-control", 
+                    'value' => $fup['date_upload' ] ]) ?>
+              </div>
             <div class="col-3">
-                <textarea class='imageDesc' name='{{ @descid }}' id='{{ @descid }}' cols='40'>{{ @fup.description }}</textarea>
+                <textarea class='imageDesc' name='<?= $descid ?>' id='<?= $descid ?>' cols='40'><?= $fup['description'] ?></textarea>
             </div>
-
         </div>
     <hr>
- </repeat>
+<?php   endforeach ?>
+    <table class="table-condensed table-striped"><tbody>
     <tr><td><label>Perform</label></td>
-    <td class="leftCell"><select name='image_op' id="image_op">
-            <repeat group="{{ @select }}" key="{{ @skey }}" value="{{ @sval }}">
-                <check if="{{ @sval[1] == 1 }}"><true>
-                        <option value='{{ @skey}}' selected="selected">{{ @sval[0] }}</option>
-                    </true><false>
-                        <option value='{{ @skey}}'>{{ @sval[0] }}</option>
-                    </false>
-                </check>
-            </repeat>
-        </select></td>
+    <td class="leftCell">
+            <?= $fm->select([ 'name' => 'image_op',  'id' => 'image_op',  'list' => $m->select, 'value' =>$m->select_op ]) ?>
+      </td>
         <td><input name='update' type='submit' value='Update Selected' class='btn-danger' /></td>
 </tr>
     </tbody></table>
-        </true>
-        <false>
+<?php else: ?>
     <p>No image files in this gallery yet</p>
-    </false>
-</check>  
-<input type='hidden' name='chkct' value='{{ @imgCount }}' />
-<input type='hidden' name='galleryid' value='{{ @gallery.id }}' />
+<?php endif ?>
+<input type='hidden' name='chkct' value='<?= $imgCount ?>' />
+<input type='hidden' name='galleryid' value='<?= $gallery['id'] ?>' />
 </form>
-
-<check if="{{@AJAX}}">
+<?php if ($f3->get('AJAX')): ?>
     <script type="text/javascript">
         pref_imagelist();
     </script>
-</check>
+<?php endif ?>
 

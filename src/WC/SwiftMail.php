@@ -5,8 +5,6 @@ namespace WC;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-    
 use Base;
 
 /**
@@ -18,6 +16,11 @@ class SwiftMail
     protected $transport;
     protected $f3;
     
+    /**
+     * Constructor needs at least first argument
+     * @param  $f3 Fatfree base instance
+     * @param type $transport
+     */
     public function __construct($f3, $transport = null) {
         $this->f3 = $f3;
         $this->transport = $transport;

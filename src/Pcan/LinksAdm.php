@@ -15,7 +15,7 @@ use WC\UserSession;
 
 class LinksAdm extends Controller {
     use Mixin\Auth;
-    use Mixin\ViewF3;
+    use Mixin\ViewPlates;
     
     private $syncUrl = 'http://parracan.org';
     private $editList = [];
@@ -26,14 +26,18 @@ class LinksAdm extends Controller {
         $numberPage = Valid::toInt($request, "page", 1);
         $orderby = Valid::toStr($request, 'orderby', null);
         $view = $this->getView();
-        $order_field = Links::indexOrderBy($view, $orderby);
+        $order_field = Links::indexOrderBy($view->model, $orderby);
 
         
-        $view->content = 'links/index.phtml';
-        $view->url = $this->url;
-        $view->orderby = $orderby;
-        $view->page = $this->listPageNum($numberPage, 12, $order_field);
+        $view->content = 'links/index';
         $view->assets(['bootstrap']);
+                
+        $m = $view->model;
+        
+        $m->url = $this->url;
+        $m->orderby = $orderby;
+        $m->page = $this->listPageNum($numberPage, 12, $order_field);
+
         echo $view->render();
     }
 
@@ -48,13 +52,13 @@ class LinksAdm extends Controller {
         $db = Server::db();
         $results = $db->exec($sql);
 
-        $maxrows = !empty($results) ? $results[0]['fullcount'] : 0;
+        $maxrows = !empty($results) ? $results[0]['full_count'] : 0;
         return new PageInfo($numberPage, $pageRows, $results, $maxrows);
     }
 
-    private function viewNewLink() {
-        $view = $this->getView();
-        $view->linkid = 0;
+    private function viewNewLink($view) {
+        $m = $view->model;
+        $m->linkid = 0;
         $this->viewCommon();
         echo $view->render();
         return null;
@@ -62,7 +66,9 @@ class LinksAdm extends Controller {
 
     public function newLink($f3, $args) {
         $view = $this->getView();
+        $m = $view->model;
         $link = new Links();
+        $m->link = $link;
         $link['sitename'] = 'Here';
         $link['url'] = '/';
         $link['urltype'] = 'Front';
@@ -82,31 +88,36 @@ class LinksAdm extends Controller {
         else {
              $link['urltype'] = 'Front';
         }
-        $view->link = $link;
        
         $view->collections = [];
-        return $this->viewNewLink();
+        return $this->viewNewLink($view);
     }
 
     /* Get link edit form */
 
     private function viewCommon() {
         $view = $this->getView();
-        $view->content = 'links/edit.phtml';
-        $view->post = '/admin/link/post';
-        $view->url = $this->url;
         $view->assets(['bootstrap','DateTime','SummerNote','links-edit']);
+        $view->content = 'links/edit';
+        $m = $view->model;
+        
+        $m->post = '/admin/link/post';
+        
+
+        $m->url = $this->url;
+        
     }
     private function editLink($rec, $id) {
         $view = $this->getView();
+        $m = $view->model;
+        $m->link = $rec;
+        $m->linkid = $id;
+        $m->collections = Linkery::byLink($id);
+        $m->title = 'Edit link ' . $id;
 
-        $view->link = $rec;
-        $view->linkid = $id;
-        $view->title = 'Edit link ' . $id;
-
-        $view->collections = Linkery::byLink($id);
+        
         $us = $this->us;
-        $view->linkery = is_null($us) ? null : $us->getKey('linkery');
+        $m->linkery = is_null($us) ? null : $us->getKey('linkery');
 
         $this->viewCommon();
         echo $view->render();
@@ -127,6 +138,32 @@ class LinksAdm extends Controller {
         }
     }
 
+    public function ableItems($f3, $args) {
+           $post = &$f3->ref('POST');
+           $op = Valid::toInt($post, 'link_enable',1);
+           
+           foreach($post as $key => $item) {
+               if (strpos( $key, 'lid') === 0):
+                   $id =  intval(substr($key,3));
+                  if ($id > 0) {
+                       if ($op !== intval($item)) {
+                           Links::setEnableId($id, $op);
+                       }
+                    }
+               endif;
+           }
+           $page = Valid::toInt($post,'page',1);
+           $orderby = Valid::toStr($post,'orderby');
+           $f3->reroute($this->url  . '?orderby='.$orderbypage.'&page=' .$page );
+    }
+    public function deleteItem($f3, $args) {
+           $post = &$f3->ref('POST');
+           $id = Valid::toInt($post, "id", 0);
+           if ($id > 0) {
+               Links::deleteId($id);
+           }
+           $this->f3->reroute('admin/link');
+    }
     public function linkPost($f3, $args) {
         $link = new Links();
         $post = &$f3->ref('POST');
@@ -148,7 +185,7 @@ class LinksAdm extends Controller {
             $err = $e->errorInfo;
             $this->flash($err[0] . ": " . $err[1]);
         }
-        return $this->viewNewLink();
+        return $this->viewNewLink($view);
     }
 
     private function assignFromPost(&$post, $link) {
@@ -163,7 +200,7 @@ class LinksAdm extends Controller {
         $link['date_created'] = Valid::toDateTime($post, 'date_created');
         $link['title'] = Valid::toStr($post, 'title', "");
         $link['summary'] = $post['summary'];
-        $link['enabled'] = Valid::toInt($post, 'enabled', 0);
+        $link['enabled'] = Valid::toBool($post, 'enabled', 0);
 
         if (!isset($post['date_created'])) {
             $link->date_created = Valid::now();

@@ -10,7 +10,7 @@ use WC\Valid;
 
 
 class Home extends \Pcan\Controller {
-use \Pcan\Mixin\ViewF3;
+use \Pcan\Mixin\ViewPlates;
 
     private function query($qry) {
         $pdo = Server::db()->pdo();
@@ -60,17 +60,18 @@ EOQ;
 
     function show($f3, $args) {
         $view = $this->getView();
+        $m = $view->model;
+        
+        $m->sides = $this->sides();
+        $m->main = $this->main();
+        $m->events = $this->events();
 
-        $view->sides = $this->sides();
-        $view->main = $this->main();
-        $view->events = $this->events();
-
-        $view->title = "PCAN Home";
+        $m->title = "PCAN Home";
         $panels = Links::byType('Panel');
         if ($panels['ct'] > 0) {
-            $view->topPanels = &$panels['rows'];
+            $m->topPanels = &$panels['rows'];
         } else {
-            $view->topPanels = [];
+            $m->topPanels = [];
         }
 
         $view->assets('bootstrap');
@@ -83,16 +84,16 @@ EOQ;
     function links($f3, $args) {
         $view = $this->getView();
         $req = &$f3->ref('REQUEST');
-
+        $m = $view->model;
 
         if (isset($req['k'])) {
             $linkType = $req['k'];
-            $view->links = Links::byType($linkType);
+            $m->links = Links::byType($linkType);
             $select = ['Remote' => 'Web', 'Event' => 'Events', 'Blog' => 'Here'];
-            $view->title = $select[$linkType];
+            $m->title = $select[$linkType];
         } else {
-            $view->links = Links::homeLinks();
-            $view->title = "All Links";
+            $m->links = Links::homeLinks();
+            $m->title = "All Links";
         }
         $view->assets(['bootstrap', 'grid']);
         $view->content = 'home/links.phtml';

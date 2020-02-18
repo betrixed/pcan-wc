@@ -11,7 +11,7 @@ return [
         'GET /cat/menu/@cap' => 'Pcan\CatView->menu',
         'GET /cat/linkery/@title' => 'Pcan\CatView->linkery',
         'GET /gallery' => 'Pcan\GalleryCtl->index',
-        'GET /gallery/view/@name' => 'Pcan\GalleryCtl->view',
+        'GET /gallery/view/@name' => 'Pcan\GalleryCtl->show',
         'POST /login' => 'Pcan\Login->check',
         'GET /logout' => 'Pcan\Login->checkout',
         'GET /login' => 'Pcan\Login->index',
@@ -29,6 +29,7 @@ return [
         'GET /admin/gallery/sync/@name' => 'Pcan\GalleryAdm->sync',
         'GET /admin/gallery/new' => 'Pcan\GalleryAdm->newRec',
         'POST /admin/gallery/post' => 'Pcan\GalleryAdm->post',
+        'GET /admin/gallery/images/@name' => 'Pcan\GalleryAdm->images',
         'POST /admin/gallery/imageList [ajax]' => 'Pcan\GalleryAdm->imageList',
         'POST /admin/gallery/upload [ajax]' => 'Pcan\GalleryAdm->upload',
         'GET /admin/series' => 'Pcan\SeriesAdm->index',
@@ -56,7 +57,9 @@ return [
         'GET /admin/link' => 'Pcan\LinksAdm->index',
         'GET /admin/link/edit/@lid' => 'Pcan\LinksAdm->edit',
         'GET /admin/link/new' => 'Pcan\LinksAdm->newLink',
+        'POST /admin/link/delete' => 'Pcan\LinksAdm->deleteItem',
         'POST /admin/link/post' => 'Pcan\LinksAdm->linkPost',
+       'POST /admin/link/enabler' =>  'Pcan\LinksAdm->ableItems',
         'GET /admin/linkery/new' => 'Pcan\LinkeryAdm->newRec',
         'GET /admin/linkery/edit/@lid' => 'Pcan\LinkeryAdm->edit',
         'GET /admin/linkery' => 'Pcan\LinkeryAdm->index',
@@ -89,5 +92,4 @@ return [
         'GET /admin/event/@id' => 'Pcan\EventEdit->edit',
         'POST /admin/eventpost' => 'Pcan\EventEdit->evtpost',
         'GET /reglink/@code/@id' => 'Pcan\Register->regEdit'
-
     ];

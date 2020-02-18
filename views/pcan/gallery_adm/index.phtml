@@ -1,20 +1,25 @@
-<div class='container outerwrap'>
-{~ 
-    @view = Base::Instance()->get('view');
-    @ubase = "/admin/gallery?orderby="; 
-     @link = @ubase . @orderby;  
-     @page = @view->page;
-     @url = @view->url;
-~}
+<?php
+if ($view->layout):
+    $this->layout($view->layout, $this->data);
+endif;
+$ubase = "gallery?orderby="; 
+$link =  $ubase . $m->orderby;  
+$page = $m->page;
+$url =  "/admin/gallery/images/";
+$fm = $this->form();
+?>
 <a href="/dash" class="title">Dash</a> &nbsp; &gt;&gt; &nbsp;
       <span><b>Gallery Index</b></span> &nbsp; &#x2609; &nbsp;
-   <link-to href="{{@link}}" text="First" ></link-to> &nbsp; | &nbsp;
-    <link-to href="{{@link . '&page=' . @page->before  }}" text="Previous" /> &nbsp; | &nbsp;
- <link-to href="{{@link . '&page=' . @page->next  }}" text="Next" /> &nbsp; | &nbsp;
- <link-to href="{{@link . '&page=' . @page->last  }}" text="Last" /> &nbsp; | &nbsp;
- {{@page->current . "/" . @page->last }} &nbsp; &#x2609; &nbsp;
+   <?= $fm->linkTo(['href'=>$link, 'text'=>'First']) ?> &nbsp; | &nbsp;
+    <?= $fm->linkTo(['href'=>$link.'&page='.$page->before,
+   'text'=>'Previous']) ?> &nbsp; | &nbsp;
+ <?= $fm->linkTo(['href'=>$link.'&page='.$page->next,
+   'text'=>'Next']) ?> &nbsp; | &nbsp;
+ <?= $fm->linkTo(['href'=>$link.'&page='.$page->last,
+   'text'=>'Last']) ?> &nbsp; | &nbsp;
+ <?=$page->current . "/" . $page->last ?> &nbsp; &#x2609; &nbsp;
  <a href="/admin/gallery/new" class="title">New Gallery</a>
- <div class="body-wrap">
+<div class="body-wrap">
 <table class='table table-striped'>
     <thead>
         <tr>
@@ -24,14 +29,19 @@
         </tr>
     </thead>
     <tbody>
-        <repeat group="{{ @page->items }}" value="{{ @gallery }}">
-{~ @udate = strtotime(@gallery.last_upload); ~}
+        <?php 
+        
+        foreach($page->items as $gallery): 
+                $udate = date('d-M-Y H:i',strtotime($gallery['last_upload']));
+                 $description = $gallery['description'];
+                 $name = $gallery['name'];
+         ?>
 <tr>
-    <td class='leftCell'><link-to href="{{ @url . @gallery.name }}" text="{{ @gallery.name }}" /></td>
-            <td class='leftCell'>{{ @gallery.description }}</td>
-            <td><p>{{ date('d-M-Y',@udate) .  ' ' . date('H:i', @udate)  }}</p></td>
+    <td class='leftCell'><?= $fm->linkTo(['href'=>$url.$name, 'text'=>$name]) ?></td>
+            <td class='leftCell'><?= $description ?></td>
+             <td><?= $udate ?></td>
         </tr>
-</repeat>
+        <?php endforeach ?>
     </tbody>
 </table>
  </div>

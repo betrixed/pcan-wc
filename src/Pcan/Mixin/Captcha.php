@@ -8,48 +8,70 @@
 
 namespace Pcan\Mixin;
 use WC\UserSession;
+use WC\App;
+use WC\Valid;
 /**
  * Captcha validation of forms for Controller
  *
  * @author michael
  */
 trait Captcha {
-/// Retrieve google recaptch result from post array reference
-    public function captchaResult(&$post) {
-        $f3 = $this->f3;
-        $captcha = $f3->get('secrets.Recaptcha');
+/**
+ * Retrieve site settings for recaptcha result from post as array
+ * @return array 
+ */
+    public function captchaSettings() {
         if (UserSession::isLoggedIn('User')) {
-            $captcha['enabled'] = false;
+             return ['enabled' => false];
         }
-        if ($captcha['enabled']) {
+        $cfg =  App::instance()->get_secrets();
+        if ( isset($cfg) && isset($cfg['ReCaptcha'])) {
+           return $cfg['ReCaptcha'];
+        }
+        return ['enabled' => false];
+    }
+    /**
+      * verify form post for recaptcha OK
+     * @param array $post
+     * @return array ['success', 'errorcode']
+     */
+    public function captchaResult(&$post) {
+        $google = $this->captchaSettings();
+        if ($google['enabled']) {
             return Valid::recaptcha($google['secret'], $post['g-recaptcha-response']);
         }
-        else { // fake it, already logged in verified
+        else { // return everything OK
             return ['success' => true, 'errorcode' => 0];
         }
     }
-/// Setup view google variable with recaptcha data
-    public function captchaView($view) {
-        $f3 = $this->f3;
-        $captcha = &$f3->ref('secrets.ReCaptcha');
-        if (UserSession::isLoggedIn('User')) {
-            $captcha['enabled'] = false;
-        }
-        $view->google = &$captcha;
+
+    /**
+     * Install initial details  of google recaptcha in passed object properties 
+     */
+    public function captchaView($model) {
+        $model->google = $this->captchaSettings();
     }
-    
-    public function xcheckView() {
+    /**
+     * Install cross script attack protection string
+     * in passed object properties, write to a user session.
+     * Make a Guest Session if no current session.
+     */
+    public function xcheckView($model) {
         $f3 = $this->f3;
-        $view = $this->view;
         $us = UserSession::read();
         if (is_null($us)) {
             $us = UserSession::guestSession();
         }
-        $view->us = $us;
-        $view->xcheck = UserSession::session()->csrf();
-        $us->setKey("signup-xcheck", $view->xcheck);
+        $model->us = $us;
+        $model->xcheck = UserSession::session()->csrf();
+        $us->setKey("signup-xcheck", $model->xcheck);
     }
-    // check result of form submission for cross scripting
+    /** 
+     * Check result of form submission for cross scripting
+     * against value stored in current persisted session
+     * @param type $post Reference to Fat Free Post array
+     * @return boolean
+     */
     public function xcheckResult(&$post) {
         $us = UserSession::read();
         if (is_null($us)) {

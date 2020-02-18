@@ -1,8 +1,12 @@
+<?php
 
-{~ 
-    @view = Base::Instance()->get('view');
-    @links = @view->links;
-~}
+    if ($view->layout) {
+        $this->layout($view->layout, $this->data);
+    }
+    $links = $m->links;
+    $fm = $this->form();
+?>
+
 <style>
 @media screen and (max-width: 900px){
     #mgrid[data-columns]::before {
@@ -59,41 +63,41 @@ div.title-area {
     border-bottom-color: #0d8ea6;
 }
 </style>
+<?php if (!empty($links)): ?>
 
-<check if="{{@links['ct'] > 0}}"><true>
 <div id="mgrid" data-columns>
-<repeat group="{{ @links['rows'] }}" value="{{ @row }}">
-
-    {~ 
-    @url = @row.url;
-    @id = @row.id;
-     @title = @row.title;
-     @ulen = strlen(@url);
-     if (@ulen > 55):
-        @urlhint = substr(@url,0,25) . '...' . substr(@url, @ulen - 27);
+    <?php foreach($links['rows'] as $row): 
+        $url = $row['url'];
+        $id = $row['id'];
+        $title = $row['title'];
+        $ulen = strlen($url);
+        if ($ulen > 55):
+          $urlhint = substr($url,0,25) . '...' . substr($url, $ulen - 27);
      else:
-         @urlhint = @url;
-     endif;
-     ~}
+         $urlhint = $url;
+      endif;
+
+?>
      
-    <div class='mitem' style="width:100%" id="{{ 'lnk' . @id }}">
-        <div class="siteid" >{{ @row.sitename }}</div>  
+    <div class='mitem' style="width:100%" id="<?= 'lnk' . $id ?>">
+        <div class="siteid" ><?= $row['sitename'] ?></div>  
         <div class="title-area" >
         <div class="link-title">
-            <check if="{{ @url === '/' }}" >
-                <true><a onclick='linkload({{ @id }});' target='_blank'>{{ @title }}</a></true>
-                <false><a href='{{ @url  }}' target='_blank'>{{ @title }}</a></false>
-            </check>
+            <?php if($url === '/'): ?>
+                <a onclick="linkload(<?= $id ?>);"  target="_blank"><?= $title ?></a>
+            <?php else: ?>
+                <a href="<?= $url  ?>" target="_blank"><?= $title ?></a>
+        <?php endif; ?>
         </div>
         </div>
-        <div class="link-summary">{{ @row.summary| raw }}</div>
-        <check if="{{ @row.urltype === 'Blog' }}">
-            <true><a href = "{{ @url }}" target="_blank"  title="{{ @title }}">&nbsp;.. read more</a></true>
-        </check>
+        <div class="link-summary"><?= $row['summary'] ?></div>
+         <?php if ($row['urltype'] === 'Blog'): ?>
+            <a href="<?= $url  ?>" target="_blank" title="<?= $title ?>">&nbsp;.. read more</a>
+         <?php endif; ?>
     </div>
 
-</repeat>
-</true></check>
+<?php  endforeach; ?>
+<?php endif; ?>
 
 </div>
 

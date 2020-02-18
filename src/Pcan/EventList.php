@@ -10,7 +10,7 @@ use WC\Valid;
 
 class EventList extends Controller
 {
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
 
     private function events() {
         $eventSql = <<<EOD
@@ -25,11 +25,13 @@ EOD;
     public function index($f3, $args)
     {
         $view = $this->getView();
-
-        $view->title = "Events";
-        $view->events = $this->events();
         $view->assets('bootstrap');
         $view->content = 'events/list.phtml';
+        
+        $m = $view->model;
+        $m->title = "Events";
+        $m->events = $this->events();
+        
         echo $view->render();
     }
 }

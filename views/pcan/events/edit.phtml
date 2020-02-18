@@ -1,9 +1,16 @@
-<wc:init></wc:init>
-{~
-@view = \Base::instance()->get('view');
-@rego = @view->rego;
-@evt = @view->evt;
-~}
+<?php
+//$view = $this->data['view'];
+
+$evt = $m->evt;
+$rego = $m->rego;
+
+if ($view->layout) {
+    $this->layout($view->layout, $this->data);
+}
+$fm = $this->form();
+
+?>
+
 
 <style>
     label {
@@ -16,48 +23,48 @@
 <div class="container-fluid body-wrap">
     <hr>
     <form id="edtevt" method="post" action="/admin/eventpost">
-        <hidden name="id" value="{{ @evt.id }}"></hidden>
+        <?= $fm->hidden( ['name'=>'id', 'value'=> $evt['id'] ]) ?> 
         <div class="row">
             <div class="col-4">
-                <datetime label="From" name="fromTime" value="{{ @evt.fromTime }}" size="20"></datetime>
-            </div>
+                <?= $fm->datetime(['label' => "From", 'name' => "fromTime", 'size' => 20, 'value' => $evt['fromTime']]) ?>
+             </div>
              <div class="col-4">
-                <datetime  label="To" name="toTime" value="{{ @evt.toTime }}"  size="20"></datetime>
-            </div>
+                <?= $fm->datetime(['label' => "To", 'name' => "toTime", 'size' => 20, 'value' => $evt['toTime']]) ?>
+           </div>
         </div>
         <div class="row">
              <div class="col-4">
-                <text-field  label="Slug" name="slug" value="{{ @evt.slug }}"></text-field>
+                <?= $fm->plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt['slug']]) ?>
             </div>
             <div class="col-4">
-                <checkbox  text="Enabled" name="enabled" value="1" checked="{{ @evt.enabled }}"></checkbox>
+                <?= $fm->checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt['enabled']]) ?>
             </div>
         </div>
         <div class="row">
             <div class="col-3"></div>
             <div class="col-4">
-            <submit-btn name="submit" value="Update"></submit-btn>
+                <?= $fm->submit(['name' => 'submit', 'value' => 'Update' ]); ?>
             </div>
         </div>
     </form>
     <hr>
-        <check if="{{ !empty(@rego) }}">
+        <?php if (!empty($rego)): ?>
               <div class="row body-wrap pad10">
                   <div class="col-2">
                   <h1>Registrations</h1>
                   </div>
                 <div class="col-10">
-                <repeat group="{{ @rego }}" value="{{ @rg }}">
+                <?php foreach($rego as $rg): ?>  
                     <div class="row">
-                        <div class="col-3">{{ @rg.fname }}&nbsp;{{ @rg.lname }}</div>
-                        <div class="col-3">{{ @rg.email }}</div>
-                        <div class="col-2">{{ @rg.phone }}</div>
-                        <div class="col-1">{{ @rg.people }}</div>
-                        <div class="col-2">{{ @rg.created_at }}</div>
+                        <div class="col-3"><?= $rg['fname'] ?>&nbsp;<?= $rg['lname'] ?></div>
+                        <div class="col-3"><?= $rg['email'] ?></div>
+                        <div class="col-2"><?= $rg['phone'] ?></div>
+                        <div class="col-1"><?= $rg['people'] ?></div>
+                        <div class="col-2"><?= $rg['created_at'] ?></div>
                     </div>
                     <hr>
-                </repeat>
+                <?php endforeach ?>
                 </div>
               </div>
-        </check>
+              <?php endif ?>
 </div>

@@ -15,7 +15,7 @@ use WC\UserSession;
  * @author michael rynn
  */
 trait ViewPlates {
-   public $view;
+    public $view;
    
     public function getView() {
         if (is_null($this->view)) {
@@ -25,8 +25,16 @@ trait ViewPlates {
     }
     public function init_View($f3, $path = null, $ext = null) {
         $view = new HtmlPlates($f3, $path, $ext);
-        $f3->set('view', $view);
+        //$f3->set('view', $view); // not going to rely on this
         $view->usrSess = UserSession::read();
         $this->view = $view;
+    }
+    
+    static public function renderView($model, $viewName) {
+        $f3 = \Base::instance();
+        $v = new HtmlPlates($f3); 
+        $v->setModel($model); // replace the model
+        $v->content = $viewName;
+        return $v->renderView();
     }
 }

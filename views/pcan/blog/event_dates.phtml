@@ -1,15 +1,16 @@
-{~
-@events = @view->events;
-@chkct = count(@events);
-@event_blogid = 0;
-@row_id = 0;
-@url = @view->url;
-~}
-<check if="{{ @chkct > 0 }}" ><true>
+<?php
+// Insertion into blog
+$events = $m->events;
+$chkct = count($events);
+$event_blogid = 0;
+$row_id = 0;
+$url = $m->url;
+
+if ( $chkct > 0): ?>
 
 <div class="body-wrap">
-<form id='eventList' action="{{ @url . 'eventUpdate'}}" method="post">
-<table class='table table-striped' style='width:600px;'>
+<form id='eventList' action="<?= $url . 'eventUpdate' ?>" method="post">
+<table class='table table-striped' style='width:auto;'>
     <thead>
         <tr>
             <th width='10%' class='centerCell'><span class="heading">Events</span></th>
@@ -19,23 +20,20 @@
             <th width='10%' class='centerCell'><label>Enabled</label></th>
         </tr>
     </thead>
-    <repeat group="{{ @events }}" value="{{ @bevt }}">
-         {~   
-               if (@row_id === 0) {
-                  @event_blogid = @bevt.blogId;
-               }
-              @row_id += 1;
-              @chkid = "chk" . @row_id;
-         ~}
-
-         <tr><td><input name='{{ @chkid }}' id='{{ @chkid }}' type='checkbox' value='{{ @bevt.id }}' /></td>
-         <td>{{ @bevt.fromTime }}</td>
-         <td>{{ @bevt.toTime }}</td>
-         <td>{{ @bevt.slug }}</td>
-        <td>{{ @bevt.enabled ? "Yes" : "No" }}</td>
-        <td><a href="/admin/event/{{ @bevt.id }}" target="_blank">Edit</a></td>
+    <?php foreach($events as $bevt): 
+     if ($row_id === 0) {
+                  $event_blogid = $bevt['blogId'];
+     }
+     $row_id += 1;
+     $chkid = "chk" . $row_id; ?>
+         <tr><td><input name='<?= $chkid ?>' id='<?= $chkid ?>' type='checkbox' value='<?= $bevt['id'] ?>' /></td>
+         <td><?= $bevt['fromTime'] ?></td>
+         <td><?= $bevt['toTime'] ?></td>
+         <td><?= $bevt['slug'] ?></td>
+        <td><?= $bevt['enabled'] ? "Yes" : "No" ?></td>
+        <td><a href="/admin/event/<?= $bevt['id'] ?>" target="_blank">Edit</a></td>
          </tr>
-    </repeat>
+    <?php endforeach ?>
     <tr><td><select name='event_op'>
                    <option value='enable'>enable</option>
                    <option value='disable'>disable</option>
@@ -44,18 +42,15 @@
     
      <td><input type='submit' value='Update Selected' class='btn-danger' /></td></tr>
     </table>
-    <input type='hidden' name='chkct' value='{{ @row_id }}' />
-    <input type='hidden' name='blogid' value= "{{ @event_blogid }}" />
+    <input type='hidden' name='chkct' value='<?= $row_id ?>' />
+    <input type='hidden' name='blogid' value= "<?= $event_blogid ?>" />
     </form>
 </div>
     
 <script type="text/javascript">
   $(document).ready(ready_eventList);
 </script>
-
-</true>
-<false>
+<?php else: ?>
     <p>Event list is empty<p>
-        </false>
-</check>
+<?php endif ?>
 

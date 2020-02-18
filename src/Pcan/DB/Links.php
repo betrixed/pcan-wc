@@ -1,25 +1,27 @@
 <?php
 
 namespace Pcan\DB;
+
 /**
  * Description of Links
  *
  * @author Michael Rynn
  */
-
 use WC\UserSession;
 use WC\DB\Server;
 
 class Links extends \DB\SQL\Mapper {
+
     public function __construct() {
         $db = Server::db();
         parent::__construct($db, 'links', NULL, 1.0e8); // 100 second
     }
-    
+
     static public function byTitle($title) {
         $result = new Links();
-        return $result->load(['title = ?' , $title]);
+        return $result->load(['title = ?', $title]);
     }
+
     // some harder to extract metadata, for size of form fields
     static public function display() {
         return [
@@ -36,11 +38,11 @@ class Links extends \DB\SQL\Mapper {
                 'type' => 'text',
                 'max' => 65535,
             ],
-            'title' =>  [
+            'title' => [
                 'type' => 'varchar',
                 'max' => 255,
             ],
-             'sitename' =>  [
+            'sitename' => [
                 'type' => 'varchar',
                 'max' => 255,
             ],
@@ -62,7 +64,12 @@ class Links extends \DB\SQL\Mapper {
             ]
         ];
     }
-    
+
+    static public function deleteId($id) {
+        $db = Server::db();
+        $db->exec('delete from links where id = ?', [$id]);
+    }
+
     static public function homeLinks() {
         $params = [];
         $db = Server::db();
@@ -79,11 +86,10 @@ EOD;
         $rows = $db->exec($sql);
         $params['ct'] = count($rows);
         $params['rows'] = $rows;
-       //$params['isMobile'] = $this->isMobile();
+        //$params['isMobile'] = $this->isMobile();
         return $params;
     }
-    
-    
+
     static public function byType($linkType) {
         $params = [];
         $db = Server::db();
@@ -97,18 +103,18 @@ select id, url, title, sitename, summary, urltype, date_created
   order by date_created desc
  limit  20
 EOD;
-        $rows = $db->exec($sql, [':utype' => $linkType] );
+        $rows = $db->exec($sql, [':utype' => $linkType]);
         $params['ct'] = count($rows);
         $params['rows'] = $rows;
-       //$params['isMobile'] = $this->isMobile();
+        //$params['isMobile'] = $this->isMobile();
         return $params;
     }
-    
+
     /**
      * Get all  possible UrlTypes as key->value. These are not a Table in the E->R
      */
     static public function getUrlTypes() {
-            return [ 
+        return [
             'Remote' => 'Remote',
             'Blog' => 'Blog',
             'Campaign' => 'Campaign',
@@ -117,18 +123,17 @@ EOD;
             'Dash' => 'Dash',
             'Panel' => 'Panel',
             'Event' => 'Event'
-                ];
+        ];
     }
+
     /**
      * 
-     * @param type $view    - View to set
+     * @param type $model    - model object to set
      * @param string $orderby  - Handles null case for ordered column name
      * @return string    - table field to order by.
      */
-    static public function indexOrderBy($view, $orderby)
-    {
-        if (is_null($orderby))
-        {
+    static public function indexOrderBy($model, $orderby) {
+        if (is_null($orderby)) {
             $orderby = 'date-alt';
         }
         $alt_list = array(
@@ -144,9 +149,8 @@ EOD;
             'type' => '',
             'site' => '',
             'enabled' => ''
-         );  
-        switch($orderby)
-        {
+        );
+        switch ($orderby) {
             case 'title':
                 $alt_list['title'] = 'title-alt';
                 $col_arrow['title'] = '&#8595;';
@@ -162,48 +166,48 @@ EOD;
                 $col_arrow['type'] = '&#8595;';
                 $order_field = 'b.urltype asc, b.date_created desc';
                 break;
-             case 'site':
+            case 'site':
                 $alt_list['site'] = 'site-alt';
                 $col_arrow['site'] = '&#8595;';
                 $order_field = 'b.sitename asc, b.date_created desc';
-                break;     
+                break;
             case 'enabled':
                 $alt_list['enabled'] = 'enabled-alt';
                 $col_arrow['enabled'] = '&#8595;';
                 $order_field = 'b.enabled desc, b.date_created desc';
-                break;     
-             case 'title-alt':
+                break;
+            case 'title-alt':
                 $col_arrow['title'] = '&#8593;';
                 $order_field = 'b.title desc';
-                break;   
+                break;
             case 'type-alt':
-                 $col_arrow['type'] = '&#8593;';
-                 $order_field = 'b.urltype desc,  b.date_created desc';
-                 break;   
+                $col_arrow['type'] = '&#8593;';
+                $order_field = 'b.urltype desc,  b.date_created desc';
+                break;
             case 'site-alt':
                 $col_arrow['site'] = '&#8593;';
                 $order_field = 'b.sitename desc, b.date_created desc';
-                break; 
-           case 'enabled-alt':
+                break;
+            case 'enabled-alt':
                 $col_arrow['enabled'] = '&#8593;';
                 $order_field = 'b.enabled asc, b.date_created asc';
-                break;     
+                break;
             case 'date-alt':
             default:
                 $col_arrow['date'] = '&#8593;';
                 $order_field = 'b.date_created desc';
-                break;             
-                
+                $orderby = 'date-alt';
+                break;
         }
-        $view->orderalt = $alt_list;
-        $view->orderby = $orderby;
-        $view->col_arrow = $col_arrow;
+        $model->orderalt = $alt_list;
+        $model->orderby = $orderby;
+        $model->col_arrow = $col_arrow;
         return $order_field;
     }
-    
+
     static function setBlogURL($blogid, $slug) {
         try {
-            $link = (new Links())->load([ 'refid = :rid', ':rid' => $blogid] );
+            $link = (new Links())->load(['refid = :rid', ':rid' => $blogid]);
         } catch (\PDOException $e) {
             $err = $e->errorInfo;
             UserSession::flash('No link record yet: ' . $err[0] . ' ' . $err[1]);
@@ -222,4 +226,16 @@ EOD;
             }
         }
     }
+
+    /**
+     * Set enabled field on record
+     * @param integer $id
+     * @param integer $op
+     */
+    static public function setEnableId($id, $op) {
+        $db = Server::db();
+
+        $db->exec("update links set enabled = ? where id = ?", [$op, $id]);
+    }
+
 }

@@ -1,18 +1,25 @@
 <?php
+/**
+ * This file, if it exists, is pulled in by require at the bottom
+ * of the \WC\App::init function.
+ * It therefore has a $this of the App object, 
+ * and  $f3 - \Base object
+ * Delete on Production Site
+ */
+if ($f3->get('FAKE_USER_SESSION')) {
+    $us = \WC\UserSession::read();
+    if (is_null($us)) {
+        // Start a fake User
+        $us = \WC\UserSession::instance();
+        $us->setValidUser('FAKE USER', ['Guest','Editor','Admin','User']);
+        $us->write();
+    }
+}
 
-    WC\Html::$browser = WC\Html::getBrowser($f3->get('AGENT'));
-    $agent = &WC\Html::$browser;
     
-    //$agent['name'] = 'Apple Safari';
-    //$agent['version'] = '5.0.6';
-    
-    WC\Assets::registerAssets(
-        [
-            'cartjs' => ['js' => ['/js/cart.js']],
-            
-        ]);
-    
-   
+   /*
+    * 
+
     if (($agent['name'] === 'Apple Safari') && ($agent['version'] === '5.0.6'))
     {
         $f3->set('navigate', 'simple_nav.phtml');
@@ -27,16 +34,6 @@
         $bundles = WC\Assets::instance();
         $bundles->add('bootstrap');
     }
+*/
 
-if (php_sapi_name() === "cli") {
-    $f3->route('GET /menuinit', function($f3) {
-        echo "Init Menus" . PHP_EOL;
-        $menus = new \WC\InitMenus();
-        $menus->doAll(__DIR__);
-    });
-    $f3->route('GET /importdb', function($f3) {
-        require __DIR__ . '/concrete_import.php';
-    });
-
-}
 

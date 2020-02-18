@@ -14,7 +14,7 @@ use Pcan\DB\Event;
 
 class BlogAdm extends Controller {
 use Mixin\Auth;
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
 
     public $url = '/admin/blog/';
     private $editAssets = ['bootstrap', 'SummerNote', 'DateTime', 'jquery-form', 'blog-edit'];
@@ -24,7 +24,7 @@ use Mixin\ViewF3;
         $blog = new Blog();
         $active = $blog->load("id = " . $id);
         $view = $this->getView();
-        $view->blog = $active;
+        $view->model->blog = $active;
         $this->editForm();
     }
 
@@ -44,7 +44,7 @@ use Mixin\ViewF3;
         $titleChanged = ($oldTitle !== $newTitle);
         $blog['title'] = $newTitle;
         $newUrl = '';
-        $lock_url = filter_var($POSTDATA['lock_url'], FILTER_VALIDATE_INT);
+        $lock_url = Valid::toBool($POSTDATA, 'lock_url');
 
         $oldUrl = $blog['title_clean'];
         $autoUrl = (!empty($lock_url) || strlen($oldUrl) == 0) ? true : false;
@@ -80,8 +80,8 @@ use Mixin\ViewF3;
     }
 
     private function errorPDO($e, $blogid) {
-        $err = $e->errorInfo;
-        $this->flash($err[0] . ": " . $err[1]);
+        $err = implode(PHP_EOL, $e->errorInfo);
+        $this->flash($err);
         UserSession::reroute('/admin/blog/edit/' . $blogid);
         return false;
     }
@@ -109,8 +109,9 @@ use Mixin\ViewF3;
         } catch (\PDOException $e) {
             return $this->errorPDO($e, $blogid);
         }
-
-        $this->view->blog = $blog;
+        $view = $this->getView();
+        $m = $view->model;
+        $m->blog = $blog;
         $blogid = $blog['id'];
         if ($update_link) 
         {
@@ -153,10 +154,13 @@ use Mixin\ViewF3;
         //$this->editForm();
     }
 
-    public function newRec() {
+    public function newRec($f3, $args) {
         $view = $this->getView();
-        $view->url = $this->url;
-        $view->content = 'blog\new.phtml';
+        $view->content = 'blog/new';
+        $m = $view->model;
+        
+        $m->url = $this->url;
+
         $view->assets($this->editAssets);
         echo $view->render();
     }
@@ -235,8 +239,10 @@ use Mixin\ViewF3;
      */
     private function editForm() {
         $view = $this->getView();
-        $view->content = 'blog/edit.phtml';
-        $blog = $view->blog;
+        $view->content = 'blog/edit';
+        $view->layout = 'layout_plates';
+        $blog = $view->model->blog;
+        
         $view->isApprover = true; // isApprover()
         
         /* if (!$this->canEdit) {
@@ -255,11 +261,12 @@ use Mixin\ViewF3;
         }
         $id = $blog['id'];
         $view->title = '#' . $id;
-        $view->stylelist = &$stylelist;
-        $view->catset = Blog::getCategorySet($id);
-        $view->events = Blog::getEvents($id);
-        $view->metatags = Blog::getMetaTags($id);
-        $view->url = $this->url;
+        $model = $view->model;
+        $model->stylelist = $stylelist;
+        $model->catset = Blog::getCategorySet($id);
+        $model->events = Blog::getEvents($id);
+        $model->metatags = Blog::getMetaTags($id);
+        $model->url = $this->url;
         $view->assets($this->editAssets);
         echo $view->render();
     }
@@ -268,6 +275,7 @@ use Mixin\ViewF3;
         $post = &$f3->ref('POST');
         $isAjax = $f3->get('AJAX');
         $view = $this->getView();
+        $m = $view->model;
         if (!empty($post) && $isAjax) {
             $blog_id = Valid::toInt($post, 'blogid', null);
             $event_op = Valid::toStr($post, 'event_op','');
@@ -289,19 +297,22 @@ use Mixin\ViewF3;
                 $db = Server::db();
                 for ($ix = 1; $ix <= $chkct; $ix++) {
                     $chkname = "chk" . $ix;
-                    $chkvalue = Valid::toInt($post, $chkname, 0);
+                    $chkvalue = Valid::toBool($post, $chkname);
                     if (!empty($chkvalue)) {
                         $db->exec($sql, $chkvalue);
                     }
                 }
             }
-            $view->events = Blog::getEvents($blog_id);
+            
+            $m->events = Blog::getEvents($blog_id);
         } else {
             $this->flash('No Ajax');
-            $view->events = [];
+            $m->events = [];
         }
-        $view->url = $this->url;
-        echo TagViewHelper::render('blog/event_dates.phtml');
+        $m->url = $this->url;
+         $view->layout = null;
+        $view->content = 'blog/event_dates';
+        echo TagViewHelper::render();
     }
     
     public function addEvent($f3, $args) {
@@ -316,6 +327,7 @@ use Mixin\ViewF3;
                 $event['blogId'] = $bid;
                 $event['fromTime'] = Valid::toDateTime($post,'fromDate');
                 $event['toTime'] = Valid::toDateTime($post,'toDate');
+                $event['slug'] = Valid::toStr($post,'slug');
                 $event['enabled'] = 1;
                 $event->save();
                 }
@@ -324,9 +336,12 @@ use Mixin\ViewF3;
                     $this->flash('New event fail: ' . $err[0] . ' ' . $err[1]);
                 }
                 $view = $this->getView();
-                $view->url = $this->url;
-                $view->events = Blog::getEvents($bid);
-                echo TagViewHelper::render('blog/event_dates.phtml');
+                $m = $view->model;
+                $m->url = $this->url;
+                $m->events = Blog::getEvents($bid);
+                $view->layout = null;
+                $view->content = 'blog/event_dates';
+                echo $view->render();
             }  
         }
         
@@ -373,7 +388,7 @@ use Mixin\ViewF3;
             }
             $db->commit();
             $view = $this->getView();
-            $view->content = 'blog/category.phtml';
+            $view->content = 'blog/category';
             $view->catset = Blog::getCategorySet($blog_id);
         }
         echo $view->render();
@@ -382,13 +397,14 @@ use Mixin\ViewF3;
     public function index($f3, $args) {
 
         $view = $this->getView();
-        $view->content = 'blog/index.phtml';
+        $m = $view->model;
+        $view->content = 'blog/index';
         $request = $f3->get('REQUEST');
 
         $numberPage = Valid::toInt($request, 'page', 1);
         $category = Valid::toInt($request, 'catId', 0);
         $orderby = Valid::toStr($request, 'orderby', null);
-        $order_field = Blog::viewOrderBy($this->view, $orderby);
+        $order_field = Blog::viewOrderBy($m, $orderby);
         $grabsize = 12;
         $start = ($numberPage - 1) * $grabsize;
 
@@ -407,12 +423,13 @@ use Mixin\ViewF3;
         
         $maxrows = !empty($results) ? $results[0]['full_count'] : 0;
         $paginator = new PageInfo($numberPage, $grabsize, $results, $maxrows);
-        $view->page = $paginator;
-        $view->args = $f3->get('SERVER.QUERY_STRING');
+        
+        $m->page = $paginator;
+        $m->args = $f3->get('SERVER.QUERY_STRING');
         $cat_items = $db->exec("select id, name from blog_category");
-        $view->catItems = $cat_items;
-        $view->catId = $category;
-        $view->isEditor = true;
+        $m->catItems = $cat_items;
+        $m->catId = $category;
+        $m->isEditor = true;
         $view->assets('bootstrap');
         echo $view->render();
     }
@@ -588,7 +605,7 @@ use Mixin\ViewF3;
         $view->title = "Import";
         $view->path = $path;
         $view->assets('bootstrap');
-        $view->content = 'blog/import.phtml';
+        $view->content = 'blog/import';
         echo $view->render();     
         
     }
@@ -596,7 +613,7 @@ use Mixin\ViewF3;
     
     public function export($f3, $args) {
         $view = $this->view;
-        $view->content = 'blog/export.phtml';
+        $view->content = 'blog/export';
         $request = $f3->get('REQUEST');
 
         $numberPage = Valid::toInt($request, 'page', 1);

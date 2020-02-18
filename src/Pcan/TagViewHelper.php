@@ -22,6 +22,7 @@ class TagViewHelper
         $plate->filter('price', __CLASS__ . '::price');
         
         $plate->extend('wc:init', __CLASS__ . '::init');
+        $plate->extend('f3:view', __CLASS__ . '::includeView');
         $plate->extend('f3:xcheck', __CLASS__ . '::xcheckToken');
         $plate->extend('f3:css-header', __CLASS__ . '::CssHeader');
         $plate->extend('f3:link', __CLASS__ . '::Link');
@@ -75,6 +76,15 @@ class TagViewHelper
         return $plate->render($layout);
     }
 
+    static public function includeView($node) {
+        $path = isset($node[0]) ? $node[0] : null;
+        if (!empty($path)) {
+            return \View::instance()->render($path);
+        }
+        else {
+            return "<p>Missing View Name</p>";
+        }
+    }
     static public function &getAttr($node)
     {
         $plate = \Template::instance();
@@ -98,9 +108,17 @@ class TagViewHelper
         return $pset;
     }
 
-    static private function &nodeAttr($node, $value = null)
-    {
-        $pset = static::getAttr($node);
+    static private function nodeAttr($node, $value = null)
+    {   
+        if (isset($node['@attrib'])) {
+            // dependency on FatFree's method of View Template processing
+            $pset = static::getAttr($node);
+        }
+        else {
+            // Take what is given
+            $pset = $node;
+        }
+
         if (isset($pset['name'])):
             $pset['id'] = $pset['name'];
             if (!isset($pset['value'])):
@@ -125,7 +143,7 @@ class TagViewHelper
 
     static public function buildSelect($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $out = "";
         if (isset($pset['label'])) {
             $out .= static::label($id, $pset['label']);
@@ -158,7 +176,7 @@ class TagViewHelper
 
     static public function checkboxTag($node, $default)
     {
-        $pset = &static::nodeAttr($node, $value);
+        $pset = static::nodeAttr($node, $value);
         $pset = array_merge($default, $pset);
         if (isset($pset['value'])):
             $value = $pset['value'];
@@ -207,7 +225,7 @@ class TagViewHelper
 
     static public function getTag($node, $default, $tag = 'input')
     {
-        $pset = &static::nodeAttr($node, $value);
+        $pset = static::nodeAttr($node, $value);
         
         /* class is a multi value attribute */
         if (isset($default['class']) && isset($pset['class'])) {
@@ -229,7 +247,7 @@ class TagViewHelper
 
     static public function textPlain($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $id = $pset['id'];
         //$out = "<div class='" . static::FORMDIV . "'>" . PHP_EOL;
         if (isset($pset['label'])) {
@@ -242,7 +260,7 @@ class TagViewHelper
 
     static public function pwdField($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $id = $pset['id'];
         //$out = "<div class='" . static::FORMDIV . "'>" . PHP_EOL;
         if (isset($pset['label'])) {
@@ -255,7 +273,7 @@ class TagViewHelper
 
     static public function linkTo($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         if (isset($pset['href'])):
             $href = $pset['href'];
             unset($pset['href']);
@@ -309,7 +327,7 @@ class TagViewHelper
 
     static public function textDatetime($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $id = $pset['id'];
         $dateid = 'pick' . $pset['id'];
         $out = "<div class='input-group date' id='$dateid' data-target='nearest'>" . PHP_EOL;
@@ -342,7 +360,7 @@ class TagViewHelper
 
     static public function textPhone($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $id = $pset['id'];
         //$out = "<div class='" . static::FORMDIV . "'>" . PHP_EOL;
         if (isset($pset['label'])) {
@@ -355,7 +373,7 @@ class TagViewHelper
 
     static public function textMultiline($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $id = $pset['id'];
         //$out = "<div class='" . static::FORMDIV . "'>" . PHP_EOL;
         if (isset($pset['label'])) {
@@ -375,7 +393,7 @@ class TagViewHelper
 
     static public function textEmail($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $id = $pset['id'];
         //$out = "<div class='" . static::FORMDIV . "'>" . PHP_EOL;
         if (isset($pset['label'])) {
@@ -386,79 +404,14 @@ class TagViewHelper
         return $out;
     }
 
-    static public function getMenu($root)
-    {
-        $f3 = \Base::instance();
-        if ($f3->exists('MenuSet')) {
-            $menus = &$f3->ref('MenuSet');
-        } else {
-            $f3->set('MenuSet', []);
-            $menus = &$f3->ref('MenuSet');
-        }
-        if (isset($menus[$root])) {
-            $tree = $menus[$root];
-        } else {
-            $tree = MenuTree::getMainMenu($root);
-            $menus[$root] = $tree;
-        }
-        return $tree;
-    }
-
-    // implement menu-links tag
-
-    static public function doSubMenu($pset, $tree)
-    {
-        if (isset($pset['prefix'])) {
-            $prefix = $pset['prefix'];
-            unset($pset['prefix']);
-        } else {
-            $prefix = "";
-        }
-        if (!empty($tree) && !empty($tree->submenu)) {
-            $out = "";
-            $aclass = "dropdown-item";
-            if (isset($pset['item-class'])) {
-                $aclass .= " " . $pset['item-class'];
-                unset($pset['item-class']);
-            }
-            if (isset($pset['root']))
-                unset($pset['root']);
-            if (isset($pset['title']))
-                unset($pset['title']);
-            foreach ($tree->submenu as $menu) {
-                if ($menu->caption === "-") {
-                    $out .= "<div class=\"dropdown-divider\"></div>" . PHP_EOL;
-                    continue;
-                }
-
-                if (substr($menu->controller, 0, 4) === 'http') {
-                    $link = $menu->controller . '/' . $menu->action;
-                } else {
-                    $qchar = (strpos($menu->action, '?') !== false) ? '&' : '?';
-                    $link = $prefix . '/' . $menu->controller . '/' . $menu->action;
-                    $link .= $qchar . 'mit=' . $menu->id;
-                }
-
-                $out .= "<a href=\"" . $link . "\"";
-                if (!empty($aclass)) {
-                    $out .= " class=\"" . $aclass . "\"";
-                }
-                foreach ($pset as $attr => $val) {
-                    $out .= ' ' . $attr . "='" . $val . "'";
-                }
-                $out .= ">" . $menu->caption . "</a>" . PHP_EOL;
-            }
-            return $out;
-        }
-        return "<!-- No menu items found -->" . PHP_EOL;
-    }
+ 
 
     static public function menuLinks($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $root = isset($pset['root']) ? $pset['root'] : null;
-        $tree = static::getMenu($root);
-        return static::doSubMenu($pset, $tree);
+        $tree = MenuTree::getMenuSet($root);
+        return MenuTree::generateSubMenu($pset, $tree);
     }
 
     static public function xcheckToken($node)
@@ -466,14 +419,16 @@ class TagViewHelper
         return static::getTag($node, ['name' => 'xcheck', 'type' => 'hidden']);
     }
 
-    static public function init($node)
+    static public function init($node = null)
     {
-        return "<?php Use WC\\Assets, WC\\UserSession ?>";
+        return '<?php ' . PHP_EOL .
+                'Use WC\Assets; ' . PHP_EOL .
+                'use WC\UserSession ?>';
     }
 
     static public function recaptcha($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $text = $pset['text'];
         $id = $pset['id'];
         $site = $pset['site'];
@@ -498,7 +453,7 @@ EOD;
 
     static public function dropDown($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $out = "<li class=\"nav-item dropdown\">" . PHP_EOL;
         $menuName = isset($pset['root']) ? $pset['root'] : -1;
         $mid = "dd_m" . $menuName;
@@ -510,8 +465,8 @@ EOD;
         $out .= "</a>" . PHP_EOL;
         $out .= "<div class=\"dropdown-menu\" aria-labelledby=\"$mid\">" . PHP_EOL;
 
-        $tree = static::getMenu($menuName);
-        $out .= static::doSubMenu($pset, $tree);
+        $tree = MenuTree::getMenuSet($menuName);
+        $out .= MenuTree::generateSubMenu($pset, $tree);
         $out .= PHP_EOL . "</div>" . PHP_EOL;
         $out .= "</li>" . PHP_EOL;
         return $out;
@@ -519,7 +474,7 @@ EOD;
 
     static public function CssAssets($node)
     {
-        $pset = &static::nodeAttr($node);
+        $pset = static::nodeAttr($node);
         $name = $pset['name'];
         $out = "<?= Assets::instance()->CssPut(" . "\"$name\"" . "); ?>";
         return $out;

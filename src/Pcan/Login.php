@@ -1,5 +1,7 @@
 <?php
+
 namespace Pcan;
+
 /**
  * Description of login
  *
@@ -11,40 +13,38 @@ use Pcan\DB\ResetCode;
 use WC\DB\Server;
 use WC\UserSession;
 use WC\Valid;
+use WC\SwiftMail;
 
-class Login extends Controller
-{
-use Mixin\Captcha;
-use Mixin\ViewF3;
+class Login extends Controller {
+
+    use Mixin\Captcha;
+    use Mixin\ViewPlates;
 
     private $username;
 
-    function index($f3, $args)
-    {
+    function index($f3, $args) {
         if (!UserSession::https($f3)) {
             return;
         }
-        $view = $this->init_View($f3);
-        $this->captchaView($view);
-        $this->xcheckView();
-        
-        $view = $this->view;
+        $view = $this->getView();
         $view->assets('bootstrap');
-        
-        $view->content = 'home/login.phtml';
-        $view->title = 'Login';
+        $view->content = 'home/login';
+        $m = $view->model;
+        $m->title = 'Login';
+        $this->captchaView($m);
+        $this->xcheckView($m);
+
         echo $view->render();
     }
 
-    function checkout($f3, $args)
-    {
+    function checkout($f3, $args) {
         $ud = UserSession::read();
         $view = $this->getView();
         if (!empty($ud)) {
             $ud->wipe();
-            $view->content = 'home/logout.phtml';
+            $view->content = 'home/logout';
         } else {
-            $view->content = 'home/error.phtml';
+            $view->content = 'home/error';
         }
         $view->assets(['bootstrap']);
         echo $view->render();
@@ -52,8 +52,7 @@ use Mixin\ViewF3;
 
     // POST from login form
 
-    function errorLogin($msg)
-    {
+    function errorLogin($msg) {
         $logger = new \Log('login.log');
         $logger->write('Fail login - ' . $msg);
         $f3 = $this->f3;
@@ -62,17 +61,14 @@ use Mixin\ViewF3;
         $this->index($f3, $args);
     }
 
-    function errorForgot($msg)
-    {
+    function errorForgot($msg) {
         $logger = new \Log('login.log');
         $logger->write('Fail Forgot - ' . $msg);
-        $f3 = $this->f3;
         $this->flash($msg);
         $this->forgotView();
     }
 
-    function errorChangePwd($msg)
-    {
+    function errorChangePwd($msg) {
         $logger = new \Log('login.log');
         $logger->write('Password change - ' . $msg);
         $f3 = $this->f3;
@@ -80,16 +76,14 @@ use Mixin\ViewF3;
         $this->changePwdView();
     }
 
-    function changePwdView()
-    {
+    function changePwdView() {
         $view = $this->view;
-        $view->content = 'home/changePWD.phtml';
+        $view->content = 'home/changePWD';
         $view->assets(['bootstrap']);
         echo $this->view->render();
     }
 
-    function changePwdPost($f3, $args)
-    {
+    function changePwdPost($f3, $args) {
         $post = &$f3->ref('POST');
         $newpwd = Valid::toStr($post, 'new_pwd', null);
         $chkpwd = Valid::toStr($post, 'confirm_pwd', null);
@@ -117,13 +111,12 @@ use Mixin\ViewF3;
             return $this->errorChangePwd($perr->getMessage());
         }
         $view = $this->view;
-        $view->content = 'home/pwd_changed.phtml';
+        $view->content = 'home/pwd_changed';
         $view->assets(['bootstrap']);
         echo $view->render();
     }
 
-    function changePwd($f3, $args)
-    {
+    function changePwd($f3, $args) {
         if (!UserSession::https($f3)) {
             return;
         }
@@ -133,17 +126,15 @@ use Mixin\ViewF3;
         $this->changePwdView();
     }
 
-    function defaultError()
-    {
+    function defaultError() {
         $view = $this->view;
-        $view->content = 'home/error.phtml';
-        $view->layout = 'minimal.phtml';
+        $view->content = 'home/error';
+        $view->layout = 'minimal';
         $view->assets(['bootstrap']);
-        echo  $view->render();
+        echo $view->render();
     }
 
-    function resetPwd($f3, $args)
-    {
+    function resetPwd($f3, $args) {
         $req = &$f3->ref('REQUEST');
         $code = $args['code'];
 
@@ -152,7 +143,7 @@ use Mixin\ViewF3;
 
         if ($valid !== false) {
             $email = trim($args['email']);
-            
+
             $userid = $valid['user_id'];
             $user = User::byId($userid);
 
@@ -160,10 +151,11 @@ use Mixin\ViewF3;
             if ($user === false || $user['email'] !== $email) {
                 return $this->defaultError();
             }
-            $view = $this->view;
-            $view->email = $email;
-            $view->header = "Change password for " . $email;
-            $view->url = "/login/";
+            $view = $this->getView();
+            $m = $view->model;
+            $m->email = $email;
+            $m->header = "Change password for " . $email;
+            $m->url = "/login/";
             $this->changePwdView();
         } else {
             $this->flash('Code is invalid or expired');
@@ -171,25 +163,23 @@ use Mixin\ViewF3;
         }
     }
 
-    function forgotView()
-    {
-        $view = $this->view;
-        if (!isset($view->email)) {
-            $view->email = '';
+    function forgotView() {
+        $view = $this->getView();
+        $m = $view->model;
+        if (!isset($m->email)) {
+            $m->email = '';
         }
-        $this->captchaView();
-        $view->content = 'home/forgotPassword.phtml';
+        $this->captchaView($m);
+        $view->content = 'home/forgotPassword';
         $view->assets(['bootstrap']);
         echo $view->render();
     }
 
-    function forgot($f3, $args)
-    {
+    function forgot($f3, $args) {
         $this->forgotView();
     }
 
-    function forgotPost($f3, $args)
-    {
+    function forgotPost($f3, $args) {
         $post = &$f3->ref('POST');
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
@@ -198,8 +188,11 @@ use Mixin\ViewF3;
         }
 
         $email = Valid::toEmail($post, 'email');
-        $view = $this->view;
-        $view->email = $post['email'];
+        $view = $this->getView();
+        $view->assets(['bootstrap']);
+         
+        $m = $view->model;
+        $m->email = $post['email'];
         if (empty($email)) {
             $this->errorForgot('Need valid email');
             return;
@@ -209,7 +202,7 @@ use Mixin\ViewF3;
         $found = $user->load(["email = ?", $email]);
 
         if ($found === false) {
-            $this->errorForgot('Match not found for email');
+            $this->errorForgot('No match was found for email');
             return;
         }
         $code = UserEvent::newUserConfirm($found, UserEvent::PW_RESET, true);
@@ -219,22 +212,25 @@ use Mixin\ViewF3;
         }
         $name = $found['name'];
 
-        $view->publicUrl = $f3->get('domain');
-        $view->confirmUrl = '/reset-password/' . $code . '/' . $found['email'];
+        $m->domain = $f3->get('domain');
+        $m->confirmUrl = '/reset-password/' . $code . '/' . $found['email'];
+        $m->sendDate = Valid::now();
+        $m->site =  $f3->get('organization');
+        $m->link = $m->domain . $m->confirmUrl;
+        
+        $textMsg = static::renderView($m, 'email/reset_text');
+        $htmlMsg = static::renderView($m, 'email/reset');
 
-        $textMsg = TagViewHelper::render('email/reset.txt');
-        $htmlMsg = TagViewHelper::render('email/reset.phtml');
-
-        $mailer = new SwiftMail();
+        $mailer = new SwiftMail($f3);
 
         $msg = [
-            "subject" => 'Password Reset from ' . $view->publicUrl,
+            "subject" => 'Password Reset from ' . $m->site,
             "text" => $textMsg,
             "html" => $htmlMsg,
             "to" => [
                 "email" => $email,
                 "name" => $name
-                ]
+            ]
         ];
 
         $isValid = $mailer->send($msg);
@@ -242,9 +238,9 @@ use Mixin\ViewF3;
         if ($isValid['success'] === false) {
             $this->errorForgot($isValid['errors']);
         } else {
-            $view->content = 'home/resetSent.phtml';
-            $view->email = $email;
-            $view->assets(['bootstrap']);
+            $view->content = 'home/resetSent';
+            $m->email = $email;
+           
             echo $view->render();
         }
     }
@@ -252,8 +248,7 @@ use Mixin\ViewF3;
     /**
      * Confirm login post
      */
-    function check($f3, $args)
-    {
+    function check($f3, $args) {
         $post = &$f3->ref('POST');
 
         if (!$this->xcheckResult($post)) {
@@ -304,8 +299,7 @@ use Mixin\ViewF3;
         return;
     }
 
-    function errorSignup($msg)
-    {
+    function errorSignup($msg) {
         $logger = new \Log('login.log');
         $logger->write('Fail Signup - ' . $msg);
         $f3 = $this->f3;
@@ -313,8 +307,7 @@ use Mixin\ViewF3;
         $this->signupView();
     }
 
-    function signupPost($f3, $args)
-    {
+    function signupPost($f3, $args) {
         $post = &$f3->ref('POST');
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
@@ -369,8 +362,8 @@ use Mixin\ViewF3;
         $view->confirmUrl = '/confirm/' . $code . '/' . $email;
 
         $textMsg = TagViewHelper::render('form/signup_text.txt');
-        $htmlMsg = TagViewHelper::render('form/signup_html.phtml');
-        $mailer = new SwiftMail();
+        $htmlMsg = TagViewHelper::render('form/signup_html');
+        $mailer = new SwiftMail($f3);
         $msg = [
             "subject" => 'Signup to SBO',
             "text" => $textMsg,
@@ -378,7 +371,7 @@ use Mixin\ViewF3;
             "to" => [
                 "email" => $email,
                 "name" => $name
-                ]
+            ]
         ];
         $isValid = $mailer->send($msg);
         if ($isValid['success']) {
@@ -389,8 +382,7 @@ use Mixin\ViewF3;
         }
     }
 
-    function signupView()
-    {
+    function signupView() {
         $f3 = $this->f3;
         if (!UserSession::https($f3)) {
             return;
@@ -400,14 +392,13 @@ use Mixin\ViewF3;
 
         $this->captchaView();
         $this->xcheckView();
-        $view->content = 'home/signup.phtml';
+        $view->content = 'home/signup';
         $view->assets('bootstrap');
 
         echo $view->render();
     }
 
-    function signup($f3, $args)
-    {
+    function signup($f3, $args) {
         $view = $this->view;
         $view->rec = new User();
         $view->message = '';

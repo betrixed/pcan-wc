@@ -1,14 +1,16 @@
-{~ 
-@view = \Base::instance()->get('view');
-@images = @view->images;
-@gallery = @view->gallery;
-@prevlink = @view->prevlink;
-@nextlink = @view->nextlink;
-@suburl = @view->suburl;
-@subjs = @view->subjs;
-@params = @view->params;
-@index = @view->indexlink;
-~}
+<?php
+if ($view->layout) {
+    $this->layout($view->layout,$this->data);
+}
+$prevlink = $m->prevlink;
+$nextlink = $m->nextlink;
+$theme = $f3->get('theme');
+$gallery = $m->gallery;
+$suburl = $m->suburl;
+$params = $m->params;
+$index = $m->indexlink;
+?>
+
 <!-- title.phtml -->
 <style>
     @media screen and (max-width: 900px){
@@ -47,67 +49,64 @@
     <div class="row">
         <div class="col-sm-2">
             <span class="view-title">
-                <a class="site-logo" href="/"><img style="width:100%;max-width:144px;" src="{{ @theme }}/site-logo-small.png"></a>
+                <a class="site-logo" href="/"><img style="width:100%;max-width:144px;" src="<?= $theme ?>/site-logo-small.png"></a>
             </span>    
         </div>
         <div class="col">
             <div  class="row">
 
-                <check if="{{ !is_null(@prevlink)}}">
+                <?php if(!is_null($prevlink)): ?>
                     <div class="col-md-auto">
                         <div class="btn btn-light">
-                            <a href="/gallery/view/{{@prevlink.name}}">
-                                <span class="nextprev"><img src="/font/glyphicons_free/glyphicons/png/glyphicons-225-chevron-left.png">&nbsp;{{@prevlink.name}}</span></a>
+                            <a href="/gallery/view/<?=$prevlink['name']?>">
+                                <span class="nextprev"><img src="/font/glyphicons_free/glyphicons/png/glyphicons-225-chevron-left.png">&nbsp;<?=$prevlink['name']?></span></a>
                         </div>
                     </div>
-                </check>
+                <?php endif ?>
 
                 <div class="col text-center">
-                    <span class="nextprev"><a href="{{@index}}">Index</a></span>
+                    <span class="nextprev"><a href="<?=$index?>">Index</a></span>
                 </div>
-
-                <check if="{{ !is_null(@nextlink)}}">
+                <?php if(!is_null($nextlink)): ?>
+                
                     <div class="col-md-auto">
-                        <a class="btn btn-light" href="/gallery/view/{{@nextlink.name}}"><span class="nextprev">{{@nextlink.name}}&nbsp;<img src="/font/glyphicons_free/glyphicons/png/glyphicons-224-chevron-right.png"></a>
+                        <a class="btn btn-light" href="/gallery/view/<?=$nextlink['name']?>"><span class="nextprev"><?=$nextlink['name']?>&nbsp;<img src="/font/glyphicons_free/glyphicons/png/glyphicons-224-chevron-right.png"></a>
                     </div>
-                </check>
+                 <?php endif ?>
 
             </div>
             <div class="row">
                 <div class="col">
                     <span style='font-size:1.2em;'> 
-                        <b><a href="{{ @view->url . "?show=" . @view->show }}">{{ @gallery.name }}</a></b>  
-                        &nbsp; | &nbsp; <small><i>{{ @gallery.description }}</i></small>
+                        <b><a href="<?= $m->url . "?show=" . $m->show ?>"><?= $gallery['name'] ?></a></b>  
+                        &nbsp; | &nbsp; <small><i><?= $gallery['description'] ?></i></small>
                     </span>
                 </div>
             </div>
         </div>
         <div class="col-3">
             <div class="row">
-                    
-
                     <div class="col text-center">
-                        <span>{{ @view->title }}</span><br>
+                        <span><?= $view->title ?></span><br>
                         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                            View as <span id="showid">{{@view->show}}</span>   
+                            View as <span id="showid"><?=$m->show?></span>   
                         </button>
 
                         <div class="dropdown-menu">
-                            <a get="{{@suburl . '&show=grid' }}" class="dropdown-item" href="#" 
-                               onclick="showAs('Grid');{{ @subjs }}" >Grid</a>
-                            <a get="{{@suburl . '&show=slider' }}" class="dropdown-item" href="#" 
-                               onclick="showAs('Slider');{{ @subjs }}" >Slider</a>
-                            <a get="{{@suburl . '&show=table' }}" class="dropdown-item" href="#" 
-                               onclick="showAs('Table');{{ @subjs }}" >Table</a>
+                            <a get="<?=$suburl . '&show=grid' ?>" class="dropdown-item" href="#" 
+                               onclick="showAs('Grid');<?= $m->subjs ?>" >Grid</a>
+                            <a get="<?=$suburl . '&show=slider' ?>" class="dropdown-item" href="#" 
+                               onclick="showAs('Slider');<?= $m->subjs ?>" >Slider</a>
+                            <a get="<?=$suburl . '&show=table' ?>" class="dropdown-item" href="#" 
+                               onclick="showAs('Table');<?= $m->subjs ?>" >Table</a>
                         </div>
                     </div> 
-
             </div>
         </div>
     </div>
 </div>
 
-<div id="gview"><include href="{{@view->vname}}"></include></div>
+<div id="gview"><?php $this->insert($m->vname,$this->data)?></div>
 
 
 

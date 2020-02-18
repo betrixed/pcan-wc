@@ -231,18 +231,12 @@ div.sidelink {
 
 body, td, pre { font-family:Helvetica, sans-serif;font-size:16px;}
 
-body {
-    background-image: url("/image/gallery/site/tile-g1.png");
-    margin-bottom:30px;
-}
-
-.footer {
-    position: absolute;
-    bottom:-10px;
-    width:100%;
-    background-color:black;
-    color:white;
-    height:30px;
+.page-footer {
+    line-height:40px;
+    background-color:lightslategray;
+    color:black;
+    overflow-y:no-display;
+    font-size:0.9em;
 }
 div.sidebox {
     margin-top:8px;
@@ -283,7 +277,7 @@ div.title-area {
     margin : 8px;    
 }
 span.link-title {
-    font-size:1.2em;
+    font-size:2.0em;
     font-weight:bolder;
     
 }
@@ -310,6 +304,9 @@ div.link-summary {
 }
 
 
+a.site-logo img{
+    max-height:2.0em;
+}
 
 img.imageframe {
     border-color: white;

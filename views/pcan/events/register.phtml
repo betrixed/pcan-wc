@@ -1,10 +1,11 @@
-<wc:init></wc:init>
-{~
-@view = \Base::instance()->get('view');
-@eblog = @view->eblog;
-@hasEvent = !empty(@eblog);
-@reg = @view->register;
-~}
+<?php
+if ($view->layout) :
+    $this->layout($view->layout, $this->data);
+endif;
+$eblog = $m->eblog;
+$hasEvent = !empty($eblog);
+$reg = $m->register;
+?>
 
 <style>
     label {
@@ -12,28 +13,31 @@
         text-align:right;
         padding-right:10px;
     }
+    .eblog {
+        background-color: antiquewhite;
+    }
 </style>
 
 <div class="container-fluid body-wrap">
+    
     <div class="row">
         <div class="col-6 text-center">
             <h4>Registration Page for Event</h4>
         </div>
     </div>
-    <check if="{{@hasEvent}}">
-        <true>
-        <div class="{{@eblog.style}}">
-            {{ @eblog.article | raw }}
-        </div>
-        <form id="regevt" method="post" action="/register/regpost">
+        <?php if ($hasEvent): ?>
+            <form id="regevt" method="post" action="/register/regpost">
             <div id="regform">
-                <include href="events/regform.phtml"></include>
+                <?php $this->insert('events/regform' , $this->data) ?>
             </div>
         </form>
-
-        </true>
-        <false>
+    <hr>
+    <div class="eblog">
+        <div class="<?= $eblog['style'] ?>">
+            <?= $eblog['article'] ?>
+        </div>
+    </div>
+<?php else: ?>
         <p>Event Page not found</p>
-        </false>
-    </check>
+<?php endif; ?>
 </div>
