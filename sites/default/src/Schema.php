@@ -32,10 +32,10 @@ use \Pcan\Mixin\ViewPlates;
         foreach ($list as $value) {
             $keyed[$value] = $value;
         }
-        $adapters = ['Mysql' => 'Mysql', 'Pgsql' => 'Pgsql'];
+        $adapters = ['Mysql' => 'Mysql', 'Pgsql' => 'Pgsql', 'Sqlite' => 'Sqlite'];
 
         $view = $this->getView();
-        $view->layout = 'input';
+        $view->content = 'input';
         $view->add(['list' => $list, 'keyed' => $keyed, 'adapters' => $adapters]);
 
         echo $view->render();
@@ -97,7 +97,7 @@ use \Pcan\Mixin\ViewPlates;
         $report->doCompareSchema($s1, $s2);
 
         $view = $this->getView();
-        $view->layout = 'compare';
+        $view->content = 'compare';
         $view->add(['script' => $report->log]);
         
         echo $view->render();
@@ -105,20 +105,27 @@ use \Pcan\Mixin\ViewPlates;
 
     public function generate($f3, $params) {
         $view = $this->getView();
-        $view->layout = 'schema';
+        $view->content = 'schema';
 
         $version = isset($params['v']) ? $params['v'] : null;
-
+        
         $path = App::instance()->getSchemaDir() . $version . '.schema';
-
-        $cfg = XmlPhp::fromFile($path);
+        $req = $f3->get('REQUEST');
+        if (isset($req['adapt'])) {
+            $adapter = $req['adapt'];
+            $rdr = static::get_adapt_to($adapter);
+            $cfg = $rdr->parseFile($path);
+        }
+        else {
+            $cfg = XmlPhp::fromFile($path);
+        }
         $script = new Script();
 
         $cfg->generate($script, ['tables' => 'create']);
 
-        $cfg->generate($script, ['alter' => true, 'indexes' => true, 'auto_inc' => true]);
+        $cfg->generate($script, ['alter' => true, 'indexes' => true]);
 
-        $cfg->generate($script, ['alter' => true, 'references' => true]);
+        $cfg->generate($script, ['alter' => true ]);
 
         $view->add(['script' => $script]);
 
@@ -159,6 +166,21 @@ use \Pcan\Mixin\ViewPlates;
         }
         return $sdb;
     }
+    
+    static function get_adapt_to($adapter) {
+        switch($adapter) :
+            case 'mysql':  
+                $rdr = new AdaptXml(['Sqlite','Pgsql'], 'Mysql');
+                break;
+            case 'pgsql': 
+                  $rdr = new AdaptXml(['Mysql', 'Sqlite'],' Pgsql');
+                  break;
+            case 'sqlite':
+                $rdr = new AdaptXml(['Mysql', 'Pgsql'], 'Sqlite');
+                  break;
+        endswitch;
+        return $rdr;
+    }
     public function make_db($f3, $p) {
 
         
@@ -168,40 +190,30 @@ use \Pcan\Mixin\ViewPlates;
 
         $sdb = $this->db_params($p);
         
+        $rdr = static::get_adapt_to($sdb['adapter']);
         
-        // Alter schema interpreter
-        
-        if ($sdb['adapter'] === 'mysql') {
-            $rdr = new AdaptXml('Pgsql', 'Mysql');
-        } else {
-            $rdr = new AdaptXml('Mysql', 'Pgsql');
-        }
-
+        if ($sdb['adapter'] === 'sqlite' && isset($sdb['dbname']) ) {
+                    $dbpath = $f3->get('sitepath') . $sdb['dbname'];
+                    $sdb['dbname'] = $dbpath;
+       }
+                
         $cfg = $rdr->parseFile($path);
-
         $db = null;
-
-
         try {
             
             $db = Server::connection($sdb);
 
             Server::setDefault($db);
+            $script = new Script();
 
-            //$db = new DiffReport();
-            $cfg->execStages($db, [
-                'drop-fkeys' => true,
-                'drop-tables' => true,
-                'tables' => true,
-                'alter' => true,
-                'indexes' => true,
-                'load-data' => $datadir . $schema . '_dir',
-                'alter' => true,
-                'auto_inc' => true,
-                'options' => true,
-                'add-fkeys' => true
-            ]);
+        $cfg->generate($script, ['tables' => 'create']);
 
+        $cfg->generate($script, ['alter' => true, 'indexes' => true]);
+
+        $cfg->generate($script, ['alter' => true ]);
+
+        $script->run($db);
+        
             $rows = $db->exec('select count(*) as gs from user_group');
             if (empty($rows) || $rows[0]['gs'] === 0) {
                 $msg = 'Data load fail';
@@ -230,7 +242,7 @@ use \Pcan\Mixin\ViewPlates;
      */
     public function initdb($f3, $params) {
         $view = $this->getView();
-        $view->layout = 'schema';
+        $view->content = 'schema';
 
         $p = &$f3->ref('POST');
         
@@ -276,10 +288,13 @@ use \Pcan\Mixin\ViewPlates;
             // Copy template config.php to root of $sitepath
             $content = file_get_contents($setup . 'config.php');
             $content = str_replace('$$_SITE_$$', $site_dir, $content);
+            $content = str_replace('$$_DOMAIN_$$', $f3->get('domain'), $content);
             file_put_contents($sitepath . 'config.php', $content);
 
             // assets.xml
             copy($setup . 'assets.xml', $sitepath . 'assets.xml');
+            // routes.php
+            copy($setup . 'routes.php', $sitepath . 'routes.php');
             // Copy Home.php to src in sitepath
             // duplicate all the existing framework views, for alterations
             Dos::copyall($pkg . 'views', $php . 'views');
