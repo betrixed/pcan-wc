@@ -4,6 +4,9 @@
     input[type="submit"] {
         margin-left:165px;
     }
+    .dbform1 {
+        margin:20px;
+    }
 </style>
 <?php $fclass = "field is-horizontal"; ?>
 <section class="hero is-success">
@@ -30,40 +33,50 @@
 <div class="container section">
     <div class="content-tab"  id="Apply">
         <h3>Initialise Site Folder and Database with Schema and Data</h3>
+        <p> PHP version <?= phpversion() ?></p>
         <hr>               
 
         <form id="fm_init" method="post" action="/schema/initdb">
             <div class="columns">
                 <div class="column">
                     <div class="<?= $fclass ?>">
+                        <label class="label">Adapter</label>&nbsp;<div class="select">
                         <?=
                         $this->form()->select(
-                                ['label' => 'Adapter', 'name' => 'adapter',
+                                ['name' => 'adapter', 'id' => 'adapter1',
                                     'list' => $adapters, 'class' => 'selectpicker'])
                         ?>
                     </div>
-                    <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Database name', 'name' => 'dbname']) ?>
-                    <?= $this->form()->plainText(['div' => $fclass, 'label' => 'User name', 'name' => 'dbuser']) ?>
-                    <?= $this->form()->password(['div' => $fclass, 'label' => 'Password', 'name' => 'passwd']) ?>
 
-                    <div class="<?= $fclass ?>">
-                        <?=
-                        $this->form()->select(['label' => 'Schema', 'name' => 'schema', 'list' => $keyed,
-                            'class' => 'selectpicker'])
-                        ?>
+                    </div>
+                    
+                    <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Database name', 'name' => 'dbname', 'id'=>'dbname1']) ?>
+                    <span class="dbform1">
+                    <?= $this->form()->plainText(['div' => $fclass, 'label' => 'User name', 'name' => 'dbuser', 'id' => 'dbuser1']) ?>
+                    <?= $this->form()->password(['div' => $fclass, 'label' => 'Password', 'name' => 'passwd', 'id' => 'passwd1']) ?>
+                    </span>
 
-                        <!--
-                        <?= $this->form()->checkbox(['name' => 'script', 'text' => 'Tables Script only']) ?> 
-                        -->
-                    </div> 
+
+                     <span class="dbform1">
                     <div class="<?= $fclass ?>">
+                       
                         <?= $this->form()->plainText(['label' => 'Port', 'name' => 'port', 'size' => 8, 'style' => 'margin-right:15px;',
                             'placeholder' => 'standard'])
                         ?> 
+                        <span class="Pgsql1" style="display:none;">
                     <?= $this->form()->checkbox(['name' => 'unix_socket', 'text' => 'Unix socket (postgresql)']) ?>
-                    </div> 
+                        </span>
+                        </div> 
 <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Host name', 'name' => 'hostname', 'placeholder' => 'localhost']) ?>
-
+ </span>
+                                        <div class="<?= $fclass ?>">
+                        <label class="label">Schema</label><div class="select">
+                        <?=
+                        $this->form()->select(['name' => 'schema', 'list' => $keyed,
+                            'class' => 'selectpicker'])
+                        ?>
+                        </div>
+                    </div> 
                 </div>
                 <div class="column">
 
@@ -100,6 +113,7 @@
                                         'list' => $adapters])
                             ?>
                         </div>
+                        
                     </div>
 
                     <?= $this->form()->plainText(['div' => $fclass, 'label' => 'Database name', 'name' => 'dbname']) ?>
@@ -169,4 +183,29 @@
         evt.currentTarget.className += " is-active";
     }
 </script>
+
+ <script type="text/javascript">    
+    function dbtype_change() {
+         var value = $(this).children("option:selected").val();
+         if (value == "Sqlite") {
+             $(".dbform1").hide();
+         }
+         else  {
+             $(".dbform1").show();
+         }
+         if (value == "Pgsql") {
+             $(".Pgsql1").show();
+         }
+         else {
+              $(".Pgsql1").hide();
+         }
+        
+     }
+
+window.onload = function() {
+    if (window.jQuery) {  
+        $("#adapter1").change(dbtype_change);
+    } 
+}
+</script>    
 
