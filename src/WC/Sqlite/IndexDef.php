@@ -8,7 +8,6 @@ namespace WC\Sqlite;
 
 use WC\NameDef;
 use WC\DB\Script;
-use WC\Mysql\TableDef;
 
 
 /**
@@ -62,9 +61,12 @@ class IndexDef extends \WC\DB\AbstractDef {
             }
         }
         $clist = NameDef::name_list($columns, $qt);
+        $outs = null;
         switch ($this->type) {
             case 'PRIMARY':
-                $outs = 'ALTER TABLE ' . $tdef->name . ' ADD PRIMARY KEY ' . $clist;
+                if (isset($stage['primary']) && $stage['primary']) {
+                    $outs = 'ALTER TABLE ' . $tdef->name . ' ADD PRIMARY KEY ' . $clist;
+                }
                 break;
             case 'UNIQUE':
                 $outs = 'CREATE UNIQUE INDEX ' . $qt . $name . $qt . ' ON ' . $tname . ' ' . $clist;
@@ -72,8 +74,6 @@ class IndexDef extends \WC\DB\AbstractDef {
             case 'INDEX':
                 $outs = 'CREATE INDEX ' . $qt . $name . $qt . ' ON ' . $tname . ' ' . $clist;
                 break;
-            DEFAULT:
-                $outs = null;
         }
         if (!empty($outs)) {
             $script->add($outs . ';' . PHP_EOL);

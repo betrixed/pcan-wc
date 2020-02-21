@@ -29,11 +29,12 @@ class ReferenceDef extends NameDef {
     public function dropSql() {
         return ' DROP CONSTRAINT IF EXISTS `' .  $this->name .  '`;';
     }
-    private function constraintSql() {
-        $outs = 'CONSTRAINT `' . $this->name 
-                . '` FOREIGN KEY ' . NameDef::name_list($this->columns)
-                . ' REFERENCES `' . $this->p_table . '` '
-                . NameDef::name_list($this->p_columns);
+    public function constraintSql() {
+        $qt = SchemaDef::QT_NAME;
+        $outs = 'CONSTRAINT ' . $qt . $this->name . $qt
+                . '  FOREIGN KEY ' . NameDef::name_list($this->columns,$qt)
+                . ' REFERENCES  ' . $qt . $this->p_table . $qt . ' '
+                . NameDef::name_list($this->p_columns, $qt);
         if (isset($this->on_delete)) {
             $outs .= ' ON DELETE ' . $this->on_delete;
         }

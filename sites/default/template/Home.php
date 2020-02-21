@@ -1,13 +1,13 @@
 <?php
 
 use WC\Assets;
-use Pcan\HtmlPlates;
 
-class Home {
+class Home extends \Pcan\Controller {
+    use \Pcan\Mixin\ViewPlates;
     public function index($f3, $args) {
-        Assets::instance()->add('bulma');
-        $view = new HtmlPlates($f3);
-        $view->layout = 'index';
+        $view = $this->getView();
+        $view->assets('bulma');
+        $view->content = 'index';
         echo $view->render();
     }
 }

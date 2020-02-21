@@ -19,20 +19,18 @@ trait ViewPlates {
    
     public function getView() {
         if (is_null($this->view)) {
-            $this->init_View($this->f3);
+            $this->init_View();
         }
         return $this->view;
     }
-    public function init_View($f3, $path = null, $ext = null) {
-        $view = new HtmlPlates($f3, $path, $ext);
-        //$f3->set('view', $view); // not going to rely on this
+    public function init_View( $path = null, $ext = null) {
+        $view = new HtmlPlates(\Base::instance(), $path, $ext);
         $view->usrSess = UserSession::read();
         $this->view = $view;
     }
     
     static public function renderView($model, $viewName) {
-        $f3 = \Base::instance();
-        $v = new HtmlPlates($f3); 
+        $v = new HtmlPlates( \Base::instance()); 
         $v->setModel($model); // replace the model
         $v->content = $viewName;
         return $v->renderView();

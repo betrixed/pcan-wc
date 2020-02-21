@@ -28,6 +28,10 @@ class Server {
      * Construct connection string and return db object
      */
     static function connection($cfg) {
+        if (isset($cfg['dbname']) && $cfg['adapter'] === 'sqlite'):
+            $str = 'sqlite:' . $cfg['dbname'];
+            return new SQL($str);
+        endif;
         $str = static::add_params($cfg);
         return new SQL(
                 $str,

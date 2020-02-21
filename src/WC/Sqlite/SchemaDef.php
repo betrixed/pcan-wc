@@ -10,7 +10,7 @@ use WC\DB\Script;
  * 
  */
 class SchemaDef extends \WC\DB\AbstractDef {
-
+    const QT_NAME = '';
     const SORT_FN = ['WC\NameDef', 'name_cmp'];
 
     public function toFile($path) {
@@ -19,9 +19,15 @@ class SchemaDef extends \WC\DB\AbstractDef {
     }
 
     static public function alterTableSql($name) {
-        return 'ALTER TABLE `' . $name . '`';
+        return 'ALTER TABLE ' . SchemaDef::QT_NAME . $name . SchemaDef::QT_NAME;
     }
 
+    public function getRelation($rname) {
+        if (isset($this->relations) && isset($this->relations[$rname])) {
+            return $this->relations[$rname];
+        }
+        return null;
+    }
     public function execRelations($db) {
         if (!empty($this->relations)) {
             $rtables = [];
@@ -51,30 +57,13 @@ class SchemaDef extends \WC\DB\AbstractDef {
 
     public function generate( $script,  $stage) {
         $tables = $this->tables;
-
+        /* if (!empty($this->relations)) {
+            $script->add('PRAGMA foriegn_keys = ON;');
+        } */
         uksort($tables, self::SORT_FN);
         foreach ($tables as $seq => $tdef) {
+             $tdef->schema = $this;
              $tdef->generate($script, $stage);
-        }
-        if (array_key_exists('references', $stage) && !empty($this->relations)) {
-            $rtables = [];
-
-            foreach ($this->relations as $key => $rdef) {
-                $rtables[$rdef->table][] = $rdef->name;
-            }
-            uksort($rtables, self::SORT_FN);
-            foreach ($rtables as $name => $rels) {
-                $script->add('-- relation ' . $name . ' references ');
-                $outs = self::alterTableSql($name);
-                if (count($rels) > 1) {
-                    usort($rels, self::SORT_FN);
-                }
-                foreach ($rels as $rname) {
-                    $rdef = $this->relations[$rname];
-                    $outs .= $rdef->toSql($stage);
-                }
-                $script->add($outs);
-            }
         }
     }
 
@@ -84,6 +73,7 @@ class SchemaDef extends \WC\DB\AbstractDef {
 
     private function execAllTables($db, $stage) {
         foreach ($this->tables as $seq => $tdef) {
+            $tdef->schema = $this;
             $script = new Script();
             $tdef->generate($script, $stage);
             if ($script->hasData()) {
@@ -114,11 +104,13 @@ class SchemaDef extends \WC\DB\AbstractDef {
         }
         if (array_key_exists('alter', $stage)) {
             if (array_key_exists('indexes', $stage)) {
-                $this->execAllTables($db, ['alter' => true, 'indexes' => true]);
+                $this->execAllTables($db, ['alter' => true, 'indexes' => true, 'primary' => false]);
             }
-            if (array_key_exists('auto_inc', $stage)) {
+           /* if (array_key_exists('auto_inc', $stage)) {
                 $this->execAllTables($db, ['alter' => true, 'auto_inc' => true]);
             }
+            * 
+            */
         }
         if (array_key_exists('add-fkeys', $stage)) {
             $this->execRelations($db);

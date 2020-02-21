@@ -21,7 +21,8 @@ class TableDef extends \WC\DB\AbstractDef {
     public $indexes;
     public $references;
     public $options;
-
+    public $schema;
+    
     public function __construct() {
         $this->columns = [];
         $this->indexes = [];
@@ -123,13 +124,11 @@ class TableDef extends \WC\DB\AbstractDef {
 
     public function exists($db) {
         $sql = <<<EOS
-SELECT * 
-FROM information_schema.tables
-WHERE table_schema = :dbname
-    AND table_name = :tname
-LIMIT 1
+SELECT name FROM sqlite_master 
+WHERE type = 'table'
+    AND name = :tname
 EOS;
-        $rows = $db->exec($sql, ['dbname' => $db->name(), 'tname' => $this->name]);
+        $rows = $db->exec($sql, ['tname' => $this->name]);
         return !empty($rows);
     }
 
@@ -180,7 +179,7 @@ EOS;
     }
 
     public function makeCreate($stage) {
-        $outs = 'CREATE TABLE `' . $this->name . '` (' . PHP_EOL;
+        $outs = 'CREATE TABLE ' . $this->name . ' (' . PHP_EOL;
         $first = true;
         $indent = '    ';
         foreach ($this->columns as $key => $cdef) {
@@ -190,6 +189,12 @@ EOS;
                 $outs .= ',' . PHP_EOL;
             }
             $outs .= $indent . $cdef->toSql($stage);
+        }
+        foreach($this->references as   $refname) {
+            $rel = $this->schema->getRelation($refname);
+            if (!empty($rel)) {
+                $outs .= "," . PHP_EOL . $indent . $rel->constraintSql();
+            }
         }
         $outs .= PHP_EOL . ')';
         return $outs;
@@ -205,17 +210,14 @@ EOS;
         if (array_key_exists('tables', $stage)) {
             $script->add('-- create table ' . $this->name . PHP_EOL);
             $outs = $this->makeCreate($stage);
+            /* SQLITE only option is WITHOUT ROWID */
             if (!empty($this->options)) {
                 foreach ($this->options as $key => $value) {
-                    if ($key === 'auto_increment') {
-                        $allow = is_null($stage['auto_inc']) ? false : $stage['auto_inc'];
-                        if (!$allow)
-                            continue;
+                    if (strtolower($key) === 'without') {
+                        if (strtolower($value) === 'rowid') {
+                            $outs .= ' WITHOUT ROWID';
+                        }
                     }
-                    if ($key === 'comment') {
-                        $value = '\'' . str_replace('\'', "''", $value) . '\'';
-                    }
-                    $outs .= ' ' . $key . '=' . $value;
                 }
             }
             $outs .= ';' . PHP_EOL;

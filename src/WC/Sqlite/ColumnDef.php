@@ -89,29 +89,42 @@ class ColumnDef extends NameDef  {
     
     public function toSql(array $stage) {
         $name = $this->name;
-        $outs = '`' . $name . '` ' . $this->type;
+        $outs = $name;
+         // Sqlite expects integer for AUTOINCREMENT
+        if ($this->auto_inc) {
+            $this->type = 'INTEGER';
+            $this->unsigned = false;
+            $this->size = 0;
+        }
+        $unsigned = !isset($this->unsigned) ? false : $this->unsigned;
+        
+        if ($unsigned && !$this->auto_inc) {
+           
+            $outs .= ' unsigned';
+        }
+        $outs .=  ' ' . $this->type;
         $size = !isset($this->size) ? 0 : $this->size;
         if ($size > 0) {
             $outs .= '(' . $size . ')';
         }
-        $unsigned = !isset($this->unsigned) ? false : $this->unsigned;
-        if ($unsigned) {
-            $outs .= ' unsigned';
-        }
-        
         $collate = !isset($this->collate ) ? false : $this->collate;
         if (!empty($collate)) {
+            if (strpos($collate, 'ci') > 0) {
+                $collate = 'NOCASE';
+            }
             $outs .= ' COLLATE ' . $collate;
         }
         $allow_null = !isset($this->null) ? false : $this->null;
         if (!$allow_null) {
             $outs .= ' NOT NULL';
         }
+        /*
         $auto_inc = false;
         if (array_key_exists('auto_inc', $stage)) {
             $auto_inc = isset($this->auto_inc) ? false : $this->auto_inc;
             
         }
+         */
 
         $default = !isset($this->default) ? null : $this->default;
         
@@ -145,8 +158,9 @@ class ColumnDef extends NameDef  {
         if (!is_null($default)) {
             $outs .= ' DEFAULT ' . $default;
         }
-        else if ($auto_inc) {
-                $outs .= ' PRIMARY KEY AUTO_INCREMENT';
+        else if ($this->auto_inc) {
+            /* Sqlite rowid alias is good as AUTOINCREMENT */
+                $outs .= ' PRIMARY KEY';
         }
         return $outs;
     }
