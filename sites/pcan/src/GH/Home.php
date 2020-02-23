@@ -27,16 +27,17 @@ use \Pcan\Mixin\ViewPlates;
             $nowfn = "NOW()";
         }
         $qry = <<<EOQ
-       SELECT A.id, A.title, B.fromTime as sysdate, 
+SELECT A.id, A.title, B.fromtime as sysdate, B.totime as finaldate,
       A.article, A.style, A.title_clean, C.content
- from blog A join event B on A.id = B.blogid
- left outer join (select BM.blog_id, BM.content from 
-     blog_meta BM join meta M on BM.meta_id = M.id
-     where M.meta_name = 'og:description') C on blog_id = A.id
-    where A.enabled = 1 and
-                ((B.fromTime <> NULL) AND (B.fromTime > $nowfn ))
-                or ((B.toTime <> NULL) AND (B.toTime > $nowfn ))
- order by B.fromTime
+ from blog A join event B on A.id = B.blogid and A.enabled = 1
+ and (
+ 	((B.fromtime is NOT NULL) AND (B.fromtime >  $nowfn ))
+ 	OR ((B.totime is NOT NULL) AND (B.totime > $nowfn ))
+ )
+ join 
+ (select MC.blog_id, MC.content from blog_meta MC join meta M on MC.meta_id = M.id
+  where M.meta_name = 'og:description') C on C.blog_id = A.id
+   order by sysdate
 EOQ;
 
         return $this->query($qry);

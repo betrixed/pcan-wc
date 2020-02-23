@@ -19,6 +19,39 @@ use Mixin\ViewPlates;
     public $url = '/admin/blog/';
     private $editAssets = ['bootstrap', 'SummerNote', 'DateTime', 'jquery-form', 'blog-edit'];
 
+    /** routing actions  */
+    public function h_get($f3,$args) {
+         $action = $args['action'];
+               switch($action) {
+                   case 'new': 
+                       $this->newRec($f3,$args);
+                       break;
+                   default:
+                       $this->$action($f3,$args);
+                       break;
+               }
+    }
+  
+    public function h_ajax($f3,$args) {
+               $action = $args['action'];
+               switch($action) {
+                   case 'categorytick':
+                       $this->catTick($f3,$args);
+                       break;
+                   default:
+                       $this->$action($f3,$args);
+                       break;
+               }
+    }
+   
+    public function h_post($f3,$args) {
+         $action = $args['action'];
+        switch($action) {
+                    default:
+                       $this->$action($f3,$args);
+                       break;
+               }
+    }
     public function edit($f3, $args) {
         $id = $args['bid'];
         $blog = new Blog();
@@ -86,7 +119,7 @@ use Mixin\ViewPlates;
         return false;
     }
 
-    public function editPost($f3, $args) {
+    public function post($f3, $args) {
         $postData = &$f3->ref('POST');
 // check match?
         $check_id = filter_var($postData['id'], FILTER_VALIDATE_INT);
@@ -165,7 +198,7 @@ use Mixin\ViewPlates;
         echo $view->render();
     }
 
-    public function postFlag($f3, $args) {
+    public function postflag($f3, $args) {
         $post = &$f3->ref('POST');
         $op = Valid::toStr($post, 'flagsel', null);
         $list = [];
@@ -208,7 +241,7 @@ use Mixin\ViewPlates;
         UserSession::reroute($this->url . 'index/?' .  $args);
     }
 
-    public function postNew($f3, $args) {
+    public function postnew($f3, $args) {
 
         $blog = new Blog();
         $postData = &$f3->ref('POST');
@@ -271,7 +304,7 @@ use Mixin\ViewPlates;
         echo $view->render();
     }
     
-    public function eventUpdate($f3, $args) {
+    public function eventupdate($f3, $args) {
         $post = &$f3->ref('POST');
         $isAjax = $f3->get('AJAX');
         $view = $this->getView();
@@ -315,7 +348,7 @@ use Mixin\ViewPlates;
         echo TagViewHelper::render();
     }
     
-    public function addEvent($f3, $args) {
+    public function addevent($f3, $args) {
         $post = &$f3->ref('POST');
         $isAjax = $f3->get('AJAX');
         if (!empty($post) && $isAjax) {
@@ -379,7 +412,13 @@ use Mixin\ViewPlates;
                 }
             }
             // delete unconfirmed values
-            $deleteSql = "DELETE IGNORE from blog_to_category where category_id = :catId and blog_id = :blogId";
+            if ($db->driver() === 'mysql') {
+                $ignore = 'IGNORE';
+            }
+            else  {
+                $ignore = '';
+            }
+            $deleteSql = "DELETE $ignore from blog_to_category where category_id = :catId and blog_id = :blogId";
             foreach ($hasCategory as $key => $value) {
                 if ($value) {
                     $params2 = [':blogId' => $blog_id, ':catId' => $key];
@@ -389,7 +428,8 @@ use Mixin\ViewPlates;
             $db->commit();
             $view = $this->getView();
             $view->content = 'blog/category';
-            $view->catset = Blog::getCategorySet($blog_id);
+            $view->layout = 'null';
+            $view->model->catset = Blog::getCategorySet($blog_id);
         }
         echo $view->render();
     }
@@ -443,7 +483,7 @@ use Mixin\ViewPlates;
             echo  json_encode($ex);
         }
      }
-    public function exportPost($f3, $args) {
+    public function exportpost($f3, $args) {
         $post = &$f3->ref('POST');
         $op = Valid::toStr($post, 'bksel', null);
         $list = [];
@@ -488,7 +528,7 @@ use Mixin\ViewPlates;
         UserSession::reroute($this->url . 'export/?' .  $args);
     }
     
-    public function importPost($f3, $args) {
+    public function importpost($f3, $args) {
         $post = &$f3->ref('POST');
         $op = Valid::toStr($post, 'bksel', null);
 

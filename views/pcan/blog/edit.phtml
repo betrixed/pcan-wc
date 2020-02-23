@@ -163,7 +163,12 @@ $btn_class = 'btn btn-outline-secondary';
     </div>
 </form>
 <div class='container outerwrap pad10' >
-    <div class="body-wrap"><?php $this->insert('blog/category', $this->data) ?></div>
+    <div class="body-wrap">
+     <span class="heading">Category List</span>   
+     <form id='categoryList' action="<?= $url . 'categorytick' ?>" method="post">
+    <div id="category_status" ><?php $this->insert('blog/category', $this->data) ?></div>
+     </form>
+    </div>
 </div>
 <div class='container outerwrap pad10'>
     <div id="event_dates" ><?php $this->insert('blog/event_dates', $this->data) ?></div>
@@ -187,3 +192,17 @@ $btn_class = 'btn btn-outline-secondary';
     </form>
 </div>
 
+<script>
+    function ready_catList() {
+    $('#categoryList').ajaxForm({
+      complete: function (xhr) {
+        var status = $('#category_status');
+        status.html(xhr.responseText);
+        status.style.display = 'block';
+        document.refresh;
+    }
+    });
+}
+window.onload = ready_catList;
+   
+</script>

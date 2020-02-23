@@ -7,13 +7,12 @@ $catList = $catset->catlist;
 $catValues = implode(",",$catset->available);
 $catBlogId = $catset->cat_blogid;
 $chkct = count($catList);
+$url=$m->url;
 ?>
 
 <?php if($chkct > 0): 
       $rowid = 0; ?>
-<span class="heading">Category List</span>   
 <p>&nbsp;<em>Unselected categories are: </em><?= $catValues ?></p>
-<form id='categoryList' action="<?= $url . 'categorytick' ?>" method="post">
 <table class='table table-striped'>
     <tbody><tr>
             <?php foreach( $catList as $cat):
@@ -23,8 +22,7 @@ $chkct = count($catList);
              $rowid += 1;
              $catid = "cat" . $rowid;   
              $checked = ($cat['blog_id'] > 0) ? 1 : 0;
-             ?>
-                        
+             ?>    
          <td class='leftCell'><?= $this->form()->checkbox(['name'=>$catid, 'value'=> $cat['id'], 'checked' => $checked]) ?>
              <?=$cat['name']?></td>
    <?php endforeach ?>
@@ -35,16 +33,4 @@ $chkct = count($catList);
     </table>
     <input type='hidden' name='chkct' value='<?= $chkct ?>' />
     <input type='hidden' name='blogid' value='<?= $catBlogId ?>' />
-    </form>
-<?php else: ?>
-<h5>Category List (empty)</h5>
 <?php endif ?>
-
-<script>
-$(document).ready(function () {
-    var options = {
-      target: '#category_status'
-    };
-    $('#categoryList').ajaxForm(options);
-}); 
-</script>
