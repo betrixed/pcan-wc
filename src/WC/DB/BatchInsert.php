@@ -42,6 +42,9 @@ class BatchInsert {
         $sql .= $vsql . ')';
         
         $this->stmt = $this->pdo->prepare($sql);
+        if (empty($this->stmt)) {
+            throw new \Exception('Prepare failed for batch: ' . $sql);
+        }
         $this->pdo->beginTransaction();
     }
 

@@ -15,6 +15,10 @@ class Script {
     public function __contruct() {
         $this->log = [];
     }
+    
+    public function clear() {
+        $this->log = [];
+    }
     public function add($sql = null, $newline = PHP_EOL) {
         if (is_string($sql)) {
             $this->log[] = $sql . $newline;

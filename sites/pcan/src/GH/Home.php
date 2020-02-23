@@ -19,15 +19,24 @@ use \Pcan\Mixin\ViewPlates;
     }
 
     private function events() {
+        $db = Server::db();
+        if ($db->driver() === 'sqlite') {
+            $nowfn = "datetime('now')";
+        }
+        else {
+            $nowfn = "NOW()";
+        }
         $qry = <<<EOQ
-       SELECT A.id, A.title, A.date_updated as sysdate, 
+       SELECT A.id, A.title, B.fromTime as sysdate, 
       A.article, A.style, A.title_clean, C.content
  from blog A join event B on A.id = B.blogid
  left outer join (select BM.blog_id, BM.content from 
      blog_meta BM join meta M on BM.meta_id = M.id
      where M.meta_name = 'og:description') C on blog_id = A.id
-    where B.toTime > NOW() and A.enabled = 1
- order by B.fromtime
+    where A.enabled = 1 and
+                ((B.fromTime <> NULL) AND (B.fromTime > $nowfn ))
+                or ((B.toTime <> NULL) AND (B.toTime > $nowfn ))
+ order by B.fromTime
 EOQ;
 
         return $this->query($qry);
