@@ -21,23 +21,25 @@ use \Pcan\Mixin\ViewPlates;
     private function events() {
         $db = Server::db();
         if ($db->driver() === 'sqlite') {
-            $nowfn = "datetime('now')";
+            $nowfn1 = "datetime( date1) > datetime('now')";
+            $nowfn2 = "datetime( date2) > datetime('now')";
         }
         else {
-            $nowfn = "NOW()";
+            $nowfn1 = "date1 > NOW()";
+             $nowfn1 = "date2 > NOW()";
         }
         $qry = <<<EOQ
-SELECT A.id, A.title, B.fromtime as sysdate, B.totime as finaldate,
+SELECT A.id, A.title, B.fromtime as  date1, B.totime as date2,
       A.article, A.style, A.title_clean, C.content
  from blog A join event B on A.id = B.blogid and A.enabled = 1
  and (
- 	((B.fromtime is NOT NULL) AND (B.fromtime >  $nowfn ))
- 	OR ((B.totime is NOT NULL) AND (B.totime > $nowfn ))
+ 	((date1 is NOT NULL) AND ( $nowfn1 ))
+ 	OR ((date2  is NOT NULL) AND ( $nowfn2 ))
  )
  join 
  (select MC.blog_id, MC.content from blog_meta MC join meta M on MC.meta_id = M.id
   where M.meta_name = 'og:description') C on C.blog_id = A.id
-   order by sysdate
+   order by date1
 EOQ;
 
         return $this->query($qry);
