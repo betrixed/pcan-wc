@@ -358,8 +358,8 @@ use Mixin\ViewPlates;
                 try {
                 $event = new Event();
                 $event['blogId'] = $bid;
-                $event['fromTime'] = Valid::toDateTime($post,'fromDate');
-                $event['toTime'] = Valid::toDateTime($post,'toDate');
+                $event['fromtime'] = Valid::toDateTime($post,'fromDate');
+                $event['totime'] = Valid::toDateTime($post,'toDate');
                 $event['slug'] = Valid::toStr($post,'slug');
                 $event['enabled'] = 1;
                 $event->save();
