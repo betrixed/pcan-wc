@@ -193,7 +193,17 @@ $btn_class = 'btn btn-outline-secondary';
 </div>
 
 <script>
-    function ready_catList() {
+function ready_eventList() {
+    $('#eventForm').ajaxForm({
+      complete: function (xhr) {
+        var evtlist = $('#event_dates');
+        evtlist.html(xhr.responseText);
+        evtlist.style.display = 'block';
+        document.refresh;
+    }
+    });
+}
+function ready_catList() {
     $('#categoryList').ajaxForm({
       complete: function (xhr) {
         var status = $('#category_status');
@@ -203,6 +213,12 @@ $btn_class = 'btn btn-outline-secondary';
     }
     });
 }
-window.onload = ready_catList;
+
+function win_load() {
+    ready_catList();
+    ready_eventList();
+}
+    
+window.onload = win_load;
    
 </script>
