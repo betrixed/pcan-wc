@@ -1,0 +1,19 @@
+<?php
+if ($view->layout):
+    $this->layout($view->layout, $this->data);
+endif;
+?>
+<div class="body-wrap">
+    <h3>GET - not handled </h3>
+<pre>
+<?php if ( !empty($m->args)) {
+    echo  ('URL' . PHP_EOL) ;
+    echo  ( print_r($m->args,true) ) . PHP_EOL;
+} ?>
+<?php if ( !empty($m->request)) {
+    echo  ('Request' . PHP_EOL) ;
+    echo ( print_r($m->post,true) ) . PHP_EOL;;
+} ?>
+</pre>
+
+</div>

@@ -50,9 +50,12 @@ class UserSession extends \Prefab {
         UserSession::instance()->addMessage($msg, $status);
     }
 
+    
+    /** Piggy back on top of Fat-Free session object */
     static public function session() {
         if (empty(static::$session)) {
             static::$session = new \Session();
+            
         }
         return static::$session;
     }
@@ -152,7 +155,15 @@ class UserSession extends \Prefab {
     public function hasMessages() {
         return !empty($this->msg);
     }
-
+    /** clean up the fat free session and user data */
+    public function destroy() {
+        if (empty(static::$session)) {
+            return;
+        }
+        $sid = static::$session->sid();
+        $f3 = \Base::instance();
+        $f3->set('SESSION.userdata', null);
+    }
     public function addMessage($text, $status = 'info') {
         if (!isset($this->keys['flash'])) {
             $this->keys['flash'] = [];
@@ -230,6 +241,7 @@ class UserSession extends \Prefab {
     static public function guestSession() {
         $us = UserSession::instance();
         $us->setGuest();
+        $us->addMessage('Browser session ID cookie made active for data entry ');
         $us->write();
         return $us;
     }
@@ -248,7 +260,13 @@ class UserSession extends \Prefab {
         //$s2 = session_status();
         return $us;
     }
-
+    /** remove Guest Session */
+    static public function nullify() {
+        $us = UserSession::read();
+        if (!is_null($us) && $us->isGuest()) {
+            $us->destroy();
+        }
+    }
     static public function getURL($f3) {
         $server = &$f3->ref('SERVER');
         $scheme = $server['REQUEST_SCHEME'];

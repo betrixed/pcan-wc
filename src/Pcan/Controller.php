@@ -5,6 +5,7 @@ namespace Pcan;
 use WC\UserSession;
 
 class Controller {
+
     // fat-free provides for __constructor
     public $f3;
     public $args;
@@ -17,7 +18,18 @@ class Controller {
     public function getAllowRole() {
         return 'Editor';
     }
-    
+
+    public function invalid($f3, $args = null) {
+        $view = $this->getView();
+        $view->assets('bootstrap');
+        $view->content = 'getargs';
+        $m = $view->model;
+        $m->args = $args;
+        $m->request = $f3->get["REQUEST"];
+
+        echo $view->render();
+    }
+
     function afterRoute() {
         // session becomes read only
         UserSession::shutdown();

@@ -7,9 +7,9 @@ $gallery = $m->gallery;
     <span style='font-size:1.2em;'> 
         <a href="/dash">Dash</a> &nbsp; &gt;&gt; &nbsp; 
         <a href="/admin/gallery/">Galleries Index</a> &nbsp; &gt;&gt; &nbsp;
-        Gallery: <b><?= $gallery['name'] ?></b><br>
+        Gallery: <a href="/admin/gallery/images/<?= $gallery['name']  ?>"><?= $gallery['name'] ?></a><br>
         <i><?= $gallery['description'] ?></i>
+        
     </span>
-    <span>
     </div>
  </div>

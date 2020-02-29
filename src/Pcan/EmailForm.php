@@ -152,6 +152,7 @@ class EmailForm extends Controller {
                 $m = $view->model;
                  $m->rec = $rec;
                 echo $view->render();
+                UserSession::nullify();
                 return;
             }
         } catch (\PDOException $e) {

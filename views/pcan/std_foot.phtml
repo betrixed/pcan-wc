@@ -2,12 +2,19 @@
     use \WC\UserSession; 
 ?>
 <div class="clear"></div>
+<!-- std_foot -->
 <footer class="page-footer">
     <div class="row" >
         <div class="col-3">
             <?php
             $f3 = \Base::Instance();
-            echo( "Session: " . UserSession::sessionName() );
+            $sid = UserSession::sessionName();
+            if ($sid !== 'NULL') {
+                echo("<a href=\"/end_session\">End Session: " . $sid . "</a>");
+            }
+            else {
+                echo("No session");
+            }
             ?>
         </div>
         <div class="col-3"> 

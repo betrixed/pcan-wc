@@ -36,7 +36,10 @@ class Login extends Controller {
 
         echo $view->render();
     }
-
+   function end_session($f3, $args) {
+       UserSession::nullify();
+       $f3->reroute('/');
+   }
     function checkout($f3, $args) {
         $ud = UserSession::read();
         $view = $this->getView();
