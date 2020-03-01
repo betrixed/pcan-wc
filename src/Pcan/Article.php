@@ -91,7 +91,10 @@ EOD;
         if (isset($req['sub'])) {
             $v->layout = null;
         }
-        $v->assets(['bootstrap', $style_class]);
+        $assets = \WC\Assets::instance();
+        $assets->add(['bootstrap']);
+        $assets->minify('pcan_home');
+        
         echo $v->render();
     }
 }

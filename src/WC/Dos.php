@@ -3,9 +3,11 @@
 namespace WC;
 
 class Dos {
+
     static function makedir($path, $permissions = 0777) {
         return is_dir($path) || mkdir($path, $permissions, true);
     }
+
     /** 	
      * Recursive copy file tree contents $from, $to
      * Parent directory of $to must exist
@@ -28,6 +30,21 @@ class Dos {
             }
         }
     }
-
+    /** unlink each file in array */
+   static function rm_all($files) {
+        foreach ($files as $file) { // iterate files
+            if (is_file($file))
+                unlink($file); // delete file
+        }
+    }
+    /** unlink each file in array older than $tsecs */
+    static function rm_old($files, $tsecs) {
+        $now = time();
+        foreach ($files as $file) { // iterate files
+            if (is_file($file) && ($now - filemtime($file) >= $tsecs)) {
+                @unlink($file);
+            }
+        }
+    }
 
 }

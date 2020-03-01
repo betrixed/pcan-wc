@@ -32,7 +32,9 @@ use Mixin\ViewPlates;
             $title = $catclean['name'];
             $view->cattitle = $title;
             $view->title = $title;
-            $view->assets([ 'bootstrap', 'cat-fetch']);
+            $assets = \WC\Assets::instance();
+            $assets->add( [ 'bootstrap',  'cat-fetch' ] );
+            $assets->minify("cat-fetch");
             if ($isSub) {
                 $view->layout = 'cat/subindex.phtml';
             } else {
@@ -69,7 +71,10 @@ use Mixin\ViewPlates;
             $m->firstId = $mit;
         }
         $view->content = 'cat/menu.phtml';
-        $view->assets(['bootstrap','grid', 'cat-menu']);
+        $assets = \WC\Assets::instance();
+        $assets->add( [ 'bootstrap','grid', 'cat-menu' ] );
+        $assets->minify("cat-menu");
+
         echo $view->render();
     }
 

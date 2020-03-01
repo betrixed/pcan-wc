@@ -85,8 +85,10 @@ EOQ;
         } else {
             $m->topPanels = [];
         }
-
-        $view->assets('bootstrap');
+        $assets = \WC\Assets::instance();
+        $assets->add('bootstrap');
+        $assets->minify("pcan_home");
+        
         $view->content = 'front/home.phtml';
         $view->layout = 'front/layout.phtml';
         $view->nav = 'front/nav.phtml';
@@ -107,9 +109,10 @@ EOQ;
             $m->links = Links::homeLinks();
             $m->title = "All Links";
         }
-        $view->assets(['bootstrap', 'grid']);
+        $assets = \WC\Assets::instance();
+        $assets->add(['bootstrap', 'grid']);
+        $assets->minify('home_grid');
         $view->content = 'home/links.phtml';
         echo $view->render();
     }
-
 }

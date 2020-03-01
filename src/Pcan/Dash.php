@@ -12,6 +12,13 @@ class Dash extends Controller {
     use Mixin\Auth;
     use Mixin\ViewPlates;
     
+    function h_jax($f3, $args) {
+        $cmd = $args['cmd'];
+        if ($cmd === "assetcache") {
+        \WC\Assets::instance()->clearCache();
+        echo("Asset cache cleared");
+        }
+    }
     function show($f3, $args) {  
         $view = $this->getView();
         $view->assets('bootstrap');

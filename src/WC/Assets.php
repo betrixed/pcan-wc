@@ -2,11 +2,12 @@
 
 namespace WC;
 
+use MatthiasMullie\Minify;
+
 /**
  * Organise typical webpage .css, .js assets
  */
 class Assets extends \Prefab {
-
     private $mark;
     private $order;
     private $loggedIn;
@@ -16,18 +17,26 @@ class Assets extends \Prefab {
     private $web;
     private $f3;
     private $config;
-
+    private $minify;
+    private $minify_name;
+    // Minify cache
+    const MAX_AGE = 60*60*24; 
+    
     static public function registerAssets($assets) {
         $si = static::instance();
         $si->addAssets($assets);
     }
 
+    public function minify($name) {
+        $this->minify_name = $name;
+        $this->minify = true;
+    }
+
     public function addAssets(array $cfg) {
         if (is_array($this->config)) {
             $this->config = array_merge($this->config, $cfg);
-        }
-        else { // is_object
-            foreach($cfg as $key => $value) {
+        } else { // is_object
+            foreach ($cfg as $key => $value) {
                 $this->config->$key = $value;
             }
         }
@@ -49,7 +58,7 @@ class Assets extends \Prefab {
         $this->assetProd = $cfg['assetCache'];
         $this->order = [];
         $this->mark = [];
-        
+
         $this->add('default');
     }
 
@@ -116,8 +125,56 @@ class Assets extends \Prefab {
         //}
         return $outs;
     }
+    static public function link_css($path) {
+        return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . $path . "\">" . PHP_EOL;
+    }
+    
+    public function getCache() {
+        return  $this->f3->get('theme') . DIRECTORY_SEPARATOR . 'cache';
+    }
+    public function clearCache() {
+         $cache = $this->getCache();
+         $webroot = rtrim($this->f3->get('web'), DIRECTORY_SEPARATOR);
+         \WC\Dos::rm_all( @\glob($webroot . $cache . DIRECTORY_SEPARATOR . '*') );
+    }
+    public function CssMinify() {
+        $cache = $this->getCache();
+        $webroot = rtrim($this->f3->get('web'), DIRECTORY_SEPARATOR);
+        $result = $cache . DIRECTORY_SEPARATOR . $this->minify_name . "_min.css";
+        $target = $webroot . $result;
+        if (file_exists($target)) {
+            if (is_file($target) && (time() - filemtime($target) < static::MAX_AGE)) {
+                return static::link_css($result);
+            }
+        }
+        $mini = null;
+        $cfg = $this->config;
+        
+        foreach ($this->order as $name) {
+            if (!empty($cfg[$name])) {
+                $assets = $cfg[$name];
+                if (!empty($assets['css'])) {
+                    foreach ($assets['css'] as $hpath) {
+                        $path = $webroot . $this->unhive($hpath);
+                        if (is_null($mini)) {
+                            $mini = new Minify\CSS($path);
+                        } else {
+                            $mini->add($path);
+                        }
+                    }
+                }
+            }
+        }
+        if (!is_null($mini)) {
+            $mini->minify($target);
+            return static::link_css($result);
+        }
+    }
 
     public function CssHeader() {
+        if ($this->minify) {
+            return $this->CssMinify();
+        }
         $outs = '';
         if (!empty($this->order)) {
             foreach ($this->order as $name) {
@@ -137,7 +194,7 @@ class Assets extends \Prefab {
             if (isset($assets['css'])) {
                 foreach ($assets['css'] as $hpath) {
                     $path = $this->unhive($hpath);
-                    $outs .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . $path . "\">" . PHP_EOL;
+                    $outs .= static::link_css($path);
                 }
             }
         }
@@ -146,6 +203,7 @@ class Assets extends \Prefab {
         //}
         return $outs;
     }
+
     /**
      * Replace @var1 hive variables in paths
      */
@@ -161,6 +219,9 @@ class Assets extends \Prefab {
         return $path;
     }
 
+    static function script_js($path) {
+        return "<script charset=\"UTF-8\" type=\"text/javascript\" src=\"" . $path . "\"></script>" . PHP_EOL;
+    }
     protected function JsPut($name) {
         $cfg = $this->config;
         $outs = "";
@@ -169,7 +230,7 @@ class Assets extends \Prefab {
             if (isset($assets['js'])) {
                 foreach ($assets['js'] as $hpath) {
                     $path = $this->unhive($hpath);
-                    $outs .= "<script charset=\"UTF-8\" type=\"text/javascript\" src=\"" . $path . "\"></script>" . PHP_EOL;
+                    $outs .= static::script_js($path);
                 }
             }
         }
@@ -179,7 +240,45 @@ class Assets extends \Prefab {
         return $outs;
     }
 
+    public function JsMinify() {
+        $cache = $this->getCache();
+        $webroot = rtrim($this->f3->get('web'), DIRECTORY_SEPARATOR);
+        $result = $cache . DIRECTORY_SEPARATOR . $this->minify_name . "_min.js";
+        $target = $webroot . $result;
+        if (file_exists($target)) {
+            if (is_file($target) && (time() - filemtime($target) < static::MAX_AGE)) {
+                return static::script_js($result);
+            }
+        }
+        $webroot = rtrim($this->f3->get('web'), DIRECTORY_SEPARATOR);
+        
+        $mini = null;
+        $cfg = $this->config;
+        
+        foreach ($this->order as $name) {
+            if (!empty($cfg[$name])) {
+                $assets = $cfg[$name];
+                if (!empty($assets['js'])) {
+                    foreach ($assets['js'] as $hpath) {
+                        $path = $webroot . $this->unhive($hpath);
+                        if (is_null($mini)) {
+                            $mini = new Minify\JS($path);
+                        } else {
+                            $mini->add($path);
+                        }
+                    }
+                }
+            }
+        }
+        if (!is_null($mini)) {
+            $mini->minify($target);
+            return static::script_js($result);
+        }
+    }
     public function JsFooter() {
+         if ($this->minify) {
+            return $this->JsMinify();
+        }
         $outs = '';
         if (!empty($this->order)) {
             foreach ($this->order as $name) {

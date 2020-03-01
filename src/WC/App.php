@@ -33,25 +33,27 @@ class App extends \Prefab {
     static public function clear_cache($f3, $suffix) {
         $value = $f3->get('CACHE_CLEAN');
         if (!empty($value)) {
+            $f3->set('CACHE_VALID', true);
             return;
         }
         // store the hour timeout value, and as a timeout in seconds.
         $f3->set('CACHE_CLEAN', 3600, 3600);
+        // record that cache timed out
+        $f3->set('CACHE_VALID', false);
         $dsn = $f3->get('CACHE'); // the dsn
         $parts = $parts = explode('=', $dsn, 2);
         if ($parts[0] === 'folder') {
             $regex = '/' . '.*' . preg_quote('.', '/') . '.*' .
                     preg_quote($suffix, '/') . '/';
-            if ($glob = @glob($parts[1] . '*')) {
-                $now = time();
+            $glob = @\glob($parts[1] . '*');
+            if (!empty($glob)) {
+                $files = [];
                 foreach ($glob as $file) {
                     if (preg_match($regex, basename($file))) {
-                        $filemtime = filemtime($file);
-                        if ($now - $filemtime >= 60 * 60 * 24) {
-                            @unlink($file);
-                        }
+                        $files[] = $file;
                     }
                 }
+                \WC\Dos::rm_old($files,  60 * 60 * 24);
             }
         }
     }

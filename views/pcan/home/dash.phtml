@@ -45,4 +45,22 @@
             <a href="/chimp/lists">Mail Chimp Lists</a>
         </div>
     </div>
+    <div class="row">
+        <div class="col-3">
+           <button id="asset_cache">Clear Asset Cache</button>
+        </div>
+    </div>
 </div>
+
+    <script>
+    function setup_dash() {
+        $("#asset_cache").click(function() {
+            $.get("/dash/assetcache", function(data, status) {
+                alert("Data: " + data + "\nStatus: " + status);
+            })
+        });
+    }
+    
+    window.onload = setup_dash;
+    
+    </script>
