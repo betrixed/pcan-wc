@@ -30,8 +30,8 @@ use Mixin\Auth;
         $id = Valid::toInt($post,'id');
         if ($id > 0) {
             $event = Event::byId($id);
-            $event['fromTime'] = Valid::toDateTime($post, 'fromTime');
-            $event['toTime'] = Valid::toDateTime($post, 'toTime');
+            $event['fromtime'] = Valid::toDateTime($post, 'fromtime');
+            $event['totime'] = Valid::toDateTime($post, 'totime');
             $event['slug'] = Valid::toStr($post, 'slug');
             $event['enabled'] = Valid::toBool($post, 'enabled');
             if ($event->update()) {
