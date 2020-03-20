@@ -61,14 +61,20 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
 
-    static public function label($id, $text, $type='') {
-        if (!empty($type)) {
-            $class = " class=\"" . $type . "\"";
+    /**
+     * Return label tag with attributes
+     * @param type $id
+     * @param type $lclass
+     * @return string
+     */
+    static public function label_front($id, $lclass='')  {
+        if (!empty($lclass)) {
+            $class = " class=\"" . $lclass . "\"";
         }
         else {
             $class = '';
         }
-        return "<label for=\"$id\"  $class>$text</label>" . PHP_EOL;
+        return "<label for=\"$id\"  $class>";
     }
 
     static public function submit($node = []) {
@@ -156,7 +162,7 @@ class PlatesForm implements ExtensionInterface {
     public function text_value($pset) {
         $out = '';
         if (isset($pset['label'])) {
-            $out .= '<label>' . $pset['label'] . '</label>';
+            $out .= '<label class="label">' . $pset['label'] . '</label>';
         }
         $value = isset($pset['value']) ? $pset['value'] : false;
         if ($value) {
@@ -224,12 +230,19 @@ EOD;
             $out .= '<div class="' . $wrapdiv . '">';
             unset($pset['div']);
         }
+        
         if (isset($pset['label'])) {
-            $out .= static::label($id, $pset['label'], $type);
+             $label = '<label for="' . $id . '" class="label" > ' . $pset['label'] . ' ';
+             $label_end = ' </label>';
+             unset($pset['label']);
+        }
+        else {
+            $label = '';
+            $label_end = '';
         }
 
         
-        $out .= static::getTag($pset, ['type' => $type]) . PHP_EOL;
+        $out .= $label . static::getTag($pset, ['type' => $type]) . $label_end . PHP_EOL;
         
         if ($wrapdiv) {
             $out .= '</div>';
@@ -242,7 +255,7 @@ EOD;
      * @return string
      */
     public function plainText(array $pset) {
-        return $this->inputType($pset,'text');
+        return $this->inputType($pset, 'text');
     }
     
     public function number(array $pset) {
@@ -336,13 +349,20 @@ EOD;
     static public function select($pset) {
         $out = "";
         if (isset($pset['label'])) {
-            $out .= static::label($id, $pset['label']);
+            $out .=  static::label_front($id, 'label') . ' ' . $pset['label']
+                    . ' ';
+            unset($pset['label']);
+            $label_end = '</label>';
         }
+        else {
+            $label_end = '';
+        }
+       
         if (isset($pset['list'])) {
             // value contains a php variable between <?= 
             $val = $pset['list'];
             $curval = isset($pset['value']) ? $pset['value'] : null;
-            $out .= '<select ';
+            $out .= '<div class="select"><select';
 
             $out .= self::addAttr('id', $pset);
             $out .= self::addAttr('class', $pset);
@@ -357,7 +377,7 @@ EOD;
                 $selected = ($skey === $curval) ? " selected" : "";
                 $out .= '<option value="' . $skey . '" ' . $selected . '>' . $sval . '</option>' . PHP_EOL;
             endforeach;
-            $out .= '</select>' . PHP_EOL;
+            $out .= '</select></div>' . $label_end . PHP_EOL;
             return $out;
         }
     }
@@ -395,7 +415,11 @@ EOD;
         $id = $pset['id'];
         //$out = "<div class='" . static::FORMDIV . "'>" . PHP_EOL;
         if (isset($pset['label'])) {
-            $out .= static::label($id, $pset['label']);
+            $out .= static::label_front($id, 'label' ) . ' ' . $pset['label'] . ' ';
+            $label_end = '</label>';
+        }
+        else {
+            $label_end = '';
         }
         if (isset($pset['value'])) {
             $value = $pset['value'];
@@ -404,7 +428,7 @@ EOD;
             $value = '';
         }
         //$pset['class'] = 'form-control';
-        $out .= static::generateTag('textarea', $pset) . $value . '</textarea>' . PHP_EOL;
+        $out .= static::generateTag('textarea', $pset) . $value . '</textarea>' . $label_end . PHP_EOL;
         //$out .= "</div>" . PHP_EOL;
         return $out;
     }

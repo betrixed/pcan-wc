@@ -40,13 +40,13 @@
             <div class="columns">
                 <div class="column">
                     <div class="<?= $fclass ?>">
-                        <label class="label">Adapter</label>&nbsp;<div class="select">
+                        
                         <?=
                         $this->form()->select(
-                                ['name' => 'adapter', 'id' => 'adapter1',
+                                [ 'label' => 'Adapter' , 'name' => 'adapter', 'id' => 'adapter1',
                                     'list' => $adapters, 'class' => 'selectpicker'])
                         ?>
-                    </div>
+                   
 
                     </div>
                     

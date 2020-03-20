@@ -19,19 +19,7 @@ Its design features include:-
     * Presumes a web root directory for index.php, and folders for static Assets of .css, .js and image files. 
     * A protected site source code and configuration folder, for privileged access by the web site programs.
 
-The private folder is the root of the .git repository. The web folder inside the repository contains what should be copied to the public web root.
 
-The location of the private folder is indicated by the relative path in first line of index.php.
-
-```php
-    require '../private/bootstrap.php';
-    $f3 = init_app(__DIR__, 'default');
-    try {
-        $f3->run();
-    } catch (Exception $x) {
-        echo $x->getMessage();
-    }
-```
 
 The bootstrap.php declares the function init_app, which is called to configure fat-free variables and routes and returns its Base::instance() object. 
 The run() function is called, and simple exceptions handled.
@@ -52,5 +40,64 @@ Different folders in sites are to allow for setup and or maintainance, and diffe
 
 The name of the site is also used as a subfolder of the web root, to hold asset and theme customisations for that site.
 
+There are several system configurations to make on a newly configured Linux system.
 
+For arch linux, install php, php-fpm, nginx 
+pacman -S php php-fpm nginx xdebug yarn
+in web-site root (not public_html) 
 
+mkdir -p private/sites/default private/sites/pcan web  
+
+in private, create composer.json
+```json
+"name": "rynn/hub-site",
+	"repositories" : [
+		{
+			"type":"vcs",
+			"url" : "https://github.com/betrixed/pcan-fatfree.git"
+		},
+		{
+			"type":"vcs",
+			"url": "https://github.com/betrixed/fatfree.git"
+		}
+	]
+	,
+	"require": {
+		"betrixed/pcan" : "dev-use_php5",
+		"betrixed/fatfree" : "dev-use_php5",
+		"matthiasmullie/minify": "^1.3"
+	}
+```
+
+ln -s to vhost_nginx.conf, for a nginx server configuation.
+setup an ssl certificate - 
+from https://wiki.archlinux.org/index.php/Nginx
+mkdir /etc/nginx/ssl
+cd /etc/nginx/ssl
+openssl req -new -x509 -nodes -newkey rsa:4096 -keyout server.key -out server.crt -days 1095
+chmod 400 server.key
+chmod 444 server.crt
+
+If your development environment is in your home directory tree,
+configure the php-fpm user and group to be yours, edit  /etc/php/php-fpm.d/www.conf
+
+Set up internal ip like 127.0.0.5 pcan.test in /etc/hosts file.
+Edit host_nginx.conf to match
+
+In this case "pcan" URL pcan.test, web folder /web/pcan,  in private/sites/pcan/vhost_nginx.conf
+The private/sites/<folder> used by PHP is called in /web/index.php , will be initially "default".
+
+More than one nginx alias can be used, and multiple <site>_index.php in /web/
+This wouldn't work on production sites, one site per client id, with seperate unix user/group ids.
+But it allows for some resource sharing on a development machine.
+
+The initial setup requires resources installed in /web
+cd ../web
+yarn add bulma
+
+For now just the usual index.php.
+
+```php
+require_once '../private/vendor/autoload.php';
+$app = \WC\App::run_app(__DIR__, dirname(__DIR__) . '/private', 'default');
+```
