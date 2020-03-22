@@ -2,7 +2,6 @@
 
 return [
     "globals" => [
-        "TEMP" => '${sitepath}tmp/',
         'TZ' => 'Australia/Sydney',
         'domain' => 'hub.test',
         'organization' => 'The Organisation',

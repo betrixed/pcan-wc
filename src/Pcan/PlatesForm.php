@@ -277,6 +277,9 @@ EOD;
     {
         return $this->inputType($node,  'hidden');
     }
+    public function money(array $pset) {
+        return $this->inputType($pset,'money');
+    }
     public function phone(array $pset) {
         return $this->inputType($pset,'tel');
     }
@@ -285,6 +288,11 @@ EOD;
         return $this->inputType($pset,'password');
     }
 
+    public function price($value) {
+         setlocale(LC_MONETARY, 'en_AU');
+         $v = floatval($value);
+         return money_format('%!10.2n', $v);
+    }
     static public function addAttr($name, $pset) {
         if (isset($pset[$name])) {
             return ' ' . $name . '="' . $pset[$name] . '"';

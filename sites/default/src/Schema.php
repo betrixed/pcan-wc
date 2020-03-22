@@ -8,15 +8,17 @@ use WC\App;
 use WC\Assets;
 use WC\Valid;
 use Pcan\DB\UserAuth;
-
 use WC\AdaptXml;
 
-class Schema extends \Pcan\Controller {
-use \Pcan\Mixin\ViewPlates;
+class Schema extends \Pcan\Controller
+{
+
+    use \Pcan\Mixin\ViewPlates;
+
     public $sitedir;
 
-
-    public function getSchemaList() {
+    public function getSchemaList()
+    {
         $files = [];
         foreach (glob(App::instance()->getSchemaDir() . '*.schema') as $filename) {
             $files[] = pathinfo($filename, PATHINFO_FILENAME);
@@ -24,7 +26,8 @@ use \Pcan\Mixin\ViewPlates;
         return $files;
     }
 
-    public function index($f3, $params) {
+    public function index($f3, $params)
+    {
         $list = $this->getSchemaList();
 
         // use each value as key
@@ -38,10 +41,13 @@ use \Pcan\Mixin\ViewPlates;
         $view->content = 'input';
         $view->add(['list' => $list, 'keyed' => $keyed, 'adapters' => $adapters]);
 
+        \WC\Assets::instance()->add(['jquery']);
+
         echo $view->render();
     }
 
-    public function meta($f3, $params) {
+    public function meta($f3, $params)
+    {
         $post = &$f3->ref('POST');
         $dbname = Valid::toStr($post, 'dbname');
         $dbuser = Valid::toStr($post, 'dbuser');
@@ -84,7 +90,8 @@ use \Pcan\Mixin\ViewPlates;
         $f3->reroute('/schema/script/' . $version);
     }
 
-    public function compare($f3, $params) {
+    public function compare($f3, $params)
+    {
         $p = &$f3->ref('POST');
         $s1 = \Valid::toStr($p, 'sel1');
         $s2 = \Valid::toStr($p, 'sel2');
@@ -99,24 +106,24 @@ use \Pcan\Mixin\ViewPlates;
         $view = $this->getView();
         $view->content = 'compare';
         $view->add(['script' => $report->log]);
-        
+
         echo $view->render();
     }
 
-    public function generate($f3, $params) {
+    public function generate($f3, $params)
+    {
         $view = $this->getView();
         $view->content = 'schema';
 
         $version = isset($params['v']) ? $params['v'] : null;
-        
+
         $path = App::instance()->getSchemaDir() . $version . '.schema';
         $req = $f3->get('REQUEST');
         if (isset($req['adapt'])) {
             $adapter = $req['adapt'];
             $rdr = static::get_adapt_to($adapter);
             $cfg = $rdr->parseFile($path);
-        }
-        else {
+        } else {
             $cfg = XmlPhp::fromFile($path);
         }
         $script = new Script();
@@ -125,25 +132,26 @@ use \Pcan\Mixin\ViewPlates;
 
         $cfg->generate($script, ['alter' => true, 'indexes' => true]);
 
-        $cfg->generate($script, ['alter' => true ]);
+        $cfg->generate($script, ['alter' => true]);
 
         $view->add(['script' => $script]);
 
         echo $view->render();
     }
 
-    private function db_params($p) {
+    private function db_params($p)
+    {
         $dbname = Valid::toStr($p, 'dbname');
         $dbuser = Valid::toStr($p, 'dbuser');
         $passwd = Valid::toStr($p, 'passwd');
-       
+
         $adapter = Valid::toStr($p, 'adapter');
         $port = Valid::toInt($p, 'port');
         $hostname = Valid::toStr($p, 'hostname');
         $unix_socket = Valid::toBool($p, 'unix_socket');
 
         $sdb = ['dbname' => $dbname, 'adapter' => strtolower($adapter),
-                'username' => $dbuser, 'password' => $passwd];
+            'username' => $dbuser, 'password' => $passwd];
 
         if ($adapter === 'Mysql') {
             if (empty($port)) {
@@ -166,54 +174,60 @@ use \Pcan\Mixin\ViewPlates;
         }
         return $sdb;
     }
-    
-    static function get_adapt_to($adapter) {
-        switch($adapter) :
-            case 'mysql':  
-                $rdr = new AdaptXml(['Sqlite','Pgsql'], 'Mysql');
+
+    static function get_adapt_to($adapter)
+    {
+        switch ($adapter) :
+            case 'mysql':
+                $rdr = new AdaptXml(['Sqlite', 'Pgsql'], 'Mysql');
                 break;
-            case 'pgsql': 
-                  $rdr = new AdaptXml(['Mysql', 'Sqlite'],' Pgsql');
-                  break;
+            case 'pgsql':
+                $rdr = new AdaptXml(['Mysql', 'Sqlite'], 'Pgsql');
+                break;
             case 'sqlite':
                 $rdr = new AdaptXml(['Mysql', 'Pgsql'], 'Sqlite');
-                  break;
+                break;
         endswitch;
         return $rdr;
     }
-    public function make_db($f3, $p) {
 
-        
+    public function make_db($f3, $p)
+    {
+
+
         $datadir = App::instance()->getSchemaDir();
         $schema = Valid::toStr($p, 'schema');
         $path = $datadir . $schema . '.schema';
 
         $sdb = $this->db_params($p);
-        
+
         $rdr = static::get_adapt_to($sdb['adapter']);
-        
-        if ($sdb['adapter'] === 'sqlite' && isset($sdb['dbname']) ) {
-                    $dbpath = $f3->get('sitepath') . $sdb['dbname'];
-                    $sdb['dbname'] = $dbpath;
-       }
-                
+
+        if ($sdb['adapter'] === 'sqlite' && isset($sdb['dbname'])) {
+            $dbpath = $f3->get('sitepath') . $sdb['dbname'];
+            $sdb['dbname'] = $dbpath;
+        }
+
         $cfg = $rdr->parseFile($path);
         $db = null;
         try {
-            
+
             $db = Server::connection($sdb);
 
             Server::setDefault($db);
             $script = new Script();
 
-        $cfg->generate($script, ['tables' => 'create']);
+            $cfg->generate($script, ['tables' => 'create']);
 
-        $cfg->generate($script, ['alter' => true, 'indexes' => true]);
+            $cfg->generate($script, ['alter' => true, 'indexes' => true]);
 
-        $cfg->generate($script, ['alter' => true ]);
+            $cfg->generate($script, ['alter' => true]);
 
-        $script->run($db);
-        
+            $script->run($db);
+            
+            // load data after the tables and relationions setup
+            $cfg->loadData($db, $datadir . $schema . '_dir');
+            
             $rows = $db->exec('select count(*) as gs from user_group');
             if (empty($rows) || $rows[0]['gs'] === 0) {
                 $msg = 'Data load fail';
@@ -228,46 +242,45 @@ use \Pcan\Mixin\ViewPlates;
             $this->flash($msg);
             throw $e;
         }
-        
-        
+
+
 
         return $sdb;
-        
     }
+
     /** Apply a schema to a new database, with given connection parameters,
      *  and setup an admin account.
      * 
      * @param type $f3
      * @param type $params
      */
-    public function initdb($f3, $params) {
+    public function initdb($f3, $params)
+    {
         $view = $this->getView();
         $view->content = 'schema';
 
         $p = &$f3->ref('POST');
-        
-        
+
+
         $dbname = Valid::toStr($p, 'dbname');
-        
+
         if (!empty($dbname)) {
             $sdb = $this->make_db($f3, $p);
-
-        }
-        else {
+        } else {
             $sdb = null;
         }
-        
+
         $admin_user = Valid::toStr($p, 'admin_user');
 
         if (!empty($admin_user)) {
-             $admin_pwd = Valid::toStr($p, 'admin_pwd');
-             $admin_email = Valid::toEmail($p, 'admin_email');
-             UserAuth::makeNewUser($admin_user, $admin_email, $admin_pwd, ['Admin', 'User', 'Editor', 'Guest']);
-             $this->flash('User created');
+            $admin_pwd = Valid::toStr($p, 'admin_pwd');
+            $admin_email = Valid::toEmail($p, 'admin_email');
+            UserAuth::makeNewUser($admin_user, $admin_email, $admin_pwd, ['Admin', 'User', 'Editor', 'Guest']);
+            $this->flash('User created');
         }
 
         $site_dir = Valid::toStr($p, 'site_dir');
-       
+
         if (!empty($site_dir)) {
             $php = $f3->get('php');
             $sitepath = $php . 'sites/' . $site_dir . '/';
@@ -277,7 +290,7 @@ use \Pcan\Mixin\ViewPlates;
             $pkg = $f3->get('pkg');
             $web = $f3->get('web');
 
-            $setup =  $pkg . 'sites/default/template/';
+            $setup = $pkg . 'sites/default/template/';
 
             // Copy template index.php to webroot
 
@@ -304,21 +317,19 @@ use \Pcan\Mixin\ViewPlates;
             Dos::makedir($sitepath . 'views');
             copy($setup . 'index.phtml', $sitepath . 'views/index.phtml');
             // Copy common locations, build a images and theme assets in webroot, using $site_dir
-            Dos::copyall( $pkg . 'web/js', $web . 'js');
-            Dos::copyall( $pkg . 'web/css', $web . 'css');
-            Dos::copyall( $pkg . 'web/image', $web . $site_dir);
+            Dos::copyall($pkg . 'web/js', $web . 'js');
+            Dos::copyall($pkg . 'web/css', $web . 'css');
+            Dos::copyall($pkg . 'web/image', $web . $site_dir);
 
 
             // create a .secrets.xml
             if (!empty($sdb)) {
-                file_put_contents($sitepath . '.secrets.xml', XmlPhp::toXmlDoc([ "database" => $sdb ]));
+                file_put_contents($sitepath . '.secrets.xml', XmlPhp::toXmlDoc(["database" => $sdb]));
             }
-
-
         }
-            
-            // make a new user (email is essential)
-        
+
+        // make a new user (email is essential)
+
         $view->add(['script' => $msg]);
 
         echo $view->render();

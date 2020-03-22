@@ -28,13 +28,20 @@
             <s>/node_modules/simplegrid/simple-grid.css</s>
         </a>
     </tb>
+    <tb k='jquery'>
+        <a k='js'>
+            <s>/node_modules/jquery/dist/jquery.min.js</s>
+        </a>
+    </tb>
     <tb k='bootstrap'>
+         <a k='requires'>
+            <s>jquery</s>
+        </a>
         <a k='css'>
             <s>/node_modules/bootstrap/dist/css/bootstrap.min.css</s>
             <s>@theme/css/sbo.css</s>
         </a>
-        <a k='js'>
-            <s>/node_modules/jquery/dist/jquery.min.js</s>
+        <a k='js'>           
             <s>/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js</s>
         </a>
     </tb>
@@ -56,6 +63,9 @@
         </a>
     </tb>
     <tb k='jquery-form'>
+        <a k='requires'>
+            <s>jquery</s>
+        </a>
         <a k='js'>
             <s>/node_modules/jquery-form/dist/jquery.form.min.js</s>
         </a>

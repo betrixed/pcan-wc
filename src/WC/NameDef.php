@@ -38,7 +38,7 @@ class NameDef implements \ArrayAccess {
     }
 
     public function offsetGet($offset) {
-        return is_null($this->$offset) ?  null : is_null($this->$offset);
+        return is_null($this->$offset) ?  null : $this->$offset;
     }
 
     public function offsetSet($offset, $value) {

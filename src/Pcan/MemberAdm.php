@@ -14,11 +14,14 @@ use Chimp\DB\ChimpLists;
 
 class MemberAdm extends Controller {
 use Mixin\Auth;
-use Mixin\ViewF3;
+use Mixin\ViewPlates;
 
     public $url = "/admin/member/";
 
     public function index($f3, $args) {
+        $view = $this->getView();
+        $view->content = 'member/list';
+        
         $db = Server::db();
         $req = &$f3->ref('REQUEST');
         $pageAll = Valid::toStr($req, 'page', 'all');
@@ -49,13 +52,14 @@ EOD;
             $page = 1;
         }
         $paginator = new PageInfo($page, $pgsize, $results, $total);
-        $view = $this->getView();
-        $view->page = $paginator;
-        $view->url = "/admin/member/list";
-        $view->pgsize = $pgsize;
+        
+        $m = $view->model;
+        $m->page = $paginator;
+        $m->url = "/admin/member/list";
+        $m->pgsize = $pgsize;
 
-        $view->content = 'member/list.phtml';
-        $view->assets(['bootstrap']);
+     
+        \WC\Assets::instance()->add(['bootstrap']);
 
         echo $view->render();
     }
@@ -63,16 +67,17 @@ EOD;
     private function editForm() {
         $view = $this->getView();
         $view->content = 'member/fields.phtml';
-        $view->url = $this->url;
-        $view->assets(['bootstrap','member-js']);
-        $rec = $view->rec;
+        $m = $view->model;
+        $m->url = $this->url;
+        \WC\Assets::instance()->add(['bootstrap','member-js']);
+        $rec = $m->rec;
         $id = $rec['id'];
         if ($id > 0) {
-            $view->emails = Member::getEmails($id);
-            $view->donations = Member::getDonations($id);
+            $m->emails = Member::getEmails($id);
+            $m->donations = Member::getDonations($id);
         } else {
-            $view->emails = [];
-            $view->donations = [];
+            $m->emails = [];
+            $m->donations = [];
         }
         echo $view->render();
     }
@@ -86,8 +91,9 @@ EOD;
 
     protected function editId($mid) {
         $view = $this->getView();
-        $view->rec = Member::byId($mid);
-        $view->title = "Member edit";
+        $m = $view->model;
+        $m->rec = Member::byId($mid);
+        $m->title = "Member edit";
         $this->editForm();
     }
 
@@ -259,9 +265,11 @@ EOD;
            
         }
         $view = $this->getView();
-        $view->donations = Member::getDonations($mid);
-        $view->layout = 'member/donations.phtml';
-        $view->content = null;
+        $view->content = 'member/donations';
+        
+        $m = $view->model;
+        $m->donations = Member::getDonations($mid);
+
         echo $view->render();
     }
 }

@@ -91,13 +91,20 @@ More than one nginx alias can be used, and multiple <site>_index.php in /web/
 This wouldn't work on production sites, one site per client id, with seperate unix user/group ids.
 But it allows for some resource sharing on a development machine.
 
-The initial setup requires resources installed in /web
+The initial setup requires some initial resources installed in /web, otherwise
+the database setup page won't be very clever.
+
 cd ../web
 yarn add bulma
+yarn add jquery
+
+Other useful yarn packages to fetch
+yarn add bootstrap popper.js flatpickr jquery-form salvattore summernote
 
 For now just the usual index.php.
 
 ```php
 require_once '../private/vendor/autoload.php';
-$app = \WC\App::run_app(__DIR__, dirname(__DIR__) . '/private', 'default');
+// Set up paths to webroot, parent of sites folder, and folder name of site
+$app = \WC\App::run_app(__DIR__,  dirname(__DIR__) . '/private', 'default');
 ```

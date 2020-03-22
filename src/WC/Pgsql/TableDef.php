@@ -363,8 +363,7 @@ ESQL;
                 foreach ($indexes as $key => $ix) {
                      $ix->toSql($script, $stage, $this);
                 }
-            }
-            if (array_key_exists('auto_inc', $stage)) {
+                
                 $seqcols = $this->getSeqCols();
                 if (!empty($seqcols)) {
                     $script->add('--' . PHP_EOL . '-- table ' . $this->name . ' auto_inc');
@@ -380,6 +379,8 @@ ESQL;
                     }
                 }
             }
+
+            
         }
     }
 

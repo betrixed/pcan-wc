@@ -152,8 +152,6 @@ EOS;
         if (array_key_exists('alter', $stage)) {
             if (array_key_exists('indexes', $stage)) {
                 $this->execAllTables($db, ['alter' => true, 'indexes' => true]);
-            }
-            if (array_key_exists('auto_inc', $stage)) {
                 $this->execAllTables($db, ['alter' => true, 'auto_inc' => true]);
             }
         }
