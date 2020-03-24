@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<?php $this->insert('std_head', $this->data); ?>
+<body>
+<?php
+if (!empty($view->nav)):
+    $this->insert($view->nav, $this->data);
+endif;
+?>
+<?php if (!empty($view->flash)):
+            $this->insert('flash', $this->data);
+        endif; ?>
+    <?= $this->section('content', $this->data); ?>
+<div class="clear"></div>
+<?php $this->insert('std_foot', $this->data); ?>
+</body>
+</html>

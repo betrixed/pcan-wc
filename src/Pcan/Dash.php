@@ -8,20 +8,29 @@ namespace Pcan;
 
 use WC\UserSession;
 
+use WC\Dos;
+
+
 class Dash extends Controller {
     use Mixin\Auth;
     use Mixin\ViewPlates;
     
-    function h_jax($f3, $args) {
+    public function h_ajax($f3, $args) {
         $cmd = $args['cmd'];
-        if ($cmd === "assetcache") {
-        \WC\Assets::instance()->clearCache();
-        echo("Asset cache cleared");
+        if ($cmd === "asset_cache") {
+            \WC\Assets::instance()->clearCache();
+            echo("Asset cache cleared");
+        }
+        else if ($cmd === "schema_cache") {
+            $cache =  \Cache::instance();
+            if (!empty($cache)) {
+                $cache->reset('schema');
+            }
         }
     }
-    function show($f3, $args) {  
+    public function show($f3, $args) {  
+        \WC\Assets::instance()->add('bootstrap');
         $view = $this->getView();
-        $view->assets('bootstrap');
         $view->content = 'path0::home/dash';
         $view->title = "Dash";
         echo $view->render();

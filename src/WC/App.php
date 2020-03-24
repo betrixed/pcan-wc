@@ -30,6 +30,13 @@ class App extends \Prefab {
         return $this->schemaDir;
     }
 
+    static public function cache_file_list($f3, $suffix) {
+        $dsn = $f3->get('CACHE'); // the dsn
+        $parts = $parts = explode('=', $dsn, 2);
+        if ($parts[0] === 'folder') {
+            
+        }
+    }
     static public function clear_cache($f3, $suffix) {
         $value = $f3->get('CACHE_CLEAN');
         if (!empty($value)) {
@@ -53,7 +60,9 @@ class App extends \Prefab {
                         $files[] = $file;
                     }
                 }
-                \WC\Dos::rm_old($files,  60 * 60 * 24);
+                if (!empty($files)) {
+                    \WC\Dos::rm_old($files,  60 * 60 * 24);
+                }
             }
         }
     }

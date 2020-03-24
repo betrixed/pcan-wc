@@ -109,7 +109,7 @@ class ColumnDef extends NameDef  {
         }
         $auto_inc = false;
         if (array_key_exists('auto_inc', $stage)) {
-            $auto_inc = isset($this->auto_inc) ? false : $this->auto_inc;
+            $auto_inc = isset($this->auto_inc) ? $this->auto_inc : false;
             
         }
 

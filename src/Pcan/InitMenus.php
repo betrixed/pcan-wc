@@ -101,15 +101,15 @@ class InitMenus extends \Pcan\Controller
         } else {
             $rdr = new AdaptXml('Mysql', 'Pgsql');
         }
-
-        $path = \Base::Instance()->get('sitepath') . 'schema/phub_v1.schema';
+        $pkg_path = \Base::Instance()->get('pkg');
+        $path =  $pkg_path . 'sites/default/schema/initdb.schema';
         $schema = $rdr->parseFile($path);
         
         $tdef = $schema->getTable('menu_item');
         $script = new \WC\DB\Script();
         $actions = [
                 ['drop-tables' => true], 
-                ['tables' => true], 
+                ['tables' => true, 'auto_inc' => true], 
                 ['alter' => true, 'indexes' => true, 'auto_inc' => true]
         ];
         foreach( $actions as $stage) {

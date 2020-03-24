@@ -1,5 +1,4 @@
 <?php
-
 $link = $m->link;
 $url = $m->url;
 $linkery = $m->linkery;
@@ -22,7 +21,7 @@ $fm = $this->form();
         padding-right: 0.5em;
         padding-top:10px;
     }
-    
+
 
     .col-restrict {
         max-width: 70%;
@@ -39,76 +38,98 @@ $fm = $this->form();
             <a href="/admin/link">Links</a> &nbsp; >> &nbsp; 
             <span><?= $m->title ?></span>
         </div>
-<?php if($link['refid']): ?>
+        <?php if ($link['refid']): ?>
             <div class="col-2">
-                <?= $fm->linkTo(['href' => '/admin/blog/edit/' . $link['refid'], 
-                    'text' =>"Edit Target Blog", 'target' =>"_blank", 'class' => "btn btn-default"]) ?>
+                <?= $fm->linkTo(['href' => '/admin/blog/edit/' . $link['refid'],
+                    'text' => "Edit Target Blog", 'target' => "_blank", 'class' => "btn btn-default"])
+                ?>
             </div>
-<?php endif ?>
-<?php if(isset($linkery)): ?>
+        <?php endif ?>
+        <?php if (isset($linkery)): ?>
             <div class="col-2">
                 <form id="addLinkery" action="/admin/linkery/add" method="post">
-                    <?= $fm->hidden(['name' => 'linkid', 'value' => $link['id'] ]) ?>
-                    <?= $fm->hidden(['name' => 'gallid', 'value' => $linkery['id'] ]) ?>
-                <?= $fm->submit(['value' => 'Add to linkery ' . $linkery['name'],
-                    'class'=> "btn btn-primary"]) ?>
+                    <?= $fm->hidden(['name' => 'linkid', 'value' => $link['id']]) ?>
+                    <?= $fm->hidden(['name' => 'gallid', 'value' => $linkery['id']]) ?>
+                    <?= $fm->submit(['value' => 'Add to linkery ' . $linkery['name'],
+                        'class' => "btn btn-primary"])
+                    ?>
                 </form>
             </div>
-<?php endif ?>
+    <?php endif ?>
     </div>
-    <?php if(!empty($collections)): ?>
+<?php if (!empty($collections)): ?>
         <div class="row" >
             <div class="col-1">
                 <label><b>Collections</b></label>
             </div>
             <div class="col-11">
-                <p><?php foreach($collections as $coll): 
-                    echo ($coll['name'] . "&nbsp[" . $coll['id'] . "]&nbsp; | &nbsp;<br>");
-                endforeach ?></p>
+                <p><?php
+                    foreach ($collections as $coll):
+                        echo ($coll['name'] . "&nbsp[" . $coll['id'] . "]&nbsp; | &nbsp;<br>");
+                    endforeach
+                    ?></p>
             </div>
         </div>
-<?php endif ?>
+        <?php endif ?>
     <hr />
     <div class="clear"></div>
     <form id="linkform" name="linkform" method="post" action="<?= $m->post ?>" onsubmit="smotePost()">
-        <?php if ( $link['refid']): ?>
-            <?= $fm->hidden(['name'=> "refid",  'value'=>  $link['refid'] ]) ?>
-<?php endif ?>
+<?php if ($link['refid']): ?>
+                <?= $fm->hidden(['name' => "refid", 'value' => $link['refid']]) ?>
+            <?php endif ?>
         <div class='row'>
             <label class="col-form-label" for='sitename'>Site Name</label>
-            <?= $fm->plainText(['name' => 'sitename' , 'value' => $link['sitename'],
-              'maxlength' =>  $display['sitename.max'] ]) ?>
+<?= $fm->plainText(['name' => 'sitename', 'value' => $link['sitename'],
+    'maxlength' => $display['sitename.max']])
+?>
         </div>
+
         <div class='row'>
             <label class="col-form-label" for='title'>Title</label>
-            <?= $fm->plainText(['name' => 'title' , 'value' => $link['title'], 'size'=>80,
-              'maxlength' =>  $display['title.max'], 'class' =>  "col-restrict"]) ?>
+<?= $fm->plainText(['name' => 'title', 'value' => $link['title'], 'size' => 80,
+    'maxlength' => $display['title.max'], 'class' => "col-restrict"])
+?>
         </div>
 
         <div class="row">
             <label class="col-form-label" for='url'>URL</label>
-            <?= $fm->plainText(['name' => 'url' , 'value' => $link['url'], 'size'=>80,
-              'maxlength' =>  $display['url.max'], 'class' =>  "col-restrict"]) ?>
+                <?= $fm->plainText(['name' => 'url', 'value' => $link['url'], 'size' => 80,
+                    'maxlength' => $display['url.max'], 'class' => "col-restrict"])
+                ?>
         </div>
         <div class='row pad10'>
             <div class="col-4">
-                <?= $fm->checkbox(['label' => 'Enabled', 'name' => 'enabled', 
-                    'checked' => $link['enabled'] ]) ?>
+        <?= $fm->checkbox(['label' => 'Enabled', 'name' => 'enabled',
+            'checked' => $link['enabled']])
+        ?>
             </div>
-            <?php if ($m->linkid > 0): ?>
-                <div class="col-5">
-                    <?= $fm->datetime(['name' => 'date_created', 'size'=>20, 
-                        'label' => "Created at",
-                        'value' => $link['date_created'] ]) ?>
-                 </div>
-            <?php endif ?>
-            <?= $fm->hidden( [ 'name' => 'id',  'value' => $m->linkid ]) ?>
-            <div>
-                <label class="col-4" for='url'>URL Type</label>
-                <?= $fm->select(['name' => 'urltype', 'list' => $urltypes,
-                    'value' => $link['urltype'] ]) ?>
-            </div>
+
         </div>
+
+
+                <?= $fm->hidden(['name' => 'id', 'value' => $m->linkid]) ?>
+        <div class="col-4">
+                <?= $fm->select(['label' => 'URL Type', 'name' => 'urltype', 'list' => $urltypes,
+                    'value' => $link['urltype']])
+                ?>
+        </div>
+                <?php if ($m->linkid > 0): ?>
+            <div class='row pad10'>
+                <div class="col-4">
+                <?= $fm->number(['label' => 'Image id', 'name' => 'imageid',
+                    'value' => $link['imageid']])
+                ?>
+                </div>
+                <div class="col-5">
+    <?=
+    $fm->datetime(['name' => 'date_created', 'size' => 20,
+        'label' => "Created at",
+        'value' => $link['date_created']])
+    ?>
+                </div>
+           
+        </div>
+         <?php endif ?>
         <div>
             <button id="airbtn" type="button" 
                     title="This also does a save-submit" 
@@ -118,11 +139,11 @@ $fm = $this->form();
         <div class="form-group">
             <textarea id='summary' name='summary' cols='100' rows='25'><?= $link['summary'] ?></textarea>
             <hr>
-            <?php if ($m->linkid==0): ?>
+<?php if ($m->linkid == 0): ?>
                 <div class="col-sm-2">
                     <input name='btnUpdate' class='btn btn-success' type='submit' id='btnupdate' value="Create">
                 </div>
-            <?php else: ?>
+<?php else: ?>
                 <div class="form-group row" >
                     <div class="col-sm-3">
                         <input name='btnDelete' class='btn btn-danger' type='button' id='btndelete' value="Delete" onclick="return doDelete(this.form);"/>
@@ -131,9 +152,20 @@ $fm = $this->form();
                         <input name='btnUpdate' class='btn btn-success' type='submit' id='btnupdate' value="Update">
                     </div>
                 </div>
-            <?php endif ?>
+<?php endif ?>
         </div>
     </form>
+    <?php if (!empty($link['imageid'])): ?>
+        <form id="imageform" name="imageform" method="post" action="<?= $m->im_post ?>">
+            <?= $fm->hidden(['name' => 'imageid', 'value'=> $link['imageid']]) ?>
+            <div class="row">
+                <textarea name="description" cols='100' rows='2'><?= $m->im_description ?></textarea>
+            </div>
+            <div class="row">
+                <?= $fm->submit(['value' => 'Update image caption']) ?>
+            </div>
+        </form>
+    <?php endif ?>
 </div>
 
 

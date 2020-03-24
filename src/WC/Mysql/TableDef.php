@@ -223,24 +223,27 @@ EOS;
         }
 
         if (array_key_exists('alter', $stage)) {
+            $auto_inc_col = $this->autoInc();
             if (array_key_exists('indexes', $stage) && !empty($this->indexes)) {
                 $indexes = $this->indexes;
                 ksort($indexes);
                 $script->add('-- table ' . $this->name . ' indexes' . PHP_EOL);
                 foreach ($indexes as $key => $ix) {
-                     $ix->toSql($script, $stage, $this);
+                    if ($ix->type === 'PRIMARY' && !empty($auto_inc_col)) {
+                        continue;
+                    }
+                    $ix->toSql($script, $stage, $this); 
                 }
             }
             if (array_key_exists('auto_inc', $stage)) {
-                $col = $this->autoInc();
-                if (!empty($col)) {
-                    $outs = SchemaDef::alterTableSql($this->name);
-                    $outs .= ' MODIFY ' . $col->toSql($stage);
+                /*  if (!empty($auto_inc_col)) {
+                   $outs = SchemaDef::alterTableSql($this->name);
+                    $outs .= ' MODIFY ' . $auto_inc_col->toSql($stage);
                     $outs .= ';';
                     $script->add('-- table ' . $this->name . ' auto_increment column');
                     $script->add($outs);
                     
-                }
+                } */
                 if (isset($this->options['auto_increment'])) {
                     $value = $this->options['auto_increment'];
                     $outs = SchemaDef::alterTableSql($this->name);
