@@ -1,7 +1,4 @@
 <head>
-<?php use \WC\Assets; 
-    use \WC\UserSession; 
-?>
     <meta charset="UTF-8" >
     <meta name="viewport" content="width=device-width, initial-scale=1" >
     <?php
@@ -13,5 +10,5 @@
     <?php if (isset($m->title)): ?>
     <title><?= $m->title ?></title>
     <?php endif; ?>
-    <?= Assets::instance()->CssHeader(); ?> 
+    <?= $assets->CssHeader(); ?> 
 </head>

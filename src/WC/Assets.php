@@ -7,7 +7,15 @@ use MatthiasMullie\Minify;
 /**
  * Organise typical webpage .css, .js assets
  */
-class Assets extends \Prefab {
+class Assets  {
+    static public $instance;
+    
+    static function instance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new Assets();
+        }
+        return self::$instance;
+    }
     private $mark;
     private $order;
     private $loggedIn;
@@ -43,17 +51,16 @@ class Assets extends \Prefab {
     }
 
     public function __construct() {
-        $this->f3 = \Base::Instance();
-        $f3 = $this->f3;
-        $path = $f3->get('sitepath') . "assets.xml";
+        $this->app = App::Instance();
+        $app = $this->app;
+        $path = $app->APP . "/assets.xml";
         if (!file_exists($path)) {
-            $path = $f3->get('php') . "config/assets.xml";
+            $path = $app->PHP . "/config/assets.xml";
         }
-        $this->web = $f3->get('webDir');
+        $this->web = $app->WEB;
 
         $cfg = WConfig::fromXml($path);
         $this->config = $cfg;
-
         $this->assetSrc = $cfg['assetSrc'];
         $this->assetProd = $cfg['assetCache'];
         $this->order = [];
@@ -66,12 +73,12 @@ class Assets extends \Prefab {
         if (!isset($this->mark[$item])) {
             // confirm existance key, and check for requires
             $cfg = $this->config;
-            if (!isset($cfg[$item])) {
+            if (!isset($cfg->$item)) {
                 return;
                 //TODO: Log
                 //throw new \Exception("Asset key $item not in configuration");
             }
-            $asset = $cfg[$item];
+            $asset = $cfg->$item;
             if (isset($asset['requires'])) {
                 $this->add($asset['requires']);
             }
@@ -110,8 +117,8 @@ class Assets extends \Prefab {
     protected function LinkPut($name) {
         $cfg = $this->config;
         $outs = "";
-        if (isset($cfg[$name])) {
-            $assets = &$cfg[$name];
+        if (isset($cfg->$name)) {
+            $assets = $cfg->$name;
             if (isset($assets['link'])) {
                 $outs .= "<link";
                 foreach ($assets['link'] as $attr => $val) {
@@ -129,19 +136,16 @@ class Assets extends \Prefab {
         return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . $path . "\">" . PHP_EOL;
     }
     
+    /** asset minify cache as relative path to web root */
     public function getCache() {
-        return  $this->f3->get('theme') . DIRECTORY_SEPARATOR . 'cache';
+        return  '/' . $this->f3->theme . '/cache';
     }
     public function clearCache() {
-         $cache = $this->getCache();
-         $webroot = rtrim($this->f3->get('web'), DIRECTORY_SEPARATOR);
-         \WC\Dos::rm_all( @\glob($webroot . $cache . DIRECTORY_SEPARATOR . '*') );
+         \WC\Dos::rm_all( @\glob($this->web . $this->getCache() . '/*') );
     }
     public function CssMinify() {
-        $cache = $this->getCache();
-        $webroot = rtrim($this->f3->get('web'), DIRECTORY_SEPARATOR);
-        $result = $cache . DIRECTORY_SEPARATOR . $this->minify_name . "_min.css";
-        $target = $webroot . $result;
+        $result = $this->getCache() . '/' . $this->minify_name . "_min.css";
+        $target = $this->web . $result;
         if (file_exists($target)) {
             if (is_file($target) && (time() - filemtime($target) < static::MAX_AGE)) {
                 return static::link_css($result);
@@ -151,8 +155,8 @@ class Assets extends \Prefab {
         $cfg = $this->config;
         
         foreach ($this->order as $name) {
-            if (!empty($cfg[$name])) {
-                $assets = $cfg[$name];
+            if (!empty($cfg->$name)){
+                $assets = $cfg->$name;
                 if (!empty($assets['css'])) {
                     foreach ($assets['css'] as $hpath) {
                         $path = $webroot . $this->unhive($hpath);
@@ -189,8 +193,8 @@ class Assets extends \Prefab {
     protected function CssPut($name) {
         $cfg = $this->config;
         $outs = "";
-        if (isset($cfg[$name])) {
-            $assets = &$cfg[$name];
+        if (isset($cfg->$name)) {
+            $assets = $cfg->$name;
             if (isset($assets['css'])) {
                 foreach ($assets['css'] as $hpath) {
                     $path = $this->unhive($hpath);
@@ -205,13 +209,13 @@ class Assets extends \Prefab {
     }
 
     /**
-     * Replace @var1 hive variables in paths
+     * Replace @var1  substitutions in paths
      */
     protected function unhive($hpath) {
         $f3 = $this->f3;
         $path = preg_replace_callback('|@([a-zA-Z][\w\d]*)|',
                 function($matches) use ($f3) {
-            $subs = $f3->get($matches[1]);
+            $subs = $f3->$matches[1];
             return $subs;
         }
                 , $hpath, 1
@@ -225,8 +229,8 @@ class Assets extends \Prefab {
     protected function JsPut($name) {
         $cfg = $this->config;
         $outs = "";
-        if (isset($cfg[$name])) {
-            $assets = &$cfg[$name];
+        if (isset($cfg->$name)) {
+            $assets = $cfg->$name;
             if (isset($assets['js'])) {
                 foreach ($assets['js'] as $hpath) {
                     $path = $this->unhive($hpath);
@@ -241,16 +245,13 @@ class Assets extends \Prefab {
     }
 
     public function JsMinify() {
-        $cache = $this->getCache();
-        $webroot = rtrim($this->f3->get('web'), DIRECTORY_SEPARATOR);
-        $result = $cache . DIRECTORY_SEPARATOR . $this->minify_name . "_min.js";
-        $target = $webroot . $result;
+        $result = $this->getCache() . DIRECTORY_SEPARATOR . $this->minify_name . "_min.js";
+        $target = $this->web . $result;
         if (file_exists($target)) {
             if (is_file($target) && (time() - filemtime($target) < static::MAX_AGE)) {
                 return static::script_js($result);
             }
         }
-        $webroot = rtrim($this->f3->get('web'), DIRECTORY_SEPARATOR);
         
         $mini = null;
         $cfg = $this->config;
@@ -260,7 +261,7 @@ class Assets extends \Prefab {
                 $assets = $cfg[$name];
                 if (!empty($assets['js'])) {
                     foreach ($assets['js'] as $hpath) {
-                        $path = $webroot . $this->unhive($hpath);
+                        $path = $this->web . '/' . $this->unhive($hpath);
                         if (is_null($mini)) {
                             $mini = new Minify\JS($path);
                         } else {

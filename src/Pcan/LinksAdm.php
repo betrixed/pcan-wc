@@ -7,6 +7,7 @@ namespace Pcan;
 use WC\DB\Server;
 use Pcan\DB\PageInfo;
 use Pcan\DB\Links;
+use Pcan\DB\Image;
 use Pcan\DB\Blog;
 use Pcan\DB\Linkery;
 use WC\Valid;
@@ -114,9 +115,11 @@ class LinksAdm extends Controller {
         $m->linkid = $id;
         $m->collections = Linkery::byLink($id);
         $m->title = 'Edit link ' . $id;
-
+        $m->image = empty($rec['imageid']) ? null : Image::getData($rec['imageid']);
         
-        $us = $this->us;
+        $us = UserSession::instance();
+        $m->im_session = $us->getKey('imageid');
+        $m->im_post = "/admin/link/image";
         $m->linkery = is_null($us) ? null : $us->getKey('linkery');
 
         $this->viewCommon();
@@ -201,7 +204,8 @@ class LinksAdm extends Controller {
         $link['title'] = Valid::toStr($post, 'title', "");
         $link['summary'] = $post['summary'];
         $link['enabled'] = Valid::toBool($post, 'enabled', 0);
-
+        $link['imageid'] = Valid::toInt($post, 'imageid');
+        
         if (!isset($post['date_created'])) {
             $link->date_created = Valid::now();
         } else {

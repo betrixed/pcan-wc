@@ -3,7 +3,7 @@ $link = $m->link;
 $url = $m->url;
 $linkery = $m->linkery;
 $collections = $m->collections;
-
+$image = $m->image;
 $display = \Pcan\DB\Links::display();
 $urltypes = $link->getUrlTypes();
 
@@ -105,8 +105,6 @@ $fm = $this->form();
             </div>
 
         </div>
-
-
                 <?= $fm->hidden(['name' => 'id', 'value' => $m->linkid]) ?>
         <div class="col-4">
                 <?= $fm->select(['label' => 'URL Type', 'name' => 'urltype', 'list' => $urltypes,
@@ -119,13 +117,17 @@ $fm = $this->form();
                 <?= $fm->number(['label' => 'Image id', 'name' => 'imageid',
                     'value' => $link['imageid']])
                 ?>
+
+                </div>
+                <div class="col-3">
+                    <?= $fm->text_value(['label' => 'Session Image Id', 'value' => $m->im_session]) ?>
                 </div>
                 <div class="col-5">
-    <?=
-    $fm->datetime(['name' => 'date_created', 'size' => 20,
-        'label' => "Created at",
-        'value' => $link['date_created']])
-    ?>
+                <?=
+                $fm->datetime(['name' => 'date_created', 'size' => 20,
+                    'label' => "Created at",
+                    'value' => $link['date_created']])
+                ?>
                 </div>
            
         </div>
@@ -155,14 +157,24 @@ $fm = $this->form();
 <?php endif ?>
         </div>
     </form>
-    <?php if (!empty($link['imageid'])): ?>
+    <?php if (!empty($image)): ?>
         <form id="imageform" name="imageform" method="post" action="<?= $m->im_post ?>">
-            <?= $fm->hidden(['name' => 'imageid', 'value'=> $link['imageid']]) ?>
+            <?= $fm->hidden(['name' => 'lk_imageid', 'value'=> $image->id] ) ?>
+            <?= $fm->hidden(['name' => 'lk_id', 'value'=> $link['id']]) ?>
             <div class="row">
-                <textarea name="description" cols='100' rows='2'><?= $m->im_description ?></textarea>
+                <div class="col-8">
+                <label for="im_caption">Image Caption for <?= $image->id . ': ' . $image->im_file ?></label>
+                <textarea name="im_caption" rows='2' style="width:100%;"><?= $image->caption ?></textarea>
+                </div>
+                <div class="col-4">
+                    <img src="<?= $image->im_path . $image->thumb ?>">
+                </div>
             </div>
+            
             <div class="row">
+                <div class="col-4">
                 <?= $fm->submit(['value' => 'Update image caption']) ?>
+                </div>
             </div>
         </form>
     <?php endif ?>

@@ -2,30 +2,35 @@
 
 namespace WC;
 
-class App extends \Prefab {
+class App extends WConfig {
 
     public $f3;
     public $config;
     public $schemaDir;
 
+    static public $instance;
+    static function instance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new App();
+        }
+        return self::$instance;
+    }
+    
     /**
      * Secrets are probably not stored in the database
      * @return configuration array or object
      */
-    function get_secrets() {
-        $cfg = $this->f3->get('secrets');
-        if (is_null($cfg)) {
-            $path = $this->f3->get('sitepath');
-            $cfg = WConfig::fromXml($path . ".secrets.xml");
-            $this->f3->set('secrets', $cfg);
+    protected $secrets;
+    public function get_secrets() {
+        if (!isset($this->secrets)) {
+            $this->secrets = WConfig::fromXml($this->APP . "/.secrets.xml");
         }
-        return $cfg;
+        return $this->secrets;
     }
 
     public function getSchemaDir() {
         if (!isset($this->schemaDir)) {
-            $f3 = \Base::Instance();
-            $this->schemaDir = $f3->get('sitepath') . 'schema/';
+            $this->schemaDir = $this->APP . '/schema/';
         }
         return $this->schemaDir;
     }
@@ -67,10 +72,6 @@ class App extends \Prefab {
         }
     }
 
-    public function __construct() {
-        $this->f3 = \Base::Instance();
-    }
-
     // Load routes from .php config file and pre-process for cache
     static public function load_routes($f3, $path) {
         $routes = include $path;
@@ -96,79 +97,88 @@ class App extends \Prefab {
 EDOC;
         return $page;
     }
-
-    public function init($webpath,   $src,  $folder) {
-        $php = $src . '/';
-        $sitepath = $php . "sites/" . $folder . '/';
-
+    /** Assume WEB_DIR and PHP_DIR are defined */
+    public function init( $folder) {
+        
+        
         // If running from composer vendor path, pkg_path !== php 
         // PHP5 has no depth parameter
-        $pkg_path = dirname(dirname(__DIR__)) . '/';  //  <path>/src/
-
-        if (!file_exists($sitepath)) {
-            // assume a setup scenario, from inside a composer package
-            // this file is in src, in the package, root/src/WC/App
-            // 2 levels up
-            $sitepath = $pkg_path . "sites/" . $folder . '/';
+        
+        
+        // temporary files and cache 
+        $sitepath = PHP_DIR . '/sites/' . $folder;
+        $tempdir = $sitepath . '/tmp';
+        $cachedir = $tempdir . '/cache';
+        
+        if (!file_exists($cachedir )) {
+            mkdir($cachedir, 0777, true);
         }
-        $f3 = \Base::instance();
-        $f3->set('pkg', $pkg_path);
-        $f3->set('web', $webpath . '/');
-        $f3->set('php', $php);
-        if ($php === $pkg_path) {
-            // running site folder from vendor path
-            $f3->set('is_vendor', true);
-            $f3->set('vendor_path', dirname(dirname($pkg_path)) . '/');
+        
+        $src_path = dirname(dirname(__DIR__));
+        
+        $this->PHP = PHP_DIR;
+        $this->WEB = WEB_DIR;
+       
+        $this->SRC = $src_path;
+
+        if (PHP_DIR === $src_path) {
+            $this->is_vendor = true;
+            $this->VENDOR = $src_path;
         } else {
             // presume composer layout
-            $f3->set('is_vendor', false);
-            $f3->set('vendor_path', $php . 'vendor/');
+            $this->is_vendor = false;
+            $this->VENDOR = PHP_DIR . '/vendor';
         }
 
-        $f3->set('sitepath', $sitepath);
-        $f3->set('AUTOLOAD', $php . 'src/|' . $sitepath . 'src/');
-        $this->f3 = $f3;
-        $cli = php_sapi_name();
-        if ($cli === "cli") {
-            $cfg = WConfig::fromPhp($sitepath . 'cli_config.php');
-            $routes_config = $sitepath . "cli_routes.php";
-            $routes_cachefile = "cli_routes_cache.dat";
-        } else {
-            $cfg = WConfig::fromPhp($sitepath . 'config.php');
-            $routes_config = $sitepath . "routes.php";
-            $routes_cachefile = "routes_cache.dat";
-        }
+        $prefix = (php_sapi_name() === "/cli") ? '/cli_' : '/';
+        $config_file = 'config.php';
+        $configpath = $sitepath .  $prefix . $config_file;
 
+        if (!file_exists($configpath)) {
+            $sitepath = $src_path . '/sites/' . $folder;
+            $configpath = $sitepath .  $prefix . $config_file;
+            
+        }
+        $routes_config = $sitepath . $prefix . 'routes.php';
+        $routes_cachefile = $prefix . 'routes_cache.dat';
+        
+        $this->APP = $sitepath;
+        
+        
+        $cfg = WConfig::fromPhp($configpath);
         $this->config = $cfg;
 
         if (isset($cfg->globals)) {
-            if (!isset($cfg->globals['UI'])) {
-
-                $cfg->globals['UI'] = $sitepath . 'views/|'
-                        . $f3->get('pkg') . 'views/pcan/';
-            }
-            foreach ($cfg->globals as $k => $v) {
-                $f3->set($k, $v);
-            }
+            $this->addArray($cfg->globals);
         }
-
-        $temp = $f3->exists('TEMP') ? $f3->get('TEMP') : false;
+        if (!isset($this->UI)) {
+            $this->UI =  [$sitepath . '/views/', 
+                            $src_path . '/views/pcan/'];
+        }
+        
+        $f3 = \Base::instance();
+        $this->f3 = $f3;
+        $src_paths = [$src_path . '/src/' , $sitepath . '/src/'];   
+        $f3->set('AUTOLOAD', implode('|', $src_paths));
+        
+        $temp = $f3->exists('TEMP') ? $f3->get('TEMP') : $tempdir;
         if ($temp === false || $temp === 'tmp/') {
-            $f3->set('TEMP', $sitepath . 'tmp/');
+            $f3->set('TEMP', $tempdir);
             $temp = $f3->get('TEMP');
         }
-        $f3->set('LOG', $temp . 'log/');
+        $this->TEMP = $temp;
 
+        $f3->set('LOG', $temp . 'log/');
+        
         $dsn = $f3->exists('CACHE') ? $f3->get('CACHE') : false;
         if ($dsn === false) {
-            $dsn = "folder=" . $temp . 'cache/';
+            $dsn = "folder=" . $cachedir;
             $f3->set('CACHE', $dsn);
         }
-
+        $this->CACHE = $dsn;
+        
         self::clear_cache($f3, '@');
 
-        $start_time = microtime(true);
-        $f3->set('start_routes', $start_time);
         if (isset($cfg->globals['cache_routes'])) {
             $cache_routes = $cfg->globals['cache_routes'];
         } else {
@@ -177,7 +187,7 @@ EDOC;
         }
 
         if ($cache_routes) {
-            $routes_cache = $temp . "/" . $routes_cachefile;
+            $routes_cache = $temp . $routes_cachefile;
             if (!file_exists($routes_cache) || (filemtime($routes_config) > filemtime($routes_cache))) {
                 static::load_routes($f3, $routes_config);
                 $f3->sort_routes();
@@ -192,8 +202,6 @@ EDOC;
             static::load_routes($f3, $routes_config);
             // delay sorting for fatfree
         }
-        $end_time = microtime(true);
-        $f3->set('routes_load_time', $end_time - $start_time);
 
         $site_init = $sitepath . "bootstrap.php";
         if (file_exists($site_init)) {
@@ -203,10 +211,11 @@ EDOC;
         return true;
     }
 
-    static public function run_app($webpath, $src, $folder) {
+
+    static public function run_app($folder) {
         try {
-            $app = \WC\App::Instance();
-           if ( $app->init($webpath, $src, $folder) ) {
+            $app = \WC\App::instance();
+           if ( $app->init($folder) ) {
                $app->run();
            }
 
@@ -215,29 +224,31 @@ EDOC;
         }
     }
 
-    /**
-     * String for timing stats during request response
-     * LR - load routes
-     * R - Routing till controller called
-     * C - Render view called
-     * V - View render
-     * Total -  request to end render
-     * @return string
+    public function __construct() {
+        $now = microtime(true);
+        $this->f3 = \Base::Instance();
+        parent::__construct([
+            'start_time' => $now, 
+            'ctrl_time' => $now, 
+            'render_time' => $now]);
+    }
+    /** simple stats of request 
+     * setup  = ctrl_time - start_time
+     * handler = render_time - ctrl_time
+     * response = end_time - render_time
      * 
+     * @param type $f3
+     * @return type
      */
-    static public function end_stats($f3) {
+   public function end_stats() {
         $end_time = microtime(true);
-        $render_start = $f3->get('render_time');
-        $ctrl_time = $f3->get('ctrl_time');
-        $handler_time = $f3->get('handler_found');
-        $start_routes = $f3->get('start_routes');
-        $route_time = ($handler_time - $start_routes) * 1000.0;
-        $ctrl = ($render_start - $handler_time) * 1000.0;
-        $render = ($end_time - $render_start) * 1000.0;
-        $total = ($end_time - $start_routes) * 1000.0;
-        $routes = $f3->get('routes_load_time') * 1000.0;
-        return sprintf('%.2f MB, ', memory_get_peak_usage() / 1024 / 1024)
-                . sprintf('Time LR %.2f H %.2f C %.2f V %.2f Total %.2f ms', $routes, $route_time, $ctrl, $render, $total);
+        $setup_time = ($this->ctrl_time - $this->start_time) * 1000.0;
+        $handler_time = ($this->render_time - $this->ctrl_time) * 1000.0;
+        $render_time = ($end_time - $this->render_time) * 1000.0;
+        $total = ($end_time - $this->start_time) * 1000.0;
+        $memory = memory_get_peak_usage() / 1024 / 1024;
+        return sprintf('Setup %.2f Handle %.2f Render %.2f Total %.2f ms, Memory %.2f MB',
+                        $setup_time, $handler_time, $render_time, $total, $memory);
     }
 
     /** For hiding try-catch for run */

@@ -1,4 +1,4 @@
-<?php use \WC\Assets; 
+<?php  
     use \WC\UserSession; 
 ?>
 <div class="clear"></div>
@@ -7,7 +7,6 @@
     <div class="row" >
         <div class="col-3">
             <?php
-            $f3 = \Base::Instance();
             $sid = UserSession::sessionName();
             if ($sid !== 'NULL') {
                 echo("<a href=\"/end_session\">End Session: " . $sid . "</a>");
@@ -18,11 +17,11 @@
             ?>
         </div>
         <div class="col-3"> 
-            &copy;&nbsp;<?= $f3->get('organization') ?>
+            &copy;&nbsp;<?= $app->organization ?>
         </div>
         <div class="col-6">            
-            <?= \WC\App::end_stats($f3); ?>
+            <?= $app->end_stats(); ?>
         </div>
     </div>
 </footer>
-<?= Assets::instance()->JsFooter(); ?>
+<?= $assets->JsFooter(); ?>

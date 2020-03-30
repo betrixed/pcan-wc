@@ -7,15 +7,14 @@
  */
 
 namespace Pcan\Mixin;
-
+use WC\UserSession;
+use WC\App;
 /**
  * Same functions, including constructor, as WC\Controller
  *
  * @author michael
  */
 trait F3Controller {
-     public $f3;
-    public $args;
 
     /**
      * Override this and use Mixin\Auth
@@ -28,7 +27,7 @@ trait F3Controller {
     
     function afterRoute() {
         // session becomes read only
-        UserSession::shutdown();
+        \WC\UserSession::shutdown();
     }
 
     public function getWebDir() {
@@ -39,13 +38,13 @@ trait F3Controller {
     }
 
     public function flash($msg, $extra = null, $status = 'info') {
-        UserSession::flash($msg, $extra, $status);
+        \WC\UserSession::flash($msg, $extra, $status);
     }
 
     public function __construct($f3, $args) {
-        $ctrl_time = microtime(true);
         $this->f3 = $f3;
         $this->args = $args;
-        $f3->set('ctrl_time', $ctrl_time);
+        $this->app = \WC\App::instance();
+        $this->app->ctrl_time = microtime(true);
     }
 }

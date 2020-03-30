@@ -26,30 +26,26 @@ class Html {
     static public $browser;
     
 
-    public function __construct($f3 ) {
+    public function __construct() {
         $this->layout = 'layout';
-        $this->nav = $f3->get('nav');
-        $this->f3 = $f3;
-        $this->ext = 'phtml';
+        $app = \WC\App::instance();
         
+        $this->nav = $app->nav;
+        $this->app = $app;
+        $this->ext = 'phtml';
+        $this->userSess = UserSession::read();
         $this->model = new WConfig();
         $this->values = [];
-
-        //$f3->set('UI', $path . '/|' . $f3->get('pkg') . 'views/');
-        
-        //$agent = $f3->get('AGENT');
-       
     }
     /**
      * Call just before render, to synchronize Session save
      */
     public function final_headers() {
-        $this->f3->set('render_time', microtime(true));
+        $this->app->render_time = microtime(true);
         // see if UserSession exists, and has flash messages
-        if (UserSession::hasInstance()) {
-            $us = UserSession::instance();
-            $this->usrSess = $us;
-            $this->flash = $us->getMessages(); // clears messages
+        $us = $this->userSess;
+        if (!empty($us)) {
+            $us->flash = $us->getMessages(); // clears messages
             $us->write(); // finalize session now
         }
     }

@@ -155,7 +155,21 @@ class GalleryAdm extends GalleryCtl {
         }
         $this->invalid($f3, $args);
     }
-
+    /*** set the imageid
+     * store in UserSession
+     */
+    protected function setid($f3, $action) {
+        if (count($action) > 1) {
+            $imageid = $action[1];
+            $us = UserSession::read();
+            if (!empty($us)) {
+                $us->setKey('imageid', $imageid);
+                echo $imageid;
+            }else {
+                echo '0';
+            }
+        }
+    }
      /** Handle actions for POST [ajax] from routes.php for '/admin/gallery/*'    */
     public function h_ajax($f3, $args) {
         if (!$f3->get('AJAX')) {
@@ -164,11 +178,14 @@ class GalleryAdm extends GalleryCtl {
         $url = $args['*'];
         $parts = explode('?', $url);
         if (!empty($parts)) {
-            $action = explode('/', $parts[0]);
+            $action = explode('/', $parts[0]); //Before the ?
             if (!empty($action)) {
                 $fn = $action[0];
                 switch ($fn) {
-                    case 'imageList' :
+                    case 'setid':
+                        $this->$fn($f3, $action);
+                        return;
+                    case 'imageList' : 
                     case 'upload' :
                         $this->$fn($f3);
                         return;
@@ -177,6 +194,7 @@ class GalleryAdm extends GalleryCtl {
         }
         $this->invalid($f3, $args);
     }
+    
     
     public function index($f3, $args) {
         $view = $this->galleryIndex($f3, 'gallery_adm/index.phtml');
@@ -378,6 +396,9 @@ class GalleryAdm extends GalleryCtl {
             $link->visible = 1;
             $link->save();
         }
+        // save the current gallery and image in the current session
+        $sess =  \WC\UserSession::instance();
+        $sess->setKey('imageid', $imageid);
         return $active;
     }
 

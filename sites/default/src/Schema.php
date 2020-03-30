@@ -10,11 +10,11 @@ use WC\Valid;
 use Pcan\DB\UserAuth;
 use WC\AdaptXml;
 
-class Schema extends \Pcan\Controller
+class Schema 
 {
-
     use \Pcan\Mixin\ViewPlates;
-
+    use \Pcan\Mixin\F3Controller;
+    
     public $sitedir;
 
     public function getSchemaList()

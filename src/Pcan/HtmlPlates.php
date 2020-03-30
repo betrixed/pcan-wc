@@ -4,25 +4,26 @@ namespace Pcan;
  * User rendering object as controller->view
  */
 use WC\UserSession;
+use WC\Assets;
 use Plates\Engine;
 
 
-class HtmlPlates  extends Html    {
+class HtmlPlates extends Html    {
     
     public $engine;
+    public $userSession;
     
-    
-    public function __construct($f3)
+    public function __construct()
     {
         // setup fall back paths
-        parent::__construct($f3);
+        parent::__construct();
         
         
         $this->engine = new Engine();
         $this->engine->setFileExtension('phtml');
-        $paths = $f3->get('UI'); // path string from hive
-        if (isset($paths)) {
-            $backups = explode('|', $paths);
+        $app = $this->app;
+        $backups = $app->UI; 
+        if (!empty($backups)) {
             $realpaths = [];
             foreach($backups as $id => $folder)  {
                 $rp = realpath($folder);
@@ -35,19 +36,21 @@ class HtmlPlates  extends Html    {
             }
         }
         // view defaults
-        if (UserSession::isLoggedIn('Admin')) {
+        $us = $this->userSess;
+        if (!empty($us) && $us->hasRole('Admin')) {
             $this->layout = 'layout_admin';
             $this->nav = 'nav_admin';
         }
         else {
-            $this->layout = $f3->get('layout_view');
-            $this->nav = $f3->get('nav_view');
+            $this->layout = $app->layout_view;
+            $this->nav = $app->nav_view;
         }
         // values which will be auto-extracted into the view
         $this->values['m'] = $this->model;
         $this->values['view'] = $this;
-        $this->values['f3'] = $f3;
-        $this->values['sess'] = UserSession::read();
+        $this->values['app'] = $app;
+        $this->values['sess'] = $us;
+        $this->values['assets'] = Assets::instance();
         $this->engine->loadExtension(new PlatesForm());
     }
 
