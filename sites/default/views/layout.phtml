@@ -8,10 +8,9 @@ Use WC\Assets,
 
     <head>
         <title>Schema</title>
-        <?= $this->insert('std_head',$this->data); ?>
+        
     </head>
     <body>
-        <?= $this->section('content'); ?>
-        <?= $this->insert('std_foot',$this->data); ?>
+       <?= $this->getContent(); ?>
     </body>
 </html>

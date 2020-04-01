@@ -6,13 +6,17 @@
  * and open the template in the editor.
  */
 
-namespace WC\DB;
+namespace WC;
+
 
 /**
- * Description of AbstractSchemaDef
+ * Compatibility extensions for Plates
  *
  * @author michael
  */
-abstract class  AbstractDef extends \WC\NameDef {
-    abstract public function generate( $script, $stages);
+class ViewEngine extends \Phalcon\Mvc\View\Engine\Php
+{
+    public function layout($vpath, $data) {
+        // negation, do nothing
+    }
 }

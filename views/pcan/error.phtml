@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <head>
-{~
-    @ERROR = \Base::instance()->get('ERROR');
-~}
-<title>{{@ERROR.text}}</title>
+<?php
+    $ERROR = \WC\App::instance()->ERROR;
+?>
+<title><?= $ERROR['text'] ?></title>
 </head>
 <body>
-  <h1>{{@ERROR.text}}</h1>
-  <p>Error code: {{@ERROR.code}}</p>
+  <h1><?= $ERROR['text'] ?></h1>
+  <p>Error code: <?= $ERROR['code'] ?></p>
 </body>
 </html>

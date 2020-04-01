@@ -1,6 +1,6 @@
 <?php
 
-namespace WC\DB;
+namespace WC\Db;
 
 /**
  * Accumulate SQL statements in order,

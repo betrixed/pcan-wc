@@ -7,7 +7,7 @@
 namespace WC\Mysql;
 
 use WC\NameDef;
-use WC\DB\Script;
+use WC\Db\Script;
 use WC\Mysql\TableDef;
 
 
@@ -15,7 +15,7 @@ use WC\Mysql\TableDef;
  * Intermediate type to and from on-file TOML table definition. 
  * Match read and write key names and format.
  */
-class IndexDef extends \WC\DB\AbstractDef {
+class IndexDef extends \WC\Db\AbstractDef {
 
 
     public function setSchema($row) {

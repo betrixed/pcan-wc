@@ -127,7 +127,27 @@ class Template
         return $this->name->getPath();
     }
 
+
     /**
+     * Show missing template file in context
+     * @param type $mypath
+     */
+    protected function render_path($mypath, $data) {
+        if (!file_exists($mypath)) {
+            $msg = 'The template "' . $this->name->getName() 
+                     . '" could not be found at "' . $mypath. '".';
+            $style = 'display:block;background-color:gray;font-size:20pt';
+            $content = '<div style="$style"><p>' . $msg . '</p></div>';
+            echo $content;
+        }
+        else {
+             $this->data($data);
+             unset($data);
+             extract($this->data);
+             include $mypath;
+        }
+    }
+     /**
      * Render the template and layout.
      * @param  array  $data
      * @throws \Throwable
@@ -136,27 +156,20 @@ class Template
      */
     public function render(array $data = array())
     {
-        $this->data($data);
-        unset($data);
-        extract($this->data);
+        
         $mypath = $this->path();
-        if (!file_exists($mypath)) {
-            throw new LogicException(
-                'The template "' . $this->name->getName() . '" could not be found at "' . $mypath. '".'
-            );
-        }
 
         try {
             $level = ob_get_level();
             ob_start();
 
-            include $mypath;
+            $this->render_path($mypath, $data);
 
             $content = ob_get_clean();
 
             if (isset($this->layoutName)) {
                 $layout = $this->engine->make($this->layoutName);
-                $layout->sections = array_merge($this->sections, array('content' => $content));
+                $layout->sections = array_merge($this->sections, ['content' => $content]);
                 $content = $layout->render($this->layoutData);
             }
 
@@ -266,7 +279,10 @@ class Template
 
         return $this->sections[$name];
     }
-
+    /** compatibility with phalcon PHP engine */
+    public function getContent() {
+        return $this->section('content');
+    }
     /**
      * Fetch a rendered template.
      * @param  string $name
@@ -288,7 +304,15 @@ class Template
     {
         echo $this->engine->render($name, $data);
     }
-
+    /**
+     * Phalcon function name view compatibility, same as insert
+     * @param type $name
+     * @param array $data
+     */
+    public function partial($name, array $data = array())
+    {
+        echo $this->engine->render($name, $data);
+    }
     /**
      * Apply multiple functions to variable.
      * @param  mixed  $var

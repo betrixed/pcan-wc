@@ -1,14 +1,18 @@
 <?php
 
 namespace WC;
-
 /**
  * What gets stored in session serialized data
  *
  * @author michael
  */
-class UserSession extends \Prefab {
 
+use Phalcon\Session\Manager;
+use Phalcon\Session\Adapter\Stream;
+
+
+class UserSession {
+    
     //put your code here
     public $userName;
     public $roles;
@@ -17,23 +21,24 @@ class UserSession extends \Prefab {
     public $status;
     public $keys;
     public $doWrite = false;
-    static private $session;
-
+    // frameworks session object
+    static private $session; 
+    static private $instance;
+    
+    static public function instance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new UserSession();
+        }
+        return self::$instance;
+    }
     static public function shutdown() {
-        if (!\Registry::exists(__CLASS__)) {
+        if (!isset(self::$instance))
             return;
-        }
-        $us = UserSession::instance();
-        if ($us && $us->doWrite) {
-            $us->write();
-        }
+        self::$instance->write();
     }
 
     public function delayWrite() {
-        if (!$this->doWrite) {
-            $this->doWrite = true;
-            //register_shutdown_function(__CLASS__ . "::shutdown");
-        }
+        $this->doWrite = true;
     }
 
     public function __construct() {
@@ -51,11 +56,13 @@ class UserSession extends \Prefab {
     }
 
     
-    /** Piggy back on top of Fat-Free session object */
+    /** implementation framework session object */
     static public function session() {
         if (empty(static::$session)) {
-            static::$session = new \Session();
-            
+            $tmp = App::instance()->TEMP;
+            static::$session = new Manager();
+            static::$session->setAdapter(new Stream(['savePath' => $tmp]));
+            static::$session->start();
         }
         return static::$session;
     }
@@ -118,8 +125,7 @@ class UserSession extends \Prefab {
     public function write() {
         if ($this->doWrite) {
             $this->doWrite = false;
-            $f3 = \Base::instance();
-            $f3->set('SESSION.userdata', $this);
+            self::session()->userdata = $this;
         }
     }
 
@@ -160,9 +166,9 @@ class UserSession extends \Prefab {
         if (empty(static::$session)) {
             return;
         }
-        $sid = static::$session->sid();
-        $f3 = \Base::instance();
-        $f3->set('SESSION.userdata', null);
+        static::$session->remove('userdata');
+        $adapter = static::$session->getAdapter();
+        $adapter->gc(24*60*60);
     }
     public function addMessage($text, $status = 'info') {
         if (!isset($this->keys['flash'])) {
@@ -201,7 +207,7 @@ class UserSession extends \Prefab {
     }
 
     static public function hasInstance() {
-        return \Registry::exists(__CLASS__);
+        return isset(self::$instance);
     }
 
     /**
@@ -224,15 +230,8 @@ class UserSession extends \Prefab {
         // Get FatFree request session parameters
         $sess = static::session();
         //$id2 = session_id();
-        $f3 = \Base::instance();
         // Get stored UserSession if any
-        $us = $f3->get('SESSION.userdata');
-        if (!is_null($us)) {
-            $f3->set('JAR.lifetime', 30 * 60);
-            \Registry::set(get_class($us), $us);
-            //$cookie = session_get_cookie_params();
-        }
-        return $us;
+        return $sess->userdata;
     }
 
     /**
@@ -298,14 +297,11 @@ class UserSession extends \Prefab {
     }
 
     static public function sessionName() {
-        if (!\Registry::exists(__CLASS__)) {
-            return 'NULL';
-        }
-        $us = static::instance();
-        if (!empty($us->userName)) {
+        $us = static::$instance;
+        if (isset($us) && !empty($us->userName)) {
             return $us->userName;
         }
-        return 'ANON';
+        return 'NULL';
     }
 
     static public function reroute($url) {

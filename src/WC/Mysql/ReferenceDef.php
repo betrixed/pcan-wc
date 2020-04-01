@@ -6,8 +6,8 @@
 
 namespace WC\Mysql;
 use WC\NameDef;
-use WC\DB\Script;
-use WC\DB\AbstractDef;
+use WC\Db\Script;
+use WC\Db\AbstractDef;
 
 /**
  * Intermediate type to and from on-file TOML table definition. 

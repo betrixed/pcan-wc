@@ -4,12 +4,14 @@ namespace WC\Mysql;
 
 use WC\NameDef;
 use WC\XmlPhp;
-use WC\DB\Script;
-/**
- * Array of TableDef and various properties
- * 
- */
-class SchemaDef extends \WC\DB\AbstractDef {
+
+use WC\Db\Script;
+use Phalcon\Db;
+use Phalcon\Db\Adapter\Pdo\Mysql;
+use WC\Mysql\DbQuery;
+use WC\Db\IQuery;
+
+class SchemaDef extends \WC\Db\AbstractDef {
 
     const SORT_FN = ['WC\NameDef', 'name_cmp'];
 
@@ -150,35 +152,43 @@ class SchemaDef extends \WC\DB\AbstractDef {
             }
         }
     }
-
+    public function newQuery($db) : IQuery
+    {
+        return new DbQuery($this, $db);
+    }
+    /**
+     * Name needs to be set before calling.
+     * @param type $db
+     */
     public function readSchema($db) {
-        $dbname = $db->name();
+        $qry = $this->newQuery($db);
+        
+        //$dbname = $db->getSchemaName();
         $tsql = <<<ESQL
   SELECT table_name, table_type, engine, auto_increment, 
       table_collation, table_comment    
    FROM information_schema.tables 
        WHERE table_schema = :dbname
 ESQL;
-        $table_names = $db->exec($tsql, ['dbname' => $dbname]);
-        $tdefs = [];
-        foreach ($table_names as $rec) {
+        $table_names = $qry->queryAll($tsql, [':dbname' => $qry->getSchemaName()]);
+        
+        foreach ( $table_names as $rec) {
 
             $tdef = new TableDef();
 
-            $tdef->readSchema($db, $rec);
+            $tdef->readSchema($qry, $rec);
 
             $tdefs[$tdef->name] = $tdef;
         }
         $this->adapter = 'Mysql';
         $this->tables = $tdefs;
-        $this->database = $dbname;
+        $this->database = $qry->getSchemaName();
         $this->date = new \DateTime();
         
-        $this->readRelations($db);
+        $this->readRelations($qry);
     }
 
-    public
-            function readRelations($db) {
+    public function readRelations(DbQuery $qry) {
         $rsql = <<<ESQL
 select 
        col.table_schema as 'schema',
@@ -214,7 +224,7 @@ order by col.table_schema,
          col.table_name,
          col.ordinal_position
 ESQL;
-        $data = $db->exec($rsql, ['dbname' => $db->name()]);
+        $data = $qry->queryAll($rsql, ['dbname' => $schemaName]);
         $relations = [];
         $constraint = '';
         $rdef = null;

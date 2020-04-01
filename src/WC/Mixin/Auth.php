@@ -1,6 +1,6 @@
 <?php
 
-namespace Pcan\Mixin;
+namespace WC\Mixin;
 
 /**
  * Add to controller if login required

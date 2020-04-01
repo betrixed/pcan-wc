@@ -1,14 +1,13 @@
 <?php
-namespace Pcan;
+namespace WC;
 /**  
  * User rendering object as controller->view
  */
 use WC\UserSession;
-use WC\Assets;
 use Plates\Engine;
 
 
-class HtmlPlates extends Html    {
+class HtmlPlates  extends Html    {
     
     public $engine;
     public $userSession;
@@ -17,13 +16,11 @@ class HtmlPlates extends Html    {
     {
         // setup fall back paths
         parent::__construct();
-        
-        
         $this->engine = new Engine();
-        $this->engine->setFileExtension('phtml');
-        $app = $this->app;
-        $backups = $app->UI; 
-        if (!empty($backups)) {
+        $plates = $this->app->plates;
+        $this->engine->setFileExtension($plates->ext);
+        $backups = $plates->UI;
+        if (isset($backups)) {
             $realpaths = [];
             foreach($backups as $id => $folder)  {
                 $rp = realpath($folder);
@@ -42,16 +39,15 @@ class HtmlPlates extends Html    {
             $this->nav = 'nav_admin';
         }
         else {
-            $this->layout = $app->layout_view;
-            $this->nav = $app->nav_view;
+            $this->layout = $plates->layout_view;
+            $this->nav = $plates->nav_view;
         }
         // values which will be auto-extracted into the view
         $this->values['m'] = $this->model;
         $this->values['view'] = $this;
-        $this->values['app'] = $app;
+        $this->values['app'] = $this->app;
         $this->values['sess'] = $us;
         $this->values['assets'] = Assets::instance();
-        $this->engine->loadExtension(new PlatesForm());
     }
 
     /** any object, there are two references to it */
@@ -83,7 +79,10 @@ class HtmlPlates extends Html    {
      * @param bool $writeHeaders default true
      * @return type
      */
-    public function render($writeHeaders = true) {
+    public function render($tpl = null, $writeHeaders = true) {
+        if (!empty($tpl)) {
+            $this->content = $tpl;
+        }
         if ($writeHeaders) {
             $this->final_headers();
         }

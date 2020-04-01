@@ -51,21 +51,15 @@ class Assets  {
     }
 
     public function __construct() {
-        $this->app = App::Instance();
-        $app = $this->app;
-        $path = $app->APP . "/assets.xml";
-        if (!file_exists($path)) {
-            $path = $app->PHP . "/config/assets.xml";
-        }
-        $this->web = $app->WEB;
-
-        $cfg = WConfig::fromXml($path);
+        $app = App::instance();
+        $this->app = $app;
+        $cfg = WConfig::fromXml($app->APP . "/assets.xml");
         $this->config = $cfg;
-        $this->assetSrc = $cfg['assetSrc'];
-        $this->assetProd = $cfg['assetCache'];
+        $this->web = $app->WEB;
+        $this->assetSrc = $cfg->assetSrc;
+        $this->assetProd = $cfg->assetCache;
         $this->order = [];
         $this->mark = [];
-
         $this->add('default');
     }
 
@@ -118,7 +112,7 @@ class Assets  {
         $cfg = $this->config;
         $outs = "";
         if (isset($cfg->$name)) {
-            $assets = $cfg->$name;
+            $assets = &$cfg->$name;
             if (isset($assets['link'])) {
                 $outs .= "<link";
                 foreach ($assets['link'] as $attr => $val) {
@@ -212,13 +206,12 @@ class Assets  {
      * Replace @var1  substitutions in paths
      */
     protected function unhive($hpath) {
-        $f3 = $this->f3;
+        $app = $this->app;
         $path = preg_replace_callback('|@([a-zA-Z][\w\d]*)|',
-                function($matches) use ($f3) {
-            $subs = $f3->$matches[1];
-            return $subs;
-        }
-                , $hpath, 1
+                function($matches) use ($app) {
+                    return  $app[$matches[1]];
+                    }
+                    , $hpath, 1
         );
         return $path;
     }

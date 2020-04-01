@@ -1,25 +1,9 @@
 <?php
 
-namespace Pcan;
-use Plates\Engine;
-use Plates\Extension\ExtensionInterface;
+namespace WC;
 use Pcan\Models\MenuTree;
 
-class PlatesForm implements ExtensionInterface {
-
-    protected $engine;
-    public $template;
-
-    public function getObject() {
-        return $this;
-    }
-
-    public function register(Engine $engine) {
-        $this->engine = $engine;
-
-        $engine->registerFunction('form', [$this, 'getObject']);
-    }
-
+class HtmlGem {
     static private function ensureIdValue(&$pset, $value = null) {
         if (isset($pset['name']) && !isset($pset['id'])):
             $pset['id'] = $pset['name'];
@@ -31,7 +15,7 @@ class PlatesForm implements ExtensionInterface {
         endif;
     }
 
-    static public function generateTag($tag, $pset) {
+    static function generateTag($tag, $pset) {
         $out = '<' . $tag;
         foreach ($pset as $arg => $val):
 
@@ -45,7 +29,7 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
 
-    static public function mergeClass(&$pset, $default) {
+    static function mergeClass(&$pset, $default) {
         /* class is a multi value attribute */
         if (isset($default['class']) && isset($pset['class'])) {
             $tmp = $default['class'] . ' ' . $pset['class'];
@@ -55,7 +39,7 @@ class PlatesForm implements ExtensionInterface {
         $pset = array_merge($default, $pset);
     }
 
-    static public function getTag(&$pset, $default, $tag = 'input') {
+    static function getTag(&$pset, $default, $tag = 'input') {
         static::mergeClass($pset, $default);
         $out = static::generateTag($tag, $pset);
         return $out;
@@ -67,7 +51,7 @@ class PlatesForm implements ExtensionInterface {
      * @param type $lclass
      * @return string
      */
-    static public function label_front($id, $lclass='')  {
+    static function label_front($id, $lclass='')  {
         if (!empty($lclass)) {
             $class = " class=\"" . $lclass . "\"";
         }
@@ -77,11 +61,11 @@ class PlatesForm implements ExtensionInterface {
         return "<label for=\"$id\"  $class>";
     }
 
-    static public function submit($node = []) {
+    static function submit($node = []) {
         return static::getTag($node, ['type' => 'submit', 'value' => 'Submit']) . PHP_EOL;
     }
 
-    public function checkbox(array $pset) {
+    static function checkbox(array $pset) {
         static::ensureIdValue($pset);
         $id = $pset['id'];
         $out = '';
@@ -119,7 +103,7 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
     // display bool in simple span
-    public function check_value($pset) {
+    static function check_value($pset) {
         $out = '';
         if (isset($pset['label'])) {
             $out .= '<label>' . $pset['label'] . '</label>';
@@ -138,7 +122,7 @@ class PlatesForm implements ExtensionInterface {
      * @param array $pset
      * @return string
      */
-    public function datetime_value($pset) {
+    static function datetime_value($pset) {
         $out = '';
         if (isset($pset['label'])) {
             $out .= '<label>' . $pset['label'] . '</label>';
@@ -159,7 +143,7 @@ class PlatesForm implements ExtensionInterface {
         return $out;
     }
     // display text in simple span
-    public function text_value($pset) {
+    static function text_value($pset) {
         $out = '';
         if (isset($pset['label'])) {
             $out .= '<label class="label">' . $pset['label'] . '</label>';
@@ -174,7 +158,7 @@ class PlatesForm implements ExtensionInterface {
         return $out;
  
     }
-    public function invisiCaptcha($pset) {
+    static function invisiCaptcha($pset) {
         $site = $pset['site'];
         $out = <<<EOD
    <input type="hidden" id="captcha-response" name="captcha-response" >
@@ -191,7 +175,7 @@ class PlatesForm implements ExtensionInterface {
 EOD;
         return $out;
     }
-    public function recaptcha($pset)
+    static function recaptcha($pset)
     {
         $text = $pset['text'];
         $id = $pset['id'];
@@ -215,12 +199,12 @@ EOD;
         return $out;
     }
     
-    public function xcheck($node)
+    static function xcheck($node)
     {
         return static::getTag($node, ['name' => 'xcheck', 'type' => 'hidden']);
     }
     
-    public function inputType(array $pset, $type = '') {
+    static function inputType(array $pset, $type = '') {
         static::ensureIdValue($pset);
         $id = $pset['id'];
         $out = '';
@@ -254,15 +238,15 @@ EOD;
      * @param array $pset
      * @return string
      */
-    public function plainText(array $pset) {
-        return $this->inputType($pset, 'text');
+    static function plainText(array $pset) {
+        return static::inputType($pset, 'text');
     }
     
-    public function number(array $pset) {
-        return $this->inputType($pset,'number');
+    static function number(array $pset) {
+        return static::inputType($pset,'number');
     }
     
-    public function email(array $pset)
+    static function email(array $pset)
     {
         if (!isset($pset['placeHolder']))
         {
@@ -271,36 +255,36 @@ EOD;
         if (!isset($pset['aria-describedby'])) {
             $pset['aria-describedby'] = 'emailHelp';
         }
-        return $this->inputType($pset,'email');
+        return static::inputType($pset,'email');
     }
-    public function hidden($node)
+    static function hidden($node)
     {
-        return $this->inputType($node,  'hidden');
+        return static::inputType($node,  'hidden');
     }
-    public function money(array $pset) {
-        return $this->inputType($pset,'money');
+    static function money(array $pset) {
+        return static::inputType($pset,'money');
     }
-    public function phone(array $pset) {
-        return $this->inputType($pset,'tel');
+    static function phone(array $pset) {
+        return static::inputType($pset,'tel');
     }
-    public function password(array $pset)
+    static function password(array $pset)
     {
-        return $this->inputType($pset,'password');
+        return static::inputType($pset,'password');
     }
 
-    public function price($value) {
+    static function price($value) {
          setlocale(LC_MONETARY, 'en_AU');
          $v = floatval($value);
          return money_format('%!10.2n', $v);
     }
-    static public function addAttr($name, $pset) {
+    static function addAttr($name, $pset) {
         if (isset($pset[$name])) {
             return ' ' . $name . '="' . $pset[$name] . '"';
         } else
             return "";
     }
     
-    static public function linkTo($pset)
+    static function linkTo($pset)
     {
         if (isset($pset['href'])):
             $href = $pset['href'];
@@ -334,7 +318,7 @@ EOD;
     }
     
 
-    static public function dropDown(array $pset) {
+    static function dropDown(array $pset) {
        static::ensureIdValue($pset);
 
         $out = "<li class=\"nav-item dropdown\">" . PHP_EOL;
@@ -354,7 +338,7 @@ EOD;
         $out .= "</li>" . PHP_EOL;
         return $out;   
     }
-    static public function select($pset) {
+    static function select($pset) {
         $out = "";
         if (isset($pset['label'])) {
             $out .=  static::label_front($id, 'label') . ' ' . $pset['label']
@@ -389,7 +373,7 @@ EOD;
             return $out;
         }
     }
-    public function datetime($pset)
+    static function datetime($pset)
     {
         static::ensureIdValue($pset);
         $id = $pset['id'];
@@ -417,7 +401,7 @@ EOD;
         return $out;
     }
     
-     public function multiline($pset)
+     static function multiline($pset)
      {
        static::ensureIdValue($pset);
         $id = $pset['id'];

@@ -11,12 +11,6 @@ class WConfig extends \stdClass implements \ArrayAccess {
         return isset($this->$name);
     }
     
-    public function __construct($init = null) {
-        if (!empty($init)) {
-            $this->addArray($init);
-        }
-    }
-    
     static function updateValue(&$value, $map) {
         $matches = null;
         if (preg_match('/\${(\w+)}/', $value, $matches)) {
@@ -35,6 +29,11 @@ class WConfig extends \stdClass implements \ArrayAccess {
         }
     }
 
+    public function __construct($init = null) {
+        if (!empty($init)) {
+            $this->addArray($init);
+        }
+    }
     // create 
     static public function fromPhp( $filename) {
         $values = require $filename;

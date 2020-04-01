@@ -7,22 +7,25 @@
 namespace WC\Mysql;
 
 use WC\NameDef;
-use WC\DB\Script;
-use WC\DB\BatchInsert;
+use WC\Db\Script;
+use WC\Db\BatchInsert;
+
 /**
  * Intermediate class for SQL table definition. 
  * Save and Load from TOML file format.
  * Generate more or less directly the 
  * table definitions used by Phalcon SQL database classes.
  */
-class TableDef extends \WC\DB\AbstractDef {
+class TableDef extends \WC\Db\AbstractDef
+{
 
     public $columns;
     public $indexes;
     public $references;
     public $options;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->columns = [];
         $this->indexes = [];
         $this->references = [];
@@ -35,7 +38,8 @@ class TableDef extends \WC\DB\AbstractDef {
      * @param type $key
      * @param type $value
      */
-    public function getColumnsByProperty($key, $value) {
+    public function getColumnsByProperty($key, $value)
+    {
         $list = [];
         foreach ($this->columns as $cdef) {
             $test = $cdef[$key];
@@ -50,7 +54,8 @@ class TableDef extends \WC\DB\AbstractDef {
      * 
      * @return array of string
      */
-    public function getFieldNames() {
+    public function getFieldNames()
+    {
         return array_keys($this->columns);
     }
 
@@ -59,7 +64,8 @@ class TableDef extends \WC\DB\AbstractDef {
      * 
      * @return array of name => integer offsets from 0
      */
-    public function getColumnOffsets() {
+    public function getColumnOffsets()
+    {
         $lookup = [];
         foreach ($this->columns as $idx => $col) {
             $lookup[$col->getName()] = $idx;
@@ -67,7 +73,8 @@ class TableDef extends \WC\DB\AbstractDef {
         return $lookup;
     }
 
-    public function autoInc() {
+    public function autoInc()
+    {
         $cols = $this->getColumnsByProperty('auto_inc', true);
         if (!empty($cols)) {
             return $cols[0];
@@ -76,7 +83,8 @@ class TableDef extends \WC\DB\AbstractDef {
         }
     }
 
-    public function getIndexNames() {
+    public function getIndexNames()
+    {
         $list = [];
         foreach ($this->indexes as $idx) {
             $list[$idx->getName()] = $idx;
@@ -84,7 +92,8 @@ class TableDef extends \WC\DB\AbstractDef {
         return $list;
     }
 
-    public function getIndexesByType($type) {
+    public function getIndexesByType($type)
+    {
         $list = [];
         foreach ($this->indexes as $idx) {
             if ($idx->getIndexType() === $type) {
@@ -94,7 +103,8 @@ class TableDef extends \WC\DB\AbstractDef {
         return $list;
     }
 
-    public function getNonPrimaryIndexes() {
+    public function getNonPrimaryIndexes()
+    {
         $list = [];
         foreach ($this->indexes as $idx) {
             if ($idx->getIndexType() != 'PRIMARY') {
@@ -104,7 +114,8 @@ class TableDef extends \WC\DB\AbstractDef {
         return $list;
     }
 
-    public function getFieldDataTypes() {
+    public function getFieldDataTypes()
+    {
         $result = [];
         foreach ($this->columns as $coldef) {
             $result[$coldef->getName()] = $coldef->getValue('type');
@@ -117,11 +128,13 @@ class TableDef extends \WC\DB\AbstractDef {
      * @param string $optionName
      * @param type $optionValue
      */
-    public function setOption(string $optionName, $optionValue) {
+    public function setOption(string $optionName, $optionValue)
+    {
         $this->options[$optionName] = $optionValue;
     }
 
-    public function exists($db) {
+    public function exists($db)
+    {
         $sql = <<<EOS
 SELECT * 
 FROM information_schema.tables
@@ -129,11 +142,12 @@ WHERE table_schema = :dbname
     AND table_name = :tname
 LIMIT 1
 EOS;
-        $rows = $db->exec($sql, ['dbname' => $db->name(), 'tname' => $this->name]);
+        $rows = $db->query($sql, ['dbname' => $db->name(), 'tname' => $this->name]);
         return !empty($rows);
     }
 
-    public function readSchema($db, $rec) {
+    public function readSchema(DbQuery $sdef, array $rec)
+    {
         $this->name = $rec['table_name'];
         $options = [];
         $check = ['table_comment' => 'comment',
@@ -151,22 +165,23 @@ EOS;
 
         $this->options = $options;
 
-        $src = $db->name() . '.' . $this->name;
+        $src = $sdef->getSchemaName() . '.' . $this->name;
 
-        $data = $db->exec('SHOW FULL COLUMNS from ' . $src . ' ');
+        $data = $sdef->queryAll('SHOW FULL COLUMNS from ' . $src . ' ');
+
         $this->columns = [];
-        foreach ($data as $i => $row) {
+        foreach ($data as $row) {
             $cdef = new ColumnDef();
             $cdef->setSchema($row);
             $this->columns[$cdef->name] = $cdef;
         }
-        $data = $db->exec('SHOW INDEXES from ' . $src . ' ');
+        $data = $sdef->queryAll('SHOW INDEXES from ' . $src . ' ');
         $this->indexes = [];
 
 
         $keyname = '';
         $idef = null;
-        foreach ($data as $i => $row) {
+        foreach ($data as $row) {
             $ixname = $row['Key_name'];
             if ($ixname !== $keyname) {
                 $idef = new IndexDef();
@@ -179,7 +194,8 @@ EOS;
         }
     }
 
-    public function makeCreate($stage) {
+    public function makeCreate($stage)
+    {
         $outs = 'CREATE TABLE `' . $this->name . '` (' . PHP_EOL;
         $first = true;
         $indent = '    ';
@@ -195,9 +211,10 @@ EOS;
         return $outs;
     }
 
-    public function generate( $script,  $stage) {
+    public function generate($script, $stage)
+    {
         if (array_key_exists('drop-tables', $stage)) {
-            $script->add('DROP TABLE IF EXISTS `' . $this->name . '`' );
+            $script->add('DROP TABLE IF EXISTS `' . $this->name . '`');
             return;
         }
         $outs = '';
@@ -224,6 +241,21 @@ EOS;
 
         if (array_key_exists('alter', $stage)) {
             $auto_inc_col = $this->autoInc();
+            if (array_key_exists('auto_inc', $stage)) {
+                if (!empty($auto_inc_col)) {
+                    $outs = SchemaDef::alterTableSql($this->name);
+                    $outs .= ' MODIFY ' . $auto_inc_col->toSql($stage);
+                    $outs .= ';';
+                    $script->add('-- table ' . $this->name . ' auto_increment column');
+                    $script->add($outs);
+                }
+                if (isset($this->options['auto_increment'])) {
+                    $value = $this->options['auto_increment'];
+                    $outs = SchemaDef::alterTableSql($this->name);
+                    $outs .= ' AUTO_INCREMENT = ' . $value . ';';
+                    $script->add($outs);
+                }
+            }
             if (array_key_exists('indexes', $stage) && !empty($this->indexes)) {
                 $indexes = $this->indexes;
                 ksort($indexes);
@@ -232,26 +264,11 @@ EOS;
                     if ($ix->type === 'PRIMARY' && !empty($auto_inc_col)) {
                         continue;
                     }
-                    $ix->toSql($script, $stage, $this); 
+                    $ix->toSql($script, $stage, $this);
                 }
             }
-            if (array_key_exists('auto_inc', $stage)) {
-                /*  if (!empty($auto_inc_col)) {
-                   $outs = SchemaDef::alterTableSql($this->name);
-                    $outs .= ' MODIFY ' . $auto_inc_col->toSql($stage);
-                    $outs .= ';';
-                    $script->add('-- table ' . $this->name . ' auto_increment column');
-                    $script->add($outs);
-                    
-                } */
-                if (isset($this->options['auto_increment'])) {
-                    $value = $this->options['auto_increment'];
-                    $outs = SchemaDef::alterTableSql($this->name);
-                    $outs .= ' AUTO_INCREMENT = ' . $value . ';';
-                    $script->add($outs);
-                }
-                /* else look for next value */
-            }
+
+            /* else look for next value */
         }
     }
 
@@ -261,20 +278,18 @@ EOS;
      * @param type $fileName
      * @return int
      */
-    public function exportDataToCSV($db, $fileName) {
+    public function exportDataToCSV(DbQuery $qry, $fileName)
+    {
 
-        $pdo = $db->pdo();
-        $statement = $pdo->query('SELECT * from `' . $this->name . '`');
-
-        $statement->setFetchMode(\PDO::FETCH_ASSOC);
+        $rset = $qry->cursor('SELECT * from  ' . $this->name);
         $result = 0;
-
-
-        $fileHandler = fopen($fileName, 'w');
         $columns = $this->columns;
-
-        while ($row = $statement->fetch()) {
+        $fileHandler = null;
+        while ($row = $rset->fetch()) {
             $data = [];
+            if ($result === 0) {
+                $fileHandler = fopen($fileName, 'w');
+            }
             $result += 1;
             foreach ($row as $key => $value) {
                 $cdef = $columns[$key];
@@ -290,11 +305,15 @@ EOS;
             }
             fputcsv($fileHandler, $data);
         }
-        fclose($fileHandler);
+        if (!is_null($fileHandler)) {
+            fclose($fileHandler);
+        }
         return $result;
     }
 
-    public function importDataFromCSV($db, string $fileName) {
+    public
+            function importDataFromCSV($db, string $fileName)
+    {
         if (!file_exists($fileName)) {
             return; // nothing to do
         }

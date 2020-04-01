@@ -1,6 +1,6 @@
 <?php
 
-namespace WC\DB;
+namespace WC\Db;
 
 class BatchInsert {
 

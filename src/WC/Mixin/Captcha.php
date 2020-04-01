@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace Pcan\Mixin;
+namespace WC\Mixin;
 use WC\UserSession;
 use WC\App;
 use WC\Valid;
