@@ -23,7 +23,7 @@ class Assets  {
     private $assetProd;
     private $blobs;
     private $web;
-    private $f3;
+    private $app;
     private $config;
     private $minify;
     private $minify_name;
@@ -131,14 +131,14 @@ class Assets  {
     }
     
     /** asset minify cache as relative path to web root */
-    public function getCache() {
-        return  '/' . $this->f3->theme . '/cache';
+    public function getAssetCache() {
+        return '/' . $this->app->theme . '/cache';
     }
     public function clearCache() {
-         \WC\Dos::rm_all( @\glob($this->web . $this->getCache() . '/*') );
+         \WC\Dos::rm_all( @\glob($this->web . $this->getAssetCache() . '/*') );
     }
     public function CssMinify() {
-        $result = $this->getCache() . '/' . $this->minify_name . "_min.css";
+        $result = $this->getAssetCache() . '/' . $this->minify_name . "_min.css";
         $target = $this->web . $result;
         if (file_exists($target)) {
             if (is_file($target) && (time() - filemtime($target) < static::MAX_AGE)) {
@@ -153,7 +153,7 @@ class Assets  {
                 $assets = $cfg->$name;
                 if (!empty($assets['css'])) {
                     foreach ($assets['css'] as $hpath) {
-                        $path = $webroot . $this->unhive($hpath);
+                        $path = $this->web . $this->unhive($hpath);
                         if (is_null($mini)) {
                             $mini = new Minify\CSS($path);
                         } else {
@@ -238,7 +238,7 @@ class Assets  {
     }
 
     public function JsMinify() {
-        $result = $this->getCache() . DIRECTORY_SEPARATOR . $this->minify_name . "_min.js";
+        $result = $this->getAssetCache() . DIRECTORY_SEPARATOR . $this->minify_name . "_min.js";
         $target = $this->web . $result;
         if (file_exists($target)) {
             if (is_file($target) && (time() - filemtime($target) < static::MAX_AGE)) {

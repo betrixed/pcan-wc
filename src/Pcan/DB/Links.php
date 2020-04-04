@@ -2,13 +2,15 @@
 
 namespace Pcan\DB;
 
+
 /**
  * Description of Links
  *
  * @author Michael Rynn
  */
 use WC\UserSession;
-use WC\DB\Server;
+use WC\Db\Server;
+use WC\Db\DbQuery;
 
 class Links extends \DB\SQL\Mapper {
 
@@ -67,14 +69,16 @@ class Links extends \DB\SQL\Mapper {
 
     static public function deleteId($id) {
         $db = Server::db();
-        $db->exec('delete from links where id = ?', [$id]);
+        $db->execute('delete from links where id = ?', [$id]);
     }
 
-    static public function homeLinks() {
-        $params = [];
-        $db = Server::db();
-        // links to recent blog articles
-        // recent remote links below front page article
+    /**
+     * 
+       Recent remote links below front page article
+     * @return array ; record set;
+     */
+    static public function homeLinks() : array {
+        // 
         $sql = <<<EOD
 select id, url, title, sitename, summary, urltype, date_created 
   from links
@@ -83,18 +87,18 @@ select id, url, title, sitename, summary, urltype, date_created
   order by date_created desc
  limit  20
 EOD;
-        $rows = $db->exec($sql);
-        $params['ct'] = count($rows);
-        $params['rows'] = $rows;
-        //$params['isMobile'] = $this->isMobile();
+        $qry = new DbQuery();
+        $params['rows'] = $qry->arraySet($sql);
+        $params['ct'] = count($params['rows']);
+
         return $params;
     }
-
-    static public function byType($linkType) {
-        $params = [];
-        $db = Server::db();
-        // links to recent blog articles
-        // recent remote links below front page article
+    /**
+     * 
+       Recent blog links below front page article
+     * @return array ; record set;
+     */
+    static public function byType($linkType) : array {
         $sql = <<<EOD
 select id, url, title, sitename, summary, urltype, date_created 
   from links
@@ -103,10 +107,11 @@ select id, url, title, sitename, summary, urltype, date_created
   order by date_created desc
  limit  20
 EOD;
-        $rows = $db->exec($sql, [':utype' => $linkType]);
+        $qry = new DbQuery();
+        $rows = $qry->arraySet($sql, [':utype' => $linkType]);
         $params['ct'] = count($rows);
         $params['rows'] = $rows;
-        //$params['isMobile'] = $this->isMobile();
+
         return $params;
     }
 
@@ -207,7 +212,7 @@ EOD;
 
     static function setBlogURL($blogid, $slug) {
         try {
-            $link = (new Links())->load(['refid = :rid', ':rid' => $blogid]);
+            $link = Rec::findFirst(['refid = :rid', ':rid' => $blogid]);
         } catch (\PDOException $e) {
             $err = $e->errorInfo;
             UserSession::flash('No link record yet: ' . $err[0] . ' ' . $err[1]);
@@ -235,7 +240,7 @@ EOD;
     static public function setEnableId($id, $op) {
         $db = Server::db();
 
-        $db->exec("update links set enabled = ? where id = ?", [$op, $id]);
+        $db->execute("update links set enabled = ? where id = ?", [$op, $id]);
     }
 
 }

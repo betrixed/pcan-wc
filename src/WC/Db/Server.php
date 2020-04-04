@@ -1,14 +1,17 @@
 <?php
 
 namespace WC\Db;
+
+use WC\App;
 Use Phalcon\Db;
 use Phalcon\Db\Adapter\PdoFactory;
-use WC\App;
+use Phalcon\Db\Adapter\AdapterInterface;
 
 /**
  * @author Michael Rynn
  */
-class Server {
+class Server
+{
 
     static public $srv;
     static public $defaultName = "database";
@@ -18,7 +21,8 @@ class Server {
     /**
      * Construct connection string and return db object
      */
-    static function connection($cfg) {
+    static function connection($cfg): AdapterInterface
+    {
         $factory = new PdoFactory();
         $adapter = $cfg['adapter'];
         unset($cfg['adapter']);
@@ -30,17 +34,20 @@ class Server {
      * @param type $name
      * @return type
      */
-    static function dbconfig($name) {
+    static function dbconfig($name): AdapterInterface
+    {
         $cfg = App::instance()->get_secrets();
         return static::connection($cfg[$name]);
     }
 
-    static function setDefault(SQL $db) {
+    static function setDefault(SQL $db)
+    {
         static::$srv[static::$defaultName] = $db;
     }
-    
+
     /** return database by name */
-    static function db($name = null) {
+    static function db($name = null): AdapterInterface
+    {
         if (empty($name)) {
             $name = static::$defaultName;
         }

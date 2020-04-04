@@ -13,7 +13,7 @@ use \WC\Mixin\ViewPhalcon;
     
 
     public function indexAction () {
-        Assets::instance()->add('bootstrap');
+        Assets::instance()->add(['bootstrap','sbo']);
         $view = $this->getView();
         echo $this->render('index','index');
     }
