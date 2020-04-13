@@ -55,6 +55,17 @@ trait ViewPhalcon {
         if (!isset($m->theme)) {
             $m->theme = App::instance()->theme;
         }
+        
+        if (UserSession::hasInstance()){
+            $us = UserSession::read();
+        }
+        else {
+            UserSession::nullify();
+        }
+        $flash = !empty($us) ? $us->getFlash() : [];
+        
+        UserSession::save();
+        $view->setVars(['sessUser'=>$us, 'flash' => $flash]);
         $view->start();
         $view->render($controller, $action, $params);
         $view->finish();
@@ -76,4 +87,5 @@ trait ViewPhalcon {
                 View::LEVEL_MAIN_LAYOUT => true,
             ]);
     }
+
 }

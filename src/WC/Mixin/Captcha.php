@@ -10,6 +10,7 @@ namespace WC\Mixin;
 use WC\UserSession;
 use WC\App;
 use WC\Valid;
+use Phalcon\Http\Response;
 /**
  * Captcha validation of forms for Controller
  *
@@ -57,8 +58,10 @@ trait Captcha {
      * Make a Guest Session if no current session.
      */
     public function xcheckView($model) {
+        
         $us = UserSession::read();
-        if (is_null($us)) {
+        // Its never null after a read!
+        if (is_null($us) || empty($us->userName)) {
             $us = UserSession::guestSession();
         }
         $model->us = $us;
@@ -92,11 +95,24 @@ trait Captcha {
         return false;
     }
     
-    public function secure_connect($url) {
-        $view = $this->view;
-        $view->m->url = $url;
-        return $this->render('secure','https');
+    public function need_ssl() : bool {
+        return !$this->request->isSecure();
     }
+    public function secure_connect() {
+        $url = $this->https_url();
+        if (App::instance()->hasValidSSL) {
+            $response = new Response();
+            $response->redirect($url,true, 301);
+            return false;
+        }
+        else {
+            $v = $this->view;
+            $v->m->url = $url;
+            $v->setTemplateAfter('redirect');
+            return $this->render('secure','https');
+        }
+    }
+    
     public function https_url() {
         $server = $_SERVER;
         $ssl_host = App::instance()->get('ssl_host',null);
