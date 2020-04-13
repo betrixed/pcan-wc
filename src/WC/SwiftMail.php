@@ -4,43 +4,24 @@ namespace WC;
     
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-use Base;
-
+use WC\App;
 /**
  * Pcan\Mail\Mail
- * Sends e-mails based on pre-defined templates
+ * Sends e-mails based on templates
  */
 class SwiftMail 
 {
-    protected $transport;
-    protected $f3;
     
     /**
-     * Constructor needs at least first argument
-     * @param  $f3 Fatfree base instance
-     * @param type $transport
-     */
-    public function __construct($f3, $transport = null) {
-        $this->f3 = $f3;
-        $this->transport = $transport;
-    }
-    // return [ $email => $name ] from [ 'email'=> 'x', 'name' => 'x' ]
-    static public function EmailName(&$ref) {
-        return [ $ref['email'] => $ref['name']];
-    }
-    /**
-     * Sends e-mails via AmazonSES based on predefined templates
-     *
      * @param array $msg
      * 
      * @return array['success' => boolean, 'errors' => *]
      */
-    public function send( &$msg )
+    public function send( array $msg ) : array
     {
         // Settings
-        $dir = $this->f3->get('php');
-        $cfg = &$this->f3->ref("secrets");
+        
+        $cfg = App::instance()->get_secrets();
         $mailSettings = &$cfg['mail'];
         
         $from = isset($msg['from']) ? $msg['from'] :  $mailSettings['from'];

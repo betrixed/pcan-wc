@@ -9,7 +9,8 @@ namespace WC;
 
 use Phalcon\Session\Manager;
 use Phalcon\Session\Adapter\Stream;
-
+use Phalcon\Http\Response;
+use WC\App;
 
 class UserSession {
     
@@ -266,17 +267,17 @@ class UserSession {
             $us->destroy();
         }
     }
-    static public function getURL($f3) {
-        $server = &$f3->ref('SERVER');
+    static public function getURL() {
+        $server = $_SERVER;
         $scheme = $server['REQUEST_SCHEME'];
         $host = $server['HTTP_HOST'];
         return $scheme . '://' . $host . $server['REQUEST_URI'];
     }
 
-    static public function https($f3) {
-        $server = &$f3->ref('SERVER');
+    static public function https() {
+        $server = $_SERVER;
         if ($server['REQUEST_SCHEME'] !== 'https') {
-            $ssl_host = $f3->get('ssl_host');
+            $ssl_host = App::instance()->get('ssl_host',null);
             $host = $server['HTTP_HOST'];
             // This is because a ssl certificate required a www.NAME
             if (!empty($ssl_host)) {
@@ -306,7 +307,8 @@ class UserSession {
 
     static public function reroute($url) {
         static::save();
-        \Base::instance()->reroute($url);
+        $response = new Response();
+        $response->redirect($url, true);
     }
 
     static public function save() {
@@ -317,11 +319,8 @@ class UserSession {
     }
 
     static public function isLoggedIn($role) {
-        if (!\Registry::exists(__CLASS__)) {
-            return false;
-        }
-        $us = static::instance();
-        return (!empty($us) && $us->hasRole($role)) ? true : false;
+        $us = static::$instance;
+        return (isset($us) && $us->hasRole($role)) ? true : false;
     }
 
 }

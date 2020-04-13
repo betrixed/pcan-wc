@@ -1,7 +1,7 @@
 <?php
 
 namespace WC;
-use Pcan\Models\MenuTree;
+use App\Link\MenuTree;
 
 class HtmlGem {
     static private function ensureIdValue(&$pset, $value = null) {
@@ -201,7 +201,10 @@ EOD;
     
     static function xcheck($node)
     {
-        return static::getTag($node, ['name' => 'xcheck', 'type' => 'hidden']);
+        if (!isset($node['name'])) {
+            $node['name'] = 'xcheck';
+        }
+        return static::getTag($node, ['type' => 'hidden']);
     }
     
     static function inputType(array $pset, $type = '') {

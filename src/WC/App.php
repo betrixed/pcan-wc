@@ -25,7 +25,7 @@ class App extends WConfig
     protected $secrets;
     public function get_secrets() {
         if (!isset($this->secrets)) {
-            $this->secrets = WConfig::fromXml($this->APP . "/.secrets.xml");
+            $this->secrets = WConfig::serialCache($this->SITE_DIR . "/.secrets.xml");
         }
         return $this->secrets;
     }

@@ -8,7 +8,9 @@
 
 namespace WC\Mixin;
 use WC\UserSession;
-
+use WC\App;
+use Phalcon\Mvc\View\Simple;
+use Phalcon\Mvc\View;
 /**
  * Same functions, including constructor, as WC\Controller
  *
@@ -49,9 +51,29 @@ trait ViewPhalcon {
     public function render($controller, $action, array $params = []) : string 
     {
         $view = $this->view;
+        $m = $view->m;
+        if (!isset($m->theme)) {
+            $m->theme = App::instance()->theme;
+        }
         $view->start();
         $view->render($controller, $action, $params);
         $view->finish();
         return $view->getContent();
+    }
+    
+    static function  simpleView($path, $params) {
+        $view = new Simple();
+        // ViewDir must be string!
+        $view->setViewsDir(App::instance()->plates->UI[0]);
+        return $view->render($path,$params);
+    }
+    public function noLayouts() {
+        $view = $this->view;
+        $view->disableLevel(
+            [
+                View::LEVEL_LAYOUT      => true,
+                View::LEVEL_AFTER_TEMPLATE => true,
+                View::LEVEL_MAIN_LAYOUT => true,
+            ]);
     }
 }

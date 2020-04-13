@@ -11,6 +11,9 @@ class WConfig extends \stdClass implements \ArrayAccess {
         return isset($this->$name);
     }
     
+    function get($key, $default = null) {
+        return isset($this->$key) ? $this->$key : $default;
+    }
     static function updateValue(&$value, $map) {
         $matches = null;
         if (preg_match('/\${(\w+)}/', $value, $matches)) {
@@ -43,6 +46,11 @@ class WConfig extends \stdClass implements \ArrayAccess {
         $cfg = new WConfig();
         return $cfg->addArray($a);
     }
+
+    static public function fromToml( $filename )
+    {
+        return \Toml\Input::parseFile($filename);
+    }
     static public function fromXml( $filename)
     {
         $xml = new XmlPhp();
@@ -73,5 +81,48 @@ class WConfig extends \stdClass implements \ArrayAccess {
     
     public function offsetUnset($offset) {
         $this->$offset = null;
+    }
+    /**
+     * Could return array, or some configuration object
+     * @param type $filename
+     * @return type
+     * @throws \Exception
+     */
+    static function serialCache($filename) {
+        $pinfo = pathinfo($filename);
+        if (!file_exists($filename)) {
+            throw new \Exception("File " . $filename . " not found");
+        }
+        $cache_name = $pinfo['filename'];
+        if (substr($cache_name,0,1) !== '.') {
+            $cache_name = '.' . $cache_name;
+        }
+        $cache_file = $pinfo['dirname'] . '/' . $cache_name
+                 . '_' . $pinfo['extension'] . '.ser';
+        
+        if (file_exists($cache_file)) {
+            if (filemtime($cache_file) > filemtime($filename)) {
+                return unserialize(file_get_contents($cache_file));
+            }
+        }
+        $data = null;
+        switch($pinfo['extension']) {
+            case 'xml' : 
+                $data = static::fromXml($filename);
+                break;
+            case 'php' :
+                $data = static::fromPhp($filename);
+                break;
+            /* case 'toml' :
+                $data = static::fromToml($filename);
+                break; */
+        }
+        if (!empty($data)) {
+            file_put_contents($cache_file, serialize($data));
+            return $data;
+        }
+        else {
+            throw new \Exception("Read error from " . $filename);
+        }     
     }
 }

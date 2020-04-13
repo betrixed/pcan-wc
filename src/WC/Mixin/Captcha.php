@@ -57,14 +57,19 @@ trait Captcha {
      * Make a Guest Session if no current session.
      */
     public function xcheckView($model) {
-        $f3 = $this->f3;
         $us = UserSession::read();
         if (is_null($us)) {
             $us = UserSession::guestSession();
         }
         $model->us = $us;
-        $model->xcheck = UserSession::session()->csrf();
-        $us->setKey("signup-xcheck", $model->xcheck);
+        $security = $this->security;
+        $value =  $security->getToken();
+        $key = $security->getTokenKey();
+        
+        $xcheck = ['key' => $key, 
+            'value' => $value];  
+        $model->xcheck = $xcheck;
+        $us->setKey("xcheck", $xcheck);
     }
     /** 
      * Check result of form submission for cross scripting
@@ -72,17 +77,37 @@ trait Captcha {
      * @param type $post Reference to Fat Free Post array
      * @return boolean
      */
-    public function xcheckResult(&$post) {
+    public function xcheckResult() : bool{
         $us = UserSession::read();
         if (is_null($us)) {
             return false;
         }
-        $xcheck = $us->getKey("signup-xcheck");
-        if (!empty($xcheck)) {
-            return ($xcheck === $post['xcheck']);
+        $xcheck = $us->getKey("xcheck");
+        if (!empty($xcheck) && isset($xcheck['key']) && isset($xcheck['value'])) {
+            $key = $xcheck['key'];
+            if (isset($_POST[$key])) {
+                return ($_POST[$key] === $xcheck['value']) ? true : false;
+            }
         }
-        else {
-            return false;
+        return false;
+    }
+    
+    public function secure_connect($url) {
+        $view = $this->view;
+        $view->m->url = $url;
+        return $this->render('secure','https');
+    }
+    public function https_url() {
+        $server = $_SERVER;
+        $ssl_host = App::instance()->get('ssl_host',null);
+        $host = $server['HTTP_HOST'];
+            // This is because a ssl certificate required a www.NAME
+        if (!empty($ssl_host)) {
+            $ssl_host = $ssl_host . '.';
+            if (strpos($host, $ssl_host) !== 0) {
+                $host = $ssl_host . $host;
+            }
         }
+        return 'https://' . $host . $server['REQUEST_URI'];
     }
 }
