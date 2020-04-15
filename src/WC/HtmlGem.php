@@ -160,18 +160,23 @@ class HtmlGem {
     }
     static function invisiCaptcha($pset) {
         $site = $pset['site'];
+        $formid = $pset['formid'];
+        $ajaxfn = $pset['ajax'];
         $out = <<<EOD
-   <input type="hidden" id="captcha-response" name="captcha-response" >
+<input type="hidden" id="gctoken" name="gctoken" >
+<div id="showid" style="display:none;">Captcha done</div>
+<div class="g-recaptcha" data-sitekey="$site" data-size="invisible" 
+        data-callback="formSubmit">
+</div>
+                
    <script>
-        function startCaptcha() {
-           
+        function formSubmit(token) {
+            $("#showid").show();
+            document.getElementById("gctoken").value = token;
+            $ajaxfn;
         }
-        function storeToken(token){
-            document.getElementById('captcha-response').value = token; 
-        }
-    </script>
-   <div class="g-recaptcha" data-sitekey="$site" data-callback="storeToken" data-size="invisible" data-badge="inline"></div>
-   <script src="https://google.com/recaptcha/api.js?onload=startCaptcha" async defer></script>
+   </script>
+   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 EOD;
         return $out;
     }
@@ -188,7 +193,8 @@ EOD;
         $out = <<<EOD
     <script>
         function cformSubmit(token) {
-            document.getElementById("$id").submit();
+            document.getElementById("$id").value = token;
+            $("#formid").submit();
         }
     </script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>

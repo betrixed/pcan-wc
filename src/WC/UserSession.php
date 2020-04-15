@@ -7,8 +7,7 @@ namespace WC;
  *
  * @author michael
  */
-use Phalcon\Session\Manager;
-use Phalcon\Session\Adapter\Stream;
+
 use Phalcon\Http\Response;
 use WC\App;
 
@@ -67,14 +66,13 @@ class UserSession
     static public function session()
     {
         if (empty(static::$session)) {
-            $tmp = App::instance()->TEMP;
-            static::$session = new Manager();
-            static::$session->setAdapter(new Stream(['savePath' => $tmp]));
-            static::$session->start();
+            $app = App::instance();
+            static::$session = $app->services->get('session');
         }
         return static::$session;
     }
 
+    
     public function hasRole($role)
     {
         if (!is_array($this->roles)) {
@@ -141,7 +139,7 @@ class UserSession
     {
         if ($this->doWrite) {
             $this->doWrite = false;
-            self::session()->userdata = $this;
+            self::session()->userData = $this;
         }
     }
 
@@ -188,11 +186,11 @@ class UserSession
         if (empty(static::$session)) {
             return;
         }
-        static::$session->remove('userdata');
+        static::$session->remove('userData');
         $adapter = static::$session->getAdapter();
         $adapter->gc(24 * 60 * 60);
         static::$session->destroy();
-        static::$session = null;
+        
     }
 
     public function addFlash($text, $status = 'info')

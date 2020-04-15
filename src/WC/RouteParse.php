@@ -34,13 +34,14 @@ class RouteParse
         //$prefix = 'admin';
         $reg1 = 'GET|POST|PUT|DELETE';
         $do1 = '/((?:' . $reg1 . ')(?:,(?:' . $reg1 . '))*)\s+/';
+        $path_reg = '[_\\-\\.\\w\\d]*';
+        $reg2 = ':?[\\w\\d]' . $path_reg . '|{\\w' . $path_reg . '}|\\s+\\[ajax\\]$';
 
-        $reg2 = ':?[\\w\\d][_\\-\\.\\w\\d]*|{\\w[_\\-\\.\\w\\d]*}|\\s+\\[ajax\\]$';
-        $ureg2 = '\\?|\\/\\w[\\-\\.\\w]*';
-        $reg3 = '[a-z][_a-z0-9]*|{[a-z][_a-z0-9]*}';
+        $obj_reg = '[a-z][_a-z0-9]*';
+        $reg3 = $obj_reg . '|{' . $obj_reg . '}';
        
         $do2 = '/\\/?(' . $reg2 . ')/mi';
-        $udo2 = '/(' . $ureg2 . ')/i';
+
         $do3 = '/(' . $reg3 . ')->(' . $reg3 . ')/i';
         $uchew = $handledUri;
  

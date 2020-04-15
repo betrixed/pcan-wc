@@ -39,10 +39,11 @@ trait Captcha {
     public function captchaResult(&$post) {
         $google = $this->captchaSettings();
         if ($google['enabled']) {
-            return Valid::recaptcha($google['secret'], $post['g-recaptcha-response']);
+            $ip = $this->request->getClientAddress();
+            return Valid::recaptcha($google['secret'], $post['g-recaptcha-response'],$ip);
         }
         else { // return everything OK
-            return ['success' => true, 'errorcode' => 0];
+            return ['success' => true, 'error-codes' => 0];
         }
     }
 

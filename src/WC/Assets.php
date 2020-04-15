@@ -16,6 +16,7 @@ class Assets  {
         }
         return self::$instance;
     }
+    private $render_lock;
     private $mark;
     private $order;
     private $loggedIn;
@@ -52,6 +53,7 @@ class Assets  {
 
     public function __construct() {
         $app = App::instance();
+        $this->render_lock = false;
         $this->app = $app;
         $cfg = WConfig::fromXml($app->APP . "/assets.xml");
         $this->config = $cfg;
@@ -68,9 +70,9 @@ class Assets  {
             // confirm existance key, and check for requires
             $cfg = $this->config;
             if (!isset($cfg->$item)) {
-                return;
+                throw new \Exception("Asset key $item not in configuration");
                 //TODO: Log
-                //throw new \Exception("Asset key $item not in configuration");
+                //
             }
             $asset = $cfg->$item;
             if (isset($asset['requires'])) {
@@ -82,6 +84,9 @@ class Assets  {
     }
 
     public function add($list) {
+        if ($this->render_lock) {
+            throw new \Exception('Assets are locked with view rendering');
+        }
         if (is_array($list)) {
             foreach ($list as $value) {
                 $this->markAdd($value);
@@ -92,6 +97,7 @@ class Assets  {
     }
 
     public function Link() {
+        $this->render_lock = true;
         $outs = '';
         if (!empty($this->order)) {
             foreach ($this->order as $name) {
@@ -109,6 +115,7 @@ class Assets  {
      * @return string
      */
     protected function LinkPut($name) {
+        $this->render_lock = true;
         $cfg = $this->config;
         $outs = "";
         if (isset($cfg->$name)) {
@@ -138,6 +145,7 @@ class Assets  {
          \WC\Dos::rm_all( @\glob($this->web . $this->getAssetCache() . '/*') );
     }
     public function CssMinify() {
+        $this->render_lock = true;
         $result = $this->getAssetCache() . '/' . $this->minify_name . "_min.css";
         $target = $this->web . $result;
         if (file_exists($target)) {
@@ -170,6 +178,7 @@ class Assets  {
     }
 
     public function CssHeader() {
+        $this->render_lock = true;
         if ($this->minify) {
             return $this->CssMinify();
         }
@@ -185,6 +194,7 @@ class Assets  {
     }
 
     protected function CssPut($name) {
+        $this->render_lock = true;
         $cfg = $this->config;
         $outs = "";
         if (isset($cfg->$name)) {
@@ -220,6 +230,7 @@ class Assets  {
         return "<script charset=\"UTF-8\" type=\"text/javascript\" src=\"" . $path . "\"></script>" . PHP_EOL;
     }
     protected function JsPut($name) {
+        $this->render_lock = true;
         $cfg = $this->config;
         $outs = "";
         if (isset($cfg->$name)) {
@@ -238,6 +249,7 @@ class Assets  {
     }
 
     public function JsMinify() {
+        $this->render_lock = true;
         $result = $this->getAssetCache() . DIRECTORY_SEPARATOR . $this->minify_name . "_min.js";
         $target = $this->web . $result;
         if (file_exists($target)) {
@@ -270,6 +282,7 @@ class Assets  {
         }
     }
     public function JsFooter() {
+        $this->render_lock = true;
          if ($this->minify) {
             return $this->JsMinify();
         }
@@ -288,6 +301,7 @@ class Assets  {
      * else, in order of template execution
      */
     protected function InlineJS() {
+        $this->render_lock = true;
         if (empty($this->blobs))
             return '';
         $outs = '';

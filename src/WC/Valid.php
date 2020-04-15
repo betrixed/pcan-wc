@@ -33,26 +33,27 @@ class Valid {
      * @return type array['success', 'error-codes']
      */
     static public function recaptcha($secret, $response, $remoteip = null) {
-        $f3=\Base::instance();
-
-        $arg['secret'] =  $secret;
-        $arg['response'] = $response;
+        $args['secret'] =  $secret;
+        $args['response'] = $response;
         
-        if (isset($remoteip)) {
-            $arg['remoteip'] = $remoteip;
+        if (!is_null($remoteip)) {
+            $args['remoteip'] = $remoteip;
         }
         
-        $options = array(
-            'method' => 'POST',
-            'content' => http_build_query($arg),
-        );
+        $url = 'https://www.google.com/recaptcha/api/siteverify' . '?'
+                . http_build_query($args);
         
-        $result = \Web::instance()->request('https://www.google.com/recaptcha/api/siteverify', $options);
+        $result = json_decode(file_get_contents($url), true);
         
-        $gresponse=json_decode($result['body'], true);
-        
-        $apiresponse['success']=$gresponse['success'];
-        $apiresponse['errorcode']=$gresponse['error-codes'];
+        $apiresponse['success']=$result['success'];
+        if (!$result['success'])  {
+            if (isset($result['error-codes'])) {
+                $apiresponse['error-codes']=$result['error-codes'];
+            }
+        }
+        else {
+            $apiresponse['error-codes']=0;
+        }
         return $apiresponse;
     }
     static function startsWith($str, $pre)
