@@ -10,6 +10,7 @@ namespace WC;
 
 use Phalcon\Http\Response;
 use WC\App;
+use App\Link\UserRoles;
 
 class UserSession
 {
@@ -120,11 +121,12 @@ class UserSession
      */
     public function setUser($user)
     {
-        $this->id = $user->get('id');
-        $this->status = $user->get('status');
-        $this->email = $user->get('email');
-        $this->userName = $user->get('name');
-        $this->roles = $user->getRoleList();
+        $this->id = $user->id;
+        $this->status = $user->status;
+        $this->email = $user->email;
+        $this->userName = $user->name;
+        $this->roles = UserRoles::getRoleList($user->id);
+        
         $this->delayWrite();
     }
 
