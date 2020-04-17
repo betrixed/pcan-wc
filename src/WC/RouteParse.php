@@ -27,7 +27,10 @@ class RouteParse
         
         $handledUri = $_SERVER['REQUEST_URI'];
         $handledMethod = $_SERVER['REQUEST_METHOD'];
-
+        $querystr = $_SERVER['QUERY_STRING'];
+        if (!empty($querystr)) {
+            $handledUri = substr($handledUri, 0, -1-strlen($querystr));
+        }
         App::instance()->handledUri = $handledUri;
 
 
