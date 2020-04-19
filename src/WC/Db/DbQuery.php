@@ -35,6 +35,9 @@ class DbQuery  {
     {
         return $this->db->fetchAll($sql, Db\Enum::FETCH_ASSOC, $params);
     }
-    
+    public function objectSet(string $sql, array $params = null) : array
+    {
+        return $this->db->fetchAll($sql, Db\Enum::FETCH_OBJ, $params);
+    }
     
 }

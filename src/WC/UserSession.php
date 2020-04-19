@@ -312,12 +312,14 @@ class UserSession
         }
     }
 
+    static public function urlPrefix() : string {
+        return  $_SERVER['REQUEST_SCHEME'] 
+                . '://' . $_SERVER['HTTP_HOST'];
+    }
     static public function getURL()
     {
-        $server = $_SERVER;
-        $scheme = $server['REQUEST_SCHEME'];
-        $host = $server['HTTP_HOST'];
-        return $scheme . '://' . $host . $server['REQUEST_URI'];
+       return  $_SERVER['REQUEST_SCHEME'] . '://' 
+               . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 
     static public function https()
@@ -359,8 +361,13 @@ class UserSession
     static public function reroute($url)
     {
         static::save();
+       
+        if (strpos($url, 'http') !== 0) {
+            $url = static::urlPrefix() . $url;
+        }
         $response = new Response();
         $response->redirect($url, true);
+        return $response;
     }
 
     static public function save()
