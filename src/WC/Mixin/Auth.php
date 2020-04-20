@@ -1,7 +1,7 @@
 <?php
 
 namespace WC\Mixin;
-
+use Phalcon\Mvc\Dispatcher;
 /**
  * Add to controller if login required
  *
@@ -11,30 +11,16 @@ use \WC\UserSession;
 use \WC\App;
 
 trait Auth {
-    /**
-     * 
-     * @return string
-     */
-    function denied() {
-        // Assume a view trait exists
-        echo App::error_page("Page access is not authorized");
-    }
+    
     /**
      * 
      * @return boolean
      */
-    public function auth() {
+    public function beforeExecuteRoute($dispatcher) {
         if (!UserSession::auth($this->getAllowRole())) {
-            $this->denied();
+            UserSession::flash("Access is not authorized", null, "info");
             return false;
         }
         return true;
-    }
-    /**
-     * 
-     * @return boolean
-     */
-    public function beforeRoute() {
-        return $this->auth();
     }
 }

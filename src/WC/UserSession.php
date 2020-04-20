@@ -73,14 +73,23 @@ class UserSession
         return static::$session;
     }
 
-    
-    public function hasRole($role)
+    public function hasAnyRole(array $roles) : bool {
+        if (!is_array($this->roles)) {
+            return false;
+        }
+        foreach($roles as $name) {
+            if (array_search($name, $this->roles) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public function hasRole($role) : bool
     {
         if (!is_array($this->roles)) {
             return false;
         }
-        $key = array_search($role, $this->roles);
-        return ($key !== false);
+        return (array_search($role, $this->roles) !== false);
     }
 
     public function hasUser()
@@ -129,7 +138,17 @@ class UserSession
         
         $this->delayWrite();
     }
-
+    /**get comma separated list for display */
+    public function roles() : string {
+        $outs = '';
+        foreach($this->roles as $name) {
+            if(!empty($outs)) {
+                $outs .= ', ';
+            }
+            $outs .= $name;
+        }
+        return $outs;
+    }
     public function wipe()
     {
         $this->setGuest();
@@ -301,7 +320,7 @@ class UserSession
     /** remove Guest Session */
     static public function nullify()
     {
-        $us = UserSession::$instance;
+        $us = UserSession::read();
         if (!is_null($us) && $us->isGuest()) {
             $us->destroy();
             
@@ -344,7 +363,16 @@ class UserSession
     static public function auth($role)
     {
         $us = static::read();
-        return (!empty($us) && $us->hasRole($role));
+        if (empty($us)) {
+            return false;
+        }
+        if (is_string($role)) {
+            return $us->hasRole($role);
+        }
+        if (is_array($role)) {
+            return $us->hasAnyRole($role);
+        }
+        return false;
     }
 
     static public function sessionName()
@@ -352,9 +380,7 @@ class UserSession
         $us = static::$instance;
         if (isset($us) && !empty($us->userName)) {
             return $us->userName;
-        } else if (isset(static::$session) && !is_null(static::$session)) {
-            return 'ANON';
-        }
+        } 
         return 'NULL';
     }
 
@@ -380,7 +406,7 @@ class UserSession
 
     static public function isLoggedIn($role)
     {
-        $us = static::$instance;
+        $us = static::read();
         return (isset($us) && $us->hasRole($role)) ? true : false;
     }
 

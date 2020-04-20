@@ -18,14 +18,6 @@ use Phalcon\Mvc\View;
  */
 trait ViewPhalcon {
 
-    /**
-     * Override this and use Mixin\Auth
-     * to limit access to UserSession role name.
-     * @return string
-     */
-    public function getAllowRole() {
-        return 'Editor';
-    }
     
     function afterExecuteRoute() {
         // session becomes read only
@@ -59,9 +51,7 @@ trait ViewPhalcon {
         if (UserSession::hasInstance()){
             $us = UserSession::read();
         }
-        else {
-            UserSession::nullify();
-        }
+
         $flash = !empty($us) ? $us->getFlash() : [];
         
         UserSession::save();
