@@ -69,7 +69,7 @@ class Valid {
      * @param type $default
      * @return type integer
      */
-    static public function toInt(&$req,  $ix, $default=0) {
+    static public function toInt($req,  $ix, $default=0) {
         if (!isset($req[$ix])) {
             return $default;
         }
@@ -83,7 +83,7 @@ class Valid {
      * @param type $ix
      * @return bool 
      */
-    static public function hasURL(&$hay, &$msg) {
+    static public function hasURL($hay, &$msg) {
         if (preg_match(self::REG_URL,$hay, $match)) {
             $msg = "URL not allowed here";
             return true;
@@ -106,7 +106,7 @@ class Valid {
         }
         return $s;
     }    
-    static public function hasBitcoin(&$hay, &$msg) {
+    static public function hasBitcoin($hay, &$msg) {
         if ( preg_match(self::REG_BITCOIN, $hay, $match) )
         {
             $msg = "Bitcoin not allowed here";
@@ -114,7 +114,7 @@ class Valid {
         }
         return false;
     }
-    static public function toStr(&$req, $ix, $default='') {
+    static public function toStr($req, $ix, $default='') {
         if (!isset($req[$ix])) {
             return $default;
         }
@@ -131,13 +131,13 @@ class Valid {
      * @param type $default
      * @return boolean
      */
-    static public function toBool(&$req, $ix, $default=0) {
+    static public function toBool($req, $ix, $default=0) {
         if (!isset($req[$ix])) {
             return $default;
         }
         return 1;
     }
-    static public function toMoney(&$req, $ix, $default=false) {
+    static public function toMoney($req, $ix, $default=false) {
         if (!isset($req[$ix])) {
             return $default;
         }
@@ -154,7 +154,7 @@ class Valid {
         return date(self::DATE_TIME_FMT);
     }
     
-    static public function toPhone(&$req, $ix) {
+    static public function toPhone($req, $ix, $default='') {
         $text = static::toStr($req, $ix, null);
         if (!empty($text)) {
             // strip out whitespace and check all are numbers
@@ -163,19 +163,19 @@ class Valid {
                 return $phone;
             }
         }
-        return null;
+        return $default;
     }
-    static public function toEmail(&$req, $ix) {
+    static public function toEmail($req, $ix, $default='') {
         $email = static::toStr($req, $ix, null);
         if (!empty($email)) {
             if (filter_var( $email, FILTER_VALIDATE_EMAIL)) {
                 return $email;
             }
         }
-        return null;
+        return $default;
     }
     
-    static public function toTime(&$req, $ix) {
+    static public function toTime($req, $ix) {
         if (!isset($req[$ix])) {
             return static::timeNow();
         }
@@ -193,7 +193,7 @@ class Valid {
         return date($format, $time);
     }
     
-    static public function toDateTime(&$req, $ix) {
+    static public function toDateTime($req, $ix) {
         if (!isset($req[$ix])) {
             return static::now();
         }

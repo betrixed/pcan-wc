@@ -1,12 +1,19 @@
 <?php
 
 namespace WC;
+
 use App\Link\MenuTree;
 
-class HtmlGem {
-    static private function ensureIdValue(&$pset, $value = null) {
+class HtmlGem
+{
+
+    static private $id_add = 100;
+
+    static private function ensureIdValue(&$pset, $value = null)
+    {
         if (isset($pset['name']) && !isset($pset['id'])):
-            $pset['id'] = $pset['name'];
+            static::$id_add++;
+            $pset['id'] = $pset['name'] . static::$id_add;
             if (!isset($pset['value'])):
                 if (!empty($value)) {
                     $pset['value'] = $value;
@@ -15,7 +22,8 @@ class HtmlGem {
         endif;
     }
 
-    static function generateTag($tag, $pset) {
+    static function generateTag($tag, $pset)
+    {
         $out = '<' . $tag;
         foreach ($pset as $arg => $val):
 
@@ -29,7 +37,8 @@ class HtmlGem {
         return $out;
     }
 
-    static function mergeClass(&$pset, $default) {
+    static function mergeClass(&$pset, $default)
+    {
         /* class is a multi value attribute */
         if (isset($default['class']) && isset($pset['class'])) {
             $tmp = $default['class'] . ' ' . $pset['class'];
@@ -39,7 +48,8 @@ class HtmlGem {
         $pset = array_merge($default, $pset);
     }
 
-    static function getTag(&$pset, $default, $tag = 'input') {
+    static function getTag(&$pset, $default, $tag = 'input')
+    {
         static::mergeClass($pset, $default);
         $out = static::generateTag($tag, $pset);
         return $out;
@@ -51,21 +61,31 @@ class HtmlGem {
      * @param type $lclass
      * @return string
      */
-    static function label_front($id, $lclass='')  {
+    static function label_front($id, $lclass = 'label')
+    {
+        $out = '<label';
+        if (!empty($id)) {
+            $out .= " for=\"$id\"";
+        }
         if (!empty($lclass)) {
-            $class = " class=\"" . $lclass . "\"";
+            $out .= " class=\"$lclass\"";
         }
-        else {
-            $class = '';
-        }
-        return "<label for=\"$id\"  $class>";
+        return $out . '>';
     }
-
-    static function submit($node = []) {
+    
+    static function in_label(string $label, string $content) : string {
+        return '<label class="label"> ' . $label . ' ' . $content . ' </label>';
+    }
+    static function out_label(string $label, $id, string $content) : string {
+        return static::label_front($id) . ' ' . $label . ' </label> ' . $content;
+    }
+    static function submit($node = [])
+    {
         return static::getTag($node, ['type' => 'submit', 'value' => 'Submit']) . PHP_EOL;
     }
 
-    static function checkbox(array $pset) {
+    static function checkbox(array $pset)
+    {
         static::ensureIdValue($pset);
         $id = $pset['id'];
         $out = '';
@@ -74,11 +94,11 @@ class HtmlGem {
             $out .= '<div class="' . $wrapdiv . '">';
             unset($pset['div']);
         }
-        $text = isset($pset['label']) ?  $pset['label'] : '';
+        $text = isset($pset['label']) ? $pset['label'] : '';
         if (!empty($text)) {
             unset($pset['label']);
         } else {
-            $text = isset($pset['text']) ?  $pset['text'] : '';
+            $text = isset($pset['text']) ? $pset['text'] : '';
         }
         if (!empty($text)) {
             unset($pset['text']);
@@ -102,27 +122,30 @@ class HtmlGem {
         }
         return $out;
     }
+
     // display bool in simple span
-    static function check_value($pset) {
+    static function check_value($pset)
+    {
         $out = '';
         if (isset($pset['label'])) {
             $out .= '<label>' . $pset['label'] . '</label>';
         }
         $checked = isset($pset['checked']) ? $pset['checked'] : false;
         if ($checked) {
-            $out  .= "&nbsp;&#x2713;&nbsp;";
-        }
-        else {
-            $out  .= "&nbsp;&#x2205;&nbsp;";
+            $out .= "&nbsp;&#x2713;&nbsp;";
+        } else {
+            $out .= "&nbsp;&#x2205;&nbsp;";
         }
         return $out;
     }
+
     /**
      *  display datetime , optional label and forma
      * @param array $pset
      * @return string
      */
-    static function datetime_value($pset) {
+    static function datetime_value($pset)
+    {
         $out = '';
         if (isset($pset['label'])) {
             $out .= '<label>' . $pset['label'] . '</label>';
@@ -130,35 +153,36 @@ class HtmlGem {
         $value = isset($pset['value']) ? $pset['value'] : false;
         $fmt = isset($pset['format']) ? $pset['format'] : null;
         if ($fmt) {
-             if (!is_numeric($value))
+            if (!is_numeric($value))
                 $time = strtotime($value); // convert string dates to unix timestamps
             $value = date($fmt, $value);
         }
         if ($value) {
-            $out  .= "&nbsp;" . $value . "&nbsp;";
-        }
-        else {
-            $out  .= "&nbsp;&#x2205;&nbsp;";
+            $out .= "&nbsp;" . $value . "&nbsp;";
+        } else {
+            $out .= "&nbsp;&#x2205;&nbsp;";
         }
         return $out;
     }
+
     // display text in simple span
-    static function text_value($pset) {
+    static function text_value($pset)
+    {
         $out = '';
         if (isset($pset['label'])) {
             $out .= '<label class="label">' . $pset['label'] . '</label>';
         }
         $value = isset($pset['value']) ? $pset['value'] : false;
         if ($value) {
-            $out  .= "&nbsp;" . $value . "&nbsp;";
-        }
-        else {
-            $out  .= "&nbsp;&#x2205;&nbsp;";
+            $out .= "&nbsp;" . $value . "&nbsp;";
+        } else {
+            $out .= "&nbsp;&#x2205;&nbsp;";
         }
         return $out;
- 
     }
-    static function invisiCaptcha($pset) {
+
+    static function invisiCaptcha($pset)
+    {
         $site = $pset['site'];
         $formid = $pset['formid'];
         $ajaxfn = $pset['ajax'];
@@ -180,6 +204,7 @@ class HtmlGem {
 EOD;
         return $out;
     }
+
     static function recaptcha($pset)
     {
         $text = $pset['text'];
@@ -204,7 +229,7 @@ EOD;
 EOD;
         return $out;
     }
-    
+
     static function xcheck($node)
     {
         if (!isset($node['name'])) {
@@ -212,87 +237,94 @@ EOD;
         }
         return static::getTag($node, ['type' => 'hidden']);
     }
-    
-    static function inputType(array $pset, $type = '') {
+
+    static function inputType(array $pset, $type = '')
+    {
         static::ensureIdValue($pset);
         $id = $pset['id'];
         $out = '';
         $wrapdiv = isset($pset['div']) ? $pset['div'] : false;
-        
+
         if ($wrapdiv) {
             $out .= '<div class="' . $wrapdiv . '">';
             unset($pset['div']);
         }
-        
-        if (isset($pset['label'])) {
-             $label = '<label for="' . $id . '" class="label" > ' . $pset['label'] . ' ';
-             $label_end = ' </label>';
-             unset($pset['label']);
-        }
-        else {
-            $label = '';
-            $label_end = '';
-        }
 
-        
-        $out .= $label . static::getTag($pset, ['type' => $type]) . $label_end . PHP_EOL;
-        
+        $input = static::getTag($pset, ['type' => $type]);
+        if (isset($pset['in-label'])) {
+            $out .= '<label class="label" > ' . $pset['in-label'] . ' '
+                    . $input . ' </label>';
+        } else if (isset($pset['label'])) {
+            $out .= '<label for="' . $id . '" class="label" > ' . $pset['label'] . ' </label>';
+            $out .= PHP_EOL . $input;
+        }
         if ($wrapdiv) {
-            $out .= '</div>';
+            $out .= PHP_EOL . '</div>';
         }
         return $out;
     }
+
     /**
      * 
      * @param array $pset
      * @return string
      */
-    static function plainText(array $pset) {
+    static function plainText(array $pset)
+    {
         return static::inputType($pset, 'text');
     }
-    
-    static function number(array $pset) {
-        return static::inputType($pset,'number');
+
+    static function number(array $pset)
+    {
+        return static::inputType($pset, 'number');
     }
-    
+
     static function email(array $pset)
     {
-        if (!isset($pset['placeHolder']))
-        {
+        if (!isset($pset['placeHolder'])) {
             $pset['placeHolder'] = 'your@email.domain';
         }
         if (!isset($pset['aria-describedby'])) {
             $pset['aria-describedby'] = 'emailHelp';
         }
-        return static::inputType($pset,'email');
-    }
-    static function hidden($node)
-    {
-        return static::inputType($node,  'hidden');
-    }
-    static function money(array $pset) {
-        return static::inputType($pset,'money');
-    }
-    static function phone(array $pset) {
-        return static::inputType($pset,'tel');
-    }
-    static function password(array $pset)
-    {
-        return static::inputType($pset,'password');
+        return static::inputType($pset, 'email');
     }
 
-    static function price($value) {
-         setlocale(LC_MONETARY, 'en_AU');
-         $v = floatval($value);
-         return money_format('%!10.2n', $v);
+    static function hidden($node)
+    {
+        return static::inputType($node, 'hidden');
     }
-    static function addAttr($name, $pset) {
+
+    static function money(array $pset)
+    {
+        return static::inputType($pset, 'money');
+    }
+
+    static function phone(array $pset)
+    {
+        return static::inputType($pset, 'tel');
+    }
+
+    static function password(array $pset)
+    {
+        return static::inputType($pset, 'password');
+    }
+
+    static function price($value)
+    {
+        setlocale(LC_MONETARY, 'en_AU');
+        $v = floatval($value);
+        return money_format('%!10.2n', $v);
+    }
+
+    static function addAttr($name, $pset)
+    {
         if (isset($pset[$name])) {
             return ' ' . $name . '="' . $pset[$name] . '"';
         } else
             return "";
     }
-    
+
     static function linkTo($pset)
     {
         if (isset($pset['href'])):
@@ -325,15 +357,15 @@ EOD;
         $out .= $text . '</a>';
         return $out;
     }
-    
 
-    static function dropDown(array $pset) {
-       static::ensureIdValue($pset);
+    static function dropDown(array $pset)
+    {
+        static::ensureIdValue($pset);
 
         $out = "<li class=\"nav-item dropdown\">" . PHP_EOL;
         $menuName = isset($pset['root']) ? $pset['root'] : -1;
         $mid = "dd_m" . $menuName;
-        
+
         $out .= "<a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"$mid\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">";
         $title = isset($pset['title']) ? $pset['title'] : null;
         $out .= PHP_EOL . $title . PHP_EOL;
@@ -342,28 +374,25 @@ EOD;
 
         $tree = MenuTree::getMenuSet($menuName);
         $out .= MenuTree::generateSubMenu($pset, $tree);
-        
+
         $out .= PHP_EOL . "</div>" . PHP_EOL;
         $out .= "</li>" . PHP_EOL;
-        return $out;   
+        return $out;
     }
-    static function select($pset) {
-        $out = "";
-        if (isset($pset['label'])) {
-            $out .=  static::label_front($id, 'label') . ' ' . $pset['label']
-                    . ' ';
-            unset($pset['label']);
-            $label_end = '</label>';
-        }
-        else {
-            $label_end = '';
-        }
-       
+
+    static function div_class(string $dclass): string
+    {
+        return '<div class="' . $dclass . '">';
+    }
+
+    static function select_list(array $pset): string
+    {
+        $out = '';
         if (isset($pset['list'])) {
             // value contains a php variable between <?= 
             $val = $pset['list'];
             $curval = isset($pset['value']) ? $pset['value'] : null;
-            $out .= '<div class="select"><select';
+            $out .= '<select';
 
             $out .= self::addAttr('id', $pset);
             $out .= self::addAttr('class', $pset);
@@ -378,10 +407,36 @@ EOD;
                 $selected = ($skey === $curval) ? " selected" : "";
                 $out .= '<option value="' . $skey . '" ' . $selected . '>' . $sval . '</option>' . PHP_EOL;
             endforeach;
-            $out .= '</select></div>' . $label_end . PHP_EOL;
-            return $out;
+            $out .= '</select>' . PHP_EOL;
         }
+        return $out;
     }
+
+    static function select(array $pset): string
+    {
+        
+        static::ensureIdValue($pset);
+        $out = '';
+        if (isset($pset['div'])) {
+            $out .= static::div_class($pset['div']);
+            unset($pset['div']);
+            $enddiv = '</div>';
+        } else {
+            $enddiv = '';
+        }
+        list($method,$label) = static::label_method($pset);
+        $select = static::select_list($pset);
+
+       if ($method === 'out_label') {
+            $out .= static::out_label($label,$pset['id'],$select);
+        }
+        else if ($method === 'in_label') {
+            $out .= static::int_label($label,$select);
+        }
+
+        return $out . PHP_EOL;
+    }
+
     static function datetime($pset)
     {
         static::ensureIdValue($pset);
@@ -404,23 +459,38 @@ EOD;
         $out .= "</div>" . PHP_EOL;
         $out .= "</div>" . PHP_EOL;
         $javaid = $id;
-        if (strpos($javaid,'<?=') === 0) {
-            $javaid = substr($id,3,strlen($id)-5 );
+        if (strpos($javaid, '<?=') === 0) {
+            $javaid = substr($id, 3, strlen($id) - 5);
         }
         return $out;
     }
-    
-     static function multiline($pset)
-     {
-       static::ensureIdValue($pset);
-        $id = $pset['id'];
-        //$out = "<div class='" . static::FORMDIV . "'>" . PHP_EOL;
+
+    static function label_method(array &$pset) : array {
+        $method = [];
         if (isset($pset['label'])) {
-            $out .= static::label_front($id, 'label' ) . ' ' . $pset['label'] . ' ';
-            $label_end = '</label>';
+            $method[0] = 'out_label';
+            $method[1] = $pset['label'];
+            unset($pset['label']);
+            return $method;
         }
-        else {
-            $label_end = '';
+        if (isset($pset['in-label'])) {
+            $method[0] = 'in_label';
+            $method[1] = $pset['in-label'];
+            unset($pset['in-label']);
+            return $method;
+        }
+        return [null,null];
+     }
+    static function multiline($pset)
+    {
+        static::ensureIdValue($pset);
+        $out = '';
+        $id = $pset['id'];
+        if (isset($pset['div'])) {
+            $out .= static::div_class($pset['div']);
+            $enddiv = '</div>';
+        } else {
+            $enddiv = '';
         }
         if (isset($pset['value'])) {
             $value = $pset['value'];
@@ -428,11 +498,19 @@ EOD;
         } else {
             $value = '';
         }
-        //$pset['class'] = 'form-control';
-        $out .= static::generateTag('textarea', $pset) . $value . '</textarea>' . $label_end . PHP_EOL;
-        //$out .= "</div>" . PHP_EOL;
+        list($method,$label) = static::label_method($pset);
+        $input = static::generateTag('textarea', $pset) . $value . '</textarea>';
+        if ($method === 'out_label') {
+            $out .= static::out_label($label,$id,$input);
+        }
+        else if ($method === 'in_label') {
+            $out .= static::int_label($label,$input);
+        }
+        else {
+            $out .= $input;
+        }
+        $out .= $enddiv;
         return $out;
     }
+
 }
-
-

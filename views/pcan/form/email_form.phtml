@@ -46,7 +46,7 @@ $fm = $this->form();
              <?= $fm->multiline([ 'name' => 'body', 'cols' => 80, 'rows' => 5,'value' => $rec['body'] ]) ?>
             </div>
         <hr>
-            <?= $fm->xcheck([ 'value' =>  $m->xcheck ]) ?>
+            <?= Gem::xcheck([ 'name' => $xcheck['key'], 'value' =>  $xcheck['value'] ]) ?>
             <div class="d-flex  justify-content-center"">
                 <?= $fm->submit(['id' => 'submit',  'name' => 'submit', 'value' => 'Send', 'class' => 'btn btn-outline-primary btn-lg' ]) ?>
                 <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
