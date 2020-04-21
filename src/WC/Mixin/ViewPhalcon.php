@@ -47,10 +47,8 @@ trait ViewPhalcon {
         if (!isset($m->theme)) {
             $m->theme = App::instance()->theme;
         }
-        
-        if (UserSession::hasInstance()){
-            $us = UserSession::read();
-        }
+        $us = UserSession::hasInstance() ? UserSession::read() : null;
+
 
         $flash = !empty($us) ? $us->getFlash() : [];
         

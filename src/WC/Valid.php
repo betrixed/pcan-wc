@@ -42,8 +42,8 @@ class Valid {
         
         $url = 'https://www.google.com/recaptcha/api/siteverify' . '?'
                 . http_build_query($args);
-        
-        $result = json_decode(file_get_contents($url), true);
+        $gdata = @file_get_contents($url);
+        $result = json_decode($gdata, true);
         
         $apiresponse['success']=$result['success'];
         if (!$result['success'])  {
