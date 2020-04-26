@@ -1,7 +1,7 @@
 { 
     "name": "betrixed/pcan",
 
-    "description": "Class based examples, simple content management to build on fat-free framework!",
+    "description": "Class based examples, simple content management to build on phalcon 4.0 framework!",
     "homepage": "http://climatebet.me/",
     "license": "GPL-3.0",
     "require": {
@@ -13,8 +13,7 @@
         "psr-4": {
             "Chimp\\": "src/Chimp/",
             "Pcan\\": "src/Pcan/",
-            "WC\\": "src/WC/",
-            "Plates\\":"src/Plates"
+            "WC\\": "src/WC/"
         }
     }
 }
