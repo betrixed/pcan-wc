@@ -258,6 +258,9 @@ EOD;
             $out .= '<label for="' . $id . '" class="label" > ' . $pset['label'] . ' </label>';
             $out .= PHP_EOL . $input;
         }
+        else {
+             $out .= PHP_EOL . $input;
+        }
         if ($wrapdiv) {
             $out .= PHP_EOL . '</div>';
         }
@@ -361,7 +364,7 @@ EOD;
     static function dropDown(array $pset)
     {
         static::ensureIdValue($pset);
-
+        
         $out = "<li class=\"nav-item dropdown\">" . PHP_EOL;
         $menuName = isset($pset['root']) ? $pset['root'] : -1;
         $mid = "dd_m" . $menuName;
@@ -370,7 +373,12 @@ EOD;
         $title = isset($pset['title']) ? $pset['title'] : null;
         $out .= PHP_EOL . $title . PHP_EOL;
         $out .= "</a>" . PHP_EOL;
-        $out .= "<div class=\"dropdown-menu\" aria-labelledby=\"$mid\">" . PHP_EOL;
+        $class = 'dropdown-menu';
+        if (isset($pset['class'])) {
+            $class .= ' ' . $pset['class'];
+            unset($pset['class']);
+        }
+        $out .= "<div class=\"$class\" aria-labelledby=\"$mid\">" . PHP_EOL;
 
         $tree = MenuTree::getMenuSet($menuName);
         $out .= MenuTree::generateSubMenu($pset, $tree);

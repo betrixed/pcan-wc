@@ -172,11 +172,11 @@ class UserSession
 
     /**
      * dump all messages and clear them
-     * @return array
+     * @return ?array
      */
-    public function getFlash()
+    public function getFlash() : ?array
     {
-        $out = $this->keys['flash'];
+        $out = $this->keys['flash'] ?? null;
         if (!empty($out)) {
             $this->clearFlash();
         }

@@ -77,8 +77,9 @@ class RouteParse
 
           }
          */
-
+ 
         $router_arg_set = [];
+                $rix = 0;
         foreach ($input as $label => $ns) {
 
             $rset = [];
@@ -129,6 +130,7 @@ class RouteParse
                 if (empty($result) || (count($r_match) < 2)) {
                     if ($remain === '/') {
                         $pattern = '/';
+                        $last_seg = '/';
                     } else {
                         continue;
                     }
@@ -162,6 +164,7 @@ class RouteParse
                         $name = $seg;
                         $pattern .= '/' . $seg;
                     }
+                    $last_seg = $name;
                     $pix++;
                 }
 
@@ -205,8 +208,9 @@ class RouteParse
                     }
                 }
                 // Create arguments ready to pass to router
-
+                $rix++;
                 $ordered[] = [
+                    'name' => $last_seg . '-' . $rix,
                     'verbs' => $verb,
                     'pattern' => $pattern,
                     'args' => $args,
@@ -223,6 +227,7 @@ class RouteParse
     {
         $router = new Router(false);
         $router->removeExtraSlashes(true);
+
         foreach ($router_arg_set as $label => $rset) {
             $notFound = $rset['not_found'] ?? null;
             if (!empty($notFound)) {
@@ -246,14 +251,15 @@ class RouteParse
                     $route->via($verb);
                 }
                 $reqIsAjax = static::requestIsJax();
-
+                $route->setName($r['name']);
                 $route->beforeMatch(
                         function ($uri, $route) use ($isAjax, $reqIsAjax) {
-                    // Check if the request was made with Ajax
-                    if ($reqIsAjax) {
-                        return $isAjax;
-                    }
-                    return !$isAjax;
+                            $result = ($isAjax === $reqIsAjax);
+                           if ($result) {
+                               App::instance()->route = $route;
+                               return true;
+                           }
+                           return false;
                 });
             }
         }

@@ -7,15 +7,18 @@ use MatthiasMullie\Minify;
 /**
  * Organise typical webpage .css, .js assets
  */
-class Assets  {
+class Assets {
+
     static public $instance;
-    
+
     static function instance() {
         if (!isset(self::$instance)) {
             self::$instance = new Assets();
         }
         return self::$instance;
     }
+
+    private $warn_missing;
     private $render_lock;
     private $mark;
     private $order;
@@ -28,9 +31,10 @@ class Assets  {
     private $config;
     private $minify;
     private $minify_name;
+
     // Minify cache
-    const MAX_AGE = 60*60*24; 
-    
+    const MAX_AGE = 60 * 60 * 24;
+
     static public function registerAssets($assets) {
         $si = static::instance();
         $si->addAssets($assets);
@@ -53,6 +57,7 @@ class Assets  {
 
     public function __construct() {
         $app = App::instance();
+        $this->warn_missing = true;
         $this->render_lock = false;
         $this->app = $app;
         $cfg = WConfig::fromXml($app->APP . "/assets.xml");
@@ -133,17 +138,20 @@ class Assets  {
         //}
         return $outs;
     }
+
     static public function link_css($path) {
         return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . $path . "\">" . PHP_EOL;
     }
-    
+
     /** asset minify cache as relative path to web root */
     public function getAssetCache() {
         return '/' . $this->app->theme . '/cache';
     }
+
     public function clearCache() {
-         \WC\Dos::rm_all( @\glob($this->web . $this->getAssetCache() . '/*') );
+        \WC\Dos::rm_all(@\glob($this->web . $this->getAssetCache() . '/*'));
     }
+
     public function CssMinify() {
         $this->render_lock = true;
         $result = $this->getAssetCache() . '/' . $this->minify_name . "_min.css";
@@ -155,9 +163,9 @@ class Assets  {
         }
         $mini = null;
         $cfg = $this->config;
-        
+
         foreach ($this->order as $name) {
-            if (!empty($cfg->$name)){
+            if (!empty($cfg->$name)) {
                 $assets = $cfg->$name;
                 if (!empty($assets['css'])) {
                     foreach ($assets['css'] as $hpath) {
@@ -193,6 +201,15 @@ class Assets  {
         }
     }
 
+    protected function verify($path) {
+        if (substr($path, 0, 1) === '/') {
+            $webpath = $this->web . $path;
+            if (!file_exists($this->web . $path)) {
+                trigger_error("file $webpath not found");
+            }
+        }
+    }
+
     protected function CssPut($name) {
         $this->render_lock = true;
         $cfg = $this->config;
@@ -202,6 +219,9 @@ class Assets  {
             if (isset($assets['css'])) {
                 foreach ($assets['css'] as $hpath) {
                     $path = $this->unhive($hpath);
+                    if ($this->warn_missing) {
+                        $this->verify($path);
+                    }
                     $outs .= static::link_css($path);
                 }
             }
@@ -219,9 +239,9 @@ class Assets  {
         $app = $this->app;
         $path = preg_replace_callback('|@([a-zA-Z][\w\d]*)|',
                 function($matches) use ($app) {
-                    return  $app[$matches[1]];
-                    }
-                    , $hpath, 1
+            return $app[$matches[1]];
+        }
+                , $hpath, 1
         );
         return $path;
     }
@@ -229,6 +249,7 @@ class Assets  {
     static function script_js($path) {
         return "<script charset=\"UTF-8\" type=\"text/javascript\" src=\"" . $path . "\"></script>" . PHP_EOL;
     }
+
     protected function JsPut($name) {
         $this->render_lock = true;
         $cfg = $this->config;
@@ -238,6 +259,9 @@ class Assets  {
             if (isset($assets['js'])) {
                 foreach ($assets['js'] as $hpath) {
                     $path = $this->unhive($hpath);
+                      if ($this->warn_missing) {
+                        $this->verify($path);
+                    }
                     $outs .= static::script_js($path);
                 }
             }
@@ -257,10 +281,10 @@ class Assets  {
                 return static::script_js($result);
             }
         }
-        
+
         $mini = null;
         $cfg = $this->config;
-        
+
         foreach ($this->order as $name) {
             if (!empty($cfg[$name])) {
                 $assets = $cfg[$name];
@@ -281,9 +305,10 @@ class Assets  {
             return static::script_js($result);
         }
     }
+
     public function JsFooter() {
         $this->render_lock = true;
-         if ($this->minify) {
+        if ($this->minify) {
             return $this->JsMinify();
         }
         $outs = '';

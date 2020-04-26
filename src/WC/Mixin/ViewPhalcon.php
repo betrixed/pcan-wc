@@ -31,7 +31,14 @@ trait ViewPhalcon {
     }
 
     public function initialize() {
-        $this->app->ctrl_time = microtime(true);
+        $app = $this->app;
+        $app->ctrl_time = microtime(true);
+        if (isset($app->route)) {
+            $this->title = $app->route->getName();
+        }
+        else {
+            $this->title = "Error";
+        }
     }
    /**
     * For Application implicit view is false.
@@ -44,6 +51,9 @@ trait ViewPhalcon {
     {
         $view = $this->view;
         $m = $view->m;
+        if (!isset($m->title)) {
+            $m->title = $this->title;
+        }
         if (!isset($m->theme)) {
             $m->theme = App::instance()->theme;
         }
