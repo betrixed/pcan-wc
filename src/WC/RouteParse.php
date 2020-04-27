@@ -22,7 +22,10 @@ use WC\App;
  */
 class RouteParse
 {
-
+    const NO_AJAX = 1;
+    const ONLY_AJAX = 2;
+    const ALLOW_AJAX=3;
+    
     static function requestIsJax()
     {
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
@@ -53,7 +56,7 @@ class RouteParse
         $reg1 = 'GET|POST|PUT|DELETE';
         $do1 = '/((?:' . $reg1 . ')(?:,(?:' . $reg1 . '))*)\s+/';
         $path_reg = '[_\\-\\.\\w\\d]*';
-        $reg2 = ':?[\\w\\d]' . $path_reg . '|{\\w' . $path_reg . '}|\\s+\\[ajax\\]$';
+        $reg2 = ':?[\\w\\d]' . $path_reg . '|{\\w' . $path_reg . '}|\\s+\\[ajax\\??\\]$';
 
         $obj_reg = '[a-z][_a-z0-9]*';
         $reg3 = $obj_reg . '|{' . $obj_reg . '}';
@@ -123,7 +126,7 @@ class RouteParse
 
                 $r_match = null;
                 $result = preg_match_all($do2, $remain, $r_match);
-                $isAjax = false;
+                $ajaxFlag = static::NO_AJAX;
                 $params = [];
                 $param_ix = 1;
 
@@ -139,15 +142,19 @@ class RouteParse
                 $segct = count($segs);
 
                 for ($i = 0; $i < $segct; $i++) {
-                    $seg = $segs[$i];
+                    $seg = strtolower(trim($segs[$i]));
                     $begin = substr($seg, 0, 1);
                     $end = substr($seg, -1);
 
                     $name = null;
                     if ($end === ']') {
-                        if (strtolower(trim($seg)) === '[ajax]') {
-                            $isAjax = true;
+                        if ($seg === '[ajax]') {
+                            $ajaxFlag = static::ONLY_AJAX;
                             continue;
+                        }
+                        else if ($seg === '[ajax?]') {
+                             $ajaxFlag = static::ALLOW_AJAX;
+                             continue;
                         }
                     }
                     if ($begin === ':') {
@@ -214,7 +221,7 @@ class RouteParse
                     'verbs' => $verb,
                     'pattern' => $pattern,
                     'args' => $args,
-                    'ajax' => $isAjax
+                    'ajax' => $ajaxFlag
                 ];
             }
             $rset['ordered'] = $ordered;
@@ -241,7 +248,7 @@ class RouteParse
                 $verb = $r['verbs'];
                 $pattern = $r['pattern'];
                 $args = $r['args'];
-                $isAjax = $r['ajax'];
+                $ajaxFlag = $r['ajax'];
 
                 if (is_string($verb)) {
                     $method = 'add' . ucfirst(strtolower($verb));
@@ -253,8 +260,19 @@ class RouteParse
                 $reqIsAjax = static::requestIsJax();
                 $route->setName($r['name']);
                 $route->beforeMatch(
-                        function ($uri, $route) use ($isAjax, $reqIsAjax) {
-                            $result = ($isAjax === $reqIsAjax);
+                        function ($uri, $route) use ($ajaxFlag, $reqIsAjax) : bool {
+                            switch($ajaxFlag) {
+                               
+                                case static::ALLOW_AJAX:
+                                        $result = true;
+                                        break;
+                                case static::ONLY_AJAX:
+                                        $result = $reqIsJax;
+                                         break;
+                                case static::NO_AJAX:
+                                 default:
+                                     $result =  !$reqIsAjax;
+                            }
                            if ($result) {
                                App::instance()->route = $route;
                                return true;
