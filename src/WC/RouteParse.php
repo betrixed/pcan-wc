@@ -267,7 +267,7 @@ class RouteParse
                                         $result = true;
                                         break;
                                 case static::ONLY_AJAX:
-                                        $result = $reqIsJax;
+                                        $result = $reqIsAjax;
                                          break;
                                 case static::NO_AJAX:
                                  default:

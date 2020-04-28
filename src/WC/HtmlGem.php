@@ -439,7 +439,10 @@ EOD;
             $out .= static::out_label($label,$pset['id'],$select);
         }
         else if ($method === 'in_label') {
-            $out .= static::int_label($label,$select);
+            $out .= static::in_label($label,$select);
+        }
+        else {
+            $out .= $select . PHP_EOL;
         }
 
         return $out . PHP_EOL;
