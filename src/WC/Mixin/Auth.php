@@ -18,7 +18,7 @@ trait Auth {
      */
     public function beforeExecuteRoute($dispatcher) {
         if (!UserSession::auth($this->getAllowRole())) {
-            UserSession::flash("Access is not authorized", null, "info");
+            $dispatcher->forward(['controller' => 'error', 'action' => 'block']);
             return false;
         }
         return true;

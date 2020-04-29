@@ -57,15 +57,18 @@ trait ViewPhalcon {
         if (!isset($m->theme)) {
             $m->theme = App::instance()->theme;
         }
-        $us = UserSession::hasInstance() ? UserSession::read() : null;
-
-
-        $flash = !empty($us) ? $us->getFlash() : [];
+        $us = UserSession::read();
+        if (!empty($us)) {
+             $flash = $us->getFlash();
+             UserSession::save();
+        }
+        else {
+            $flash = [];
+        }
         
-        UserSession::save();
         $view->setVars(['sessUser'=>$us, 'flash' => $flash]);
         $view->start();
-        $view->render($controller, $action, $params);
+       $view->render($controller, $action, $params);
         $view->finish();
         return $view->getContent();
     }

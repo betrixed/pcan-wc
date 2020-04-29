@@ -384,6 +384,10 @@ class UserSession
         return 'NULL';
     }
 
+    static public function notAuthorized() {
+        static::flash('No access to ' . App::instance()->handledUri);
+        static::reroute('/error/block');
+    }
     static public function reroute($url)
     {
         static::save();
@@ -391,7 +395,7 @@ class UserSession
         if (strpos($url, 'http') !== 0) {
             $url = static::urlPrefix() . $url;
         }
-        $response = new Response();
+        $response = App::instance()->services->get('response');
         $response->redirect($url, true);
         return $response;
     }
