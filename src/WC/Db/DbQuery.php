@@ -10,8 +10,11 @@ use Phalcon\Db\Adapter\AdapterInterface;
 class DbQuery  {
     public AdapterInterface $db;
     
-    public function __construct() {
-        $this->db = Server::db();
+    public function __construct(AdapterInterface $db = null) {
+        if (empty($db)) {
+            $db =  Server::db();
+        }
+        $this->db =$db;
     }
     
     public function getSchemaName() : string {
@@ -35,9 +38,9 @@ class DbQuery  {
     {
         return $this->db->fetchAll($sql, Db\Enum::FETCH_ASSOC, $params, $bindtypes);
     }
-    public function objectSet(string $sql, array $params = null) : array
+    public function objectSet(string $sql, array $params = null, $bindtypes = null) : array
     {
-        return $this->db->fetchAll($sql, Db\Enum::FETCH_OBJ, $params);
+        return $this->db->fetchAll($sql, Db\Enum::FETCH_OBJ, $params, $bindtypes);
     }
     
 }
