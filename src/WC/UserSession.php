@@ -53,6 +53,12 @@ class UserSession
         static::session();
     }
 
+    /**
+     * Inject popup notices into HTML, or leave in session
+     * @param string $msg
+     * @param type $extra
+     * @param type $status 
+     */
     static public function flash($msg, $extra = null, $status = 'info')
     {
         if (!empty($extra)) {
@@ -331,11 +337,19 @@ class UserSession
         }
     }
 
+    /**
+     * URL protocol and host
+     * @return string
+     */
     static public function urlPrefix() : string {
         return  $_SERVER['REQUEST_SCHEME'] 
                 . '://' . $_SERVER['HTTP_HOST'];
     }
-    static public function getURL()
+    /**
+     * 
+     * @return string Full URL with Query String
+     */
+    static public function getURL() : string
     {
        return  $_SERVER['REQUEST_SCHEME'] . '://' 
                . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
