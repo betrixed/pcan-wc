@@ -455,16 +455,23 @@ EOD;
         $dateid = 'pick' . $pset['id'];
         $out = "<div class='input-group date' id='$dateid' data-target='nearest'>" . PHP_EOL;
 
-        if (isset($pset['label'])) {
-            $label = $pset['label'];
-            $out .= "<label for='$id'>" . $label . "</label>" . PHP_EOL;
-        }
-        $out .= static::getTag($pset, ['type' => 'text',
+        list($method,$label) = static::label_method($pset);
+
+        $input = static::getTag($pset, ['type' => 'text',
                     'class' => "datetimepicker-input",
                     'data-target' => '#' . $dateid,
                     'size' => "15",
                     'maxlength' => "15"
         ]);
+        if ($method === 'out_label') {
+            $out .= static::out_label($label,$id,$input);
+        }
+        else if ($method === 'in_label') {
+            $out .= static::int_label($label,$input);
+        }
+        else {
+            $out .= $input;
+        }
         $out .= PHP_EOL . "<div class=\"input-group-append\" data-target=\"#$dateid\" data-toggle=\"datetimepicker\">" . PHP_EOL;
         $out .= '<div class="input-group-text"><img src="/font/glyphicons_free/glyphicons/png/glyphicons-46-calendar.png"></div>' . PHP_EOL;
         $out .= "</div>" . PHP_EOL;

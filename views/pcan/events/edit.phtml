@@ -1,13 +1,9 @@
 <?php
 //$view = $this->data['view'];
-
+use WC\HtmlGem as Gem;
 $evt = $m->evt;
 $rego = $m->rego;
-
-if ($view->layout) {
-    $this->layout($view->layout, $this->data);
-}
-$fm = $this->form();
+$assets->add(['bootstrap','DateTime']);
 
 ?>
 
@@ -23,27 +19,33 @@ $fm = $this->form();
 <div class="container-fluid body-wrap">
     <hr>
     <form id="edtevt" method="post" action="/admin/eventpost">
-        <?= $fm->hidden( ['name'=>'id', 'value'=> $evt['id'] ]) ?> 
+        <?= Gem::hidden( ['name'=>'id', 'value'=> $evt->id ]) ?> 
         <div class="row">
             <div class="col-4">
-                <?= $fm->datetime(['label' => "From", 'name' => "fromtime", 'size' => 20, 'value' => $evt['fromtime']]) ?>
+                <?= Gem::datetime(['label' => "From", 'name' => "fromtime", 'size' => 20, 'value' => $evt->fromtime]) ?>
              </div>
              <div class="col-4">
-                <?= $fm->datetime(['label' => "To", 'name' => "totime", 'size' => 20, 'value' => $evt['totime']]) ?>
+                <?= Gem::datetime(['label' => "To", 'name' => "totime", 'size' => 20, 'value' => $evt->totime]) ?>
            </div>
         </div>
         <div class="row">
              <div class="col-4">
-                <?= $fm->plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt['slug']]) ?>
+                <?= Gem::plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt->slug]) ?>
             </div>
             <div class="col-4">
-                <?= $fm->checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt['enabled']]) ?>
+                <?= Gem::checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt->enabled]) ?>
             </div>
+        </div>
+        <div class="row">
+             <div class="col">
+                <?= Gem::multiline(['label' => "Detail", 'name' => "reg_detail", 'cols' => 80, 'rows'=>4, 'value' => $evt->reg_detail]) ?>
+            </div>
+
         </div>
         <div class="row">
             <div class="col-3"></div>
             <div class="col-4">
-                <?= $fm->submit(['name' => 'submit', 'value' => 'Update' ]); ?>
+                <?= Gem::submit(['name' => 'submit', 'value' => 'Update' ]); ?>
             </div>
         </div>
     </form>
@@ -56,11 +58,11 @@ $fm = $this->form();
                 <div class="col-10">
                 <?php foreach($rego as $rg): ?>  
                     <div class="row">
-                        <div class="col-3"><?= $rg['fname'] ?>&nbsp;<?= $rg['lname'] ?></div>
-                        <div class="col-3"><?= $rg['email'] ?></div>
-                        <div class="col-2"><?= $rg['phone'] ?></div>
-                        <div class="col-1"><?= $rg['people'] ?></div>
-                        <div class="col-2"><?= $rg['created_at'] ?></div>
+                        <div class="col-3"><?= $rg->fname ?>&nbsp;<?= $rg->lname ?></div>
+                        <div class="col-3"><?= $rg->email ?></div>
+                        <div class="col-2"><?= $rg->phone ?></div>
+                        <div class="col-1"><?= $rg->people ?></div>
+                        <div class="col-2"><?= $rg->created_at ?></div>
                     </div>
                     <hr>
                 <?php endforeach ?>
