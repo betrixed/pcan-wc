@@ -400,6 +400,9 @@ EOD;
             // value contains a php variable between <?= 
             $val = $pset['list'];
             $curval = isset($pset['value']) ? $pset['value'] : null;
+           /*  if (is_numeric($curval)) {
+                $curval = intval($curval);
+            } */
             $out .= '<select';
 
             $out .= self::addAttr('id', $pset);
@@ -412,7 +415,17 @@ EOD;
                 if (is_null($curval)):
                     $curval = $skey;
                 endif;
-                $selected = ($skey === $curval) ? " selected" : "";
+                // allow type conversions in comparison
+                $selected = ($skey == $curval) ? " selected" : "";
+                /*
+                if (is_numeric($skey)) {
+                    $selected = (intval($skey )=== $curval) ? " selected" : "";
+                }
+                else {
+                    $selected = ($skey === $curval) ? " selected" : "";
+                }
+                 * 
+                 */
                 $out .= '<option value="' . $skey . '" ' . $selected . '>' . $sval . '</option>' . PHP_EOL;
             endforeach;
             $out .= '</select>' . PHP_EOL;
