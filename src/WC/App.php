@@ -23,11 +23,18 @@ class App extends WConfig
     }
     
     protected $secrets;
-    public function get_secrets() {
+    public function get_secrets($section = null) {
         if (!isset($this->secrets)) {
             $this->secrets = WConfig::serialCache($this->SITE_DIR . "/.secrets.xml");
         }
-        return $this->secrets;
+        $obj = $this->secrets;
+        if (!empty($section)) {
+            if (!isset($obj[$section])) {
+                throw new \Exception("App section $section is missing");
+            }
+            return $obj[$section];
+        }
+        return $obj;
     }
     
     public function __construct() {
@@ -55,8 +62,5 @@ class App extends WConfig
         return sprintf('Setup %.2f Handle %.2f Render %.2f Total %.2f ms, Memory %.2f MB',
                         $setup_time, $handler_time, $render_time, $total, $memory);
     }
-    
-    static public function run_app($folder) {
-    
-    }
+
 }

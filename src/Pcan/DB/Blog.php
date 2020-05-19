@@ -79,7 +79,7 @@ EOD;
                     $content = str_replace("'", "&apos;", $row['content']);
                     // replace ' with &apos; 
                     
-                    if ($row['prefixSite'] && !static::hasPrefix($content, "http")) {
+                    if ($row['prefix_site'] && !static::hasPrefix($content, "http")) {
                         if (!static::hasPrefix($content, '/')) {
                             $content = '/' . $content;
                         }
