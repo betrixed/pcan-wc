@@ -61,6 +61,17 @@ $assets->add('validate');
                <?= Gem::invisiCaptcha([ 'site' => $google['site'], 'formid' => $formid, 'ajax'=>'formid_submit()']) ?>
             </div>
         <?php endif ?>
+ <?php if (is_null($google) || !$google['enabled']) {
+ $blob = <<<EOJS
+<script>        
+ var grecaptcha = {
+         getResponse : function() { return true; }
+         };
+ </script>
+EOJS;
+ $assets->addJS($blob);
+ }
+?>
 <?php
 $blob = <<<EOJS
 <script>         

@@ -76,7 +76,23 @@ trait ViewPhalcon {
     static function  simpleView($path, $params) {
         $view = new Simple();
         // ViewDir must be string!
-        $view->setViewsDir(App::instance()->plates->UI[0]);
+        // Simple View doesn't know about alternate paths, so try each in turn.
+        $app = App::instance();
+        $plates = $app->plates;
+        $ext = $plates->ext;
+        $found = false;
+        $basename = $path . "." . $ext;
+        foreach($plates->UI as $dir) {
+                $testfile = $dir . $basename;
+                if (file_exists($testfile)) {
+                         $view->setViewsDir($dir);
+                          $found = true;
+                         break;
+                }
+        }
+        if (!$found) {
+            throw new \Exception("Template file not found " . $basename);
+        }
         return $view->render($path,$params);
     }
     public function noLayouts() {

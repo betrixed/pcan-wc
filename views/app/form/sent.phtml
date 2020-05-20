@@ -1,7 +1,8 @@
 <?php
-use WC\HtmlGem as Gem;
-$rec = $m->rec;
 
+use WC\HtmlGem as Gem;
+
+$rec = $m->rec;
 ?>
 <style>
     div.form-group  label {
@@ -12,34 +13,42 @@ $rec = $m->rec;
 </style>
 
 <div class='container pad10'>
+<?php if (!empty($flash)) {
+    $this->partial('flash');
+} ?>
+
     <div class="outerwrap pad10">
 
-<?php if (!empty($rec)): ?>         
+                <?php if (!empty($rec)): ?>         
             <div class="form-group row">
                 <div class="col-5">
-                        <?= Gem::plainText([ 'label' =>'Date sent' ,'name' => 'created_on', 
-                                        'value' => $rec->senddate , "readonly", 'class' => 'form-control']) ?>
+            <?= Gem::plainText(['label' => 'Date sent', 'name' => 'created_on',
+                'value' => $rec->senddate, "readonly", 'class' => 'form-control'])
+            ?>
                 </div>
             </div>
-            <?php endif ?>
-                    <div class="form-group row">
+                <?php endif ?>
+        <div class="form-group row">
             <div class="col-4">
-                     <?= Gem::plainText([ 'label' =>'Name' ,'name' => 'name', 'size' => 16,
-                                        'value' => $rec->name , 'class' => 'form-control', "readonly"]) ?>
+                <?= Gem::plainText(['label' => 'Name', 'name' => 'name', 'size' => 16,
+                    'value' => $rec->name, 'class' => 'form-control', "readonly"])
+                ?>
             </div>
             <div class="col-4">
-                    <?= Gem::email([ 'label' =>'Your email' ,'name' => 'email',
-                                        'value' => $rec->email , 'class' => 'form-control', "readonly"]) ?>
+                <?= Gem::email(['label' => 'Your email', 'name' => 'email',
+                    'value' => $rec->email, 'class' => 'form-control', "readonly"])
+                ?>
             </div>
             <div class="col-4">
-                     <?= Gem::phone([ 'label' =>'Phone number' ,'name' => 'telephone', 'size' => 16,
-                                        'value' => $rec->telephone , 'class' => 'form-control', "readonly"]) ?>
+            <?= Gem::phone(['label' => 'Phone number', 'name' => 'telephone', 'size' => 16,
+                'value' => $rec->telephone, 'class' => 'form-control', "readonly"])
+            ?>
             </div>
         </div>
-            <div class="form-group">
-                <label>Message</label>
-             <?= Gem::multiline([ 'name' => 'body', 'cols' => 80, 'rows' => 5,'value' => $rec->body, "readonly" ]) ?>
-            </div>
-            <hr>
+        <div class="form-group">
+            <label>Message</label>
+<?= Gem::multiline(['name' => 'body', 'cols' => 80, 'rows' => 5, 'value' => $rec->body, "readonly"]) ?>
+        </div>
+        <hr>
     </div>
 </div>
