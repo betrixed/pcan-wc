@@ -155,7 +155,7 @@ class ChimpEntry extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("chimp_entry");
         $this->belongsTo('listid', 'App\Models\ChimpLists', 'id', ['alias' => 'ChimpLists']);
         $this->belongsTo('emailid', 'App\Models\MemberEmail', 'id', ['alias' => 'MemberEmail']);

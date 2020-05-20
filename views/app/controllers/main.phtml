@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <!-- <?= 'File: ' . __FILE__ ?> -->
+    <head>
+        <?php $title=$m->title ?? "??" ?>
+        <title><?=$title?></title>
+        <?= 
+            $this->partial('std_head'); 
+        ?>
+
+    </head>
+    <body>
+       <?= $this->partial('flash'); ?>
+       <?=
+            $this->getContent(); 
+       ?>
+        <?= 
+            $this->partial('std_foot');
+        ?>
+    </body>
+</html>
+

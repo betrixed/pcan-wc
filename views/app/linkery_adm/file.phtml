@@ -1,0 +1,73 @@
+
+{~
+    @view = Base::Instance()->get('view');
+    @links = @view->links;
+    @chkct = count(@links);
+    @linkery = @view->linkery;
+    @post = @view->post;
+~}
+
+<div class='body-wrap'>
+<form id='linkList' action="{{@post . 'linkList' }}" method="post">
+    <check if="{{ isset(@replylist)  }}"><true>
+        <repeat group="{{ @replylist }}" value="{{ @reply }} ">
+            <p>{{ @reply }}</p>
+        </repeat>
+        </true></check>
+<check if="{{ @chkct }}" ><true>
+        {~   
+        @rowId = 0;
+        @select = @view->select;
+        
+        ~}
+<table class="table-condensed table-striped"><tbody>
+        <tr>
+            <th>select</th>
+            <th>visible</th>
+            <th>title</th>
+            <th>date</th>
+            <th>info</th>
+            <th>content</th>
+        </tr>
+
+        
+ <repeat group="{{ @links }}" value="{{ @fup  }}">
+{~ 
+    @info = (@fup.enabled ? 'Y' : 'N') . ' ' . @fup.urltype;
+    @odate = strtotime( @fup.date_created );
+    @row_id = @row_id + 1;
+    @chkid = "chk" . @row_id;
+    @descid = "desc" . @row_id;
+~}
+
+<tr>
+    <td><input name='{{ @chkid }}' id='{{ @chkid }}' type='checkbox' value='{{ @fup.id }}' /></td>
+    <td>{{ @fup.visible }}</td>
+    <td class="leftCell">{{ @fup.title }}</td>
+    <td><p>{{ date('Y-m-d',@odate) .  ' ' .  date('H:i',@odate) }}</p></td>
+    <td><p>{{ @info }}</p></td>
+    <td><textarea class='content' name='{{ @descid }}' id='{{ @descid }}' cols='40'>{{ @fup.summary }}</textarea></td>
+</tr>
+ </repeat>
+    <tr><td><label>Perform</label></td>
+    <td class="leftCell"><select name='image_op' id="image_op">
+            <repeat group="{{ @select }}" key="{{ @skey }}" value="{{ @sval }}">
+                <check if="{{ @sval[1] == 1 }}"><true>
+                        <option value='{{ @skey}}' selected="selected">{{ @sval[0] }}</option>
+                    </true><false>
+                        <option value='{{ @skey}}'>{{ @sval[0] }}</option>
+                    </false>
+                </check>
+            </repeat>
+        </select></td>
+        <td><input name='update' type='submit' value='Update Selected' class='btn-danger' /></td>
+</tr>
+    </tbody></table></true>
+        <false>
+    <p>No records in this Linkery yet</p>
+    </false>
+</check>  
+<input type='hidden' name='chkct' value='{{ @chkct }}' />
+<input type='hidden' name='linkeryid' value='{{ @linkery.id }}' />
+</form>
+</div>

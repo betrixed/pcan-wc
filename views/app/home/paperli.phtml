@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width">
+<style>
+     body { margin:0;}
+     iframe {margin:0; width:100%; }
+     p {padding:10px;}
+     .iframe-wrap {
+         overflow: hidden;
+     }
+     
+     .iframe-wrap  iframe {
+         border:0;
+         height:100%;
+         left: 0;
+         position:absolute;
+         top: 0;
+         width: 100%;
+     }
+</style>
+</head>
+<body>
+<div class="iframe-wrap">
+<iframe  src="<?= $m->url ?>"></iframe> 
+</div>
+</body> 
+</html>

@@ -68,7 +68,7 @@ class Permissions extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("permissions");
         $this->belongsTo('groupId', 'App\Models\UserGroup', 'id', ['alias' => 'UserGroup']);
     }

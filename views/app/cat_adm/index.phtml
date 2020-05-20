@@ -1,0 +1,36 @@
+<?php
+use WC\HtmlGem as Gem;
+    $page =$m->page;
+    $url = $m->url;
+$assets->add('bootstrap');
+?>
+<div class="container body-wrap">
+    <div class="row">
+<span class="title">Index</span>
+<?= Gem::linkTo(['href' =>$url  .  'new' , 'text' =>"New Category", 'class' => "btn btn-outline-primary"]) ?>
+    </div>
+<div class="container body-wrap">
+<table class="table table-bordered table-striped" align="center">
+    <thead>
+        <tr>
+            <th style="width:65%;">Category</th>
+            <th style="width:20%;">URL Part</th>
+            <th style="width:15%;">Enabled</th> 
+        </tr>
+    </thead>
+
+    <tbody>
+        <?php foreach ($page->items as $cat): ?>
+            <tr>
+                <td class="leftCell"><?= Gem::linkTo(['href' =>$url  .  'edit/' .  $cat['id'] , 'text'=>$cat['name'] ])  ?></td>
+                <td><?= $cat['name_clean'] ?></td>
+                <td><?php if( $cat['enabled'] ): echo('Y'); else: echo('N'); endif; ?></td>
+            </tr>
+   <?php endforeach; ?>
+    </tbody>
+
+</table>
+
+</div>
+      </div>  
+

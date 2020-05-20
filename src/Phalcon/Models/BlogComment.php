@@ -300,7 +300,7 @@ class BlogComment extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("blog_comment");
         $this->belongsTo('blog_id', 'App\Models\Blog', 'id', ['alias' => 'Blog']);
         $this->belongsTo('user_id', 'App\Models\Users', 'id', ['alias' => 'Users']);

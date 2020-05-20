@@ -1,0 +1,27 @@
+<?php  
+    use \WC\UserSession; 
+?>
+<div class="clear"></div>
+<!-- std_foot -->
+<footer class="page-footer">
+    <div class="row" >
+        <div class="col-3">
+            <?php
+            $sid = UserSession::sessionName();
+            if ($sid !== 'NULL') {
+                echo("<a href=\"/end_session\">End Session: " . $sid . "</a>");
+            }
+            else {
+                echo("No session");
+            }
+            ?>
+        </div>
+        <div class="col-3"> 
+            &copy;&nbsp;<?= $app->organization ?>
+        </div>
+        <div class="col-6">            
+            <?= $app->end_stats(); ?>
+        </div>
+    </div>
+</footer>
+<?= $assets->JsFooter(); ?>

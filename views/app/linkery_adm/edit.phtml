@@ -1,0 +1,54 @@
+<?php
+
+use WC\HtmlGem as Gem;
+
+$links = $m->links;
+$linkery = $m->linkery;
+$post = $m->post;
+$assets->add(['bootstrap', 'grid']);
+?>
+<style>
+    label.label {
+        min-width:110px;
+        text-align:right;
+        margin-right:10px;
+        font-weight: bold;
+        vertical-align:top;
+    }
+    .box {
+        padding:10px;
+    }
+    .html {
+        max-height:10.0em;
+        overflow: scroll;
+    }
+</style>
+<?php $this->partial('linkery_adm/title') ?>
+
+<div class="container outerwrap">
+    <div class="box">
+    <h2>Link Gallery</h2>
+    <form id="edit_linkery" method="post" action="<?= $post . "post" ?>" >
+                <?= Gem::hidden(['name' => 'id', 'value' => $linkery->id]) ?>
+        <div class="row">
+            <div class="col">
+<?= Gem::plainText(['label' => 'Name', 'name' => "name", 'value' => $linkery->name]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+<?= Gem::multiline(['label' => 'Description', 'cols' => 80, 'name' => "description", 'value' => $linkery->description]) ?> 
+            </div>
+        </div>
+        <div class="row">
+             <div class="col text-center">
+<?= Gem::submit(['value' => "Update details"]) ?>
+                 </div>
+        </div>
+    </form>
+    </div>
+</div>
+<hr>
+<div class="container-fluid">
+    <div id="image_status"><?= $this->partial('linkery_adm/file') ?></div>
+</div>

@@ -213,7 +213,7 @@ class EmailConfirmations extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("email_confirmations");
         $this->belongsTo('usersId', 'App\Models\Users', 'id', ['alias' => 'Users']);
     }

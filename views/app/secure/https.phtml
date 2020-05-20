@@ -1,0 +1,28 @@
+<?php
+\WC\Assets::instance()->add('bootstrap');
+$url = $m->url;
+?>
+
+<div class='container outerwrap novosti pad10'>
+    <p style="font-size:2em;">HTTPS Redirect to 
+    <a id="redirect" href="<?= $url ?>"><?= $url ?></a></p>
+    <div id="message"></div>
+</div>
+
+<script>
+function pageRedirect(){
+ var delay = 4000; // time in milliseconds
+
+ var url = document.getElementById("redirect").innerHTML;
+ // Display message
+ document.getElementById("message").innerHTML = "Please wait, you are redirecting to " + url;
+
+ setTimeout(function(){
+  window.location = url;
+ },delay);
+ 
+}
+
+window.onload = pageRedirect;
+
+</script>

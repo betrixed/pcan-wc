@@ -1,0 +1,79 @@
+<?php 
+use WC\HtmlGem as Gem;
+$assets->add('bootstrap');
+
+$url = $m->url;
+$ubase = $url . '?orderby=';
+$ref = $ubase . $m->orderby;
+$page = $m->page;
+$orderalt = $m->orderalt;
+$col_arrow = $m->col_arrow;
+
+?>
+
+<div class='container body-wrap'>
+    <div class="row">
+        <div class="col-2">
+            <span><b>Links</b></span> 
+        </div>
+        <div class="col-8">
+&nbsp;&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $url . 'new', 'text' => 'New link record']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $ref . '&page=1', 'text' => 'First']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $ref . '&page='. $page->before, 'text' => 'Previous']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $ref . '&page='. $page->next, 'text' => 'Next']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $ref . '&page='. $page->last, 'text' => 'Last']) ?>&#x3009;
+&nbsp;&nbsp;Page <?= $page->current . " of " .  $page->last ?>
+        </div>
+    </div>
+</div>
+<div class='container outerwrap'>
+    <form id="links_form" method="post", action="<?= $url . 'enabler' ?>" >
+<table class='table table-striped'>
+    <thead>
+        <tr>
+             <th><?= Gem::linkTo(['href' => $ubase . $orderalt['enabled'], 'text' => "Enabled" . $col_arrow['enabled']]) ?></th>
+           <th><?= Gem::linkTo(['href' => $ubase . $orderalt['title'], 'text' => "Title" . $col_arrow['title']]) ?></th>
+            <th><?= Gem::linkTo(['href' => $ubase . $orderalt['site'], 'text' => "Site" . $col_arrow['site']]) ?></th>
+            <th><?= Gem::linkTo(['href' => $ubase . $orderalt['type'], 'text' => "Type" . $col_arrow['type']]) ?></th>
+            <th><?= Gem::linkTo(['href' => $ubase . $orderalt['date'], 'text' => "Date" . $col_arrow['date']]) ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php 
+        foreach($page->items as $link): 
+            
+
+        $enabled = $link['enabled'] ? 'Y' : 'N';
+        $created = substr($link['date_created'], 0, 10);
+        $id = $link['id'];
+        $title = trim($link['title']);
+        if (empty($title)) {
+            $title = '[NULL]';
+        }
+        ?>
+        <tr>
+            <td><label><?= $enabled ?>&nbsp;<input type="checkbox" name="lid<?= $id ?>" value="<?= $link['enabled' ] ?>" ?></label></td>
+            <td class='leftCell'><a href="<?= $url . 'edit/' . $id ?>"><?= $title ?></a></td>
+            <td><?= $link['sitename'] ?></td>
+            <td><?= $link['urltype'] ?></td>
+            <td><?= $created ?></td>
+            
+        </tr>
+    <?php endforeach ?>
+    </tbody>
+</table>
+        <?= Gem::hidden(['name' => 'page', 'value' => $page->current ]) ?>
+          <?= Gem::hidden(['name' => 'orderby', 'value' => $m->orderby ]) ?>
+        
+        <div class="row center">
+        <div class="form-group">
+            <label for="link_enable">Change Selected</label>
+        <select name="link_enable" id="link_enable">
+            <option value="1">Enable</option>
+            <option value="0">Disable</option>
+        </select>
+            <?= Gem::submit(['value' => 'Save', 'class' => "btn btn-warning"]) ?>
+        </div>
+        </div>
+    </form>
+</div>

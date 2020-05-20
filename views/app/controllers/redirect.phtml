@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <!-- <?= 'File: ' . __FILE__ ?> -->
+    <head>
+        <title>Schema</title>
+        <meta http-equiv=”Refresh” content=”0;URL=<?= $m->url?>” />
+        <?= 
+            $this->partial('std_head'); 
+        ?>
+    </head>
+    <body>
+       <?= $this->partial('flash'); ?>
+       <?=
+            $this->getContent(); 
+       ?>
+        <?= 
+            $this->partial('std_foot');
+        ?>
+    </body>
+</html>
+

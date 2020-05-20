@@ -1,0 +1,210 @@
+
+<?php
+use WC\HtmlGem as Gem;
+$google = $m->google;
+$email = $m->email;
+$mbr = $m->mbr;
+$message = $m->message;
+$countries = $m->countries;
+$states = $m->states;
+$xcheck = $m->xcheck;
+$assets->add(['bootstrap','select','validate']);
+$formid = 'signup';
+?>
+                                                                                                         
+<style>
+    .label {
+        font-weight:bold;
+        min-width:120px;
+        text-align: right;
+        margin-top: auto;
+
+    }
+
+    div.fcell .label {
+        display: inline-table;
+        vertical-align:top;
+    }
+    .padx {
+        padding:30px;
+    }
+    .title-wrap {
+        padding:5px;
+        background-color:lightyellow;
+        border-style: groove;
+        border-width: 2px;
+    }
+    
+</style>
+<div class='container outerwrap padx'>
+    <div class="title-wrap text-center">
+         <span class="title">Sign-up form for ParraCAN Newsletter via Mail Chimp</span> 
+    </div>
+    <hr>
+    <form id='signup' method='post' action='/id/signed'>
+        <?php if( !empty($message) ): ?>
+
+            <div class="alert alert-primary" role ="alert">
+                <p class="message"><?= $message ?></p>
+            </div>
+<?php endif; ?>
+        <div id='ctblock'>
+            <div class="row mb-3">
+                <div class="col-8">
+                    <?= Gem::plainText(['class'=>'idgroup', 'label' => 'Email', 'name' => 'email', 
+                        'value' => $email, 'size' => 50]) ?>
+                </div>
+            </div>
+            <hr>
+            <p>Contact Details</p>
+            <hr>
+            <div class="row mb-3" >
+                <div class="col-6">
+                    <?= Gem::plainText(['label' => 'First Name', 'name' => 'fname', 
+                        'value' => $mbr->fname, 'size' => 30]) ?>
+                 </div>
+                <div class="col-6">
+                     <?= Gem::plainText(['label' => 'Last Name', 'name' => 'lname', 
+                        'value' => $mbr->lname, 'size' => 30]) ?>
+                 </div>
+            </div>
+            <div class="row mb-3">
+                <div class='col'>
+                    <?= Gem::plainText(['label' => 'Address', 'name' => 'addr1', 
+                        'value' => $mbr->addr1, 'size' => 50]) ?>
+                     <br>
+                     <?= Gem::plainText(['label' => '_', 'name' => 'addr2', 
+                        'value' => $mbr->addr2, 'size' => 50]) ?>
+                 </div>
+            </div>
+            <div class="row mb-3">
+                <div class='col-6'>
+                    <?= Gem::plainText(['label' => 'City', 'name' => 'city', 
+                        'value' => $mbr->city, 'size' => 35]) ?>
+                    </div>
+                 <div class='col-6'>   
+                    <?= Gem::select([ 'class'=>'selectpicker', 'name' => 'state', 'label' => 'State', 
+                                    'list' => $states, 'value' => $mbr->state ]) ?>
+                 </div>
+            </div>
+            <div class="row mb-3">
+                <div class='col-6'>
+                    <?= Gem::plainText(['div'=>'float-right', 'label' => 'Post-Code', 'name' => 'postcode', 
+                        'value' => $mbr->postcode, 'size' => 8]) ?>
+                 </div>
+                 <div class='col-6'>   
+                      <?= Gem::select([ 'class'=>'selectpicker', 'name' => 'country_code', 'label' => 'Country', 
+                                    'list' => $countries, 'value' => $mbr->country_code ]) ?>
+                 </div>
+            </div>
+            <div class="row mb-3">
+                <div class='col-5'>
+                    <?= Gem::phone(['class'=>'idgroup', 'label' => 'Phone', 'name' => 'phone', 
+                        'value' => $mbr->phone, 'size' => 20]) ?>
+                 </div>   
+            </div>
+            <div class="row mb-3">
+                <div class='col-12'>
+                    <?= Gem::multiline(['div'=>'fcell', 'label' => 'Volunteer info', 'name' => 'source', 
+                        'value' => $mbr->ref_source, 'cols' => 50, 'rows' => 3]) ?>
+                </div>   
+            </div>
+        </div>
+        <?= Gem::xcheck([ 'name' => $xcheck['key'], 'value' =>  $xcheck['value'] ]) ?>
+                 <?php if (!is_null($google) && $google['enabled']): ?>
+            <div class="d-flex  justify-content-center"">
+               <?= Gem::invisiCaptcha([ 'site' => $google['site'],
+                   'formid' => $formid, 'ajax'=>'formid_submit()' ]) ?>
+            </div>
+            <?php endif ?>
+        <hr>
+        <div class="d-flex  justify-content-center" >
+                <?= Gem::submit(['id' => 'submit',  'name' => 'submit', 'value' => 'Send', 'class' => 'btn btn-outline-primary btn-lg' ]) ?>
+                <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
+            </div>    
+    </form>
+</div>
+<?php
+$blob = <<<EOJS
+<script>         
+function prep_valid() {
+  // Initialize form validation on the registration form.
+  // It has the name attribute "registration"
+    $.validator.addMethod( "postcodeAU", function( value, element ) {
+        return this.optional( element ) || /^(\d{4})+$/.test( value );
+    }, "The specified Post Code is invalid" );
+        
+  $("#$formid").validate({
+    rules: {
+      fname: "required",
+      lname: "required",
+      postcode: {
+        required: true,
+        postcodeAU: true
+        },
+      email: {
+        required: true,
+        email: true
+      }
+
+    },
+    // Specify validation error messages
+    messages: {
+      fname: "* Please enter your name",
+      lname: "* Please enter your name",
+      email: "Please enter a valid email address",
+      phone: "Please enter a contact phone no."
+    },
+    // Make sure the form is submitted to the destination defined
+    // in the "action" attribute of the form when valid
+    submitHandler: function(form) {
+        if (grecaptcha.getResponse()) {
+            formid_submit();
+        }else{
+            grecaptcha.reset();
+            grecaptcha.execute();
+        } 
+    }
+  });
+}
+</script>
+EOJS;
+$assets->addJS($blob);
+?>
+
+
+<?php
+$blob = <<<EOJS
+<script>
+function formid_submit() {
+    var fm = $("#$formid");
+    var purl = fm.attr('action');
+    var request_method =fm.attr("method");
+    var form_data = fm.serialize();
+
+    $.ajax({
+            type: request_method,
+            url:  purl,
+            data: form_data
+        }).done(function(response) {
+             $("#login-fields").html(response);
+        }) ;
+        
+    $("#submit").hide();
+    $("#loading").show();
+}    
+</script>
+EOJS;
+$assets->addJS($blob);
+?>
+<?php
+$blob = <<<EOJS
+<script>
+function doprep() {
+    prep_valid();      
+};
+window.onload = doprep; 
+</script>
+EOJS;
+$assets->addJS($blob);
+?>

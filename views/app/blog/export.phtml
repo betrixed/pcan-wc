@@ -1,0 +1,82 @@
+<?php
+
+use WC\HtmlGem as Gem;
+use App\Link\BlogExport as Export;
+
+$assets->add(['bootstrap', 'select']);
+$theme = "/" . $m->theme;
+$catId = $m->catId;
+$orderalt = $m->orderalt;
+$col_arrow = $m->col_arrow;
+$isEditor = $m->isEditor;
+
+$catItems = $m->catItems;
+$url = $m->url;
+
+if ($catId > 0) {
+    $ubase = $url . "?catId=" . $catId . "&orderby=";
+} else {
+    $ubase = $url . "?orderby=";
+}
+$link = $ubase . $m->orderby;
+$page = $m->page;
+?>
+
+<div class="body-wrap">
+    <a href="/dash" class="btn btn-outline-default title">Dash</a> 
+ <?php if ($page->last > 1): ?>
+        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link, 'text' => "First"]) ?>
+        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page=' . $page->before, 'text' => "Previous"]) ?>
+        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page=' . $page->next, 'text' => "Next"]) ?>
+        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page=' . $page->last, 'text' => "Last"]) ?>
+<?php endif ?>
+    &nbsp;|&nbsp;  <?= $page->current . "/" . $page->last ?>
+
+    <?php if (!empty($catItems)): ?>
+        <div class="container">
+            <form method='get'>
+                <?= Gem::select(['label' => 'Category', 'class' => 'selectpicker', 'list' => $catItems, 'name'=>'catId', 'value' => $catId]) ?>
+                <?= Gem::hidden(['name'=>'args' , 'value' => $m->args]) ?> 
+                <?= Gem::submit( [ 'value' => "Fetch" ]) ?>
+            </form>
+        </div>
+<?php endif ?>
+</div>
+<div class="container outerwrap">
+     <form method="post" action="<?= $url . 'exportpost' ?>" >
+    <table class="table table-bordered table-striped" align="center">
+        <thead>
+            <tr>
+                <th><img src='/image/gallery/site/tick16.png' /></th>
+                    <th style="width:50%;"><?= Gem::linkTo(['href' => $ubase . $orderalt['title'], 'text' => 'Title' . $col_arrow['title']]) ?></th>
+                    <th style="width:15%;"><?= Gem::linkTo(['href' => $ubase . $orderalt['author'], 'text' => "Author" . $col_arrow['author']]) ?></th>
+                    <th style="width:10%;"><?= Gem::linkTo(['href' => $ubase . $orderalt['date'], 'text' => "Date" . $col_arrow['date']]) ?></th>
+                    <th style="width:10%;"><?= Gem::linkTo(['href' => $ubase . $orderalt['update'],"text" => "Updated". $col_arrow['update'] ]) ?></th>
+            </tr>
+        </thead>
+        <tbody>
+             <?php
+                foreach ($page->items as $blog):
+                    $pubdate = (new DateTime($blog['date_published']))->format('d M y');
+                    $update = (new DateTime($blog['date_updated']))->format('d M y'); 
+                    ?>
+            <tr>
+                <td><?= Gem::checkbox(['name' => 'op' . $blog['id']]) ?></td>
+                <?php if ($isEditor): ?>
+                <td class="leftCell"><?= Gem::linkTo(['href' => $url . "edit/" . $blog['id'], 'text' => $blog['title']]) ?></td>
+    <?php else: ?>
+                <td><link-to href="<?= '/article/' . $blog['title_clean'] ?>" text="<?= $blog['title'] ?>" /></td>
+    <?php endif ?>
+                <td><span class="lighten"><?= $blog['author_name'] ?></span></td>
+                <td><span class="lighten"><?= $pubdate ?></span></td>
+                <td><?= $update ?></td>
+                </tr>
+<?php endforeach ?>
+        </tbody>
+    </table>
+         <?= Gem::select(['name' => 'bksel',
+             'list' => Export::backupOptions(), 'class' => 'selectpicker']) ?>
+           <?= Gem::submit(['name' => 'submit', 'value'=>'Execute']) ?>
+           <hidden name="args" value="<?= $m->args ?>" ></hidden>
+     </form>
+</div>

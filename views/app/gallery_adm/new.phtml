@@ -1,0 +1,60 @@
+<?php
+use WC\HtmlGem as Gem;
+    $gallery = $m->gallery;
+    $assets->add('bootstrap');
+    if (!empty($gallery->id)) {
+        $assets->add(['grid','DateTime']);
+    }
+?>
+<style>
+    textarea.form-control {
+        margin:20px;
+    }
+    
+    input.form-control {
+        max-width:300px;
+        margin:20px;
+    }
+    label.control-label {
+        min-width:110px;
+        text-align:right;
+        margin-right:10px;
+    }
+</style>
+<div class="container-fluid">
+    <div class="outerwrap pad10">
+    
+    <form method="post" action="<?= $m->url . 'postnew' ?>">
+        <?php 
+            $name = $gallery->name;
+            if(empty($gallery->id)):
+                $sval = 'Create';
+            ?>
+           <h1>Create Image Gallery</h1>
+            <?=Gem::hidden(['name' => 'id', 'value' =>  $gallery->id ]) ?>
+            <div class="row">
+            <label for="name" class="control-label">Name</label>
+            <?=Gem::plainText(['name' => 'name', 'value' =>  $name  ]) ?>
+            </div>
+            <?php else: 
+                $sval = 'Update';
+                ?>
+ 
+            <h1>Update Image Gallery</h1>
+                <div class="row">
+                    <label for="name" class="control-label">Name</label>
+                    <?=Gem::plainText(['name' => 'name', 'value' =>  $name, 'readonly'  ]) ?>
+                </div>
+            <?php endif ?>
+        <div class="row">
+            <label for="description" class="control-label">Description</label>
+            <?=Gem::multiline(['cols' => 50, 'name' => 'description', 'value' =>  $gallery->description   ]) ?>
+         </div>
+        <div class="row">
+            <div class="col">
+            <?=Gem::submit(['value' => $sval, 'class'=>'btn btn-warning btn-lg']) ?>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>

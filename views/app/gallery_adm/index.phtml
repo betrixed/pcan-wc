@@ -1,0 +1,46 @@
+<?php
+use WC\HtmlGem as Gem;
+$ubase = "gallery?orderby="; 
+$link =  $ubase . $m->orderby;  
+$page = $m->page;
+$url =  "/admin/gallery/images/";
+$assets->add(['bootstrap','grid']);
+?>
+<a href="/dash" class="title">Dash</a> &nbsp; &gt;&gt; &nbsp;
+      <span><b>Gallery Index</b></span> &nbsp; &#x2609; &nbsp;
+   <?= Gem::linkTo(['href'=>$link, 'text'=>'First']) ?> &nbsp; | &nbsp;
+    <?= Gem::linkTo(['href'=>$link.'&page='.$page->before,
+   'text'=>'Previous']) ?> &nbsp; | &nbsp;
+ <?= Gem::linkTo(['href'=>$link.'&page='.$page->next,
+   'text'=>'Next']) ?> &nbsp; | &nbsp;
+ <?= Gem::linkTo(['href'=>$link.'&page='.$page->last,
+   'text'=>'Last']) ?> &nbsp; | &nbsp;
+ <?=$page->current . "/" . $page->last ?> &nbsp; &#x2609; &nbsp;
+ <a href="/admin/gallery/new" class="title">New Gallery</a>
+<div class="body-wrap">
+<table class='table table-striped'>
+    <thead>
+        <tr>
+            <th class='leftCell'>Path</th>
+            <th class='leftCell'>Description</th>
+              <th>Upload</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php 
+        
+        foreach($page->items as $gallery): 
+                $udate = date('d-M-Y H:i',strtotime($gallery['last_upload']));
+                 $description = $gallery['description'];
+                 $name = $gallery['name'];
+         ?>
+<tr>
+    <td class='leftCell'><?= Gem::linkTo(['href'=>$url.$name, 'text'=>$name]) ?></td>
+            <td class='leftCell'><?= $description ?></td>
+             <td><?= $udate ?></td>
+        </tr>
+        <?php endforeach ?>
+    </tbody>
+</table>
+ </div>
+</div>

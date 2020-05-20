@@ -1,0 +1,117 @@
+<?php
+use \WC\HtmlGem as Gem;
+$assets->add('more-validate');
+$formid = $m->formid;
+
+?>
+
+<div class='container outerwrap pad10'>
+ 
+<form id="<?=$formid?>" method='post' action='check'>
+    <div id="login-fields">
+        <?= $this->partial('login/fields') ?>
+    </div>
+</form>
+
+</div>
+
+
+<?php
+$blob = <<<EOJS
+<script>
+function formid_submit() {
+    var fm = $("#$formid");
+    var purl = fm.attr('action');
+    var request_method =fm.attr("method");
+    var form_data = fm.serialize();
+
+    $.ajax({
+            type: request_method,
+            url:  purl,
+            data: form_data
+        }).done(function(response) {
+             $("#login-fields").html(response);
+        }) ;
+        
+    $("#submit").hide();
+    $("#loading").show();
+}    
+</script>
+EOJS;
+$assets->addJS($blob);
+?>
+
+
+
+<?php
+$blob = <<<EOJS
+<script>         
+function prep_valid() {
+  // Initialize form validation on the registration form.
+  // It has the name attribute "registration"
+
+  $("#$formid").validate({
+    // Specify validation rules
+    rules: {
+      // The key name on the left side is the name attribute
+      // of an input field. Validation rules are defined
+      // on the right side
+      
+      email: {
+        require_from_group: [1, ".idgroup"]
+        },
+      alias: {
+        require_from_group: [1, ".idgroup"]
+        },
+      password: {
+        required: true,
+        minlength: 8
+        }
+      
+    },
+    // Specify validation error messages
+    messages: {
+      password: "Must be 8 or more characters",
+      email: "Please enter a valid email address",
+      alias: "Name registered with email"
+    },
+    // Make sure the form is submitted to the destination defined
+    // in the "action" attribute of the form when valid
+    submitHandler: function(form) {
+        if (grecaptcha.getResponse()) {
+            formid_submit();
+        }else{
+            grecaptcha.reset();
+            grecaptcha.execute();
+        } 
+    }
+  });
+}
+</script>
+EOJS;
+$assets->addJS($blob);
+?>
+
+<?php if (!empty($m->google) && ($m->google['enabled']===false)): 
+// Fake google function
+$blob = <<<EOJS
+<script>
+ var grecaptcha = {
+    getResponse: function() { return true; }
+ };
+</script>
+EOJS;
+$assets->addJS($blob);
+endif ?>
+
+<?php
+$blob = <<<EOJS
+<script>
+function doprep() {
+    prep_valid();      
+};
+window.onload = doprep; 
+</script>
+EOJS;
+$assets->addJS($blob);
+?>

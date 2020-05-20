@@ -1,0 +1,83 @@
+<?php 
+use WC\HtmlGem as Gem;
+$orderalt = $m->orderalt;
+$col_arrow = $m->col_arrow;
+$page = $m->page;
+$pno = $page->current;
+$end =  $page->last;
+$data = $page->items;
+$pgsize = "?pgsize=" . $m->pgsize;
+$link = $m->url . $pgsize . "&orderby=" . $m->orderby; 
+$ubase =  $m->url . $pgsize . "&page=1&orderby=";
+$assets->add('bootstrap');
+?>
+<style>
+    .box {
+        border-color: green;
+        border-style:solid;
+        color: black;
+        font-weight: bold;
+    }
+</style>
+<div class='outerwrap pad10'>
+    <div class="container-fluid">
+        <?php if ($page->last > 1 ): ?>
+            <span>Pages - </span>&nbsp;&nbsp;<?= ($pno > 1) ? Gem::linkTo([ "href" => $link . '&page=1', "text" => "First" ]  ): 'First' ?>
+            &nbsp; | &nbsp; <?= ($pno > 1) ? Gem::linkTo(["href" => $link . '&page='. $page->before, "text" => "Previous" ]) : 'Previous' ?>
+            &nbsp; | &nbsp;<?= ($pno < $end) ? Gem::linkTo(["href" => $link . '&page='. $page->next, "text" => "Next" ]) : 'Next' ?>
+            &nbsp; | &nbsp;<?= ($pno < $end) ? Gem::linkTo(["href" => $link . '&page='. $page->last, "text" => "Last" ]) : 'Last' ?>
+            &nbsp;|&nbsp; Page <?=  $page->current . "/" . $page->last  ?>
+             &nbsp;|&nbsp;  <?= Gem::linkTo(["href" => $m->url  . "?orderby=" . $m->orderby, "text" => "All" ]) ?>
+         <?php else: ?>
+             &nbsp;&nbsp;<?= Gem::linkTo([ "href" => $m->url . "?page=1&orderby=" . $m->orderby, "text" => "Pages" ]) ?>
+        <?php endif ?>
+
+        <div class="row box">
+            <div class="col-3">
+                # <span class="float-right"><?=Gem::linkTo(['href' => $ubase . $orderalt['name'], 'text' => 'Name' . $col_arrow['name'] ]) ?></span>
+            </div>
+            <div class="col-1">
+                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['surname'], 'text' => 'Surname' . $col_arrow['surname'] ]) ?></span>
+            </div>
+            <div class="col-3">
+                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['email'], 'text' => 'Email' . $col_arrow['email'] ]) ?></span>
+            </div>
+            <div class="col-2">
+                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['phone'], 'text' => 'Phone' . $col_arrow['phone']]) ?></span>
+            </div>
+            <div class="col-2">
+                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['city'], 'text' => 'Suburb' . $col_arrow['city']]) ?></span>
+            </div>
+            <div class="col-1">
+                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['status'], 'text' => 'Status' . $col_arrow['status']]) ?></span>
+            </div>
+        </div>
+
+       <?php 
+                $rno = ( $page->current -1 ) * $m->pgsize;
+                foreach($data as $row): 
+                        $rno += 1;
+        ?>
+            <div class="row">
+                <div class="col-3">
+                    <?=  $rno  ?> <span class="float-right"><?=  $row['fname']  ?></span>
+                </div>
+                <div class="col-1">
+                    <?=  $row['lname']  ?>
+                </div>
+                <div class="col-3">
+                    <?=  $row['email_address']  ?>
+                </div>
+                <div class="col-2">
+                    <?=  $row['phone']  ?>
+                </div>
+                <div class="col-2">
+                    <?=  $row['city']  ?>
+                </div>
+                <div class="col-1">
+                    <?=  $row['mcstatus']  ?>
+                </div>
+            </div>
+        <?php endforeach ?>
+    </div>
+</div>

@@ -1,0 +1,125 @@
+<?php
+//$view = $this->data['view'];
+use WC\HtmlGem as Gem;
+$evt = $m->evt;
+$rego = $m->rego;
+$assets->add(['bootstrap','DateTime','SummerNote']);
+
+?>
+
+
+<style>
+    .label {
+        min-width:150px;
+        text-align:right;
+        padding-right:10px;
+        font-weight: bold;
+        vertical-align:top;
+    }
+    .vspace {
+        margin-bottom : 1.0em;
+    }
+    
+</style>
+<div class="container-fluid body-wrap">
+    <hr>
+    <form id="edtevt" method="post" action="/admin/eventpost" onsubmit="smotePost()">
+        <?= Gem::hidden( ['name'=>'id', 'value'=> $evt->id ]) ?> 
+        <div class="row vspace">
+            <div class="col-4" >
+                <?= Gem::datetime(['label' => "From", 'name' => "fromtime", 'size' => 20, 'value' => $evt->fromtime]) ?>
+             </div>
+             <div class="col-4">
+                <?= Gem::datetime(['label' => "To", 'name' => "totime", 'size' => 20, 'value' => $evt->totime]) ?>
+           </div>
+        </div>
+        <div class="row vspace">
+             <div class="col-4">
+                <?= Gem::plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt->slug]) ?>
+            </div>
+            <div class="col-4">
+                <?= Gem::checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt->enabled]) ?>
+            </div>
+        </div>
+        <div class="row vspace">
+             <div class="col">
+                <?= Gem::multiline(['label' => "Detail", 
+                    'id' => 'reg_detail', 
+                    'name' => "reg_detail", 
+                    'cols' => 80, 'rows'=>7, 
+                    'style' => "display:none;",
+                    'value' => $evt->reg_detail]) ?>
+            </div>
+
+        </div>
+        <div class="row vspace">
+            <div class="col-3"></div>
+            <div class="col-4">
+                <?= Gem::submit(['name' => 'submit', 'value' => 'Update' ]); ?>
+            </div>
+        </div>
+    </form>
+    <hr>
+        <?php if (!empty($rego)): ?>
+              <div class="row body-wrap pad10">
+                  <div class="col-4 text-center">
+                  <span class="title">Registrations</span>
+                  </div>
+              </div>
+  <hr>
+                <?php foreach($rego as $rg): ?>  
+                    <div class="row">
+                        <div class="col-3"><?= $rg->fname ?>&nbsp;<?= $rg->lname ?></div>
+                        <div class="col-3"><?= $rg->email ?></div>
+                        <div class="col-2"><?= $rg->phone ?></div>
+                        <div class="col-1"><?= $rg->people ?></div>
+                        <div class="col-2"><?= $rg->created_at ?></div>
+                    </div>
+                    <hr>
+                <?php endforeach ?>
+              <?php endif ?>
+</div>
+<?php
+$js = <<<EOJS
+<script>
+var AboutToSubmit = false;
+
+function smotePost() {
+    if ($('#reg_detail').summernote('codeview.isActivated')) {
+        $('#reg_detail').summernote('codeview.deactivate');
+    }
+    AboutToSubmit = true;
+    return true;
+}
+
+function smoteOptions() {
+    smote = {
+        callbacks: {
+            onChange: function (contents) {
+                if (contents) {
+                    var winEvent = window.attachEvent || window.addEventListener;
+                    var chkEvent = window.attachEvent ? 'onbeforeunload' : 'beforeunload';
+
+                    winEvent(chkEvent, function (e) {
+                        if (AboutToSubmit)
+                            return true;
+                        var confirmationMessage = 'This page is asking you to confirm that you want to leave - data you have entered may not be saved';
+                        (e || window.event).returnValue = confirmationMessage;
+                        return confirmationMessage;
+                    });
+                }
+            }
+        }
+    };
+    return smote;
+}
+
+function edit_setup() {
+    $("#reg_detail").summernote(smoteOptions());
+}
+
+$(document).ready(edit_setup);
+</script>
+EOJS;
+$assets->addJS($js);
+?>

@@ -68,7 +68,7 @@ class BlogToCategory extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("blog_to_category");
         $this->belongsTo('category_id', 'App\Models\BlogCategory', 'id', ['alias' => 'BlogCategory']);
         $this->belongsTo('blog_id', 'App\Models\Blog', 'id', ['alias' => 'Blog']);

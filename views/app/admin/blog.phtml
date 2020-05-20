@@ -1,0 +1,123 @@
+<?php
+
+use WC\HtmlGem as Gem;
+
+$assets->add(['bootstrap', 'select']);
+$theme = "/" . $m->theme;
+$catId = $m->catId;
+$orderalt = $m->orderalt;
+$col_arrow = $m->col_arrow;
+$isEditor = $m->isEditor;
+
+$catItems = $m->catItems;
+$url = "/admin/blog/";
+
+if ($catId > 0) {
+    $ubase = $url . "?catId=" . $catId . "&orderby=";
+} else {
+    $ubase = $url . "?orderby=";
+}
+$link = $ubase . $m->orderby;
+$page = $m->page;
+?>
+
+<style>
+    span.lighten {
+        color:#774488;
+    }
+    a:link {
+        color:black;
+    }
+    a:visited {
+        color:darkblue;
+    }
+    div.gap {
+        padding-bottom:15px;
+        margin-bottom:15px;
+    }
+</style>
+
+<div class="body-wrap">
+    <a href="/admin/dash" class="btn btn-outline-default title">Dash</a> 
+<?php if ($page->last > 1): ?>
+        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link, 'text' => "First"]) ?>
+        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page=' . $page->before, 'text' => "Previous"]) ?>
+        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page=' . $page->next, 'text' => "Next"]) ?>
+        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page=' . $page->last, 'text' => "Last"]) ?>
+<?php endif ?>
+    &nbsp;|&nbsp;  <?= $page->current . "/" . $page->last ?>
+    &nbsp;|&nbsp;  
+    <?= Gem::linkTo(['href' => $url . 'new', 'text' => "New Article", 'class' => "title"]) ?>
+
+    <?php if (!empty($catItems)): ?>
+        <div class="container">
+            <form method='get'>
+                <?= Gem::select(['label' => 'Category', 'class' => 'selectpicker', 'list' => $catItems, 'name'=>'catId', 'value' => $catId]) ?>
+                <?= Gem::hidden(['name'=>'args' , 'value' => $m->args]) ?> 
+                <?= Gem::submit( [ 'value' => "Fetch" ]) ?>
+            </form>
+        </div>
+<?php endif ?>
+</div>
+<div class="container outerwrap">
+    <form method="post" action="<?= $url . 'postflag' ?>" >
+
+        <table class="table table-bordered table-striped" align="center">
+            <thead>
+                <tr>
+                    <th><img src='<?= $theme ?>/tick16.png' /></th>
+                    <th style="width:50%;"><?= Gem::linkTo(['href' => $ubase . $orderalt['title'], 'text' => 'Title' . $col_arrow['title']]) ?></th>
+                    <th style="width:15%;"><?= Gem::linkTo(['href' => $ubase . $orderalt['author'], 'text' => "Author" . $col_arrow['author']]) ?></th>
+                    <th style="width:10%;"><?= Gem::linkTo(['href' => $ubase . $orderalt['date'], 'text' => "Date" . $col_arrow['date']]) ?></th>
+                    <th>Feature</th>
+                    <th>Enable</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                foreach ($page->items as $blog):
+                    $pubdate = (new DateTime($blog['date_published']))->format('d M y');
+                    ?>
+                    <tr>
+                        <td><?= Gem::checkbox(['name' => 'op' . $blog['id']]) ?></td>
+                <?php if ($isEditor): ?>
+                <td class="leftCell"><?= Gem::linkTo(['href' => $url . "edit/" . $blog['id'], 'text' => $blog['title']]) ?></td>
+    <?php else: ?>
+                <td><link-to href="<?= '/article/' . $blog['title_clean'] ?>" text="<?= $blog['title'] ?>" /></td>
+    <?php endif ?>
+              
+                <td><span class="lighten"><?= $blog['author_name'] ?></span></td>
+                <td><span class="lighten"><?= $pubdate ?></span></td>
+                <td><?php if ($blog['featured']): ?>
+                        <img src="<?= $theme ?>/tick16.png" />
+                    <?php endif ?></td>
+                <td><?php if ($blog['enabled']): ?>
+                        <img src='<?= $theme ?>/tick16.png' />
+                    <?php endif ?></td>
+                <td><?php if ($blog['comments']): ?>
+                        <img src='<?= $theme ?>/tick16.png' />
+                <?php endif ?></td>
+                </td>
+                </tr>
+<?php endforeach ?>
+            </tbody>
+        </table>
+        <div class="row gap">
+            <div class="col-2">
+                <select name="flagsel">
+                    <option value="enable">Enable</option>
+                    <option value="disable">Disable</option>
+                    <option value="comment">Comment</option>
+                    <option value="noComment">No Comment</option>
+                    <option value="feature">Feature</option>
+                    <option value="noFeature">No Feature</option>
+                </select>
+            </div>
+            <div class="col">
+<?= Gem::submit(['value' => "Change selected"]) ?>
+            </div>
+        </div>
+        <hidden name="args" value="<?= $m->args ?>" ></hidden>
+    </form>
+</div>

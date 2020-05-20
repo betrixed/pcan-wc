@@ -358,7 +358,7 @@ class Image extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("image");
         $this->hasMany('id', 'App\Models\ImgGallery', 'imageid', ['alias' => 'ImgGallery']);
         $this->belongsTo('galleryid', 'App\Models\Gallery', 'id', ['alias' => 'Gallery']);

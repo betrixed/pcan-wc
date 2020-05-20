@@ -1,0 +1,44 @@
+<?php
+$data = $m->data;
+$assets->add('bootstrap');
+?>
+
+<div class='outerwrap pad10'>
+    <h4><a href="/dash">Dash</a>  ---  Mail Chimp Lists</h4>
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <label>Name</label>
+            </div>
+            <div class="col-2">
+                 <label>last subscribe</label>
+            </div>
+            <div class="col-2">
+                 <label>last unsubscribe</label>
+            </div>
+        </div>
+    
+        <hr>
+        <?php foreach($data as $list): ?>
+        <div class="row">
+        <div class="col-3">
+            <a href="<?= '/admin/chimp/mlist/' . $list->id ?>"><?=  $list->listName ?></a>
+        </div>
+        <div class="col-2">
+           <?= $list->last_sub  ?>
+        </div>
+        <div class="col-2">
+          <?= $list->last_unsub  ?>
+        </div>
+        </div>
+    <?php endforeach ?>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-4">
+        </div>
+        <div class="col-4">
+            <a class="btn btn-warning" href="/admin/chimp/downsync">Update from MailChimp</a>
+        </div>
+    </div>
+</div>

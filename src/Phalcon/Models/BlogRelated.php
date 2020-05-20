@@ -68,7 +68,7 @@ class BlogRelated extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("blog_related");
         $this->belongsTo('blog_related_id', 'App\Models\Blog', 'id', ['alias' => 'Blog']);
     }

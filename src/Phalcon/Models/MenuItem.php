@@ -300,7 +300,6 @@ class MenuItem extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
         $this->setSource("menu_item");
     }
 

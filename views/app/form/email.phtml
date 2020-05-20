@@ -1,0 +1,63 @@
+<?php
+$assets->add(['bootstrap','validate']);
+
+$url = $m->url;
+$blog = $m->blog;
+$formid = $m->formid;
+?>
+
+<div class='container outerwrap novosti pad10'>
+    <?php if (!empty($blog)): ?>
+        <div class="<?= $blog['style '] ?>" >
+            <?= $blog['article'] ?>
+        </div>
+    <?php endif ?>
+    <form id="<?=$formid?>" method='post' action="<?= $url . 'post' ?>">
+        <div class="alert alert-error" style="display: none">
+            <p><strong>Failed!</strong> 
+    Your form has not been sent, 
+    please make sure all required fields are filled in.</p>
+	</div>
+        <div id="msgfields">
+            <?php $this->partial('form/email_form') ?>
+        </div>
+    </form>
+</div>
+
+
+<?php
+$blob = <<<EOJS
+<script>
+function formid_submit() {
+    var fm = $("#$formid");
+    var purl = fm.attr('action');
+    var request_method =fm.attr("method");
+    var form_data = fm.serialize();
+
+    $.ajax({
+            type: request_method,
+            url:  purl,
+            data: form_data
+        }).done(function(response) {
+             $("#msgfields").html(response);
+        }) ;
+        
+    $("#submit").hide();
+    $("#loading").show();
+}    
+</script>
+EOJS;
+$assets->addJS($blob);
+?>
+
+<?php
+$blob = <<<EOJS
+<script>
+function doprep() {
+    prep_valid();      
+};
+window.onload = doprep; 
+</script>
+EOJS;
+$assets->addJS($blob);
+?>

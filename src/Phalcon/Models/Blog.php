@@ -358,7 +358,6 @@ class Blog extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
         $this->setSource("blog");
         $this->hasMany('id', 'App\Models\BlogComment', 'blog_id', ['alias' => 'BlogComment']);
         $this->hasMany('id', 'App\Models\BlogMeta', 'blog_id', ['alias' => 'BlogMeta']);

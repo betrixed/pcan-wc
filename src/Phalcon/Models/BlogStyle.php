@@ -68,7 +68,7 @@ class BlogStyle extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("blog_style");
         $this->hasMany('style_class', 'App\Models\Blog', 'style', ['alias' => 'Blog']);
     }

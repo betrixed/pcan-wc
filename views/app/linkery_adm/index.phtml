@@ -1,0 +1,41 @@
+<?php
+use WC\HtmlGem as Gem;
+    $ubase = "/admin/linkery?orderby="; 
+    $link = $ubase . $m->orderby;  
+     $page =  $m->page;
+     $url = $m->url;
+     $assets->add('bootstrap');
+?>
+<div class='container outerwrap'>
+
+<a href="/dash">Dash</a> &nbsp; &gt;&gt; &nbsp;
+      <span><b>Linkery Index</b></span> &nbsp; &#x2609; &nbsp;
+   <link-to href="<?= $link ?>" text="First" ></link-to> &nbsp; | &nbsp;
+    <link-to href="<?= $link . '&page=' . $page->before   ?>" text="Previous" /> &nbsp; | &nbsp;
+ <link-to href="<?= $link . '&page=' . $page->next   ?>" text="Next" /> &nbsp; | &nbsp;
+ <link-to href="<?= $link . '&page=' . $page->last   ?>" text="Last" /> &nbsp; | &nbsp;
+ <?= $page->current . "/" . $page->last  ?> &nbsp; &#x2609; &nbsp;
+ <a href="<?= $url . 'new'  ?>" >New Linkery</a>
+ <div class="body-wrap">
+<table class='table table-striped'>
+    <thead>
+        <tr>
+            <th class='leftCell'>Path</th>
+            <th class='leftCell'>Description</th>
+              <th>Upload</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($page->items as $linkery): 
+            $udate = strtotime($linkery->created_on);  ?>
+            <tr>
+    <td class='leftCell'><?= Gem::linkTo(['href'=>$url . 'edit/' . $linkery->id, 'text'=> $linkery->name])?></td>
+            <td class='leftCell'><?= $linkery->description  ?></td>
+            <td><p><?= date('d-M-Y', $udate) .  ' ' . date('H:i', $udate)  ?></p></td>
+        </tr>
+        <?php endforeach ?>
+
+    </tbody>
+</table>
+ </div>
+</div>

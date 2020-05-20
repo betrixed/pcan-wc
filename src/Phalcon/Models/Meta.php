@@ -184,7 +184,7 @@ class Meta extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("meta");
         $this->hasMany('id', 'App\Models\BlogMeta', 'meta_id', ['alias' => 'BlogMeta']);
     }

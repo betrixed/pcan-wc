@@ -1,0 +1,50 @@
+<!-- <?= 'File: ' . __FILE__ ?> -->
+<style>
+    nav  {
+        background-image: url("/<?=$m->theme?>/tile-fog.png");
+        color:lightcoral;
+    }
+    ul.navbar-nav a {
+        font-size:1.2em;
+    }
+    .nav-link {
+        font-weight:bold;
+    }
+    .navbar-brand {
+        padding-top:0;
+        padding-bottom:0;
+    }
+    .navbar {
+        padding:0 0;
+        margin: 0 0;
+    }
+    .site-logo img {
+       max-height:100%;
+        padding:5px;
+    }
+    
+    .view-title {
+        background-color: white;
+        color:darkslateblue;
+        font-weight:bold;
+        font-size:1.5rem;
+        padding-right:10px;
+       height:70px;
+    }
+</style>
+<nav class="navbar navbar-expand-lg navbar-light ">
+    <div class="view-title">
+        <a class="site-logo" href="/"><img src="/<?=$m->theme?>/site-logo.png"></a>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown"> 
+          <ul class="navbar-nav mr-auto">
+            <?=  $this->partial('menus') ?>
+        </ul>
+        <ul class="navbar-nav ml-auto"  style="border-left-width:5px; border-left-style: groove;">
+            <?=  $this->partial('menus_admin') ?>
+        </ul>
+    </div>
+</nav>

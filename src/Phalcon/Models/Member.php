@@ -445,7 +445,7 @@ class Member extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("member");
         $this->hasMany('id', 'App\Models\Donation', 'memberid', ['alias' => 'Donation']);
         $this->hasMany('id', 'App\Models\MemberEmail', 'memberid', ['alias' => 'MemberEmail']);

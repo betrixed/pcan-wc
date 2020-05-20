@@ -126,7 +126,7 @@ class MemberEmail extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("member_email");
         $this->hasMany('id', 'App\Models\ChimpEntry', 'emailid', ['alias' => 'ChimpEntry']);
         $this->belongsTo('memberid', 'App\Models\Member', 'id', ['alias' => 'Member']);

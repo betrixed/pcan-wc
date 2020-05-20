@@ -1,0 +1,84 @@
+<?php 
+$assets->add('bootstrap');
+$url = '/admin/dash/cmd/';
+
+?>
+<div style="font-size:24px;">
+<div class="container outerwrap pad10">
+    <div class="row">
+        <div class="col-3">
+            <a href="/admin/blog">Articles</a>
+        </div>
+        <div class="col-3">
+            <a href="/admin/blog/export">Backup/Export</a>
+        </div>
+        <div class="col-3">
+            <a href="/admin/blog/import">Import</a>
+        </div>
+        <div class="col-3">
+           <a href="/admin/info">PHP Info</a>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col-3">
+            <a href="/admin/link">Links</a><br>
+        </div>
+        <div class="col-3">
+            <a href="/admin/linkery">Linkery</a>
+        </div>
+        <div class="col-3">
+            <a href="/admin/user">User Index</a>
+        </div>
+        <div class="col-3">
+            <a href="/admin/shop">Shop</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+           <a href="/admin/gallery">Gallery</a>
+        </div>
+        <div class="col-3">
+            <a href="/admin/menu">Menus</a>
+        </div>
+        <div class="col-3">
+            <a href="/admin/member/list">Members</a>
+        </div>
+        <div class="col-3">
+            <a href="/admin/chimp/lists">Mail Chimp Lists</a>
+        </div>
+    </div>
+    <div class="row">
+            <div class="col-3">
+            <a href="/admin/series">Series</a><br>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+           <button id="asset_cache" class="dbtn">Clear Asset Cache</button>
+        </div>
+        <div class="col-3">
+           <button id="model_cache" class="dbtn">Clear Model Cache</button>
+        </div>
+    </div>
+</div>
+
+<?php
+$js = <<<EOJS
+<script charset="UTF-8" type="text/javascript">
+function dbtn_handle(e) {
+    var url="$url" + e.target.id;
+    $.get(url, function(data, status) {
+        alert("Data: " + data + "\\nStatus: " + status);
+    });
+}
+
+function setup_dash() {
+    $(".dbtn").on("click", dbtn_handle);
+}
+
+window.onload = setup_dash;
+</script>
+EOJS;
+$assets->addJS($js); 
+?>

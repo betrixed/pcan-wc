@@ -1,0 +1,84 @@
+<?php
+if ( $view->layout):
+    $this->layout( $view->layout, $this->data);
+endif;
+$hasEvents = !empty($m->events);
+?>
+
+<style>
+    div.sidebox {
+        background-color:whitesmoke;
+        border-radius:4px;
+        overflow-x: hidden;
+    }
+    div.sidebox iframe {
+        width:100%;
+    }
+    div.title-area span.link-sitename {
+        color:darkred;
+        font-size:1.2em;
+    }
+</style>
+<div class="container-fluid">
+    <?php if ($hasEvents): ?>
+        <div class="row body-wrap pad10">
+            <div class="col-2">
+                <h1>Sydney Events</h1>
+            </div>
+            <div class="col-10">
+                <?php foreach($m->events as $box): 
+                    $href = "/article/" . $box['title_clean'];
+                    ?>
+                    <div class="<?= $box['style'] ?>">
+                        <div class="title"><a href="<?= $href ?>"><?= $box['title'] ?></a></div>
+                        <p><?= $box['content'] ?> </p>
+                    </div>
+                    <hr>
+              <?php endforeach; ?>
+            </div>
+        </div>
+   <?php endif; ?>
+    <div class="row">
+        <div class="col-lg-5">
+            <?php foreach($m->sides as $box): ?>
+                <div class="sidebox">
+                    <span class='link-title'><?= $box['title'] ?></span>
+                    <span class='link-summary'><?= $box['summary'] ?></span>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div class='col-lg-7 body-wrap pad10'>
+            <?php foreach($m->main as $link): 
+                 $url = $link['url'];
+                $ulen = strlen($url);
+                $urlhint = ($ulen > 55) ? substr($url,0,25) . '...' . substr($url,$ulen-27) : $url;
+?>
+                <div class='mitem' id='lnk<?= $link['id'] ?>'>
+                    <div class="title-area">
+                        <span class="link-title">
+                            <a  href='<?= $url  ?>' target='_blank'><?= $link['title'] ?></a>
+                        </span>
+                        <span class='link-sitename float-right' ><?= $link['sitename'] ?></span>
+                    </div>
+                    <div class="clear"></div>
+<div class="link-summary">
+    <?php if(!empty($link['im_file'])): ?>
+    <figure style="float:left;width:47%;max-width:450px;margin:10px;">
+        <img src="<?= $link['im_path'] . $link['im_file'] ?>" style="width:100%; margin:0;">
+        <?php if (!empty($link['im_caption'])): ?>
+        <figcaption style="border-style:solid; padding:4px; font-size:0.9em;"><?= $link['im_caption'] ?></figcaption>
+        <?php endif ?>
+    </figure>
+    <?php endif ?>
+    <?= $link['summary'] ?>
+</div>
+                    <?php if ($link['urltype'] == 'Blog'): ?>
+                        <a href = '<?= $url ?>' target='_blank' title="<?= $urlhint ?>">&nbsp;.. more</a>
+                        <?php endif; ?>
+                </div>
+                <div class="clear"></div>
+                <hr>
+           <?php    endforeach; ?>
+        </div>
+    </div>
+</div>

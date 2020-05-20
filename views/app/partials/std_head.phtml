@@ -1,0 +1,14 @@
+<head>
+    <meta charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+    <?php
+    if (isset($m->metaloaf)): 
+        foreach($m->metaloaf as $meta):
+            echo($meta) . PHP_EOL;
+        endforeach;
+    endif; ?>
+    <?php if (isset($m->title)): ?>
+    <title><?= $m->title ?></title>
+    <?php endif; ?>
+    <?= $assets->CssHeader(); ?> 
+</head>

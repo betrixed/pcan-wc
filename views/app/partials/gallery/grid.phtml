@@ -1,0 +1,50 @@
+<?php 
+    $images = $m->images;
+    $gallery = $m->gallery;
+    $assets->add('grid');
+?>
+<style>
+    .item-sep {
+        padding:10px;
+        background-color:black;
+        margin:10px;
+    }
+</style>
+
+<?php if (!empty($images)): 
+  $linkpath = "/" . $gallery->path . "/";
+  $row_id = 0;
+  $view_thumbs = $gallery->view_thumbs;
+?>
+    <div id="mgrid" data-columns>
+    <?php foreach($images as $fup): 
+      $info = $fup['size_str'] . ' ' . $fup['mime_type'];
+      $row_id = $row_id + 1;
+      $chkid = "chk" . $row_id;
+      $idate = strtotime($fup['date_upload']);
+      $name = $fup['name'];
+      $fname = pathinfo($name,PATHINFO_FILENAME);
+      $linkname = $linkpath .  $name; 
+      if ($view_thumbs):
+          if (!empty($fup['thumb_ext'])):
+            $img = $linkpath . 'thumbs/' . $fname . "." . $fup['thumb_ext'];   
+          else:
+            $img = $linkpath . 'thumbs/' . $fname . '.png'; 
+          endif; 
+      else:
+         $img = $linkname;
+      endif;
+    ?>
+            <div class='mitem' id="{{ 'lnk' . $fup.id }}">
+                <div style="padding:10px;background-color:black;color:white;">
+                <?php
+                    echo "<p>" . htmlspecialchars($fup['description']) . "</p>";
+                    echo "<a href=\"$linkname\"><img src=\"$img\" style=\"width:100%;\" title=\"$info\"></a>";
+                ?>
+                </div>
+            </div>
+        <?php endforeach ?>
+    </div>
+    <?php else: ?>
+    <p>No image files in this gallery yet</p>
+<?php endif ?>

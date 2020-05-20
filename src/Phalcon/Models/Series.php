@@ -126,7 +126,7 @@ class Series extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("series");
         $this->hasMany('id', 'App\Models\Gallery', 'seriesid', ['alias' => 'Gallery']);
     }

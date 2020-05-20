@@ -97,7 +97,7 @@ class BlogMeta extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("blog_meta");
         $this->belongsTo('blog_id', 'App\Models\Blog', 'id', ['alias' => 'Blog']);
         $this->belongsTo('meta_id', 'App\Models\Meta', 'id', ['alias' => 'Meta']);

@@ -1,0 +1,224 @@
+<?php
+use WC\HtmlGem as Gem;
+$assets->add(['bootstrap', 'SummerNote', 'DateTime', 'jquery-form', 'blog-edit']);
+$blog = $m->blog;
+$metatags = $m->metatags;
+$url = $m->url;
+$stylelist = $m->stylelist;
+$module = '/admin/';
+$btn_class = 'btn btn-outline-secondary';
+$air_text = empty($m->airmode) ? 'Switch to "Air-Mode"' : 'Switch to Edit Frame';
+    
+
+?>
+
+<style>
+    .form-check label {
+        padding-left:10px;
+        padding-right:40px;
+        font-weight:bold;
+    }
+    
+    .form-check-input {
+        margin-left:0px;
+    }
+    .col-form-label {
+        min-width:100px;
+        padding-right:10px;
+        padding-left:10px;
+        font-weight:bold;
+        text-align:right;
+    }
+
+    .date label {
+        min-width:150px;
+        font-weight:bold;
+        text-align:right;
+        padding-right:10px;
+        padding-left:10px;
+    }
+
+    .date input {
+        max-width:300px;
+    }
+</style>
+<div class='row center' style="padding-top:15px; padding-bottom:0; ">
+    <div class="col-2">
+        <span><?= Gem::linkTo(['text'=>"Articles", 'href'=> $module . 'blog',  'class' => $btn_class]) ?></span>
+    </div>
+    <div class="col-2">
+        <?= Gem::linkTo(['href'=>$module ."links/blog/" . $blog->id, 'text'=>"Generate Link" , 'target' => '_blank',  'class' => $btn_class]) ?> 
+    </div>
+    <div class="col-2">
+        <?= Gem::linkTo(['href' => $module . "gallery", 'text' => "Galleries",  'target' => '_blank',  'class' => $btn_class]) ?>
+    </div>
+</div>
+
+<form action="<?=$url.'post'?>"
+      id="postForm"
+      method='post'
+      onsubmit='smotePost()'>
+    <?= Gem::hidden(["name" => 'id', "value" => $blog->id]) ?>
+
+    <div class="container-fluid">
+        <div class='row'>
+            <div class='col-7 outerwrap'>
+                <div class='form-group'>
+                    
+                    <label class='col-form-label' for="title">Title</label>
+                    <?= Gem::plainText(['name'=>'title', 'size'=>40, 'value'=> $blog->title]) ?><br>
+                    <label class=' col-form-label' for="issue">Issue</label>
+                    <?= Gem::plainText(['name'=>'issue', 'size'=>4, 'value'=> $blog->issue]) ?>
+                </div>
+                <div class='form-group'>
+                    <label class='col-form-label' for="lock_url">Unlock URL</label>
+                    <?= Gem::checkbox(['name'=>'lock_url', 'size'=>5, 'class'=> "form-check-input"]) ?>
+                   
+                    <label class='col-form-label' for="title_clean">Unique URL</label>
+                     <?= Gem::plainText(['name'=>'title_clean', 'size'=>40, 'value'=> $blog->title_clean]) ?>
+                </div>
+            </div>
+            <div class='col-5 outerwrap'>
+                <div class='form-group'>
+                    <?= 'Updated ' .  $blog->date_updated . ' &nbsp;'  ?>
+                    <?= Gem::submit(['name'=>'save', 'size'=>40, 'value'=> "Save", 'class'=>"btn btn-primary" ]) ?>
+                </div>
+                <div class='form-group'>
+                    <label for="class_select">Select style wrapper</label>
+                    <?= Gem::select(['name'=>'style', 'list'=>$stylelist, 'value'=> $blog->style, 'empty' => 'false', 'onChange' =>'wrapStyle()' ]) ?>
+                </div>
+
+                <div class='form-group'>
+                    <label for="summernote">Article Text</label>
+                    <button id="airbtn" type="button" class='col-form-button' title="This also does a save-submit"
+                            onclick="codeSwitch()"><?=$air_text?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+    <!--
+    <div class="row body-wrap pad10">
+        <button onclick="smoteVerify(); return false;">Verify HTML</button>
+        <textarea id="analysis" cols="80"></textarea>
+    </div>
+    -->
+    <div id='wrap_style' class="<?= $blog->style ?>">
+        <textarea id='article' name='article' style='display:none;' cols='100' rows='25'><?= $blog->article ?></textarea>
+    </div>
+    <div class='container outerwrap'>
+        <span class="heading">Author / Flags</span>
+        <div class='body-wrap'>
+             <div class="row">
+                 <div class="col-3">
+                    <label for="author_id">Author</label>
+                    <?= Gem::number(['name'=>'author_id', 'value' => $blog->issue,  'readonly'=>'readonly' ]) ?>
+                 </div>
+                 <div class="col-4"> 
+                     <?= Gem::datetime(['name'=>'date_published', 'value' => $blog->date_published,  'label' => 'Date', 'class'=>"form-control" ]) ?>
+                 </div>
+             </div>
+            
+            <div class="row">
+                <div class="col-2">
+                    <?= Gem::checkbox(['name'=>'enabled',   'checked'=>$blog->enabled, 'value'=>1 ]) ?>
+                    <label for="enabled">Enabled</label>
+                </div>
+
+            <div class="col-2">
+                <?= Gem::checkbox(['name'=>'featured',   'checked'=>$blog->featured, 'value'=>1 ]) ?>
+                <label for="featured">Featured</label>
+            </div>
+            <div class="col-2">
+                <?= Gem::checkbox(['name'=>'comments',   'checked'=>$blog->comments, 'value'=>1 ]) ?>
+               <label for="comments">Comments</label>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class='container outerwrap'>
+        <span class="heading">Meta-Tags for Search Engines</span>
+        <table class='table table-striped'>
+            <tbody>
+            <?php foreach($metatags as $meta):
+                $label = $meta['meta_name'];
+                $name = 'metatag-' .  $meta['id'];
+                $value = $meta['content'];
+            ?>
+                <tr>
+                    <td class='rightCell'><label for='<?= $name ?>'> <?= $label ?></label></td>
+                    <td class='leftCell'>
+                        <?php if($meta['data_limit'] <= 80): ?>
+                        <?= Gem::plainText(['name'=>$name, 'size'=>65, 'cols'=>65, 'value'=> $value, 'maxlength' => $meta['data_limit'] ]) ?>
+                    <text-field  maxlength='<?= $meta['data_limit'] ?>' />
+                    <?php else: ?>
+                    <textarea name="<?= $name ?>" id="<?= $name ?>"  size="60" cols="60" maxlength="<?= $meta['data_limit'] ?>" ><?= $value ?></textarea>
+                    <?php endif ?>
+                </td>
+                </tr>
+           <?php endforeach ?>
+            </tbody>
+        </table>
+    </div>
+</form>
+<div class='container outerwrap pad10' >
+    <div class="body-wrap">
+     <span class="heading">Category List</span>   
+     <form id='categoryList' action="<?= $url . 'categorytick' ?>" method="post">
+    <div id="category_status" ><?php $this->partial('blog/category') ?></div>
+     </form>
+    </div>
+</div>
+<div class='container outerwrap pad10'>
+    <div id="event_dates" ><?php $this->partial('blog/event_dates') ?></div>
+    <form id='eventForm' action="<?= $url  . 'addevent'?>" method="post" autocomplete="off">
+        <input type="hidden" name="event_blogid" value="<?= $blog->id ?>" />
+        <span class="heading">Add Event</span>
+        <div class="form-group">
+            <?= Gem::datetime(['label'=> "From Date", 'name' => "fromtime", 'class' => "form-control"]) ?>
+            
+        </div>
+        <div class="form-group">
+            <?= Gem::datetime(['label'=> "To Date", 'name' => "totime", 'class' => "form-control"]) ?>
+            
+        </div>
+        <div class="row">
+            <div class="col" style="max-width:200px;" >
+            <?= Gem::plainText(['label' => 'Slug', 'name' => "slug", 'maxlength' => 12, 'size'=>12, 'class' => "form-control", 'autocomplete'=>'off']) ?>
+            </div>
+        </div>
+        <input type="submit" class='btn-danger' value='Add Event'></input>
+    </form>
+</div>
+
+<script>
+function ready_eventList() {
+    $('#eventForm').ajaxForm({
+      complete: function (xhr) {
+        var evtlist = $('#event_dates');
+        evtlist.html(xhr.responseText);
+        evtlist.style.display = 'block';
+        document.refresh;
+    }
+    });
+}
+function ready_catList() {
+    $('#categoryList').ajaxForm({
+      complete: function (xhr) {
+        var status = $('#category_status');
+        status.html(xhr.responseText);
+        status.style.display = 'block';
+        document.refresh;
+    }
+    });
+}
+
+function win_load() {
+    ready_catList();
+    ready_eventList();
+}
+    
+window.onload = win_load;
+   
+</script>

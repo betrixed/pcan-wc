@@ -1,0 +1,11 @@
+<?php 
+$blog = $m->blog;
+$sclass = $blog->style;
+?>
+<div class="container">
+<div class="<?= $sclass  ?>">
+<span class="cattitle"><?= $blog->title ?></span>
+<hr>
+<?= $blog->article ?>
+</div>
+</div>

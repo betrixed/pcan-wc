@@ -97,7 +97,7 @@ class ImgGallery extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        // $this->setSchema("pcan");
         $this->setSource("img_gallery");
         $this->belongsTo('imageid', 'App\Models\Image', 'id', ['alias' => 'Image']);
         $this->belongsTo('galleryid', 'App\Models\Gallery', 'id', ['alias' => 'Gallery']);

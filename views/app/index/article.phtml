@@ -1,0 +1,79 @@
+<?php
+//use WC\HtmlGem as Gem;
+$blog = $m->blog;
+$metadata = $m->metadata;
+$back = $m->back;
+$theme = '/' . $m->theme;
+
+$assets->add(['bootstrap','styles']);
+$assets->minify('pcan_home');
+?>
+
+<style>
+    div#title-box {
+        background-color:white;
+        font-family: Times;
+        font-weight: bold;
+        font-size:1.8em;
+        margin:10px;
+    }
+    div#article-box {
+        border-width:0;
+    }
+    div#metadata {
+        background-image: url( "<?= $theme ?>/tile-fog.png" );
+    }
+</style>
+<div class='container outerwrap'>
+    <div  class="row">
+        <div class="col-6">
+            <?php if($back): ?>
+                Back to <a href="<?= $back ?>"><?= $m->backname ?></a>&nbsp; &nbsp; &nbsp; 
+            <?php endif; ?>
+        </div>
+    </div>
+    <div id="article-box">
+    <div class='<?=$blog->style ?>' >
+        <div id="title-box" class="row">
+             <div class="col">
+            <span><?= $blog->title ?></span>
+             </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <?= $blog->article ?>
+            </div>
+        </div>
+    </div>
+    </div>
+    <?php if ( !empty($metadata) ): ?>
+        <div class='container' id='metadata' style='font-size:0.6em;'>
+            <div class='table'>
+                <?php foreach($metadata as $mtag): ?>
+                   <?php if ($mtag['display'] == 1 && strlen($mtag['content'] ) >0): ?>
+                        <div class="row">
+                            <div class='col-1'><?= $mtag['meta_name'] ?>:</div>
+                            <div class='col-8'><?= $mtag['content'] ?></div>
+                        </div>
+                <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+ <?php endif; ?>
+    <hr />
+</div>
+<div class='clear'></div>
+
+<?php if ( !empty($metadata) ): ?>
+    <div class="fb-share-button" 
+         data-href="<?= $m->canonical ?>" 
+         data-layout="button_count">
+    </div>
+<?php endif; ?>
+<?php if ( $blog->comments ): ?>
+    <div>
+        <div id="fb-root"></div>
+        <fb:login-button autologoutlink="True" length="short" background="white" size="large"></fb:login-button>
+        <div class="fb-comments" data-href="<?= $m->canonical ?>" data-width="900" data-numposts="5"></div>
+    </div>
+<?php endif; ?>

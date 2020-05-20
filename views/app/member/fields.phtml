@@ -1,0 +1,236 @@
+<?php
+use WC\HtmlGem as Gem;
+$rec = $m->rec;
+$url = $m->url;
+$emails = $m->emails;
+$donations = $m->donations;
+$btnclass = 'btn btn-outline-info';
+?>
+<style>
+    .outerwrap {
+        font-size:16pt;
+    }
+    label  {
+        padding-left:15px;
+        padding-right:10px;
+    }
+</style>
+
+<div class='container outerwrap pad10'>
+    <div class="row">
+        <div class="col-4">
+            <p><b>Member Details</b></p>
+        </div>
+        <div class="col-2">
+            <?= Gem::linkTo(['href' => '/dash', 'text' => 'Dash', 'class' => $btnclass]) ?>
+        </div>
+        <div class="col-2">
+            <?= Gem::linkTo(['href' => '/admin/member/list', 'text' => 'List', 'class' => $btnclass]) ?>
+        </div>
+        <div class="col-2">
+            <?= Gem::linkTo(['href' => '/admin/member/new', 'text' => 'New Record', 'class' => $btnclass]) ?>
+        </div>
+
+    </div>
+    <hr>
+    <form id='member' method="post" action="<?= $url . 'post' ?>" >
+        <div class="row">
+            <?= Gem::plainText(['name' => 'fname', 'label' => 'First Name', 'size' => 50, 'value' => $rec->fname]) ?>
+        </div>
+        <div class="row">
+            <?= Gem::plainText(['name' => 'lname', 'label' => 'Last Name', 'size' => 50, 'value' => $rec->lname]) ?>
+        </div>
+        <div class="row">
+            <div class='col-10'>
+                <?= Gem::plainText(['name' => 'addr1', 'label' => 'Street Address', 'size' => 50, 'value' => $rec->addr1]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-10'>
+                <?= Gem::plainText(['name' => 'addr2', 'label' => 'More Address', 'size' => 50, 'value' => $rec->addr2]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-8'>
+                <?= Gem::plainText(['name' => 'city', 'label' => 'City', 'size' => 40, 'value' => $rec->city]) ?>
+            </div>
+            <div class='col-4'>
+                <?= Gem::plainText(['name' => 'state', 'label' => 'State', 'size' => 12, 'value' => $rec->state]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-8'>
+                <?= Gem::plainText(['name' => 'postcode', 'label' => 'Post-Code', 'size' => 8, 'value' => $rec->postcode]) ?>
+            </div>
+            <div class='col-4'>
+                <?= Gem::plainText(['name' => 'country_code', 'label' => 'Country', 'size' => 4, 'value' => $rec->country_code]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class='col-5'>
+                <?= Gem::phone(['name' => 'phone', 'label' => 'Phone', 'size' => 12, 'value' => $rec->phone]) ?>
+            </div>   
+        </div>
+        <div class="row">
+            <div class='col-12'>
+                <?= Gem::plainText(['name' => 'source', 'label' => 'Source', 'size' => 60, 'value' => $rec->ref_source]) ?>
+            </div>   
+        </div>
+        <?php if ($rec->id > 0): ?>
+            <div class="row">
+                <div class='col-6'>
+                    <?= Gem::datetime(['name' => 'create_date', 'label' => 'Created', 'size' => 20, 'value' => $rec->create_date]) ?>
+                </div>   
+                <div class='col-6'>
+                    <?= Gem::datetime(['name' => 'last_update', 'label' => 'Updated', 'size' => 20, 'value' => $rec->last_update]) ?>
+                </div>   
+            </div>
+            <div class="row">
+                <div class='col-8'>
+                    <?= Gem::plainText(['name' => 'status', 'label' => 'Status', 'size' => 20, 'value' => $rec->status]) ?>
+                </div>   
+            </div>           
+        <?php endif ?>
+        <hr>
+        <?= Gem::hidden(['name' => 'id', 'value' => $rec->id]) ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-4">
+                <?= Gem::submit(['name' => 'Submit', 'value' => 'Update Details', 'class' => 'btn btn-info']) ?>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container outerwrap pad10">
+    <form id="email-list" method="post" action="<?= $url . 'empost' ?>">
+        <?= Gem::hidden(['name' => 'mid', 'value' => $rec->id]) ?>
+        <?php if (!empty($emails)): ?>
+            <div class="row">
+
+                <div class="col-6 text-left">
+                    <label><b>Emails</b></label>
+                </div>
+                <div class="col-2 text-center">
+                    <label>delete</label>
+                </div>
+                <div class="col-3 text-left">
+                    <label>Status</label>
+                </div>
+            </div>
+        <?php endif ?>
+        <?php foreach ($emails as $em): ?>
+            <div class="row">
+
+                <div class="col-6">
+                    <?= Gem::email(['name' => 'eml' . $em['id'], 'value' => $em['email_address'], 'readonly']) ?>
+                </div>
+                <div class="col-2 text-center">
+                    <?= Gem::checkbox(['name' => 'chk' . $em['id']]) ?>
+                </div>
+                <div class="col-3">
+                    <?= Gem::hidden(['name' => 'stat' . $em['id'], 'value' => $em['status']]) ?>
+                    <?php
+                    $boxargs['name'] = 'chimp' . $em['id'];
+                    if ($em['status'] === 'subscribed'):
+                        $boxargs[] = 'checked';
+                    endif;
+                    echo (Gem::checkbox($boxargs));
+                    ?>
+                    <span><?= $em['status'] ?></span>
+                </div>
+            </div>
+        <?php endforeach ?>
+        <hr>
+        <div class="row">
+            <div class="col-3 text-right">
+                Add email
+            </div>
+            <div class="col-6">
+                <?= Gem::email(['name' => 'eml0']) ?>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-6">
+                <?= Gem::submit(['value' => 'Add email']) ?>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="container body-wrap" >
+    <form id="update" method="post" action="<?= $url . 'update' ?>" >
+    <div class="row">
+            <?= Gem::hidden(['name' => 'uid', 'value' => $rec->id]) ?>
+            <div class="col-8">
+                
+            </div>
+            <div class="col float-right">
+                <span>Verify Chimp Status</span>
+                <?= Gem::submit([ 'value' => 'Verify', 'class' => $btnclass]) ?>
+            </div>
+       
+    </div>
+    </form>
+</div>
+
+<div class="container outerwrap pad10">
+    <div class="row">
+        <div class="col">
+            <span><b>Donations & Membership</b></span>
+        </div>
+    </div>
+
+
+    <?php if (!empty($donations)): ?>
+        <div id="donateList">
+            <div class="row">
+                <div class="col-2"><span>Date</span></div>
+                <div class="col-2"><span>Purpose</span></div>
+                <div class="col-2 text-right"<span class="align-right">Amount</span></div>
+            </div>
+            <hr>
+            <?php foreach ($donations as $dn): ?>
+                <div class="row" id="dnid<?= $dn['donateId'] ?>">
+                    <div class="col-2">
+                        <span><?= $dn['member_date'] ?></span>
+                    </div>
+
+                    <div class="col-2">
+                        <span><?= $dn['purpose'] ?></span>
+                    </div>
+                    <div class="col-2 text-right">
+                        <span class="align-right"><?= Gem::price($dn['amount']) ?></span>
+                    </div>
+                </div>
+            <?php endforeach ?>
+        </div>
+    <?php endif ?>
+    <hr>
+    <form id="donateForm" method="post" action="<?= $url . 'donate' ?>" >
+        <?= Gem::hidden(['name' => 'duid', 'value' => $rec->id]) ?>
+        <div class="row">
+            <div class="col-3">
+                <?=
+                Gem::money(['label' => 'Amount', 'name' => 'amount', 'value' => 10.00,
+                    'min' => 0.00, 'max' => 10000.00, 'step' => 'any', 'size' => 6])
+                ?>
+            </div>
+            <div class="col-3">
+                <?=
+                Gem::select(['list' => ['donate' => 'Donation', 'member' => 'Membership'],
+                    'name' => 'purpose', 'label' => 'For'])
+                ?>
+            </div>
+            <div class="col-1">
+<?= Gem::submit(['value' => 'Add Record', 'class' => 'btn btn-info']) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+<?= Gem::datetime(['name' => 'member-date', 'label' => 'Date']) ?>
+            </div>
+        </div>
+    </form>
+
+</div>

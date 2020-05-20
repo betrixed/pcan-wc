@@ -1,0 +1,57 @@
+<?php 
+use WC\HtmlGem as Gem;
+use App\Link\BlogExport as Import;
+$packs = $m->packs;
+$url= $m->url;
+$rowid = 0;
+$assets->add(['bootstrap', 'select']);
+?>
+
+<div class="body-wrap">
+    <a href="/dash" class="btn btn-outline-default title">Dash</a> 
+    &nbsp; &#x2609; &nbsp; Import from <?= $m->path ?>
+</div>
+<div class="container outerwrap">
+     <form method="post" action="<?= $url . 'importpost' ?>" >
+    <table class="table table-bordered table-striped" align="center">
+        <thead>
+            <tr>
+                <th><img src='/image/gallery/site/tick16.png' /></th>
+                <th>Compare</th>
+                <th>Title</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>Here</th>
+            </tr>
+        </thead>
+        <tbody>
+         <?php 
+            foreach($packs as $pack): 
+                $blog = $pack['blog'];
+                $pubdate = (new DateTime($blog['date_published']))->format('d M y'); 
+                $update = $blog['date_updated']; //(new DateTime(@blog.date_updated))->format('d M y');
+                if (isset($pack['match'])) {
+                    $match = $pack['match']->date_updated;
+                }
+                else {
+                    $match = null;
+                }
+                $rowid += 1;
+            ?>
+            <tr>
+                <td> <?= Gem::checkbox(['name' => 'op-' . $rowid, 'value' => $pack['file'] ]) ?></td>
+                <td><?= $pack['compare'] ?></td>
+                <td class="leftCell"><?= $blog['title'] ?></td>
+                <td><?= $pubdate ?></td>
+                <td><?= $update ?></td>
+                </tr>
+                <?php endforeach ?>
+        </tbody>
+    </table>
+         <?= Gem::select(['name' => 'bksel', 'list' => Import::importOptions(), 
+             'class' => 'selectpicker']) ?>
+      <?= Gem::submit(['value' => 'Execute']) ?>
+    <?= Gem::hidden(['name' => 'args', 'value' => $m->args]) ?>
+     </form>
+</div>
+

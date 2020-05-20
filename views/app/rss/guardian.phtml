@@ -1,0 +1,71 @@
+<?php
+if ($view->layout) {
+    $this->layout($view->layout, $this->data);
+}
+$items = $m->items;
+?>
+
+<style>
+    .frss {
+        
+    }
+    
+    .frss img {
+        margin:0;
+        width:100%;
+    }
+    .cwrap {
+        background-color: rgba(255,255,255,1);
+        opacity:1;
+    }
+    .ctitle {
+        font-size:1.2em;
+        font-weight:bold;
+    }
+    .icaption {
+        border-style:solid;
+        font-size:0.85em;
+        padding:3px;
+    }
+    
+    .allwrap {
+        background-color:rba(100,100,100,0.4);
+        content:"";
+        z-index:-2;
+
+    }
+</style>
+<div class="allwrap">
+    <hr>
+<?php foreach($items as $ni):?>
+<div class="container cwrap">
+<div class="row">
+    <div class="col-9">
+        <p class="ctitle"><?= $ni->title ?></p>
+    </div>
+    <div class="col-3 float-right">
+        <img src="<?= $ni->source->image ?>">
+    </div>
+</div>
+<div class="row">
+    <?php if (!empty($ni->image)): 
+        $dclass = "col-6";
+        $img = $ni->image;
+        ?>
+        <div class="col-6">
+            <figure class="irss" style="width:<?= $img->width ?>px;">
+                <figcaption class="icaption" ><?= $img->credit ?></figcaption>
+                <img src="<?= $img->url ?>">
+            </figure>
+        </div>
+    <?php else: 
+        $dclass = "col-12";
+    endif ?>
+    <div class="<?= $dclass ?>">
+        <p><?= $ni->description ?></p>
+    </div>
+</div>
+</div>
+<hr>
+<?php endforeach ?>
+</div>

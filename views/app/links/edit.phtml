@@ -1,0 +1,196 @@
+<?php
+use WC\HtmlGem as Gem;
+$assets->add(['bootstrap','DateTime','SummerNote','links-edit']);
+$link = $m->link;
+$url = $m->url;
+ $display = $m->display;
+    $urltypes = $m->urltypes;
+if (!empty($link->refid)) {
+    $collections = $m->collections ?? null;
+    $image = $m->image ?? null;
+   
+}
+
+?>
+
+<style>
+    label {
+        font-weight:bold;
+        min-width: 10em;
+        text-align: right;
+        padding-right: 0.5em;
+    }
+
+    .box {
+        border-style:solid;
+        border-color:lightseagreen;
+        padding: 8px;
+        width:fit-content;
+        display:inline-block;
+    }
+    .box .label {
+         vertical-align: top;
+    }
+    .col-restrict {
+        max-width: 70%;
+    }
+    #date_created {
+        max-width: 15em;
+    };
+</style>
+
+<div class="container-fluid outerwrap pad10">
+    <div class="row">
+        <div class="col-4">
+            <a href="/admin/dash">Dash</a> &nbsp; >> &nbsp; 
+            <a href="/admin/link">Links</a> &nbsp; >> &nbsp; 
+            <span><?= $m->title ?></span>
+        </div>
+        <?php if (!empty($link->refid)): ?>
+            <div class="col-2">
+                <?= Gem::linkTo(['href' => '/admin/blog/edit/' . $link->refid,
+                    'text' => "Edit Target Blog", 'target' => "_blank", 'class' => "btn btn-default"])
+                ?>
+            </div>
+        <?php endif ?>
+        <?php if (!empty($m->linkery)): 
+            $linkery = $m->linkery;
+            ?>
+            <div class="col-2">
+                <form id="addLinkery" action="/admin/linkery/add" method="post">
+                    <?= Gem::hidden(['name' => 'linkid', 'value' => $link->id]) ?>           
+                    <?= Gem::hidden(['name' => 'gallid', 'value' => $linkery['id']]) ?>
+                    <?= Gem::submit(['value' => 'Add to linkery ' . $linkery['name'],
+                        'class' => "btn btn-primary"])
+                    ?>
+                </form>
+            </div>
+    <?php endif ?>
+    </div>
+<?php if (!empty($collections)): ?>
+        <div class="row" >
+            <div class="col">
+                 <label class="label"><b>Collections</b> 
+                     <div class="box">
+                <?php foreach ($collections as $coll):?>
+                <p><?= Gem::linkTo(['href' => '/admin/linkery/edit/' . $coll['id'], 'text' =>  $coll['name'] ]) ?></p> 
+                    <?php endforeach ?>
+                  </div></label>
+                
+            </div>
+        </div>
+  
+        <?php endif ?>
+    <hr />
+    <div class="clear"></div>
+    <form id="linkform" name="linkform" method="post" action="<?= $m->post ?>" onsubmit="smotePost()">
+<?php if (!empty($link->refid)): ?>
+                <?= Gem::hidden(['name' => "refid", 'value' => $link->refid]) ?>
+            <?php endif ?>
+        <div class='row'>
+            <label class="col-form-label" for='sitename'>Site Name</label>
+<?= Gem::plainText(['name' => 'sitename', 'value' => $link->sitename,
+    'maxlength' => $display['sitename']['max']])
+?>
+        </div>
+
+        <div class='row'>
+            <label class="col-form-label" for='title'>Title</label>
+<?= Gem::plainText(['name' => 'title', 'value' => $link->title, 'size' => 80,
+    'maxlength' => $display['title']['max'], 'class' => "col-restrict"])
+?>
+        </div>
+
+        <div class="row">
+            <label class="col-form-label" for='url'>URL</label>
+                <?= Gem::plainText(['name' => 'url', 'value' => $link->url, 'size' => 80,
+                    'maxlength' => $display['url']['max'], 'class' => "col-restrict"])
+                ?>
+        </div>
+        <div class='row pad10'>
+            <div class="col-4">
+        <?= Gem::checkbox(['label' => 'Enabled', 'name' => 'enabled',
+            'checked' => $link->enabled])
+        ?>
+            </div>
+
+        </div>
+                <?= Gem::hidden(['name' => 'id', 'value' => $m->linkid]) ?>
+        <div class="col-4">
+                <?= Gem::select(['label' => 'URL Type', 'name' => 'urltype', 'list' => $urltypes,
+                    'value' => $link->urltype])
+                ?>
+        </div>
+                <?php if ($m->linkid > 0): ?>
+            <div class='row pad10'>
+                <div class="col-4">
+                <?= Gem::number(['label' => 'Image id', 'name' => 'imageid',
+                    'value' => $link->imageid])
+                ?>
+
+                </div>
+                <div class="col-3">
+                    <?= Gem::text_value(['label' => 'Session Image Id', 'value' => $m->im_session]) ?>
+                </div>
+                <div class="col-5">
+                <?=
+                Gem::datetime(['name' => 'date_created', 'size' => 20,
+                    'label' => "Created at",
+                    'value' => $link->date_created])
+                ?>
+                </div>
+           
+        </div>
+         <?php endif ?>
+        <div>
+            <button id="airbtn" type="button" 
+                    title="This also does a save-submit" 
+                    onclick="codeSwitch()">Switch to 'Air-Mode'</button>
+        </div>
+        <div class="clear"></div>
+        <div class="form-group">
+            <textarea id='summary' name='summary' cols='100' rows='25'><?= $link->summary ?></textarea>
+            <hr>
+<?php if ($m->linkid == 0): ?>
+                <div class="col-sm-2">
+                    <input name='btnUpdate' class='btn btn-success' type='submit' id='btnupdate' value="Create">
+                </div>
+<?php else: ?>
+                <div class="form-group row" >
+                    <div class="col-sm-3">
+                        <input name='btnDelete' class='btn btn-danger' type='button' id='btndelete' value="Delete" onclick="return doDelete(this.form);"/>
+                    </div>
+                    <div class="col-sm-6">
+                        <input name='btnUpdate' class='btn btn-success' type='submit' id='btnupdate' value="Update">
+                    </div>
+                </div>
+<?php endif ?>
+        </div>
+    </form>
+    <?php if (!empty($image)): ?>
+        <form id="imageform" name="imageform" method="post" action="<?= $m->im_post ?>">
+            <?= Gem::hidden(['name' => 'lk_imageid', 'value'=> $image->id] ) ?>
+            <?= Gem::hidden(['name' => 'lk_id', 'value'=> $link->id]) ?>
+            <div class="row">
+                <div class="col-8">
+                <label for="im_caption">Image Caption for <?= $image->id . ': ' . $image->im_file ?></label>
+                <textarea name="im_caption" rows='2' style="width:100%;"><?= $image->caption ?></textarea>
+                </div>
+                <div class="col-4">
+                    <img src="<?= $image->im_path . $image->thumb ?>">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-4">
+                <?= Gem::submit(['value' => 'Update image caption']) ?>
+                </div>
+            </div>
+        </form>
+    <?php endif ?>
+</div>
+
+
+
+
+

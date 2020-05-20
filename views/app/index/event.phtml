@@ -1,0 +1,26 @@
+<?php
+$hasEvents = !empty($m->events);
+?>
+
+<div class="container-fluid">
+    <div class="row body-wrap pad10">
+        <?php if ($hasEvents): ?>
+                  <div class="col-2">
+                  <h1>Events</h1>
+                  </div>
+                <div class="col-10">
+                    <?php foreach( $m->events as $box): 
+                        $href = "/article/" . $box['title_clean']; ?>
+
+                    <div class="<?= $box['style'] ?>">
+                        <div class="title"><a href="<?= $href ?>"><?= $box['title'] ?></a></div>
+                    </div>
+                    <hr>
+               <?php   endforeach; ?>
+                </div>
+
+<?php else: ?>
+            <p>No upcoming events yet</p>
+<?php endif;  ?>
+    </div>
+</div>

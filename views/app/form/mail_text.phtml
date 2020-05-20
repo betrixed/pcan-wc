@@ -1,0 +1,14 @@
+<?php
+    $rec = $m->rec;
+?>
+Thank you for your message.
+
+The following details have been sent using  "Contact" form to <?= $app->get('organization','My Organization') . '.' ?>
+
+Date: <?= $rec->senddate ?>
+From: <?= $rec->name ?>
+Email: <?= $rec->email ?>
+Telephone: <?= $rec->telephone ?>
+Message:
+<?= $rec->body ?>
+
