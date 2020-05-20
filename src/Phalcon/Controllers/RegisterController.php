@@ -25,7 +25,7 @@ use \WC\Mixin\Captcha;
         $db = $this->dbq;
                 
 $sql=<<<EOD
-select e.fromTime, e.toTime, e.enabled, e.id as eventid, 
+select e.fromTime, e.toTime, e.enabled, e.id as eventid, e.reg_detail,
  b.* from event e 
  join blog b on b.id = e.blogid
  where e.id = :eid

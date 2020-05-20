@@ -41,6 +41,12 @@ $assets->add(['bootstrap', 'register-js']);
         </div>
     </div>
         <?php if ($hasEvent): ?>
+    <div class="row">
+        <div class="outerwrap">
+            <p>Important Online Details - in case of late changes</p>
+            <?= $eblog['reg_detail']; ?>
+        </div>
+    </div>
             <form id="regevt" method="post" action="/register/regpost">
             <div id="regform">
                 <?= $this->partial('events/regform') ?>
@@ -48,6 +54,7 @@ $assets->add(['bootstrap', 'register-js']);
         </form>
 
     <div class="eblog">
+        
         <div class="<?= $eblog['style'] ?>">
             <?= $eblog['article'] ?>
         </div>
