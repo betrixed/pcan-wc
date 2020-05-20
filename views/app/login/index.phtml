@@ -92,7 +92,7 @@ EOJS;
 $assets->addJS($blob);
 ?>
 
-<?php if (!empty($m->google) && ($m->google['enabled']===false)): 
+<?php if (empty($m->google) || ($m->google['enabled']===false)): 
 // Fake google function
 $blob = <<<EOJS
 <script>
