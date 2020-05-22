@@ -6,9 +6,18 @@ use App\Link\MenuTree;
 
 class HtmlGem
 {
-
     static private $id_add = 100;
-
+    static private $moneyfmt;
+    static private $sym_dollar;
+    
+    static public function getMoneyFmt() {
+        if (!isset(static::$moneyfmt)) {
+            static::$moneyfmt = \numfmt_create('en-AU', \NumberFormatter::CURRENCY);
+            static::$sym_dollar =static::$moneyfmt->getSymbol(\NumberFormatter::INTL_CURRENCY_SYMBOL);
+        }
+        return static::$moneyfmt;
+     }
+    
     static private function ensureIdValue(&$pset, $value = null)
     {
         if (isset($pset['name']) && !isset($pset['id'])):
@@ -315,9 +324,8 @@ EOD;
 
     static function price($value)
     {
-        setlocale(LC_MONETARY, 'en_AU');
-        $v = floatval($value);
-        return money_format('%!10.2n', $v);
+        $fmt = static::getMoneyFmt();
+        return $fmt->formatCurrency(floatval($value),static::$sym_dollar);
     }
 
     static function addAttr($name, $pset)
