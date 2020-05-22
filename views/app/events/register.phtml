@@ -26,7 +26,11 @@ $assets->add(['bootstrap', 'register-js']);
         font-size:1.6em;
         font-weight:bolder;
     }
-    
+    .notice {
+        padding:10px;
+        border-style: groove;
+        border-color:lightgreen;
+    }
     
 </style>
 
@@ -42,8 +46,8 @@ $assets->add(['bootstrap', 'register-js']);
     </div>
         <?php if ($hasEvent): ?>
     <div class="row">
-        <div class="outerwrap">
-            <p>Important Online Details - in case of late changes</p>
+        <div class="outerwrap notice">
+            <p>Important Online Details - posted here in case of late changes</p>
             <?= $eblog['reg_detail']; ?>
         </div>
     </div>
