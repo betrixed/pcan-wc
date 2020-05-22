@@ -44,7 +44,7 @@ $assets->add(['bootstrap', 'register-js']);
             <?php endif ?>
         </div>
     </div>
-        <?php if ($hasEvent): ?>
+        <?php if ($hasEvent && !empty($reg->linkcode)): ?>
     <div class="row">
         <div class="outerwrap notice">
             <p>Important Online Details - posted here in case of late changes</p>
