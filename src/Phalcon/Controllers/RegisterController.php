@@ -116,6 +116,7 @@ EOD;
             // Get the record 
            if (empty($rec)) {
                $rec = new Register();
+               $this->flash("Register link not found");
            }
             $eventId = $rec->eventid;
             if ($code !== $rec->linkcode) {
