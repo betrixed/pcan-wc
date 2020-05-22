@@ -114,7 +114,9 @@ EOD;
         if (!empty($regid)) {
             $rec = Register::findFirstById($regid);
             // Get the record 
-          
+           if (empty($rec)) {
+               $rec = new Register();
+           }
             $eventId = $rec->eventid;
             if ($code !== $rec->linkcode) {
                 $m->register = new Register();
