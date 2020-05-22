@@ -143,7 +143,7 @@ EOD;
             $rec = Register::findFirstById($regid);
             if (!empty($rec) && !empty($delete)) {
         // this record will be deleted
-                $rec->erase();
+                $rec->delete();
                 $rec = new Register();
                 $rec->eventid = $eventid;
                 $this->flash('Previous registration deleted');
