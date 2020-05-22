@@ -13,6 +13,8 @@ use App\Models\MemberEmail;
 use App\Models\Member;
 use WC\App;
 
+require_once PHP_DIR . '/chimpv3/vendor/autoload.php';
+
 /**
  * Description of chimplists
  *
