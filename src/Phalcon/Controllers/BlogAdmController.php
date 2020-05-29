@@ -118,7 +118,6 @@ class BlogAdmController extends Controller
         $this->setBlogTitle($post, $blog);
 
         $blog->article = $post['article'];
-
         $blog->style = $post['style'];
         $blog->issue = Valid::toInt($post, 'issue');
 
@@ -127,6 +126,7 @@ class BlogAdmController extends Controller
         $blog->comments = Valid::toBool($post, 'comments');
         $blog->date_published = Valid::toDateTime($post, 'date_published');
         $blog->date_updated = Valid::now();
+       
     }
 
     private function errorPDO($e, $blogid)
@@ -167,7 +167,7 @@ class BlogAdmController extends Controller
         if ($update_link) {
             Links::setBlogURL($blogid, $blog->title_clean);
         }
-        $metatags = BlogView::getMetaTags($id);
+        $metatags = BlogView::getMetaTags($blogid);
         $db = Server::db();
         $inTrans = false;
         foreach ($metatags as $mtag) {

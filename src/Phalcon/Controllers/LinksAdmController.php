@@ -245,9 +245,9 @@ class LinksAdmController extends Controller {
 
     public function generateAction($bid) {
 
-        $link = findFirst("urltype='Blog' and refid = " . $bid);
+        $link = Links::findFirst("urltype='Blog' and refid = " . $bid);
 
-        if ($link !== false) {
+        if (!empty($link)) {
             // go to edit 
             return $this->editLink($link, $link->id);
         } else {
