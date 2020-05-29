@@ -40,6 +40,7 @@ $hasEvents = !empty($m->events);
     <div class="row">
         <div class="col-lg-5">
 <?php foreach ($m->sides as $box): ?>
+               <!-- link <?= $box['id'] ?>-->
                 <div class="sidebox">
                     <span class='link-title'><?= $box['title'] ?></span>
                     <span class='link-summary'><?= $box['summary'] ?></span>
@@ -54,6 +55,7 @@ $hasEvents = !empty($m->events);
                 $urlhint = ($ulen > 55) ? substr($url, 0, 25) . '...' . substr($url, $ulen - 27)
                             : $url;
                 ?>
+                <!-- link <?= $link['id'] ?>-->
                 <div class='mitem' id='lnk<?= $link['id'] ?>'>
                     <div class="title-area">
                         <span class="link-title">

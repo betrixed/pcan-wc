@@ -148,7 +148,7 @@ use Mixin\ViewPlates;
         $blogid = $blog['id'];
         if ($update_link) 
         {
-            Links::setBlogURL($blogid, $blog['title_clean']);
+            LinksOps::setBlogURL($blogid, $blog['title_clean']);
         }
         $metatags = Blog::getMetaTags($id);
         $db = Server::db();
