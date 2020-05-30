@@ -3,6 +3,7 @@
 
 namespace App\Link;
 use WC\Db\DbQuery;
+use WC\Db\Server;
 use App\Link\PageInfo;
 use WC\App;
 use Phalcon\Db\Column;
@@ -22,7 +23,7 @@ class GalleryView
      static public function removeRef($img_id, $gallery_id)
     {
         $db = Server::db();
-        return $db->execute("delete from img_gallery where imageid = :imgid: and galleryid = :gid:",
+        return $db->execute("delete from img_gallery where imageid = :imgid and galleryid = :gid",
                     ['imgid' => $img_id, 'gid' => $gallery_id], 
                     ['imgid' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_INT]);
     }

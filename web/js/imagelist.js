@@ -1,5 +1,5 @@
 // scripting for file.htm, to order by Asset
-
+// For GalleryAdmController
 function post_imagelist(responseText, statusText, xhr, $form) {
     var status = $('#image_status');
     status.html(responseText);
@@ -8,6 +8,7 @@ function post_imagelist(responseText, statusText, xhr, $form) {
     //alert('done');
     cfg_dtclass();
     prep_imagelist();
+    $('#image_op').selectpicker('refresh');
 }
 function prep_imagelist() {
     try {
@@ -35,14 +36,7 @@ function prep_imagelist() {
          var id = '#chk' + event.target.id.substring(4);
          $(id).prop('checked',true); 
     });
-    
 }
-
 $(document).ready(function() { 
         prep_imagelist();
 });
-
-    
-
-
-

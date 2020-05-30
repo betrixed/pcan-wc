@@ -84,7 +84,7 @@ class DeleteOp extends ImageOp {
             $msg = "Removed reference to image: id = " . $img_id;
         } else {
 // remove reference, image and file
-            Gallery::removeRef($img_id, $gallery_id);
+            GalleryView::removeRef($img_id, $gallery_id);
             $myimg = Image::findFirstById($img_id);
             $mygal = Gallery::findFirstById($myimg->galleryid);
             $dpath = $controller->getWebDir() . $mygal->path . "/";
@@ -103,7 +103,7 @@ class DeleteOp extends ImageOp {
             }
             if ($wasDeleted) {
                 $msg = "Deleted image " . $myimg->name;
-                $myimg->erase();
+                $myimg->delete();
             } else {
                 $msg = "Problem with delete of " . $myimg->name;
             }
@@ -511,8 +511,6 @@ class GalleryAdmController extends Controller {
             }
             $m->gallery = $gal;
             $m->fileset = $fileset;
-            $us = UserSession::read();
-            $m->sessImageId = (!empty($us)) ? $us->getKey('imageid') : 0;
             return $gal;
         }
     }
@@ -617,6 +615,8 @@ class GalleryAdmController extends Controller {
         $m->images = $image_set;
         $m->post = $this->url;
         $m->isAjax = false;
+        $us = UserSession::read();
+        $m->sessImageId = (!empty($us)) ? $us->getKey('imageid') : 0;
         $elist = [];
         if ($op == "edit" && count($this->editList) > 0) {
             $tindex = [];
@@ -644,7 +644,7 @@ class GalleryAdmController extends Controller {
             $galleryid = Valid::toInt($post, 'galleryid', null);
             $image_op = Valid::toStr($post, 'image_op', null);
             $chkct = Valid::toInt($post, 'chkct', 0);
-
+            $myop = null;
             if ($chkct > 0) {
                 $sql = "";
                 $id = 0;
@@ -664,7 +664,7 @@ class GalleryAdmController extends Controller {
                         $myop = new EditOp($post);
                         break;
                 }
-                if (isset($myop)) {
+                if (!empty($myop)) {
                     $myop->init($this, $galleryid);
                     for ($ix = 1; $ix <= $chkct; $ix++) {
                         $chkname = "chk" . $ix;
@@ -764,6 +764,7 @@ class GalleryAdmController extends Controller {
         } else {
             $isPDF = false;
         }
+        
         if (!file_exists($thumbfile)) {
 //get image info
             if (!$isPDF) {
