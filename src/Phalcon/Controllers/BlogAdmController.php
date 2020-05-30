@@ -9,6 +9,7 @@ use WC\UserSession;
 use WC\Valid;
 use WC\DB\Server;
 use App\Models\Blog;
+use App\Link\LinksOps;
 use App\Link\BlogView;
 use App\Link\PageInfo;
 use App\Models\Links;
@@ -165,7 +166,7 @@ class BlogAdmController extends Controller
         $m->blog = $blog;
         $blogid = $blog->id;
         if ($update_link) {
-            Links::setBlogURL($blogid, $blog->title_clean);
+            LinksOps::setBlogURL($blogid, $blog->title_clean);
         }
         $metatags = BlogView::getMetaTags($blogid);
         $db = Server::db();

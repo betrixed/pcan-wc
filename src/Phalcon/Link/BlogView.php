@@ -208,7 +208,7 @@ EOD;
         $sql = 'select count(*) as dupe from blog where title_clean = :tc';
         $isUpdate = !is_null($blogid) && ($blogid > 0);
         $params['tc'] = $slug;
-        $bind['tc'] = Column::BIND_PARAM_INT;
+        $bind['tc'] = Column::BIND_PARAM_STR;
         if ($isUpdate) {
 // exclude self from search, in case of no change?
             $sql .= ' and id <> :bid';
