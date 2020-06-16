@@ -2,6 +2,8 @@
 use WC\HtmlGem as Gem;
 $assets->add(['bootstrap', 'SummerNote', 'DateTime', 'jquery-form', 'blog-edit']);
 $blog = $m->blog;
+$revision = $m->revision;
+
 $metatags = $m->metatags;
 $url = $m->url;
 $stylelist = $m->stylelist;
@@ -67,8 +69,8 @@ $air_text = empty($m->airmode) ? 'Switch to "Air-Mode"' : 'Switch to Edit Frame'
                     
                     <label class='col-form-label' for="title">Title</label>
                     <?= Gem::plainText(['name'=>'title', 'size'=>40, 'value'=> $blog->title]) ?><br>
-                    <label class=' col-form-label' for="issue">Issue</label>
-                    <?= Gem::plainText(['name'=>'issue', 'size'=>4, 'value'=> $blog->issue]) ?>
+                    <label class=' col-form-label' for="revision">Revision</label>
+                    <?= Gem::plainText(['name'=>'revision', 'size'=>4, 'value'=> $revision->revision]) ?>
                 </div>
                 <div class='form-group'>
                     <label class='col-form-label' for="lock_url">Unlock URL</label>
@@ -80,7 +82,7 @@ $air_text = empty($m->airmode) ? 'Switch to "Air-Mode"' : 'Switch to Edit Frame'
             </div>
             <div class='col-5 outerwrap'>
                 <div class='form-group'>
-                    <?= 'Updated ' .  $blog->date_updated . ' &nbsp;'  ?>
+                    <?= 'Updated ' .  $revision->date_saved . ' &nbsp;'  ?>
                     <?= Gem::submit(['name'=>'save', 'size'=>40, 'value'=> "Save", 'class'=>"btn btn-primary" ]) ?>
                 </div>
                 <div class='form-group'>
@@ -105,7 +107,7 @@ $air_text = empty($m->airmode) ? 'Switch to "Air-Mode"' : 'Switch to Edit Frame'
     </div>
     -->
     <div id='wrap_style' class="<?= $blog->style ?>">
-        <textarea id='article' name='article' style='display:none;' cols='100' rows='25'><?= $blog->article ?></textarea>
+        <textarea id='article' name='article' style='display:none;' cols='100' rows='25'><?= $revision->content ?></textarea>
     </div>
     <div class='container outerwrap'>
         <span class="heading">Author / Flags</span>
@@ -113,10 +115,10 @@ $air_text = empty($m->airmode) ? 'Switch to "Air-Mode"' : 'Switch to Edit Frame'
              <div class="row">
                  <div class="col-3">
                     <label for="author_id">Author</label>
-                    <?= Gem::number(['name'=>'author_id', 'value' => $blog->issue,  'readonly'=>'readonly' ]) ?>
+                    <?= Gem::number(['name'=>'author_id', 'value' => $blog->revision,  'readonly'=>'readonly' ]) ?>
                  </div>
                  <div class="col-4"> 
-                     <?= Gem::datetime(['name'=>'date_published', 'value' => $blog->date_published,  'label' => 'Date', 'class'=>"form-control" ]) ?>
+                     <?= Gem::datetime(['name'=>'date_published', 'value' => $revision->date_saved,  'label' => 'Date', 'class'=>"form-control" ]) ?>
                  </div>
              </div>
             

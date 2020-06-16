@@ -13,15 +13,9 @@ class Blog extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var string
+     * @var integer
      */
-    protected $title;
-
-    /**
-     *
-     * @var string
-     */
-    protected $article;
+    protected $revision;
 
     /**
      *
@@ -31,21 +25,9 @@ class Blog extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var integer
-     */
-    protected $author_id;
-
-    /**
-     *
      * @var string
      */
-    protected $date_published;
-
-    /**
-     *
-     * @var string
-     */
-    protected $date_updated;
+    protected $title;
 
     /**
      *
@@ -67,15 +49,15 @@ class Blog extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var string
+     * @var integer
      */
-    protected $style;
+    protected $author_id;
 
     /**
      *
-     * @var integer
+     * @var string
      */
-    protected $issue;
+    protected $style;
 
     /**
      * Method to set the value of field id
@@ -91,27 +73,14 @@ class Blog extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field title
+     * Method to set the value of field revision
      *
-     * @param string $title
+     * @param integer $revision
      * @return $this
      */
-    public function setTitle($title)
+    public function setRevision($revision)
     {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field article
-     *
-     * @param string $article
-     * @return $this
-     */
-    public function setArticle($article)
-    {
-        $this->article = $article;
+        $this->revision = $revision;
 
         return $this;
     }
@@ -130,40 +99,14 @@ class Blog extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field author_id
+     * Method to set the value of field title
      *
-     * @param integer $author_id
+     * @param string $title
      * @return $this
      */
-    public function setAuthorId($author_id)
+    public function setTitle($title)
     {
-        $this->author_id = $author_id;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field date_published
-     *
-     * @param string $date_published
-     * @return $this
-     */
-    public function setDatePublished($date_published)
-    {
-        $this->date_published = $date_published;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field date_updated
-     *
-     * @param string $date_updated
-     * @return $this
-     */
-    public function setDateUpdated($date_updated)
-    {
-        $this->date_updated = $date_updated;
+        $this->title = $title;
 
         return $this;
     }
@@ -208,6 +151,19 @@ class Blog extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field author_id
+     *
+     * @param integer $author_id
+     * @return $this
+     */
+    public function setAuthorId($author_id)
+    {
+        $this->author_id = $author_id;
+
+        return $this;
+    }
+
+    /**
      * Method to set the value of field style
      *
      * @param string $style
@@ -216,19 +172,6 @@ class Blog extends \Phalcon\Mvc\Model
     public function setStyle($style)
     {
         $this->style = $style;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field issue
-     *
-     * @param integer $issue
-     * @return $this
-     */
-    public function setIssue($issue)
-    {
-        $this->issue = $issue;
 
         return $this;
     }
@@ -244,23 +187,13 @@ class Blog extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field title
+     * Returns the value of field revision
      *
-     * @return string
+     * @return integer
      */
-    public function getTitle()
+    public function getRevision()
     {
-        return $this->title;
-    }
-
-    /**
-     * Returns the value of field article
-     *
-     * @return string
-     */
-    public function getArticle()
-    {
-        return $this->article;
+        return $this->revision;
     }
 
     /**
@@ -274,33 +207,13 @@ class Blog extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field author_id
-     *
-     * @return integer
-     */
-    public function getAuthorId()
-    {
-        return $this->author_id;
-    }
-
-    /**
-     * Returns the value of field date_published
+     * Returns the value of field title
      *
      * @return string
      */
-    public function getDatePublished()
+    public function getTitle()
     {
-        return $this->date_published;
-    }
-
-    /**
-     * Returns the value of field date_updated
-     *
-     * @return string
-     */
-    public function getDateUpdated()
-    {
-        return $this->date_updated;
+        return $this->title;
     }
 
     /**
@@ -334,6 +247,16 @@ class Blog extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field author_id
+     *
+     * @return integer
+     */
+    public function getAuthorId()
+    {
+        return $this->author_id;
+    }
+
+    /**
      * Returns the value of field style
      *
      * @return string
@@ -344,30 +267,21 @@ class Blog extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field issue
-     *
-     * @return integer
-     */
-    public function getIssue()
-    {
-        return $this->issue;
-    }
-
-    /**
      * Initialize method for model.
      */
     public function initialize()
     {
+        $this->setSchema("pcan");
         $this->setSource("blog");
         $this->hasMany('id', 'App\Models\BlogComment', 'blog_id', ['alias' => 'BlogComment']);
         $this->hasMany('id', 'App\Models\BlogMeta', 'blog_id', ['alias' => 'BlogMeta']);
         $this->hasMany('id', 'App\Models\BlogRelated', 'blog_related_id', ['alias' => 'BlogRelated']);
+        $this->hasMany('id', 'App\Models\BlogRevision', 'blog_id', ['alias' => 'BlogRevision']);
         $this->hasMany('id', 'App\Models\BlogTag', 'blog_id', ['alias' => 'BlogTag']);
         $this->hasMany('id', 'App\Models\BlogToCategory', 'blog_id', ['alias' => 'BlogToCategory']);
         $this->hasMany('id', 'App\Models\Event', 'blogid', ['alias' => 'Event']);
         $this->hasMany('id', 'App\Models\FileUpload', 'blog_id', ['alias' => 'FileUpload']);
         $this->belongsTo('style', 'App\Models\BlogStyle', 'style_class', ['alias' => 'BlogStyle']);
-        $this->belongsTo('author_id', 'App\Models\Users', 'id', ['alias' => 'Users']);
     }
 
     /**
@@ -402,17 +316,14 @@ class Blog extends \Phalcon\Mvc\Model
     {
         return [
             'id' => 'id',
-            'title' => 'title',
-            'article' => 'article',
+            'revision' => 'revision',
             'title_clean' => 'title_clean',
-            'author_id' => 'author_id',
-            'date_published' => 'date_published',
-            'date_updated' => 'date_updated',
+            'title' => 'title',
             'enabled' => 'enabled',
             'comments' => 'comments',
             'featured' => 'featured',
-            'style' => 'style',
-            'issue' => 'issue'
+            'author_id' => 'author_id',
+            'style' => 'style'
         ];
     }
 

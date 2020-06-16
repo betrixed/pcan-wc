@@ -50,8 +50,7 @@ EOD;
 
         if (empty($blog)) {
             $blog = new Blog();
-             $blog->title = "Not found { /$title }";
-            $blog->article = "Missing link { /$title }";
+            $blog->title = "Not found { /$title }";
             $style_class = 'noclass';
         }
         else {
@@ -65,8 +64,10 @@ EOD;
             $temp = explode("\n", wordwrap( $briefTitle, 30));
             $briefTitle = $temp[0] . "\u{2026}";
         }
-        $m->title =  Valid::asDate($blog->date_published);
+        $m->title =  $blog->title;
         $m->blog = $blog;
+        $m->revision = BlogView::linkedRevision($blog);
+
         $m->analytics = true;
         $meta = [];
         // fill the array up with article meta tags.

@@ -4,7 +4,7 @@ $blog = $m->blog;
 $metadata = $m->metadata;
 $back = $m->back;
 $theme = '/' . $m->theme;
-
+$revision = $m->revision;
 $assets->add(['bootstrap','styles']);
 $assets->minify('pcan_home');
 ?>
@@ -41,7 +41,7 @@ $assets->minify('pcan_home');
         </div>
         <div class="row">
             <div class="col">
-                <?= $blog->article ?>
+                <?= $revision->content ?>
             </div>
         </div>
     </div>

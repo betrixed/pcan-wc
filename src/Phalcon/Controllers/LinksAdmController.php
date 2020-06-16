@@ -13,6 +13,7 @@ use App\Models\Image;
 use App\Link\ImageView;
 use App\Models\Blog;
 use App\Link\LinkGallery;
+use App\Link\BlogView;
 use WC\Valid;
 use WC\Text;
 use WC\Db\DbQuery;
@@ -96,10 +97,11 @@ class LinksAdmController extends Controller {
             $link->urltype = 'Blog';
             // get the actual blog, extract title, url and intro text
             $blog = Blog::findFirstById($bid);
-            if ($blog !== false) {
+            if (!empty($blog)) {
+                $revision = BlogView::linkedRevision($blog);
                 $link->url = "/article/" . $blog->title_clean;
                 $link->title = $blog->title;
-                $link->summary = Text::IntroText($blog->article, 300);
+                $link->summary = Text::IntroText($revision->content, 300);
             }
         } else {
             $link->urltype = 'Front';

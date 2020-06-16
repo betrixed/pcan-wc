@@ -114,19 +114,25 @@ class BlogAdmController extends Controller
         }
     }
 
-    private function setBlogFromPost($post, $blog)
+    private function setBlogFromPost($post, $m)
     {
+        $blog = $m->blog;
+        $revision = $m->revision;
+        
         $this->setBlogTitle($post, $blog);
+        
+        $revision->content = $post['article'];
+        $revision->date_saved = Valid::now();
 
-        $blog->article = $post['article'];
         $blog->style = $post['style'];
-        $blog->issue = Valid::toInt($post, 'issue');
-
+        $revision_id  = Valid::toInt($post, 'revision');
+        if ($revision_id !== intval($revision->revision) ) {
+                $this->flash('Submitted Incorrect  revision id');
+        }
         $blog->featured = Valid::toBool($post, 'featured');
         $blog->enabled = Valid::toBool($post, 'enabled');
         $blog->comments = Valid::toBool($post, 'comments');
-        $blog->date_published = Valid::toDateTime($post, 'date_published');
-        $blog->date_updated = Valid::now();
+
        
     }
 
@@ -153,17 +159,17 @@ class BlogAdmController extends Controller
 // set updatable things
 
         $old_tc = $blog->title_clean;
-        $this->setBlogFromPost($post, $blog);
+        $update = new WConfig();
+        $update->blog = $blog;
+        $update->revision = BlogView::linkedRevision($blog);
+        $this->setBlogFromPost($post, $update);
         $update_link = ($old_tc !== $blog->title_clean);
-
         try {
-            $blog->update();
+            $update->blog->update();
+            $update->revision->update();
         } catch (\PDOException $e) {
             return $this->errorPDO($e, $blogid);
         }
-        $view = $this->getView();
-        $m = $view->m;
-        $m->blog = $blog;
         $blogid = $blog->id;
         if ($update_link) {
             LinksOps::setBlogURL($blogid, $blog->title_clean);
@@ -264,16 +270,20 @@ class BlogAdmController extends Controller
 
         $us = UserSession::instance();
 
-        $blog->author_id = $us->id;
-        $blog->date_published = date('Y-m-d H:i:s');
-        $blog->date_updated = date('Y-m-d H:i:s');
         $blog->featured = 0;
         $blog->enabled = 0;
         $blog->comments = 1;
-
+        $blog->revision = 1;
+        
         $this->setBlogTitle($post, $blog);
         try {
-            $blog->save();
+            $blog->create();
+            $revision = new BlogRevision();
+            $revision->blog_id = $blog->id;
+            $revision->date_saved = Valid::now();
+            $revision->revision = $blog->revision;
+            $revision->content = "<p>Edit This Content<br></p>";
+            $revision->create();
             $this->flash("Blog created");
         } catch (\PDOException $e) {
             return $this->errorPDO($e, 'new');
@@ -310,13 +320,15 @@ class BlogAdmController extends Controller
             $stylelist[$row['style_class']] = $row['style_name'];
         }
         $id = $blog->id;
-
-
+        
+        $model->revision = BlogView::linkedRevision($blog);
+        
         $model->title = '#' . $id;
         $model->stylelist = $stylelist;
         $model->catset = BlogView::getCategorySet($id);
         $model->events = BlogView::getEvents($id);
         $model->metatags = BlogView::getMetaTags($id);
+        $model->content = 
         $model->url = $this->url;
 
         return $this->render('blog', 'edit');

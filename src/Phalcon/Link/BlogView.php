@@ -6,6 +6,7 @@ use WC\Db\Server;
 use WC\Db\DbQuery;
 use Phalcon\Db\Column;
 use App\Models\Blog;
+use App\Models\BlogRevision;
 use WC\Valid;
 use WC\App;
 /**
@@ -15,8 +16,6 @@ use WC\App;
 
 
 class BlogView  {
-
-     
     static public function hasPrefix($s, $p) {
         $p1 = strlen($p);
         return ($p1 <= strlen($s) && $p1 > 0 && substr($s, 0, $p1) === $p);
@@ -33,16 +32,19 @@ class BlogView  {
         $m->grabsize = 12;
         $m->start = ($m->numberPage - 1) * $m->grabsize;
 
-        $sql = "select b.*, u.name as author_name,"
-                . " count(*) over() as full_count from blog b" .
-                " left outer join users u on u.id = b.author_id ";
+        $sql = <<<EOS
+SELECT  B.*, R.content as article, R.date_saved, M.content as author_name,
+  count(*) over() as full_count from blog B
+  JOIN blog_revision R on R.blog_id = B.id and R.revision = B.revision
+  JOIN blog_meta M on M.blog_id = B.id JOIN meta T on T.id = M.meta_id and T.meta_name = 'author'
+EOS;
         $binders = [];
         if ($m->catId > 0) {
-            $sql .= " inner join blog_to_category bc on bc.blog_id = b.id and bc.category_id = :catId";
+            $sql .= " INNER JOIN blog_to_category BC on BC.blog_id = B.id and BC.category_id = :catId";
             $binders['catId'] = $m->catId;
         }
-        $sql .= " order by " . $m->order_field
-                . " limit " . $m->grabsize . " offset " . $m->start;
+        $sql .= " ORDER BY  " . $m->order_field
+                . " LIMIT " . $m->grabsize . " OFFSET " . $m->start;
         $qry = new DbQuery();
 
         $results = $qry->arraySet($sql, $binders);
@@ -94,6 +96,15 @@ class BlogView  {
          $db->commit();
          
      }
+     
+     static public function linkedRevision($blog) {
+         $rev = BlogRevision::findFirst([
+                    'conditions' => 'blog_id = :bid: and revision = :rev:',
+                    'bind' => [ 'bid' => $blog->id, 'rev' => $blog->revision]
+         ]);
+         return $rev;
+     }
+     
     static public function getMetaTagHtml($id, &$meta) {
         // setup metatag info
         $sql = <<<EOD
@@ -267,52 +278,52 @@ EOD;
             'date' => 'date',
             'title' => 'title',
             'author' => 'author',
-            'update' => 'update'
+            'slug' => 'slug'
         );
         $col_arrow = array(
             'date' => '',
             'title' => '',
             'author' => '',
-            'update' => ''
+            'slug' => ''
         );  
         switch($orderby)
         {
+                case 'slug':
+                $alt_list['slug'] = 'slug-alt';
+                $col_arrow['slug'] = '&#8595;';
+                $order_field = 'B.title_clean asc';
+                break;
             case 'title':
                 $alt_list['title'] = 'title-alt';
                 $col_arrow['title'] = '&#8595;';
-                $order_field = 'b.title asc';
+                $order_field = 'B.title asc';
                 break;
             case 'date':
                 $alt_list['date'] = 'date-alt';
                 $col_arrow['date'] = '&#8595;';
-                $order_field = 'b.date_published asc';
+                $order_field = 'R.date_saved asc';
                 break;
             case 'author':
                 $alt_list['author'] = 'author-alt';
                 $col_arrow['author'] = '&#8595;';
-                $order_field = 'author_name asc, b.date_published desc';
-                break;
-            case 'update':
-                 $alt_list['update'] = 'update-alt';
-                $col_arrow['update'] = '&#8595;';
-                $order_field = 'b.date_updated asc, b.title asc';              
+                $order_field = 'author_name asc, R.date_saved desc';
                 break;
              case 'title-alt':
                 $col_arrow['title'] = '&#8593;';
-                $order_field = 'b.title desc';
+                $order_field = 'B.title desc';
                 break;   
+        case 'slug-alt':
+                $col_arrow['slug'] = '&#8593;';
+                $order_field = 'B.title_clean desc';
+                break;
             case 'author-alt':
                  $col_arrow['author'] = '&#8593;';
-                 $order_field = 'author_name desc,  b.date_published desc';
+                 $order_field = 'author_name desc, R.date_saved desc';
                  break;    
-            case 'update-alt':
-                 $col_arrow['update'] = '&#8593;';
-                 $order_field = 'b.date_updated desc, b.title asc';
-                 break;       
             case 'date-alt':
             default:
                 $col_arrow['date'] = '&#8593;';
-                $order_field = 'b.date_published desc';
+                $order_field = 'R.date_saved desc';
                 $orderby = 'date-alt';
                 break;             
                 
