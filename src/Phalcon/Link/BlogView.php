@@ -21,6 +21,16 @@ class BlogView  {
         return ($p1 <= strlen($s) && $p1 > 0 && substr($s, 0, $p1) === $p);
     }
 
+    // return highest revision number plus 1
+   static function  newRevision(Blog $blog) : int {
+        $q = new DbQuery();
+        $result = $q->arrayColumn('SELECT MAX(revision) as max_revision from blog_revision where blog_id = :bid',
+                                                ['bid' => $blog->id], ['bid'=>Column::BIND_PARAM_INT]);
+        if (!empty($result)) {
+            return intval($result[0]) + 1;
+        }
+        return 1;
+   }
     static function pageFromRequest($m) {
         $request = $_GET;
         $m->args = $_SERVER['QUERY_STRING'];

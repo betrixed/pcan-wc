@@ -107,9 +107,10 @@ class MenuBuild
         }
         $rowslimit = ($limit !== 0) ? " LIMIT $limit" : "";
         $sql = <<<EOD
- select b.title_clean, b.title, b.date_published as pdate
-     from blog b join blog_to_category bc on bc.blog_id = b.id
-     where bc.category_id = :id 
+ select B.title_clean, B.title, R.date_saved as pdate
+     from blog B 
+     join blog_to_category BC on BC.blog_id = B.id and BC.category_id = :id 
+     join blog_revision R on R.blog_id = B.id and R.revision = B.revision
      order by pdate desc $rowslimit
 EOD;
         $result = $db->query($sql, ["id" => $catrec->id], ["id" => Column::BIND_PARAM_INT]);
@@ -223,6 +224,9 @@ EOD;
                 $code = "<?php endif ?>" . PHP_EOL;
                 $this->navbar_plates .= $code;
             }       
+        }
+        if (!file_exists($this->output_dir)) {
+            mkdir($this->output_dir);
         }
         $output = $this->output_dir . $config_file . '.phtml';
         file_put_contents($output, $this->navbar_plates);

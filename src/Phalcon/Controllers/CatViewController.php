@@ -10,6 +10,7 @@ use App\Models\BlogCat;
 use App\Models\Blog;
 use App\Models\Linkery;
 use App\Link\MenuTree;
+use App\Link\BlogView;
 use WC\Valid;
 use Phalcon\Mvc\Controller;
 use Phalcon\Mvc\View;
@@ -221,6 +222,7 @@ EOD;
         $v = $this->getView();
         $m = $v->m;
         $m->blog = $blog;
+        $m->revision = BlogView::linkedRevision($blog);
         return $this->render('cat', 'fetch');
     }
 
@@ -229,6 +231,8 @@ EOD;
         $view = $this->getView();
         $m = $view->m;
         $m->blog = $blog;
+        $m->revision = BlogView::linkedRevision($blog);
+        
         return $view->render('cat','fetch');
     }
     

@@ -27,12 +27,14 @@ class EventOps
         }
         $qry = <<<EOQ
       SELECT A.id, A.title, B.fromtime as  date1, B.totime as date2,
-      A.article, A.style, A.title_clean, C.content
-      from blog A join event B on A.id = B.blogid and A.enabled = 1
+      R.content as article,  A.style, A.title_clean, C.content
+      from blog A 
+      join event B on A.id = B.blogid and A.enabled = 1
       and (
       ((B.fromtime is NOT NULL) AND ( $nowfn1 ))
       OR ((B.totime  is NOT NULL) AND ( $nowfn2 ))
       )
+      join blog_revision R on R.blog_id = A.id and R.revision = A.revision
       join
       (select MC.blog_id, MC.content from blog_meta MC join meta M on MC.meta_id = M.id
       where M.meta_name = 'og:description') C on C.blog_id = A.id

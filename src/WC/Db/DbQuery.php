@@ -30,9 +30,9 @@ class DbQuery  {
         return $this->db->query($sql, $params);
     }
     
-    public function arrayColumn(string $sql, array $params = null) : array
+    public function arrayColumn(string $sql, array $params = null,array $bindtypes = null) : array
     {
-        return $this->db->fetchAll($sql, Db\Enum::FETCH_COLUMN, $params);
+        return $this->db->fetchAll($sql, Db\Enum::FETCH_COLUMN, $params,$bindtypes);
     }
     public function arraySet(string $sql, array $params = null, array $bindtypes = null) : array
     {

@@ -3,14 +3,13 @@ use WC\HtmlGem as Gem;
 $assets->add(['bootstrap', 'SummerNote', 'DateTime', 'jquery-form', 'blog-edit']);
 $blog = $m->blog;
 $revision = $m->revision;
-
 $metatags = $m->metatags;
 $url = $m->url;
 $stylelist = $m->stylelist;
 $module = '/admin/';
 $btn_class = 'btn btn-outline-secondary';
 $air_text = empty($m->airmode) ? 'Switch to "Air-Mode"' : 'Switch to Edit Frame';
-    
+$date_saved = new DateTime($revision->date_saved);
 
 ?>
 
@@ -69,8 +68,7 @@ $air_text = empty($m->airmode) ? 'Switch to "Air-Mode"' : 'Switch to Edit Frame'
                     
                     <label class='col-form-label' for="title">Title</label>
                     <?= Gem::plainText(['name'=>'title', 'size'=>40, 'value'=> $blog->title]) ?><br>
-                    <label class=' col-form-label' for="revision">Revision</label>
-                    <?= Gem::plainText(['name'=>'revision', 'size'=>4, 'value'=> $revision->revision]) ?>
+                   
                 </div>
                 <div class='form-group'>
                     <label class='col-form-label' for="lock_url">Unlock URL</label>
@@ -82,12 +80,16 @@ $air_text = empty($m->airmode) ? 'Switch to "Air-Mode"' : 'Switch to Edit Frame'
             </div>
             <div class='col-5 outerwrap'>
                 <div class='form-group'>
-                    <?= 'Updated ' .  $revision->date_saved . ' &nbsp;'  ?>
-                    <?= Gem::submit(['name'=>'save', 'size'=>40, 'value'=> "Save", 'class'=>"btn btn-primary" ]) ?>
+                     <label class=' col-form-label' for="revision">Revision #</label>
+                    <?= Gem::text_value(['name'=>'revision', 'size'=>4, 'value'=> $revision->revision]) ?>
+                   <?= Gem::select(['name'=>'rev_list','list'=>$m->rev_list]) ?>
+                    <?= '<br>Updated ' .  $date_saved->format('d-M-Y') . ' &nbsp;'  ?>
+                    <?= Gem::submit(['name'=>'save', 'size'=>40, 'value'=> "Perform Action", 'class'=>"btn btn-info btn-lg" ]) ?>
                 </div>
                 <div class='form-group'>
                     <label for="class_select">Select style wrapper</label>
                     <?= Gem::select(['name'=>'style', 'list'=>$stylelist, 'value'=> $blog->style, 'empty' => 'false', 'onChange' =>'wrapStyle()' ]) ?>
+                    
                 </div>
 
                 <div class='form-group'>

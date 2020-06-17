@@ -1,11 +1,12 @@
 <?php 
 $blog = $m->blog;
+$revision = $m->revision;
 $sclass = $blog->style;
 ?>
 <div class="container">
 <div class="<?= $sclass  ?>">
 <span class="cattitle"><?= $blog->title ?></span>
 <hr>
-<?= $blog->article ?>
+<?= $revision->content ?>
 </div>
 </div>

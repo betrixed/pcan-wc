@@ -14,6 +14,7 @@ use App\Link\BlogView;
 use App\Link\PageInfo;
 use App\Models\Links;
 use App\Models\Event;
+use App\Models\BlogRevision;
 use Phalcon\Mvc\Controller;
 use WC\Db\DbQuery;
 use WC\WConfig;
@@ -121,14 +122,15 @@ class BlogAdmController extends Controller
         
         $this->setBlogTitle($post, $blog);
         
+        $action = Valid::toStr($post,'rev_list');
+        if ($action === 'Revision') {
+            $blog->revision = BlogView::newRevision($blog);
+        }
         $revision->content = $post['article'];
         $revision->date_saved = Valid::now();
 
         $blog->style = $post['style'];
-        $revision_id  = Valid::toInt($post, 'revision');
-        if ($revision_id !== intval($revision->revision) ) {
-                $this->flash('Submitted Incorrect  revision id');
-        }
+       
         $blog->featured = Valid::toBool($post, 'featured');
         $blog->enabled = Valid::toBool($post, 'enabled');
         $blog->comments = Valid::toBool($post, 'comments');
@@ -165,8 +167,21 @@ class BlogAdmController extends Controller
         $this->setBlogFromPost($post, $update);
         $update_link = ($old_tc !== $blog->title_clean);
         try {
-            $update->blog->update();
-            $update->revision->update();
+            $revision = $update->revision;
+            if ($revision->revision !== $blog->revision) {
+                //  have new primary key
+                $new_revision = new BlogRevision();
+                $new_revision->setRevision($blog->getRevision());
+                $new_revision->setBlogId($blog->getId());
+                $new_revision->setContent($revision->getContent());
+                $new_revision->setDateSaved($revision->getDateSaved());
+                $new_revision->create(); // a create using old record object fails silently
+            }
+            else {
+                // update existing revision
+                $revision->update();
+            }
+            $blog->update();
         } catch (\PDOException $e) {
             return $this->errorPDO($e, $blogid);
         }
@@ -322,6 +337,10 @@ class BlogAdmController extends Controller
         $id = $blog->id;
         
         $model->revision = BlogView::linkedRevision($blog);
+        $model->rev_list = [
+            'Save' => 'Save',
+            'Revision' => 'Save as new revision',
+        ];
         
         $model->title = '#' . $id;
         $model->stylelist = $stylelist;
