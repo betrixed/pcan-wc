@@ -1,0 +1,71 @@
+<?php
+use WC\HtmlGem as Gem;
+$assets->add( [ 'bootstrap','grid', 'cat-menu', 'styles'] );
+$assets->minify('cat-menu');
+$blog = $m->blog;
+$list = $m->list;
+?>
+<style>
+    .color-fill {
+        background-color:paleturquoise;
+        min-height:10px;
+    }
+@media screen and (max-width: 900px){
+    #mgrid[data-columns]::before {
+        content: '3 .column.size-1of1';
+    }
+}
+
+@media screen and (min-width: 901px) and (max-width: 1300px) {
+    #mgrid[data-columns]::before {
+            content: '2 .column.size-1of2';
+    }
+}
+@media screen and (min-width: 1301px) {
+    #mgrid[data-columns]::before {
+            content: '3 .column.size-1of3';
+    }
+}
+
+.column { float:left; }
+.size-1of1 { width: 100%; }
+.size-1of2 { width: 50%; }
+.size-1of3 { width: 33.333%; }
+
+.title {
+    font-size:1.2em;
+}
+</style>
+<div class="container" >
+    <p>Revisions for <span class="title"><?=$blog->title?></span></p>
+</div>
+<div class='container-fluid artcat-bg'>
+    <?php if (!empty($m->list)): ?>
+    <div class="row">
+    <div id="list" class="col-2 catlist ubuntu">
+        <?php $fid = 0;
+                foreach($m->list as $menu): 
+                $itemUrl = "/admin/blog/rget/" . $blog->id . "/" . $menu->id;
+               for($ix = 0; $ix < 2; $ix++) {
+                     $fid += 1;
+            ?>
+               <div class="row">
+            <div class="catlink">
+                    <?php if ($ix === 0): ?>
+                    <a class="btn" id="f<?=$fid?>" href="<?= $itemUrl ?>" onclick="fetch(this);return false;"><?= $menu->title ?></a>
+                    <?php else: ?>
+                    <a class="btn" id="f<?=$fid?>" href="<?= $itemUrl . '?html=1' ?>" onclick="fetch(this);return false;"> - <?=$menu->id . ")"?> as HTML</a>
+                    <?php endif ?>
+            </div>
+                </div>
+               <?php } endforeach ?>
+    </div>
+    <div class="col-10">
+    <div id="article"></div>
+    </div>
+    <div class="hidden">
+        <a id="first_link" href="<?= $m->firstId ?>" onclick="fetch(this);return false;">#First#</a>
+    </div>
+    </div>
+<?php endif ?>
+</div>

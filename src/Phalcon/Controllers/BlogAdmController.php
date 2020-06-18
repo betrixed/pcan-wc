@@ -226,6 +226,33 @@ class BlogAdmController extends Controller
         //$this->editForm();
     }
 
+    public function revisionsAction($bid)
+    {
+         $view = $this->getView();
+         $m = $view->m;
+         $blog = Blog::findFirstById($bid);
+         $m->blog = $blog;
+         $all = $blog->getRelated('BlogRevision');
+         $list = [];
+         foreach($all as $revision) {
+             $item = new WConfig();
+             $item->id = $revision->revision;
+             $item->title = strval($revision->revision) . ") " . $revision->date_saved;
+             $list[] = $item;
+         }
+         $m->list = $list;
+         return $this->render('blog','revisions');
+    }
+    public function revgetAction($bid,$rid)
+    {
+         $view = $this->getView();
+         $this->noLayouts();
+         $m = $view->m;
+         $m->blog = Blog::findFirstById($bid);
+         $m->revision = BlogView::getRevision($bid,$rid);
+         $m->asHTML = $this->request->getQuery('html') ?? 0;
+         return $this->render('blog','revget');
+    }
     public function newAction()
     {
         $view = $this->getView();
@@ -336,7 +363,18 @@ class BlogAdmController extends Controller
         }
         $id = $blog->id;
         
-        $model->revision = BlogView::linkedRevision($blog);
+        //$model->revision = BlogView::linkedRevision($blog);
+        
+        $all_revisions = $blog->getRelated('BlogRevision');
+       
+        
+        foreach($all_revisions as $rec) {
+            if ($blog->revision === $rec->revision) {
+                $model->revision = $rec;
+            }
+        }
+        $model->all_revisions = $all_revisions;
+        // submit choices
         $model->rev_list = [
             'Save' => 'Save',
             'Revision' => 'Save as new revision',

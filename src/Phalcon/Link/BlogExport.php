@@ -9,7 +9,7 @@ use App\Models\Blog;
 use Phalcon\Db\Column;
 use App\Link\BlogView;
 use Masterminds\HTML5;
-
+use App\Link\BlogView;
 /**
  * Change a blog article into JSON package.
  *
@@ -107,24 +107,36 @@ class BlogExport {
         $rec = $pack['blog'];
         $blog->title = $rec['title'];
         $blog->title_clean = $rec['title_clean'];
-        $blog->article = $rec['article'];
-        $blog->date_published = $rec['date_published'];
-        $blog->date_updated = $rec['date_updated'];
+        
+        if (!empty($blog->id)) {
+            $revision = new BlogRevision();
+            $revision->revision = BlogView::newRevision($blog);
+        }
+        else {
+            $revision = new BlogRevision();
+            $revision->revision = 1;
+        }
+        $revision->content = $rec['article'];
+        //$blog->date_published = $rec['date_published'];
+        $revision->date_saved = $rec['date_updated'];
         $blog->style = $rec['style'];
         $blog->issue = $rec['issue'];
 
         $db = Server::db();
+        $blog->revision = $revision->revision;
+        
         if (!empty($blog->id)) {
-            $this->update();
+            $blog->update();
         } else {
-            $this->create();
+            $blog->create();
         }
+         $revision->blog_id = $blog->id;
+         $revision->create();
+         
         $blogid = $blog->id;
         if ($op === "update") {
             $db->execute("delete from blog_meta where blog_id = ?", [$blogid]);
         }
-
-
         $meta = $pack['meta'];
 
         if (!empty($meta)) {
@@ -196,15 +208,21 @@ class BlogExport {
     static public function package($id): array {
         $blog = Blog::findFirstById($id);
         // get essential data for json, not by keys of this DB
-
+        $revision = BlogView::linkedRevision($blog);
+        if ($revision->revision > 1) {
+            $first = BlogView::getRevision($blog->id, 1);
+        }
+        else {
+            $first = $revision;
+        }
         $pack = [];
         $pack['version'] = "0.2";
         $rec = [];
         $rec['title'] = $blog->title;
         $rec['title_clean'] = $blog->title_clean;
-        $rec['article'] = $blog->article;
-        $rec['date_published'] = $blog->date_published;
-        $rec['date_updated'] = $blog->date_updated;
+        $rec['article'] = $revision->content;
+        $rec['date_published'] = $first->date_saved;
+        $rec['date_updated'] = $revision->date_saved;
         $rec['style'] = $blog->style;
         $rec['issue'] = $blog->issue;
 

@@ -108,9 +108,12 @@ EOS;
      }
      
      static public function linkedRevision($blog) {
+         return getRevision($blog->id, $blog->revision);
+     }
+     static public function getRevision($bid,$rid) {
          $rev = BlogRevision::findFirst([
                     'conditions' => 'blog_id = :bid: and revision = :rev:',
-                    'bind' => [ 'bid' => $blog->id, 'rev' => $blog->revision]
+                    'bind' => [ 'bid' => intval($bid), 'rev' => intval($rid) ]
          ]);
          return $rev;
      }

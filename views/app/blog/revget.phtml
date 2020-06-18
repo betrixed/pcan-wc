@@ -1,0 +1,16 @@
+<?php 
+$blog = $m->blog;
+$revision = $m->revision;
+$sclass = $blog->style;
+?>
+<div class="container">
+
+<?php if (!empty($m->asHTML)): ?>
+<?= htmlentities($revision->content) ?>
+<?php else: ?>
+<div class="<?= $sclass  ?>">
+<hr>
+<?= $revision->content ?>
+</div>
+<?php endif ?>
+</div>
