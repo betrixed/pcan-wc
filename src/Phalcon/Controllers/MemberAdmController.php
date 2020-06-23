@@ -15,6 +15,7 @@ use App\Models\ChimpEntry;
 use App\Models\ChimpLists;
 use Phalcon\Mvc\Controller;
 use App\Link\LinkData;
+use App\Link\MemberData;
 use App\Chimp\ChimpData;
 
 class MemberAdmController extends Controller {
@@ -248,21 +249,21 @@ EOD;
      * @param type $f3
      * @param type $args
      */
-    public function donate($f3, $args) {
-        $post = &$f3->ref('POST');
+    public function donateAction() {
+        $post = $_POST;
         $mid = Valid::toInt($post, 'duid', 0);
         $amount = Valid::toMoney($post, 'amount', 0.0);
-        $member_date = Valid::toDateTime($post, 'member-date');
+        $member_date = Valid::toDate($post, 'member-date');
         $purpose = Valid::toStr($post, 'purpose');
         
         if ($amount > 0.0) {
             try {
                 $give = new Donation();
-                $give['member_date'] = $member_date;
-                $give['amount'] = $amount;
-                $give['purpose'] = $purpose;
-                $give['created_at'] = Valid::now();
-                $give['memberid'] = $mid;
+                $give->member_date = $member_date;
+                $give->amount = $amount;
+                $give->purpose = $purpose;
+                $give->created_at = Valid::now();
+                $give->memberid = $mid;
                 $give->save();
                   
             } catch (\Exception $e) {
@@ -271,11 +272,10 @@ EOD;
            
         }
         $view = $this->getView();
-        $view->content = 'member/donations';
-        
-        $m = $view->model;
-        $m->donations = Member::getDonations($mid);
+        $m = $view->m;
+         $m->donations = MemberData::getDonations($mid);
+        $this->noLayouts();
+        return $this->render('partials','member/donations');
 
-        echo $view->render();
     }
 }

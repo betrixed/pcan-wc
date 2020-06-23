@@ -181,31 +181,7 @@ $btnclass = 'btn btn-outline-info';
         </div>
     </div>
 
-
-    <?php if (!empty($donations)): ?>
-        <div id="donateList">
-            <div class="row">
-                <div class="col-2"><span>Date</span></div>
-                <div class="col-2"><span>Purpose</span></div>
-                <div class="col-2 text-right"<span class="align-right">Amount</span></div>
-            </div>
-            <hr>
-            <?php foreach ($donations as $dn): ?>
-                <div class="row" id="dnid<?= $dn['donateId'] ?>">
-                    <div class="col-2">
-                        <span><?= $dn['member_date'] ?></span>
-                    </div>
-
-                    <div class="col-2">
-                        <span><?= $dn['purpose'] ?></span>
-                    </div>
-                    <div class="col-2 text-right">
-                        <span class="align-right"><?= Gem::price($dn['amount']) ?></span>
-                    </div>
-                </div>
-            <?php endforeach ?>
-        </div>
-    <?php endif ?>
+    <div id="donateList"><?php $this->partial('member/donations'); ?></div>
     <hr>
     <form id="donateForm" method="post" action="<?= $url . 'donate' ?>" >
         <?= Gem::hidden(['name' => 'duid', 'value' => $rec->id]) ?>

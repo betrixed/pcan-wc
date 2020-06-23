@@ -9,7 +9,7 @@ class Donation extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
-    protected $donateId;
+    protected $id;
 
     /**
      *
@@ -42,14 +42,14 @@ class Donation extends \Phalcon\Mvc\Model
     protected $member_date;
 
     /**
-     * Method to set the value of field donateId
+     * Method to set the value of field id
      *
-     * @param integer $donateId
+     * @param integer $id
      * @return $this
      */
-    public function setDonateId($donateId)
+    public function setId($id)
     {
-        $this->donateId = $donateId;
+        $this->id = $id;
 
         return $this;
     }
@@ -120,13 +120,13 @@ class Donation extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field donateId
+     * Returns the value of field id
      *
      * @return integer
      */
-    public function getDonateId()
+    public function getId()
     {
-        return $this->donateId;
+        return $this->id;
     }
 
     /**
@@ -220,7 +220,7 @@ class Donation extends \Phalcon\Mvc\Model
     public function columnMap()
     {
         return [
-            'donateId' => 'donateId',
+            'id' => 'id',
             'memberid' => 'memberid',
             'amount' => 'amount',
             'purpose' => 'purpose',

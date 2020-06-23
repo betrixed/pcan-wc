@@ -13,6 +13,7 @@ class Valid {
     
     const REG_URL = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
     const REG_BITCOIN = "/bitcoin/i";
+    const DATE_FMT = 'Y-m-d';
     const DATE_TIME_FMT = 'Y-m-d H:i:s';
     const TIME_FMT = 'H:i:s';
     /**
@@ -153,7 +154,9 @@ class Valid {
     static public function now() {
         return date(self::DATE_TIME_FMT);
     }
-    
+     static public function today() {
+        return date(self::DATE_FMT);
+    }   
     static public function toPhone($req, $ix, $default='') {
         $text = static::toStr($req, $ix, null);
         if (!empty($text)) {
@@ -193,6 +196,26 @@ class Valid {
         return date($format, $time);
     }
     
+    static private  function defaultDate($default) {
+         if ($default === "today") {
+             return static::today();
+         }
+         else { 
+             return $default;
+         }
+    }
+     static public function toDate($req, $ix, $default ="today") {
+        if (!isset($req[$ix])) {
+             return static::defaultDate($default);
+        }
+        $sval = $req[$ix];
+         if (empty($sval)) {
+            return static::defaultDate($default);
+        }
+        $temp = filter_var( $sval, FILTER_SANITIZE_STRING);
+        $date = strtotime($temp); 
+        return date(self::DATE_FMT, $date);
+    }
     static public function toDateTime($req, $ix) {
         if (!isset($req[$ix])) {
             return static::now();

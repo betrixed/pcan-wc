@@ -4,6 +4,7 @@ namespace App\Link;
 
 use WC\Valid;
 use WC\Db\Server;
+use WC\Db\DbQuery;
 /**
  * Description of member
  *
@@ -166,8 +167,8 @@ class MemberData {
     }  
     static function getDonations($id) {
         $sql = "select d.* from donation d where d.memberid = :mid order by d.member_date";
-        $db = Server::db();
-        $results = $db->exec($sql, ['mid' => $id]);
+        
+        $results = (new DbQuery())->arraySet($sql, ['mid' => intval($id)]);
         if ($results) {
             return $results;
         } else {

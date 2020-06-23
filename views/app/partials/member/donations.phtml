@@ -1,8 +1,5 @@
 <?php
-if ($view->layout) {
-    $this->layout($view->layout, $this->data);
-}
-$gen = $this->form();
+use WC\HtmlGem as Gem;
 $donations = $m->donations;
 $btnclass = 'btn btn-outline-info';
 ?>
@@ -29,7 +26,7 @@ $btnclass = 'btn btn-outline-info';
                 <span><?= $dn['purpose'] ?></span>
             </div>
             <div class="col-2 text-right">
-                <span class="align-right"><?= $gen->price($dn['amount']) ?></span>
+                <span class="align-right"><?= Gem::price($dn['amount']) ?></span>
             </div>
         </div>
     <?php endforeach ?>

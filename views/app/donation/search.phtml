@@ -1,0 +1,53 @@
+<?php
+use WC\HtmlGem as Gem;
+$assets->add(['bootstrap']);
+$url = "/admin/donation/";
+
+?>
+<style>
+    .title {
+        font-size:18pt;
+    }
+</style>
+<div class="container-fluid">
+<div class="row">
+            <div class="col-2"><?= Gem::linkTo(['href' => $url . "index", 'text' => "Go Back", 'class'=>'btn btn-info']); ?></div>
+          <div class="col-10"><p><span class="title">Search results</span>  <?= $m->criteria ?> </p></div>
+</div>
+</div>
+
+<div class="container">
+    <div class="outer-wrap">
+
+
+<?php echo $this->getContent(); ?>
+
+<div class="row">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+            <th>Name</th>
+            <th>Entered</th>
+            <th>Date for</th>
+            <th>Amount</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+        <?php foreach ($m->page as $d):
+            $name = $d['fname'] . ' ' . $d['lname'];
+            ?>
+            <tr>
+                <td><?= Gem::linkTo(['href' =>$url . "edit/" . $d['id'], 'text' => $name ]) ?></td>
+            <td><?=  $d['created_at'] ?></td>
+            <td><?=  $d['member_date'] ?></td>
+            <td><?=  Gem::price( $d['amount'] ) ?></td>
+
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+        </div>
+</div>
+

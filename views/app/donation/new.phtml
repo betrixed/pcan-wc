@@ -1,0 +1,63 @@
+<?php
+/**
+ * @var \Phalcon\Mvc\View\Engine\Php $this
+ */
+?>
+
+<div class="row">
+    <nav>
+        <ul class="pager">
+            <li class="previous"><?php echo $this->tag->linkTo(["donation", "Go Back"]) ?></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="page-header">
+    <h1>Create donation</h1>
+</div>
+
+<?php echo $this->getContent(); ?>
+
+<form action="donation/create" class="form-horizontal" method="post">
+    <div class="form-group">
+    <label for="fieldMemberid" class="col-sm-2 control-label">Memberid</label>
+    <div class="col-sm-10">
+        <?php echo $this->tag->textField(["memberid", "type" => "number", "class" => "form-control", "id" => "fieldMemberid"]) ?>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="fieldAmount" class="col-sm-2 control-label">Amount</label>
+    <div class="col-sm-10">
+        <?php echo $this->tag->textField(["amount", "type" => "number", "class" => "form-control", "id" => "fieldAmount"]) ?>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="fieldPurpose" class="col-sm-2 control-label">Purpose</label>
+    <div class="col-sm-10">
+        <?php echo $this->tag->textField(["purpose", "size" => 30, "class" => "form-control", "id" => "fieldPurpose"]) ?>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="fieldCreatedAt" class="col-sm-2 control-label">Created</label>
+    <div class="col-sm-10">
+        <?php echo $this->tag->textField(["created_at", "size" => 30, "class" => "form-control", "id" => "fieldCreatedAt"]) ?>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="fieldMemberDate" class="col-sm-2 control-label">Member Of Date</label>
+    <div class="col-sm-10">
+        <?php echo $this->tag->textField(["member_date", "type" => "date", "class" => "form-control", "id" => "fieldMemberDate"]) ?>
+    </div>
+</div>
+
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <?php echo $this->tag->submitButton(["Save", "class" => "btn btn-default"]) ?>
+        </div>
+    </div>
+</form>
