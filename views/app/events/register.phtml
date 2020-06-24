@@ -51,6 +51,8 @@ $assets->add(['bootstrap', 'register-js']);
             <?= $eblog['reg_detail']; ?>
         </div>
     </div>
+    <?php endif ?>
+    <?php if ($hasEvent): ?>
             <form id="regevt" method="post" action="/register/regpost">
             <div id="regform">
                 <?= $this->partial('events/regform') ?>

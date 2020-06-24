@@ -44,8 +44,10 @@ EOD;
         $db = $this->dbq;
         $sql=<<<EOD
 select e.fromTime, e.toTime, e.enabled, e.id as eventid, 
- b.* from event e 
+ b.*, r.content as article, r.date_saved as date_updated
+ from event e 
  join blog b on b.id = e.blogid
+join blog_revision r on r.blog_id = b.id and r.revision = b.revision
  where e.slug = :slug
  and NOW() < e.fromTime
  and e.enabled=1 

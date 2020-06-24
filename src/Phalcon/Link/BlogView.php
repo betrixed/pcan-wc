@@ -108,7 +108,7 @@ EOS;
      }
      
      static public function linkedRevision($blog) {
-         return getRevision($blog->id, $blog->revision);
+         return static::getRevision($blog->id, $blog->revision);
      }
      static public function getRevision($bid,$rid) {
          $rev = BlogRevision::findFirst([
