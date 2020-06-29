@@ -71,22 +71,23 @@ class DbQuery  {
         return $this->where;
     }
     
-    public function queryAA(string $sql) : array {
-        if (!empty($this->params)) {
-            $params = $this->params;
-            $binds = $this->binds;
-        }
-        else {
-            $params = [];
-            $binds = [];
-        }
+    public function queryAA(string $sql) : array
+    {
+         return $this->arraySet($this->buildSql($sql),$this->params, $this->binds);
+    }
+    public function queryOA(string $sql) : array
+    {
+         return $this->objectSet($this->buildSql($sql),$this->params, $this->binds);
+    }
+    public function buildSql(string $sql) : string
+    {
         if (!empty($this->where)) {
             $sql .= ' WHERE ' . $this->where;
         }
         if (!empty($this->order)) {
             $sql .= ' ORDER BY ' . $this->order;
         }
-        return $this->arraySet($sql, $params, $binds);
+       return $sql;
     }
     /** Add a simple condition, must have a '?'  for replacement  */
     public function bindCondition(string $condition,  $value) {

@@ -9,6 +9,7 @@
 namespace WC\Mixin;
 use WC\UserSession;
 use WC\App;
+use WC\WConfig;
 use Phalcon\Mvc\View\Simple;
 use Phalcon\Mvc\View;
 /**
@@ -22,6 +23,11 @@ trait ViewPhalcon {
     function afterExecuteRoute() {
         // session becomes read only
         UserSession::shutdown();
+    }
+    
+    public function getViewModel() : WConfig
+    {
+        return $this->view->m;
     }
     public function getView() {
         return $this->view; // magic view service getter in Phalcon

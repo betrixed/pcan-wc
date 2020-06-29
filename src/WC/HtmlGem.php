@@ -543,7 +543,7 @@ EOD;
             $out .= static::out_label($label,$id,$input);
         }
         else if ($method === 'in_label') {
-            $out .= static::int_label($label,$input);
+            $out .= static::in_label($label,$input);
         }
         else {
             $out .= $input;

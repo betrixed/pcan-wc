@@ -1,0 +1,72 @@
+<?php
+
+use WC\HtmlGem as Gem;
+
+$assets->add(['bootstrap']);
+$url = $m->url;
+$feed = $m->feed;
+$btn_class = "btn btn-outline-info btn-lg";
+$linkview = "/news/rss_link/view/";
+$linkdel = "/news/rss_link/delete/";
+$linkreset = "/news/rss_link/reset/";
+?>
+
+<div class="container-fluid">
+                <div class="outer-wrap">
+        <div class="row">
+                <div class="col-3">
+                <span><?= Gem::linkTo(['href' => $url . "index", 'text' => "Go Back", 'class' => $btn_class]); ?></span>
+                </div>
+                 <div class="col-3">
+                 <span><?= Gem::linkTo(['href' => $url . "new", 'text' => "Create", 'class' => $btn_class]); ?></span>
+                 </div>
+                 <div class="col-3">
+                 <span><?= Gem::linkTo(['href' => $url . "edit/" . $feed->id, 'text' => "Edit", 'class' => $btn_class]); ?></span>
+                 </div>
+           </div>
+        </div>
+    <h1>New links </h1>
+</div>
+<style>
+      #main-table > div.row {
+        border-top: 2px dotted lightblue;
+        font-size: 0.8em;
+    }
+</style>
+
+
+<?php echo $this->getContent(); ?>
+<div class="container-fluid">
+    <div id="main-table" class="body-wrap">
+
+        <div class="row title">
+            <div class="col-5 text-center"><span>Description</span></div>
+            <div class="col-2 text-center">Title</div>
+            <div class="col-1 text-center">Creator</div>
+            <div class="col-1 text-center">Section</div>
+            <div class="col-1 text-center">Date</div>
+            <div class="col-1"></div>
+        </div>
+
+        <?php
+        foreach ($m->items as $rss_link):
+            $dateonly = explode(' ', $rss_link->pub_date);
+            $date = empty($dateonly) ? '-' : $dateonly[0];
+            $processed = empty($rss_link->flags) ? 0 : $rss_link->flags;
+            ?>
+            <div class="row">
+                <div class="col-5"><?= $rss_link->description ?></div>
+                <div class="col-2"><?= $rss_link->title ?></div>
+                <div class="col-1"><?= $rss_link->creator ?></div>
+                 <div class="col-1 text-center"><?= $rss_link->section ?></div>
+                <div class="col-1"><?= $date ?></div>
+                <div class="col-1"><?= Gem::linkTo(['href' => $linkview . $rss_link->id, 'text' => "View " . $processed]); ?><br>
+                    <?= Gem::linkTo(['href' => $linkdel . $rss_link->id, 'text' => "Delete" ]); ?> <?= Gem::linkTo(['href' => $linkreset . $rss_link->id, 'text' => "Reset" ]); ?>
+                </div>
+            </div>
+
+<?php endforeach; ?>
+        </tbody>
+        </table>
+    </div>
+</div>

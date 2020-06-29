@@ -43,10 +43,9 @@ class BlogView  {
         $m->start = ($m->numberPage - 1) * $m->grabsize;
 
         $sql = <<<EOS
-SELECT  B.*, R.content as article, R.date_saved, M.content as author_name,
-  count(*) over() as full_count from blog B
-  JOIN blog_revision R on R.blog_id = B.id and R.revision = B.revision
-  JOIN blog_meta M on M.blog_id = B.id JOIN meta T on T.id = M.meta_id and T.meta_name = 'author'
+  SELECT B.*, C.content as author_name, count(*) over() as full_count
+      from articles B JOIN (SELECT id as meta_id from meta where meta_name = 'author') M
+                LEFT JOIN blog_meta C on C.blog_id = B.id and C.meta_id = M.meta_id
 EOS;
         $binders = [];
         if ($m->catId > 0) {
@@ -314,7 +313,7 @@ EOD;
             case 'date':
                 $alt_list['date'] = 'date-alt';
                 $col_arrow['date'] = '&#8595;';
-                $order_field = 'R.date_saved asc';
+                $order_field = 'B.date_saved asc';
                 break;
             case 'author':
                 $alt_list['author'] = 'author-alt';
@@ -336,7 +335,7 @@ EOD;
             case 'date-alt':
             default:
                 $col_arrow['date'] = '&#8593;';
-                $order_field = 'R.date_saved desc';
+                $order_field = 'B.date_saved desc';
                 $orderby = 'date-alt';
                 break;             
                 

@@ -1,0 +1,84 @@
+<?php
+use WC\HtmlGem as Gem;
+$assets->add(['bootstrap']);
+$feed = $m->feed;
+$rss_link = $m->link;
+$furl = "/news/rss_feed/process/";
+?>
+<style>
+    textarea {
+        width: 100%;
+    }
+    .body-wrap {
+        padding:20px;
+    }
+    figure {
+        width:100%;
+        border-style:solid;
+    }
+    figure img {
+        width:100%;
+    }
+    figcaption {
+        padding:0.2em;
+        font-family:sans-serif;
+        font-size: 0.8em;
+        background-color:palegoldenrod;
+    }
+    .text-item {
+        font-family:serif;
+    }
+    label.label {
+        display: inline-block;
+        font-size: 0.8em;
+        font-weight:bold;
+        min-width:100px;
+        text-align:right;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="body-wrap">
+<div class="row">
+    <div class="col">
+    <?= Gem::linkTo(['href' => $furl . $feed->id, 'text' => 'Feed list']); ?>
+    </div>
+</div>
+
+    <div class="row"><div class="col"><h1><?= $rss_link->title ?></h1></div></div>
+           <div class="row border-top border-bottom" style="font-size:0.8em">
+                <div class="col"><label class="label">Description:  </label><?= strip_tags($rss_link->description) ?></div>
+            </div>
+           <div class="row border-bottom" style="font-size:0.8em">
+                <div class="col"><label class="label">Creator: </label> <?= $rss_link->creator ?></div>
+                <div class="col ml-auto"><label class="label">Published:  </label> <?= $rss_link->pub_date ?></div>
+           </div>    
+      <div class="row border-bottom" style="font-size:0.8em">
+                <div class="col"><label class="label">Link: </label> <?= $rss_link->link ?></div>
+           </div>    
+</div>
+</div>
+
+    <?php if ((intval($rss_link->flags) & 1) === 1): ?>
+<div class="container">
+    <div class="body-wrap text-item">
+    <hr>
+     <div class="row">
+        <div class="col">
+            <?= $rss_link->extract ?>
+        </div>
+    </div>
+    </div>
+    </div>
+<?php else: ?>
+<div class="container-fluid">
+    <div class="body-wrap text-item">
+    <hr>
+     <div class="row">
+        <div class="col">
+            <?= Gem::multiline(['name' => 'text', 'value' => $rss_link->extract]) ?>
+        </div>
+    </div>
+    </div>
+    </div>
+    <?php endif ?>

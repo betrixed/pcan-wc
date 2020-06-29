@@ -1,0 +1,69 @@
+<?php
+/**
+ * @var \Phalcon\Mvc\View\Engine\Php $this
+ */
+?>
+
+<div class="row">
+    <nav>
+        <ul class="pager">
+            <li class="previous"><?php echo $this->tag->linkTo(["rss_link/index", "Go Back"]); ?></li>
+            <li class="next"><?php echo $this->tag->linkTo(["rss_link/new", "Create "]); ?></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="page-header">
+    <h1>Search result</h1>
+</div>
+
+<?php echo $this->getContent(); ?>
+
+<div class="row">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+            <th>Feed</th>
+            <th>Xml Of Json</th>
+            <th>Extract</th>
+            <th>Extract Of Title</th>
+
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($page->getItems() as $rss_link): ?>
+            <tr>
+                <td><?php echo $rss_link->getId() ?></td>
+            <td><?php echo $rss_link->getFeedId() ?></td>
+            <td><?php echo $rss_link->getXmlJson() ?></td>
+            <td><?php echo $rss_link->getExtract() ?></td>
+            <td><?php echo $rss_link->getExtractTitle() ?></td>
+
+                <td><?php echo $this->tag->linkTo(["rss_link/edit/" . $rss_link['id'], "Edit"]); ?></td>
+                <td><?php echo $this->tag->linkTo(["rss_link/delete/" . $rss_link['id'], "Delete"]); ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-sm-1">
+        <p class="pagination" style="line-height: 1.42857;padding: 6px 12px;">
+            <?php echo $page->getCurrent(), "/", $page->getTotalItems() ?>
+        </p>
+    </div>
+    <div class="col-sm-11">
+        <nav>
+            <ul class="pagination">
+                <li><?php echo $this->tag->linkTo(["rss_link/search", "First", 'class' => 'page-link', 'id' => 'first']) ?></li>
+                <li><?php echo $this->tag->linkTo(["rss_link/search?page=" . $page->getPrevious(), "Previous", 'class' => 'page-link', 'id' => 'previous']) ?></li>
+                <li><?php echo $this->tag->linkTo(["rss_link/search?page=" . $page->getNext(), "Next", 'class' => 'page-link', 'id' => 'next']) ?></li>
+                <li><?php echo $this->tag->linkTo(["rss_link/search?page=" . $page->getLast(), "Last", 'class' => 'page-link', 'id' => 'last']) ?></li>
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -18,33 +18,6 @@ use App\Link\BlogView;
 class ArticleController  extends Controller {
 use \WC\Mixin\ViewPhalcon;
 
-    public function news($f3, $args) {
-        $server = &$f3->ref('SERVER');
-        $req = $args['*'];
-       // $req = $server['REQUEST_URI'];
-         $db = Server::db('concrete');
-         $sql = <<<EOD
- select CV.cID, CV.cvName, CV.cvID, VB.bID, CL.content from CollectionVersions CV 
- join
- (select  cID, max(cvID) as  vID from  CollectionVersions where  cvHandle = ? group by cID)
- MCV on CV.cID = MCV.cID and CV.cvID = MCV.vID
- join CollectionVersionBlocks VB on VB.cvID = CV.cvID and VB.cID = CV.cID
- join btContentLocal CL on CL.bID = VB.bID          
-EOD;
-        $content = $db->exec($sql, $req);
-        $view = $this->getView();
-        $m = $view->model;
-        if (!empty($content)) {
-            //$view->article = "Record " . $content[0]['cID'];
-           $m->article = $content[0]['content'];
-        }
-        else {
-            $m->article = "Not found";
-        }
-        $view->content = 'blog/sbo.phtml';
-        $view->assets(['bootstrap']);
-        echo $view->render();
-    }
     public function titleAction($title) {
         $blog = Blog::findFirstByTitleClean($title);
 

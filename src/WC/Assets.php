@@ -35,7 +35,8 @@ class Assets {
     // Minify cache
     const MAX_AGE = 60 * 60 * 24;
     const SCRIPT_TAG = '<script>' . PHP_EOL;
-    const SCRIPT_END= '</script>' . PHP_EOL;
+    const SCRIPT_END = '</script>' . PHP_EOL;
+
     static public function registerAssets($assets) {
         $si = static::instance();
         $si->addAssets($assets);
@@ -137,6 +138,23 @@ class Assets {
         //if (empty($outs)) {
         //$outs = "<!-- No link assets found: {" . $name . "} -->" . PHP_EOL;
         //}
+        return $outs;
+    }
+
+    public function inline_css($name): string {
+        $cfg = $this->config;
+        $outs = "";
+        if (isset($cfg->$name)) {
+            $assets = &$cfg->$name;
+            if (isset($assets['css'])) {
+                foreach ($assets['css'] as $hpath) {
+                    $path = $this->web . $this->unhive($hpath);
+                    $outs .= PHP_EOL . '<style>' . PHP_EOL;
+                    $outs .= file_get_contents($path);
+                    $outs .= PHP_EOL . '</style>' . PHP_EOL;
+                }
+            }
+        }
         return $outs;
     }
 
@@ -257,21 +275,21 @@ class Assets {
         $outs = "";
         if (isset($cfg->$name)) {
             $assets = $cfg->$name;
-            
+
             if (isset($assets['js'])) {
                 foreach ($assets['js'] as $hpath) {
                     $path = $this->unhive($hpath);
-                      if ($this->warn_missing) {
+                    if ($this->warn_missing) {
                         $this->verify($path);
                     }
                     $outs .= static::script_js($path);
                 }
             }
             if (isset($assets['js-inline'])) {
-                foreach($assets['js-inline'] as $srctype => $list) {
-                    switch($srctype) {
+                foreach ($assets['js-inline'] as $srctype => $list) {
+                    switch ($srctype) {
                         CASE 'vendor':
-                            foreach($list as $jspath) {
+                            foreach ($list as $jspath) {
                                 $path = $this->app->web_files . $jspath;
                                 $script = file_get_contents($path);
                                 $this->addJS(static::SCRIPT_TAG . $script . static::SCRIPT_END);
