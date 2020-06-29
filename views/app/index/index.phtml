@@ -54,6 +54,7 @@ $hasEvents = !empty($m->events);
                 $ulen = strlen($url);
                 $urlhint = ($ulen > 55) ? substr($url, 0, 25) . '...' . substr($url, $ulen - 27)
                             : $url;
+                
                 ?>
                 <!-- link <?= $link['id'] ?>-->
                 <div class='mitem' id='lnk<?= $link['id'] ?>'>
@@ -67,7 +68,7 @@ $hasEvents = !empty($m->events);
                     <div class="link-summary">
                             <?php if (!empty($link['im_file'])): ?>
                             <figure style="float:left;width:47%;max-width:450px;margin:10px;">
-                                <img src="<?= $link['im_path'] . '/' . $link['im_file'] ?>" style="width:100%; margin:0;">
+                                <img src="<?= '/' . $link['im_path'] . '/' . $link['im_file'] ?>" style="width:100%; margin:0;">
                             <?php if (!empty($link['im_caption'])): ?>
                                     <figcaption style="border-style:solid; padding:4px; font-size:0.9em;"><?= $link['im_caption'] ?></figcaption>
                             <?php endif ?>
