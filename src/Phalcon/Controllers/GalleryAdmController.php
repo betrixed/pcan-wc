@@ -49,7 +49,8 @@ class EditOp extends ImageOp {
 
     public function doThing() {
         // description field changed?
-        $new_description = Valid::toStr($this->post, 'desc' . $this->rowid, "");
+        
+        $new_description = Valid::toHtml($this->post, 'desc' . $this->rowid );
         $update = Valid::toDateTime($this->post, 'date' . $this->rowid);
 
         $image = Image::findFirstById($this->imageid);

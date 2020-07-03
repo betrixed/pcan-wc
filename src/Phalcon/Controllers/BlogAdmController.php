@@ -126,7 +126,7 @@ class BlogAdmController extends Controller
         if ($action === 'Revision') {
             $blog->revision = BlogView::newRevision($blog);
         }
-        $revision->content = $post['article'];
+        $revision->content = Valid::toHtml($post,'article');
         $revision->date_saved = Valid::now();
 
         $blog->style = $post['style'];

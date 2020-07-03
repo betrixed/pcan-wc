@@ -230,7 +230,7 @@ class LinksAdmController extends Controller {
         $link->sitename = Valid::toStr($post, 'sitename', 'Here');
         $link->date_created = Valid::toDateTime($post, 'date_created');
         $link->title = Valid::toStr($post, 'title', "");
-        $link->summary = $post['summary'];
+        $link->summary = Valid::toHtml($post,'summary');
         $link->enabled = Valid::toBool($post, 'enabled', 0);
         $link->imageid = Valid::toInt($post, 'imageid');
 

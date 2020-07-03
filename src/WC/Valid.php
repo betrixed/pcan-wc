@@ -9,6 +9,9 @@ namespace WC;
  * Simple validations, usually first parameter is the POST array
  * @author Michael Rynn
  */
+
+
+        
 class Valid {
     
     const REG_URL = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
@@ -63,6 +66,18 @@ class Valid {
         return (substr($str,0,$len) == $pre);
     }
     
+    static public function toHtml($req, $ix) : string
+    {
+        $app =  \WC\App::instance();
+        require_once  $app->vendor  . '/ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
+     
+         if (!isset($req[$ix])) {
+            return  "";
+        }
+        $config = \HTMLPurifier_Config::createDefault();
+        $purifier = new \HTMLPurifier($config);
+        return $purifier->purify($req[$ix]);
+    }
     /**
      * 
      * @param type $req
