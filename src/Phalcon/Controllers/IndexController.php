@@ -83,7 +83,27 @@ EOQ;
 
         return (new DbQuery())->arraySet($qry);
     }
-
+   protected function getMaxHeight(array $images)
+   {
+       $max = 0;
+       foreach($images as $im) {
+           $test = $im['height'];
+           if ($max < $test) {
+               $max = $test;
+           }
+       }
+       return $max;
+   }
+    public function recentFFB() {
+        $qry = <<<EOQ
+    select IM.*, G.path from image IM 
+    join gallery G on IM.galleryid = G.id
+    where G.seriesid = 1
+    order by IM.date_upload desc
+    LIMIT 4
+   EOQ;
+         return (new DbQuery())->arraySet($qry);
+    }
     public function indexAction()
     {
         $assets = \WC\Assets::instance();
@@ -92,15 +112,19 @@ EOQ;
 
         $view = $this->getView();
 
-        $cache = FileCache::modelCache();
+        /*$cache = FileCache::modelCache();
         $cache_key = 'IndexIndex';
         $m = $cache->get($cache_key, null);
-
+       
         if (is_null($m)) {
+         */
             $m = $view->m;
             $m->sides = $this->sides();
             $m->main = $this->main();
             $m->events = $this->events();
+            $m->images = $this->recentFFB();
+            $m->maxHeight = $this->getMaxHeight($m->images);
+            
             $m->title = "PCAN Home";
 
             $panels = LinksOps::byType('Panel');
@@ -109,11 +133,11 @@ EOQ;
             } else {
                 $m->topPanels = [];
             }
-            $cache->set($cache_key, $m);
+           /*$cache->set($cache_key, $m);
         } else {
-            $view->m = $m;
-        }
-
+           
+        }*/
+         $view->m = $m;
 
 
         /*

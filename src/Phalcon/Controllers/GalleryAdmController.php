@@ -140,10 +140,8 @@ class GalleryAdmController extends Controller {
             $galpath = Valid::noFrontSlash($app->gallery);
             $this->galleryPath = Valid::endSlash($galpath);
         }
-
         return $this->galleryPath;
     }
-
     public function getAllowRole(): string {
         return 'Editor';
     }
@@ -283,6 +281,17 @@ class GalleryAdmController extends Controller {
         return $imglist;
     }
 
+    
+    protected function checkSizeInfo($dpath, $img, $gal) {
+           if (intval($img->getHeight()) === 0 && ($gal->getViewThumbs())) {
+                   $thumb_file =   $dpath . self::get_thumb_path($img, $gal);
+                   if (file_exists($thumb_file)) {
+                       $this->get_sizeinfo($img,$thumb_file);
+                       $img->update();
+                   }
+                }               
+      
+    }
     private function scanMissing($gal) {
         $dpath = $this->getDirPath($gal);
         $imglist = GalleryView::getImages($gal->id);
@@ -291,7 +300,10 @@ class GalleryAdmController extends Controller {
             if (!file_exists($ipath)) {
                 $url = $this->syncUrl . "/" . $gal->path . "/" . $img['name'];
                 file_put_contents($ipath, fopen($url, 'r'));
-            }
+
+            } else {
+                    $this->checkSizeInfo($dpath, $img, $gal);
+                }
         }
     }
 
@@ -311,6 +323,15 @@ class GalleryAdmController extends Controller {
         return $thumb_ext;
     }
 
+    static function get_thumb_path($img, $gal) {
+         $basename = pathinfo($img->name,PATHINFO_FILENAME);
+        $ext =  $img->getThumbExt();
+        if (empty($ext)) {
+                 $ext = 'jpg';
+               
+        }
+        return  "/thumbs/" . $basename. "." . $ext;
+    }
     private function scanUnregistered($gal) {
         $dpath = $this->getDirPath($gal);
         if (file_exists($dpath) && is_dir($dpath)) {
@@ -339,6 +360,7 @@ class GalleryAdmController extends Controller {
             }
             // check for null, or incorrect thumb_ext, but existing thumb file
             foreach ($imglist as $r) {
+                $this->checkSizeInfo($dpath, $r,$gal);
                 $thumb_ext = static::findThumbExt($dpath, $r->name);
                 if ($r->thumb_ext !== $thumb_ext) {
                     $r->thumb_ext = $thumb_ext;
@@ -413,16 +435,14 @@ class GalleryAdmController extends Controller {
             // construct real path, get $file_size, $mimi_type, $date_upload, width , height
 
             if (in_array($extension, ['jpg', 'png', 'gif'])) {
-                $sizeinfo = getimagesize($imgfile);
-                $img->mime_type = $sizeinfo['mime'];
-                $img->width = $sizeinfo[0];
-                $img->height = $sizeinfo[1];
+                self::get_sizeinfo($img, $imgfile);
             } else if ($extension == 'pdf') {
                 $img->mime_type = 'application/pdf';
             }
             $img->file_size = filesize($imgfile);
             $img->date_upload = date('Y-m-d H:i:s', filemtime($imgfile));
             $img->thumb_ext = $thumb_ext;
+            
             $active = $img->create();
             $image_id = $img->id;
             $active = $img; //for return
@@ -721,6 +741,9 @@ class GalleryAdmController extends Controller {
                     $imgRec = $this->registerImage($gal, $dest_file);
                     if ($imgRec !== false) {
                         $this->set_thumb($imgRec->name, $dest_dir, $thumbs_dir);
+                        if ($gal->getViewThumbs()) {
+                            $this->update_sizeinfo($imgRec,$dest_dir, $thumbs_dir);
+                        }
                     }
                 }
             }
@@ -748,6 +771,13 @@ class GalleryAdmController extends Controller {
         }
     }
 
+static public function get_sizeinfo($img, $filepath)
+{
+        $info = getimagesize($filepath);
+        $img->height = $info[1];
+        $img->width =  $info[0];
+        $img->mime_type = $info['mime'];
+}
 /// photos_dir = ‘uploads/photos’
 /// thumbs_dir = photos_dir . /thumbs
 /// squire_size = 150

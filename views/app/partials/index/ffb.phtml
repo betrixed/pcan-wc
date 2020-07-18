@@ -1,0 +1,100 @@
+<?php 
+    $images = $m->images;
+     //height: <?=$m->maxHeight + 50 
+?>
+
+<style>
+.carousel-inner,.carousel,.item,.fill {
+  background-position:center center;
+}   
+
+.carousel {
+    
+}
+.carousel-inner {
+    background-color:white;
+}
+.carousel-inner img {
+    margin-bottom : 50px;
+    width:100%;
+}
+
+div.carousel-link{
+    width: auto;
+    height: 32px;
+    margin: 10px;    
+    vertical-align:middle;
+}
+.carousel-indicators li {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    margin: 10px;
+    text-indent: 0;
+    cursor: pointer;
+    border: none;
+    border-radius: 30%;
+    background-color: #dd5599;
+    box-shadow: inset 1px 1px 1px 1px rgba(0,0,0,0.5);    
+}
+.carousel-indicators .active {
+    width: 32px;
+    height: 32px;
+    margin: 10px;
+    background-color: black;
+}
+</style>
+
+<?php if (!empty($images)): 
+
+  $row_id = 0;
+  ?>   
+    <div id="gallery-c" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+             <?php foreach($images as $fup): ?>
+                <?php if ($row_id === 0): ?>
+    <li data-target="#gallery-c" data-slide-to="<?=$row_id?>" class="active"></li>
+                <?php else: ?>
+    <li data-target="#gallery-c" data-slide-to="<?=$row_id?>"></li>
+                        <?php endif ?>
+            <?php $row_id++; endforeach;   $row_id = 0;  ?>
+    <div class="carousel-link"><a href="/gallery/view/ffb-2020-Apr-Jun">Gallery Archive</a></div>
+      </ol>
+
+        <div class="carousel-inner">
+    <?php foreach($images as $fup): 
+      $info = $fup['description'];
+      $row_id = $row_id + 1;
+      $chkid = "chk" . $row_id;
+      $idate = strtotime($fup['date_upload']);
+      $filename = pathinfo( $fup['name'] , PATHINFO_FILENAME);
+      $itemClass = ($row_id === 1) ? "carousel-item active" : "carousel-item";
+        $img_path = "/" . $fup['path'] . "/thumbs/" .  $filename. ".png";
+        $doc_url = "/" . $fup['path'] . "/" .   $fup['name'] ;
+    ?>
+     <div class="<?=$itemClass ?>">
+         <img class="d-flex align-items-center" src="<?=$img_path ?>"  title="<?=$info ?>" onclick="alert('Clicked');"alt="<?='slide ' . $row_id ?>" >
+    </div>
+    <?php endforeach ?>
+<a class="carousel-control-prev" href="#gallery-c" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#gallery-c" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+        </div>
+    </div>
+<div style="font-family:serif;font-size:16pt;">
+<div class="row">
+    <div class="col text-center">
+        <p style="line-height: normal;">
+            Published at <a href="https://knitting-nannas.com/bulletins.php">Knitting Nanas</a> & <a href="https://fossilfool.com.au/">Fossil Fool Site</a><br>
+ <a href="https://knitting-nannas.org/subscribe.php">Email Subscription - Knitting Nannas Site</a></p>
+    </div>
+</div>
+</div>
+
+
+<?php endif ?>

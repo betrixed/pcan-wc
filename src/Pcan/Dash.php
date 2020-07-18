@@ -27,6 +27,20 @@ class Dash extends Controller {
                 $cache->reset('schema');
             }
         }
+        else if ($cmd === "metadata_cache") {
+            $ns = "App\\Model\\";
+            $reflector = new \ReflectionClass($ns . 'Blog');
+            $dir = dirname( $reflector->getFileName());
+            foreach(glob($dir . '/' . '*') as $model_file) {
+                if (substr($mode_file,0,1) !== '.') {
+                    $classfile = basename($model_file, ".php");
+                    $model_class = $ns . $classfile;
+                    $model = new $model_class();
+                    $meta_data = $model->getMetaData();
+                    $meta_data->reset();
+                }
+            }
+        }
     }
     public function show($f3, $args) {  
         \WC\Assets::instance()->add('bootstrap');

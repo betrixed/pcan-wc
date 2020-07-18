@@ -39,6 +39,9 @@ $hasEvents = !empty($m->events);
 <?php endif; ?>
     <div class="row">
         <div class="col-lg-5">
+             <div class="sidebox">
+                 <?php $this->partial("index/ffb") ?>
+                </div>
 <?php foreach ($m->sides as $box): ?>
                <!-- link <?= $box['id'] ?>-->
                 <div class="sidebox">
