@@ -70,10 +70,10 @@ div.carousel-link{
       $filename = pathinfo( $fup['name'] , PATHINFO_FILENAME);
       $itemClass = ($row_id === 1) ? "carousel-item active" : "carousel-item";
         $img_path = "/" . $fup['path'] . "/thumbs/" .  $filename. ".png";
-        $doc_url = "/" . $fup['path'] . "/" .   $fup['name'] ;
+        $doc_url = "'/" . $fup['path'] . "/" .   $fup['name']  . "'";
     ?>
      <div class="<?=$itemClass ?>">
-         <img class="d-flex align-items-center" src="<?=$img_path ?>"  title="<?=$info ?>" onclick="alert('Clicked');"alt="<?='slide ' . $row_id ?>" >
+         <img class="d-flex align-items-center" src="<?=$img_path ?>"  title="<?=$info ?>" onclick="goto_url(<?=$doc_url?>);"alt="<?='slide ' . $row_id ?>" >
     </div>
     <?php endforeach ?>
 <a class="carousel-control-prev" href="#gallery-c" role="button" data-slide="prev">
@@ -95,6 +95,12 @@ div.carousel-link{
     </div>
 </div>
 </div>
-
+<script>
+    function goto_url(url) {
+        var loc = window.location;
+        var newloc = loc.protocol + '//' +  loc.host + url;
+        window.location.href = newloc;
+    }
+</script>
 
 <?php endif ?>
