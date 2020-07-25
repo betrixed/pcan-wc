@@ -7,8 +7,16 @@ class WConfig extends \stdClass implements \ArrayAccess {
         $f->replaceVars($map);
     }
     
+    function toArray() : array {
+        return get_object_vars($this);
+    }
     function exists($name) {
         return isset($this->$name);
+    }
+    
+    function has($key) : bool 
+    {
+         return isset($this->$key);
     }
     
     function get($key, $default = null) {
@@ -85,13 +93,13 @@ class WConfig extends \stdClass implements \ArrayAccess {
     /**
      * Could return array, or some configuration object
      * @param type $filename
-     * @return type
-     * @throws \Exception
+     * @return array or object
+     * @throws Exception
      */
     static function serialCache($filename) {
         $pinfo = pathinfo($filename);
         if (!file_exists($filename)) {
-            throw new \Exception("File " . $filename . " not found");
+            throw new Exception("File " . $filename . " not found");
         }
         $cache_name = $pinfo['filename'];
         if (substr($cache_name,0,1) !== '.') {
@@ -122,7 +130,7 @@ class WConfig extends \stdClass implements \ArrayAccess {
             return $data;
         }
         else {
-            throw new \Exception("Read error from " . $filename);
+            throw new Exception("Read error from " . $filename);
         }     
     }
 }

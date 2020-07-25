@@ -33,9 +33,10 @@ class RouteParse {
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
     }
 
-    // make an array of pre-builtRoute objects for serialize, and for fast Router setup.
-    static function makeRouterArgs(array $input): array {
+    // make an array of pre-built Route objects for serialize, for fast Router setup.
+    static function makeRouteObjects(array $input): object {
 
+        $route_list = [];
         $reg1 = 'GET|POST|PUT|DELETE';
         $do1 = '/((?:' . $reg1 . ')(?:,(?:' . $reg1 . '))*)\s+/';
         $path_reg = '[_\\-\\.\\w\\d]*';
@@ -47,7 +48,6 @@ class RouteParse {
         $do2 = '/\\/?(' . $reg2 . ')/mi';
         $do3 = '/(' . $reg3 . ')->(' . $reg3 . ')/i';
 
-        $router_arg_set = [];
         $rix = 0;
         foreach ($input as $label => $ns) {
 
@@ -178,20 +178,23 @@ class RouteParse {
                         $args[$name] = $ix;
                     }
                 }
-                // Create arguments ready to pass to router
+                // Make a serializable class
                 $rix++;
-                $ordered[] = [
-                    'name' => $last_seg . '-' . $rix,
-                    'verbs' => $verb,
-                    'pattern' => $pattern,
-                    'args' => $args,
-                    'ajax' => $ajaxFlag
-                ];
+                $route = new  Route($pattern, $args, $verb);
+                $route->setName($last_seg . '-' . $rix);
+                $rs = new \stdClass();
+                $rs->route = $route;
+                $rs->ajaxFlag = $ajaxFlag;
+                $route_list[] = $rs;
             }
-            $rset['ordered'] = $ordered;
-            $router_arg_set[$label] = $rset;
+            
         }
-        return $router_arg_set;
+        $result = new  \stdClass();
+        $result->rset = $route_list;
+        $result->notFound = $rset['not_found'];
+        $result->defaultNS = $rset['namespace'];
+
+        return $result;
     }
 
     static function makeRouter(object $app, object $route_set): Router {
@@ -237,41 +240,4 @@ class RouteParse {
 
         return $router;
     }
-
-    // turn arguments in to array of Route Objects
-    static function makeRouteSet(array $router_arg_set): object {
-        //$gen = $router->getIdGenerator();
-        $route_list= [];
-
-        $notFound = null;
-        $namespace = null;
-        foreach ($router_arg_set as $label => $rset) {
-            $notFound = $rset['not_found'] ?? null;
-            $namespace = $rset['namespace'] ?? null;
-
-            foreach ($rset['ordered'] as $ix => $r) {
-                $verb = $r['verbs'];
-                $pattern = $r['pattern'];
-                $args = $r['args'];
-                $ajaxFlag = $r['ajax'];
-                $route = new  Route($pattern, $args, $verb);
-                //$route->setId($route_id);
-
-                $route->setName($r['name']);
-                $rs = new \stdClass();
-                $rs->route = $route;
-                $rs->ajaxFlag = $ajaxFlag;
-
-                $route_list[] = $rs;
-                $route;
-            }
-        }
-        $result = new  \stdClass();
-        $result->rset = $route_list;
-        $result->notFound = $notFound;
-        $result->defaultNS = $namespace;
-
-        return $result;
-    }
-
 }

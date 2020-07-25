@@ -22,7 +22,7 @@ trait ViewPhalcon {
     
     function afterExecuteRoute() {
         // session becomes read only
-        UserSession::shutdown();
+        $this->user_session->shutdown();
     }
     
     public function getViewModel() : WConfig
@@ -60,13 +60,15 @@ trait ViewPhalcon {
         if (!isset($m->title)) {
             $m->title = $this->title;
         }
+        $app = $this->app;
         if (!isset($m->theme)) {
-            $m->theme = App::instance()->theme;
+            $m->theme = $app->theme;
         }
-        $us = UserSession::read();
+        $us = $app->user_session;
+        
         if (!empty($us)) {
              $flash = $us->getFlash();
-             UserSession::save();
+             $us->save();
         }
         else {
             $flash = [];

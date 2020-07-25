@@ -8,49 +8,122 @@ namespace WC;
  * @author michael
  */
 
-use Phalcon\Http\Response;
-use WC\App;
-use App\Link\UserRoles;
 
-class UserSession
-{
+class UserData {
 
     //put your code here
     public $userName;
     public $roles;
     public $email;
-    public $id; // database record user id
+    public $id = 0; // database record user id
     public $status;
-    public $keys;
-    public $doWrite = false;
-    // frameworks session object
-    static private $session;
-    static private $instance;
+    public $keys = [];
 
-    static public function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new UserSession();
+    public function hasAnyRole(array $roles): bool {
+
+        if (!is_array($this->roles)) {
+            return false;
         }
-        return self::$instance;
+        foreach ($roles as $name) {
+            if (array_search($name, $this->roles) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public function getFlash(): array {
+        $out = $this->keys['flash'] ?? [];
+        if (!empty($out)) {
+            $this->clearFlash();
+        }
+        return $out;
+    }
+    public function hasRole($role): bool {
+        if (!is_array($this->roles)) {
+            return false;
+        }
+        return (array_search($role, $this->roles) !== false);
+    }
+    public function hasUser() {
+        return !empty($this->id);
     }
 
-    static public function shutdown()
-    {
-        if (!isset(self::$instance))
-            return;
-        self::$instance->write();
+    public function isGuest() {
+        return ($this->id === 0) ? true : false;
     }
 
-    public function delayWrite()
+    public  function setGuest() {
+        $this->setValidUser('Guest', ['Guest']);
+    }
+
+    public function wipe() {
+        $this->keys = [];
+    }
+    /** To be real is to be persisted
+     * 
+     * @param type $name
+     * @param type $roles
+     */
+    public function setValidUser($name, $roles) {
+        $this->id = 0;
+        $this->status = 'OK';
+        $this->email = '';
+        $this->userName = $name;
+        $this->roles = $roles;
+    }
+    public function addFlash($text, $status = 'info') {
+        if (!isset($this->keys['flash'])) {
+            $this->keys['flash'] = [];
+        }
+        $this->keys['flash'][] = ['text' => $text, 'status' => $status];
+    }
+    public function auth($role) : bool
     {
+        if (is_string($role)) {
+            return $this->hasRole($role);
+        }
+        if (is_array($role)) {
+            return $role->hasAnyRole($role);
+        }
+        return false;
+    }
+}
+
+use WC\App;
+
+class UserSession {
+
+    protected $doWrite = false;
+    protected $session;
+    protected $data;
+    protected $app;
+
+    /*
+      static private $instance;
+
+      static public function instance()
+      {
+      if (!isset(self::$instance)) {
+      self::$instance = new UserSession();
+      }
+      return self::$instance;
+      }
+     */
+
+    public function shutdown() {
+        $this->write();
+    }
+
+    public function delayWrite() {
         $this->doWrite = true;
     }
 
-    public function __construct()
-    {
-        $this->keys['flash'] = [];
-        static::session();
+    public function __construct(App $app) {
+        $this->app = $app;
+        $data = new UserData();
+        $this->data = $data;
+
+        $data->keys['flash'] = [];
     }
 
     /**
@@ -59,129 +132,78 @@ class UserSession
      * @param type $extra
      * @param type $status 
      */
-    static public function flash($msg, $extra = null, $status = 'info')
-    {
+    public function flash($msg, $extra = null, $status = 'info') {
         if (!empty($extra)) {
             foreach ($extra as $line) {
                 $msg .= '<br>' . PHP_EOL . $line;
             }
         }
-        UserSession::instance()->addFlash($msg, $status);
+        $this->addFlash($msg, $status);
     }
 
     /** implementation framework session object */
-    static public function session()
-    {
-        if (empty(static::$session)) {
-            $app = App::instance();
-            static::$session = $app->services->get('session');
+    public function getSession() {
+        if (empty($this->session)) {
+            $this->session = $this->app->services->get('session');
         }
-        return static::$session;
+        return $this->session;
     }
-
-    public function hasAnyRole(array $roles) : bool {
-        if (!is_array($this->roles)) {
-            return false;
-        }
-        foreach($roles as $name) {
-            if (array_search($name, $this->roles) !== false) {
-                return true;
-            }
-        }
-        return false;
-    }
-    public function hasRole($role) : bool
-    {
-        if (!is_array($this->roles)) {
-            return false;
-        }
-        return (array_search($role, $this->roles) !== false);
-    }
-
-    public function hasUser()
-    {
-        return !empty($this->id);
-    }
-
-    public function isGuest()
-    {
-        return ($this->id === 0) ? true : false;
-    }
-
-    private function setGuest()
-    {
-        $this->setValidUser('Guest', ['Guest']);
-    }
-
-    /** To be real is to be persisted
-     * 
-     * @param type $name
-     * @param type $roles
-     */
-    public function setValidUser($name, $roles)
-    {
-        $this->id = 0;
-        $this->status = 'OK';
-        $this->email = '';
-        $this->userName = $name;
-        $this->roles = $roles;
-        $this->delayWrite();
-    }
-
     /**
      * Set from \WC
      * @param type $user, with get('') properties
      * id, status, email, name, and 
      * getRoleList()
      */
-    public function setUser($user)
-    {
-        $this->id = $user->id;
-        $this->status = $user->status;
-        $this->email = $user->email;
-        $this->userName = $user->name;
-        $this->roles = UserRoles::getRoleList($user->id);
-        
+    public function setUser($user) {
+        $this->data->setUser($user);
         $this->delayWrite();
     }
-    /**get comma separated list for display */
-    public function roles() : string {
+    
+    public function setGuest() {
+        $this->data->setGuest();
+    }
+
+    /*     * get comma separated list for display */
+
+    public function roles(): string {
+        $data = $this->data;
         $outs = '';
-        foreach($this->roles as $name) {
-            if(!empty($outs)) {
+        foreach ($data->roles as $name) {
+            if (!empty($outs)) {
                 $outs .= ', ';
             }
             $outs .= $name;
         }
         return $outs;
     }
-    public function wipe()
-    {
-        $this->setGuest();
-        $this->keys = [];
+
+    public function wipe() {
+        $data = $this->data;
+        $data->wipe();
+        $data->setGuest();
+        $this->delayWrite();
+
     }
 
     /** Write is performed by fat free hive persist */
-    public function write()
-    {
+    public function write() {
         if ($this->doWrite) {
             $this->doWrite = false;
-            self::session()->userData = $this;
+            $session = $this->getSession();
+            $session->userData = $this->data;
         }
     }
 
-    public function updated()
-    {
-        $sess = static::session();
-        $sess->setData($this);
+    public function updated() {
+       $this->getSession()->userData = $this->data;
+        //$this->session->setData($this->data);
     }
 
     /**
      * dump all messages and clear them
      * @return ?array
      */
-    public function getFlash() : ?array
-    {
+    public function getFlash(): ?array {
         $out = $this->keys['flash'] ?? null;
         if (!empty($out)) {
             $this->clearFlash();
@@ -192,8 +214,7 @@ class UserSession
     /**
      * reset message stack
      */
-    public function clearFlash()
-    {
+    public function clearFlash() {
         $this->keys['flash'] = [];
         $this->delayWrite();
     }
@@ -202,14 +223,12 @@ class UserSession
      * check if there messages in the stack
      * @return bool
      */
-    public function hasValues()
-    {
-        return !empty($this->keys);
+    public function hasValues() {
+        return !empty($this->data->keys);
     }
 
     /** clean up the fat free session and user data */
-    public function destroy()
-    {
+    public function destroy() {
         if (empty(static::$session)) {
             return;
         }
@@ -217,15 +236,10 @@ class UserSession
         $adapter = static::$session->getAdapter();
         $adapter->gc(24 * 60 * 60);
         static::$session->destroy();
-        
     }
 
-    public function addFlash($text, $status = 'info')
-    {
-        if (!isset($this->keys['flash'])) {
-            $this->keys['flash'] = [];
-        }
-        $this->keys['flash'][] = ['text' => $text, 'status' => $status];
+    public function addFlash($text, $status = 'info') {
+        $this->data->addFlash($text,$status);
         $this->delayWrite();
     }
 
@@ -234,9 +248,8 @@ class UserSession
      * @param $key
      * @param bool $val
      */
-    public function setKey($key, $val = TRUE)
-    {
-        $this->keys[$key] = $val;
+    public function setKey($key, $val = TRUE) {
+        $this->data->keys[$key] = $val;
         $this->delayWrite();
     }
 
@@ -246,186 +259,96 @@ class UserSession
      * @param $clear boolean
      * @return mixed|null
      */
-    public function getKey($key, $clear = false)
-    {
-        $out = NULL;
-        if ($this->hasKey($key)) {
-            $out = $this->keys[$key];
+    public function getKey($key, $clear = false) {
+        $data = $this->data;
+        $value = $data->keys[$key] ?? null;
+        
+        if ($value !== null) {
             if ($clear) {
-                unset($this->keys[$key]);
+                unset($data->keys[$key]);
                 $this->delayWrite();
             }
         }
-        return $out;
+        return $value;
     }
-
-    static public function hasInstance()
-    {
-        return isset(self::$instance);
-    }
-
     /**
      * check if there's a  key existing
      * @param $key
      * @return bool
      */
-    public function hasKey($key)
-    {
-        return ($this->keys && array_key_exists($key, $this->keys));
+    public function hasKey($key) {
+        $data = $this->data;
+        return isset($data->keys[$key]);
     }
 
     /**
      *  Static  read returns and sets instance
      * @return UserSession or null
      */
-    static public function read()
+    public function read() : UserSession
     {
-        //$s1 = session_status();
-        //$id = session_id();
-        //$name = session_name();
-        // Get FatFree request session parameters
-        //$id2 = session_id();
-        // Get stored UserSession if any
-        if (!is_null(static::$instance)) {
-            return static::$instance;
-        } else {
-            $sess = static::session();
-            static::$instance = $sess->userData;
-            return static::$instance;
+             $this->data =$this->getSession()->userData;
+             if (!$this->data) {
+                 $this->data = new UserData();
         }
+            return $this;
     }
 
     /**
       @return UserSession
      */
-    static public function guestSession()
+    public function guestSession() : UserSession
     {
-        $us = UserSession::instance();
-        $us->setGuest();
-        $us->addFlash('Browser session ID cookie made active for data entry ');
-        $us->write();
-        return $us;
+        $this->setGuest();
+        $this->addFlash('Browser session ID cookie made active for data entry ');
+        $this->write();
+        return $this;
     }
 
     /**
       @return UserSession
      */
-    static public function activate()
-    {
-        //$s1 = session_status();
-        //$sess = static::session();
-        //if (! \Registry::exists(__CLASS__)) {
-        $us = UserSession::instance();
-        $us->doWrite = true;
-        $us->write();
-        //}
-        //$s2 = session_status();
-        return $us;
+    public function activate() : UserSession {
+        $this->doWrite = true;
+        $this->write();
+
+        return $this;
     }
 
     /** remove Guest Session */
-    static public function nullify()
-    {
-        $us = UserSession::read();
-        if (!is_null($us) && $us->isGuest()) {
-            $us->destroy();
-            
+    public function nullify() {
+        $this->read();
+        if ($this->isGuest()) {
+            $this->destroy();
         }
-        if (isset(static::$session) && !is_null(static::$session)) {
-                static::$session->destroy();
-                static::$session = null;
+        if ($this->session) {
+            $this->session->destroy();
+            $this->session = null;
         }
     }
 
-    /**
-     * URL protocol and host
-     * @return string
-     */
-    static public function urlPrefix() : string {
-        return  $_SERVER['REQUEST_SCHEME'] 
-                . '://' . $_SERVER['HTTP_HOST'];
+    public function getUserName() {
+        return $this->data->userName;
     }
-    /**
-     * 
-     * @return string Full URL with Query String
-     */
-    static public function getURL() : string
-    {
-       return  $_SERVER['REQUEST_SCHEME'] . '://' 
-               . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-    }
+    public function auth($role): bool {
+        return $this->data->auth($role);
 
-    static public function https()
-    {
-        $server = $_SERVER;
-        if ($server['REQUEST_SCHEME'] !== 'https') {
-            $ssl_host = App::instance()->get('ssl_host', null);
-            $host = $server['HTTP_HOST'];
-            // This is because a ssl certificate required a www.NAME
-            if (!empty($ssl_host)) {
-                $ssl_host = $ssl_host . '.';
-                if (strpos($host, $ssl_host) !== 0) {
-                    $host = $ssl_host . $host;
                 }
-            }
-            static::reroute('https://' . $host . $server['REQUEST_URI']);
-            return false;
-        }
-        return true;
-    }
 
-    static public function auth($role)
-    {
-        $us = static::read();
-        if (empty($us)) {
-            return false;
+   public function sessionName() {
+       $data = $this->data;
+        if (!empty($data->userName)) {
+            return $data->userName;
         }
-        if (is_string($role)) {
-            return $us->hasRole($role);
-        }
-        if (is_array($role)) {
-            return $us->hasAnyRole($role);
-        }
-        return false;
-    }
-
-    static public function sessionName()
-    {
-        $us = static::$instance;
-        if (isset($us) && !empty($us->userName)) {
-            return $us->userName;
-        } 
         return 'NULL';
     }
 
-    static public function notAuthorized() {
-        static::flash('No access to ' . App::instance()->handledUri);
-        static::reroute('/error/block');
+    public function save() {
+            $this->write(); // finalize session now
     }
-    static public function reroute($url)
-    {
-        static::save();
        
-        if (strpos($url, 'http') !== 0) {
-            $url = static::urlPrefix() . $url;
+     public function isLoggedIn($role) {
+        return ($this->data->hasRole($role)) ? true : false;
         }
-        $response = App::instance()->services->get('response');
-        $response->redirect($url, true);
-        return $response;
-    }
 
-    static public function save()
-    {
-        if (static::hasInstance()) {
-            $us = UserSession::instance();
-            $us->write(); // finalize session now
         }
-    }
-
-    static public function isLoggedIn($role)
-    {
-        $us = static::read();
-        return (isset($us) && $us->hasRole($role)) ? true : false;
-    }
-
-}

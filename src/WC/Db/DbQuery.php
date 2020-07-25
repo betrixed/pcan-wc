@@ -16,10 +16,7 @@ class DbQuery  {
     private $params;
     private $binds;
     
-    public function __construct(AdapterInterface $db = null) {
-        if (empty($db)) {
-            $db =  Server::db();
-        }
+    public function __construct(AdapterInterface $db) {
         $this->db =$db;
     }
     

@@ -8,16 +8,6 @@ use MatthiasMullie\Minify;
  * Organise typical webpage .css, .js assets
  */
 class Assets {
-
-    static public $instance;
-
-    static function instance() {
-        if (!isset(self::$instance)) {
-            self::$instance = new Assets();
-        }
-        return self::$instance;
-    }
-
     private $warn_missing;
     private $render_lock;
     private $mark;
@@ -37,11 +27,6 @@ class Assets {
     const SCRIPT_TAG = '<script>' . PHP_EOL;
     const SCRIPT_END = '</script>' . PHP_EOL;
 
-    static public function registerAssets($assets) {
-        $si = static::instance();
-        $si->addAssets($assets);
-    }
-
     public function minify($name) {
         $this->minify_name = $name;
         $this->minify = true;
@@ -57,16 +42,15 @@ class Assets {
         }
     }
 
-    public function __construct() {
-        $app = App::instance();
+    public function __construct(object $app) {
         $this->warn_missing = true;
         $this->render_lock = false;
         $this->app = $app;
-        $cfg = WConfig::fromXml($app->APP . "/assets.xml");
+        $cfg = WConfig::fromXml($app->site_dir . "/assets.xml");
         $this->config = $cfg;
-        $this->web = $app->WEB;
+        $this->web = $app->web_dir;
         $this->assetSrc = $cfg->assetSrc;
-        $this->assetProd = $cfg->assetCache;
+        $this->assetProd = $app->temp_dir . $cfg->assetCache;
         $this->order = [];
         $this->mark = [];
         $this->add('default');

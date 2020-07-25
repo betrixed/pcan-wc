@@ -13,15 +13,23 @@ use Phalcon\Db\Adapter\AdapterInterface;
 class Server
 {
 
-    static public $srv;
-    static public $defaultName = "database";
+    protected $dbparams = [];
+    protected $srv = [];
+    protected $defaultName = "database";
 
     const DB_connect = ['host', 'port', 'charset', 'dbname'];
 
+    
     /**
      * Construct connection string and return db object
      */
-    static function connection($cfg): AdapterInterface
+    
+    public function __construct(string $defaultName = "database", array $dbparams = [])
+    {
+        $this->defaultName = $defaultName;
+        $this->dbparams = $dbparams;
+    }
+    function connection($cfg): AdapterInterface
     {
         $factory = new PdoFactory();
         $adapter = $cfg['adapter'];
@@ -34,30 +42,32 @@ class Server
      * @param type $name
      * @return type
      */
-    static function dbconfig($name): AdapterInterface
+    function dbconfig($cfg): AdapterInterface
     {
-        $cfg = App::instance()->get_secrets();
-        return static::connection($cfg[$name]);
+        return  $this->connection($cfg);
     }
 
-    static function setDefault(SQL $db)
+    function setDefault(SQL $db)
     {
-        static::$srv[static::$defaultName] = $db;
+       $this->srv[$this->defaultName] = $db;
     }
 
-    /** return database by name */
-    static function db($name = null): AdapterInterface
+    /** return database by configuration name */
+    function db($name = null): AdapterInterface
     {
         if (empty($name)) {
-            $name = static::$defaultName;
+            $name = $this->defaultName;
         }
-        if (empty(static::$srv) || !isset(static::$srv[$name])) {
-            $db = static::dbconfig($name);
-            static::$srv[$name] = $db;
+        $config = $this->dbparams[$name] ?? null;
+        if (is_null($config)) {
+            throw new \Exception('Database configuration "' . $name . '" not found');
+        }
+        if (empty(static::$srv) || !isset($this->srv[$name])) {
+            $db = $this->dbconfig($config);
+            $this->srv[$name] = $db;
             return $db;
         } else {
-            return static::$srv[$name];
+            return  $this->srv[$name];
         }
     }
-
 }

@@ -3,7 +3,6 @@ namespace WC;
 
 use Phalcon\Cache\Adapter\Stream;
 use Phalcon\Storage\SerializerFactory;
-use WC\App;
 
 /** 
  * Somehow this failed as a trait to return $adapter directly
@@ -28,8 +27,4 @@ class FileCache
         $this->adapter->set($key, $value);
     }
 
-    static public function modelCache() : FileCache
-    {
-        return new FileCache(App::instance()->model_cache);
     }
-}
