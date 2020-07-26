@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $assets->add(['bootstrap','DateTime']);
 $url = $m->url;
 $rec = $m->rec;
@@ -7,7 +7,7 @@ $rec = $m->rec;
 <?= $assets->inline_css('form-format'); ?>
 
 <div class="row">
-    <div class="col"><?= Gem::linkTo(['href'=>$url . "index", 'text'=>"Back to Index"]) ?></div>
+    <div class="col"><?= $gem->linkTo(['href'=>$url . "index", 'text'=>"Back to Index"]) ?></div>
 </div>
 
 
@@ -22,39 +22,39 @@ $rec = $m->rec;
 <form action="<?= $url ?>save" class="form-horizontal" method="post">
     <div class="row">
     <div class="col-sm-10">
-        <?= Gem::plainText(['label' => 'URL', 'name' => "url", "size" => 50, 'value' => $rec->url]) ?>
+        <?= $gem->plainText(['label' => 'URL', 'name' => "url", "size" => 50, 'value' => $rec->url]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-10">
-        <?= Gem::datetime(['label' => 'Last update', 'name' => "last_read", "size" => 20, 'value' => $rec->last_read]) ?>
+        <?= $gem->datetime(['label' => 'Last update', 'name' => "last_read", "size" => 20, 'value' => $rec->last_read]) ?>
     </div>
 </div>
 
 
 <div class="row">
     <div class="col-sm-10">
-        <?= Gem::plainText(['label' => 'Short name', 'name' => "nick_name", "size" => 30,   'value' => $rec->nick_name]) ?>
+        <?= $gem->plainText(['label' => 'Short name', 'name' => "nick_name", "size" => 30,   'value' => $rec->nick_name]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-10">
-        <?= Gem::plainText(['label' => 'Web site provider', 'name' => "provider", "size" => 30, "value" => $rec->provider]) ?>
+        <?= $gem->plainText(['label' => 'Web site provider', 'name' => "provider", "size" => 30, "value" => $rec->provider]) ?>
     </div>
 </div>
-<?= Gem::hidden([ 'name' => "id",  'value' => $rec->id]) ?>
+<?= $gem->hidden([ 'name' => "id",  'value' => $rec->id]) ?>
     
 <div class="row">
     <div class="col">
-        <?= Gem::multiline(['label' => 'Content (read-only)' , 'name' => "content",  'value' => $rec->content, "readonly"]) ?>
+        <?= $gem->multiline(['label' => 'Content (read-only)' , 'name' => "content",  'value' => $rec->content, "readonly"]) ?>
     </div>
 </div>
     
 <div class="row">
         <div class="col-sm-offset-2 col-sm-10">
-            <?= Gem::submit(['value' => "Save", "class" => "btn btn-info btn-lg"]) ?>
+            <?= $gem->submit(['value' => "Save", "class" => "btn btn-info btn-lg"]) ?>
         </div>
     </div>
 </form>

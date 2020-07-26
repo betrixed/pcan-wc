@@ -1,6 +1,6 @@
 <?php
 //$view = $this->data['view'];
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $evt = $m->evt;
 $rego = $m->rego;
 $assets->add(['bootstrap','DateTime','SummerNote']);
@@ -24,26 +24,26 @@ $assets->add(['bootstrap','DateTime','SummerNote']);
 <div class="container-fluid body-wrap">
     <hr>
     <form id="edtevt" method="post" action="/admin/eventpost" onsubmit="smotePost()">
-        <?= Gem::hidden( ['name'=>'id', 'value'=> $evt->id ]) ?> 
+        <?= $gem->hidden( ['name'=>'id', 'value'=> $evt->id ]) ?> 
         <div class="row vspace">
             <div class="col-4" >
-                <?= Gem::datetime(['label' => "From", 'name' => "fromtime", 'size' => 20, 'value' => $evt->fromtime]) ?>
+                <?= $gem->datetime(['label' => "From", 'name' => "fromtime", 'size' => 20, 'value' => $evt->fromtime]) ?>
              </div>
              <div class="col-4">
-                <?= Gem::datetime(['label' => "To", 'name' => "totime", 'size' => 20, 'value' => $evt->totime]) ?>
+                <?= $gem->datetime(['label' => "To", 'name' => "totime", 'size' => 20, 'value' => $evt->totime]) ?>
            </div>
         </div>
         <div class="row vspace">
              <div class="col-4">
-                <?= Gem::plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt->slug]) ?>
+                <?= $gem->plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt->slug]) ?>
             </div>
             <div class="col-4">
-                <?= Gem::checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt->enabled]) ?>
+                <?= $gem->checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt->enabled]) ?>
             </div>
         </div>
         <div class="row vspace">
              <div class="col">
-                <?= Gem::multiline(['label' => "Detail", 
+                <?= $gem->multiline(['label' => "Detail", 
                     'id' => 'reg_detail', 
                     'name' => "reg_detail", 
                     'cols' => 80, 'rows'=>7, 
@@ -55,7 +55,7 @@ $assets->add(['bootstrap','DateTime','SummerNote']);
         <div class="row vspace">
             <div class="col-3"></div>
             <div class="col-4">
-                <?= Gem::submit(['name' => 'submit', 'value' => 'Update' ]); ?>
+                <?= $gem->submit(['name' => 'submit', 'value' => 'Update' ]); ?>
             </div>
         </div>
     </form>

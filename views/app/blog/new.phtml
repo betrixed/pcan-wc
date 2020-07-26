@@ -1,5 +1,5 @@
 <?php 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $url = $m->url;
 $assets->add('bootstrap');
 ?>
@@ -15,11 +15,11 @@ $assets->add('bootstrap');
                     <label for="title">Title</label>
                 </td>
                 <td align="left">
-                    <?= Gem::plainText(['name' => 'title', 'size' => 30]) ?>
+                    <?= $gem->plainText(['name' => 'title', 'size' => 30]) ?>
             </td>
             </tr>
             <tr>
-                <td align="right"> <?= Gem::submit(['value' => 'Save', 'class' => "pure-button pure-button-primary"]) ?></td>
+                <td align="right"> <?= $gem->submit(['value' => 'Save', 'class' => "pure-button pure-button-primary"]) ?></td>
             </tr>
 
         </table>

@@ -219,7 +219,7 @@ trait MemberData
     {
         $sql = "update member_email set status = :stat where id = :id";
         $db = $this->db;
-        $db->exec($sql, ['id' => $id, 'stat' => $status]);
+        $db->execute($sql, ['id' => $id, 'stat' => $status]);
     }
 
     public function getMemberEmails($id)

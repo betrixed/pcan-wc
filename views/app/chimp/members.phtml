@@ -1,5 +1,5 @@
 <?php 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $orderalt = $m->orderalt;
 $col_arrow = $m->col_arrow;
 $page = $m->page;
@@ -22,34 +22,34 @@ $assets->add('bootstrap');
 <div class='outerwrap pad10'>
     <div class="container-fluid">
         <?php if ($page->last > 1 ): ?>
-            <span>Pages - </span>&nbsp;&nbsp;<?= ($pno > 1) ? Gem::linkTo([ "href" => $link . '&page=1', "text" => "First" ]  ): 'First' ?>
-            &nbsp; | &nbsp; <?= ($pno > 1) ? Gem::linkTo(["href" => $link . '&page='. $page->before, "text" => "Previous" ]) : 'Previous' ?>
-            &nbsp; | &nbsp;<?= ($pno < $end) ? Gem::linkTo(["href" => $link . '&page='. $page->next, "text" => "Next" ]) : 'Next' ?>
-            &nbsp; | &nbsp;<?= ($pno < $end) ? Gem::linkTo(["href" => $link . '&page='. $page->last, "text" => "Last" ]) : 'Last' ?>
+            <span>Pages - </span>&nbsp;&nbsp;<?= ($pno > 1) ? $gem->linkTo([ "href" => $link . '&page=1', "text" => "First" ]  ): 'First' ?>
+            &nbsp; | &nbsp; <?= ($pno > 1) ? $gem->linkTo(["href" => $link . '&page='. $page->before, "text" => "Previous" ]) : 'Previous' ?>
+            &nbsp; | &nbsp;<?= ($pno < $end) ? $gem->linkTo(["href" => $link . '&page='. $page->next, "text" => "Next" ]) : 'Next' ?>
+            &nbsp; | &nbsp;<?= ($pno < $end) ? $gem->linkTo(["href" => $link . '&page='. $page->last, "text" => "Last" ]) : 'Last' ?>
             &nbsp;|&nbsp; Page <?=  $page->current . "/" . $page->last  ?>
-             &nbsp;|&nbsp;  <?= Gem::linkTo(["href" => $m->url  . "?orderby=" . $m->orderby, "text" => "All" ]) ?>
+             &nbsp;|&nbsp;  <?= $gem->linkTo(["href" => $m->url  . "?orderby=" . $m->orderby, "text" => "All" ]) ?>
          <?php else: ?>
-             &nbsp;&nbsp;<?= Gem::linkTo([ "href" => $m->url . "?page=1&orderby=" . $m->orderby, "text" => "Pages" ]) ?>
+             &nbsp;&nbsp;<?= $gem->linkTo([ "href" => $m->url . "?page=1&orderby=" . $m->orderby, "text" => "Pages" ]) ?>
         <?php endif ?>
 
         <div class="row box">
             <div class="col-3">
-                # <span class="float-right"><?=Gem::linkTo(['href' => $ubase . $orderalt['name'], 'text' => 'Name' . $col_arrow['name'] ]) ?></span>
+                # <span class="float-right"><?=$gem->linkTo(['href' => $ubase . $orderalt['name'], 'text' => 'Name' . $col_arrow['name'] ]) ?></span>
             </div>
             <div class="col-1">
-                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['surname'], 'text' => 'Surname' . $col_arrow['surname'] ]) ?></span>
+                <span class=""><?=$gem->linkTo(['href' => $ubase . $orderalt['surname'], 'text' => 'Surname' . $col_arrow['surname'] ]) ?></span>
             </div>
             <div class="col-3">
-                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['email'], 'text' => 'Email' . $col_arrow['email'] ]) ?></span>
+                <span class=""><?=$gem->linkTo(['href' => $ubase . $orderalt['email'], 'text' => 'Email' . $col_arrow['email'] ]) ?></span>
             </div>
             <div class="col-2">
-                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['phone'], 'text' => 'Phone' . $col_arrow['phone']]) ?></span>
+                <span class=""><?=$gem->linkTo(['href' => $ubase . $orderalt['phone'], 'text' => 'Phone' . $col_arrow['phone']]) ?></span>
             </div>
             <div class="col-2">
-                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['city'], 'text' => 'Suburb' . $col_arrow['city']]) ?></span>
+                <span class=""><?=$gem->linkTo(['href' => $ubase . $orderalt['city'], 'text' => 'Suburb' . $col_arrow['city']]) ?></span>
             </div>
             <div class="col-1">
-                <span class=""><?=Gem::linkTo(['href' => $ubase . $orderalt['status'], 'text' => 'Status' . $col_arrow['status']]) ?></span>
+                <span class=""><?=$gem->linkTo(['href' => $ubase . $orderalt['status'], 'text' => 'Status' . $col_arrow['status']]) ?></span>
             </div>
         </div>
 

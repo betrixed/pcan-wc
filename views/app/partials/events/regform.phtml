@@ -1,5 +1,5 @@
 <?php
-Use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $eblog = $m->eblog;
 $hasEvent = !empty($eblog);
 $reg = $m->register;
@@ -10,45 +10,45 @@ $reg = $m->register;
         $this->partial('flash');
     endif;
         ?>
-<?= Gem::hidden(['name' => 'id', 'value' => $reg->id]) ?>
-<?= Gem::hidden(['name' => 'eventid', 'value' => $eblog['eventid']]) ?>
+<?= $gem->hidden(['name' => 'id', 'value' => $reg->id]) ?>
+<?= $gem->hidden(['name' => 'eventid', 'value' => $eblog['eventid']]) ?>
 <?php if (!empty($reg->linkcode)): ?>
     <div class="row">
     <div class="col">
         <p> Your RSVP edit link  is <a href="<?= $m->editUrl  ?>"><?= $m->editUrl  ?></a></p>
-        <?= Gem::hidden([ 'name' => 'linkcode', 
+        <?= $gem->hidden([ 'name' => 'linkcode', 
                                 'value' => $reg->linkcode ]) ?>  
 </div>
 </div>
 <?php endif; ?>
 <div class="row">
     <div class="col-12">
-        <?= Gem::plainText(['label' => 'First name', 'name' => 'fname', 
+        <?= $gem->plainText(['label' => 'First name', 'name' => 'fname', 
                                 'value' => $reg->fname, 'size' => 40]) ?>    </div>
 </div>
 <div class="row">
     <div class="col-12">
-        <?= Gem::plainText(['label' => 'Last name', 'name' => 'lname', 
+        <?= $gem->plainText(['label' => 'Last name', 'name' => 'lname', 
                                 'value' => $reg->lname, 'size' => 40]) ?>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-         <?= Gem::email(['label' => 'Email', 'name' => 'email', 
+         <?= $gem->email(['label' => 'Email', 'name' => 'email', 
                                 'value' => $reg->email, 'size' => 40]) ?>
         <span>Optional to receive email link for edit or delete registration</span>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-                 <?= Gem::phone(['label' => 'Phone', 'name' => 'phone', 
+                 <?= $gem->phone(['label' => 'Phone', 'name' => 'phone', 
                                 'value' => $reg->phone ]) ?>
         <span>Optional mobile number</span>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-                         <?= Gem::number(['label' => '# Extra People', 'name' => 'people', 
+                         <?= $gem->number(['label' => '# Extra People', 'name' => 'people', 
                                 'value' => $reg->people, 'size' => 4 ]) ?>
     </div>
 </div>
@@ -57,15 +57,15 @@ $reg = $m->register;
     </div>
       <?php if (empty ($reg->id)): ?>
             <div class="col-4">
-                <?= Gem::submit(['name' => 'submit', 'value' => 'Register']) ?>
+                <?= $gem->submit(['name' => 'submit', 'value' => 'Register']) ?>
                
             </div>
          <?php else: ?>
                 <div class="col-2">
-                     <?= Gem::submit(['name' => 'submit', 'value' => 'Update']) ?>
+                     <?= $gem->submit(['name' => 'submit', 'value' => 'Update']) ?>
                 </div>
                 <div class="col-2">
-                     <?= Gem::submit(['name' => 'delete', 'value' => 'Delete']) ?>
+                     <?= $gem->submit(['name' => 'delete', 'value' => 'Delete']) ?>
                 </div>
         <?php endif; ?>
     </div>

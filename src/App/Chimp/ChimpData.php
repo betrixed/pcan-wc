@@ -32,7 +32,7 @@ trait ChimpData {
                 throw new \Exception("Mail Chimp settings not found");
             }
         }
-        return $this->api;
+        return $this->chimp_api;
     }
 
     public function defaultList() : ?ChimpLists 

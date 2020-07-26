@@ -1,6 +1,6 @@
 <?php
 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 
 $assets->add(['bootstrap']);
 $url = $m->url;
@@ -15,13 +15,13 @@ $linkreset = "/news/rss_link/reset/";
                 <div class="outer-wrap">
         <div class="row">
                 <div class="col-3">
-                <span><?= Gem::linkTo(['href' => $url . "index", 'text' => "Go Back", 'class' => $btn_class]); ?></span>
+                <span><?= $gem->linkTo(['href' => $url . "index", 'text' => "Go Back", 'class' => $btn_class]); ?></span>
                 </div>
                  <div class="col-3">
-                 <span><?= Gem::linkTo(['href' => $url . "new", 'text' => "Create", 'class' => $btn_class]); ?></span>
+                 <span><?= $gem->linkTo(['href' => $url . "new", 'text' => "Create", 'class' => $btn_class]); ?></span>
                  </div>
                  <div class="col-3">
-                 <span><?= Gem::linkTo(['href' => $url . "edit/" . $feed->id, 'text' => "Edit", 'class' => $btn_class]); ?></span>
+                 <span><?= $gem->linkTo(['href' => $url . "edit/" . $feed->id, 'text' => "Edit", 'class' => $btn_class]); ?></span>
                  </div>
            </div>
         </div>
@@ -60,8 +60,8 @@ $linkreset = "/news/rss_link/reset/";
                 <div class="col-1"><?= $rss_link->creator ?></div>
                  <div class="col-1 text-center"><?= $rss_link->section ?></div>
                 <div class="col-1"><?= $date ?></div>
-                <div class="col-1"><?= Gem::linkTo(['href' => $linkview . $rss_link->id, 'text' => "View " . $processed]); ?><br>
-                    <?= Gem::linkTo(['href' => $linkdel . $rss_link->id, 'text' => "Delete" ]); ?> <?= Gem::linkTo(['href' => $linkreset . $rss_link->id, 'text' => "Reset" ]); ?>
+                <div class="col-1"><?= $gem->linkTo(['href' => $linkview . $rss_link->id, 'text' => "View " . $processed]); ?><br>
+                    <?= $gem->linkTo(['href' => $linkdel . $rss_link->id, 'text' => "Delete" ]); ?> <?= $gem->linkTo(['href' => $linkreset . $rss_link->id, 'text' => "Reset" ]); ?>
                 </div>
             </div>
 

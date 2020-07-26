@@ -1,6 +1,6 @@
 <?php
 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 
 $url = $m->url;
 $assets->add(['bootstrap']);
@@ -8,8 +8,8 @@ $btn_class = "btn btn-outline-primary";
 ?>
 
 <div class="row">
-    <div class="col text-center"><?= Gem::linkTo(['href' => $url . "index", 'text' => "Go Back", "class" => $btn_class]); ?>
-        &nbsp; &nbsp;<?= Gem::linkTo(['href' => $url . "new", 'text' => "Create ", "class" => $btn_class]); ?>
+    <div class="col text-center"><?= $gem->linkTo(['href' => $url . "index", 'text' => "Go Back", "class" => $btn_class]); ?>
+        &nbsp; &nbsp;<?= $gem->linkTo(['href' => $url . "new", 'text' => "Create ", "class" => $btn_class]); ?>
     </div>
 </div>
 
@@ -33,11 +33,11 @@ $btn_class = "btn btn-outline-primary";
             <tbody>
 <?php foreach ($m->items as $rss_feed): ?>
                     <tr>
-                        <td><?= Gem::linkTo(['href' => $url . "process/" .  $rss_feed->id, 'text'=>$rss_feed->nick_name]) ?></td>
+                        <td><?= $gem->linkTo(['href' => $url . "process/" .  $rss_feed->id, 'text'=>$rss_feed->nick_name]) ?></td>
                         <td><?= $rss_feed->provider ?></td>
                         <td><?= $rss_feed->url ?></td>
                         <td><?= $rss_feed->last_read ?></td>
-                        <td><?= Gem::linkTo(['href' => $url . "edit/" . $rss_feed->id, 'text'=>"Edit"]); ?></td>
+                        <td><?= $gem->linkTo(['href' => $url . "edit/" . $rss_feed->id, 'text'=>"Edit"]); ?></td>
                     </tr>
 <?php endforeach; ?>
             </tbody>

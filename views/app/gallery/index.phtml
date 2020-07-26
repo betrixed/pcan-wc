@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $assets->add(['bootstrap', 'grid']);
 $ubase = "gallery?orderby="; 
 $link =  $ubase . $m->orderby;  
@@ -8,12 +8,12 @@ $url =  "/gallery/view/";
 
 ?>
 <div class='container body-wrap'>      
-   <?= Gem::linkTo(['href'=>$link, 'text'=>'First']) ?>
-   <?= Gem::linkTo(['href'=>$link.'&page='.$page->before,
+   <?= $gem->linkTo(['href'=>$link, 'text'=>'First']) ?>
+   <?= $gem->linkTo(['href'=>$link.'&page='.$page->before,
    'text'=>'Previous']) ?> |
-    <?= Gem::linkTo(['href'=>$link.'&page='.$page->next,
+    <?= $gem->linkTo(['href'=>$link.'&page='.$page->next,
    'text'=>'Next']) ?> |
-   <?= Gem::linkTo(['href'=>$link.'&page='.$page->last,
+   <?= $gem->linkTo(['href'=>$link.'&page='.$page->last,
    'text'=>'Last']) ?> |
    <?=$page->current . "/" . $page->last ?>
 <table class='table table-striped'>
@@ -32,7 +32,7 @@ $url =  "/gallery/view/";
          $name = $gallery['name'];
          ?>
 <tr>
-    <td class='leftCell'><?= Gem::linkTo(['href'=>$url.$name, 'text'=>$name]) ?></td>
+    <td class='leftCell'><?= $gem->linkTo(['href'=>$url.$name, 'text'=>$name]) ?></td>
             <td class='leftCell'><?= $description ?></td>
              <td><?= $udate ?></td>
         </tr>

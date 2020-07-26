@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
     $cat = $m->cat;
     $url = $m->url;
 $assets->add('bootstrap');
@@ -14,7 +14,7 @@ $assets->add('bootstrap');
 </style>
 <div class='header row'>
     <div class="outerwrap pad10">
-        <?= Gem::linkTo(['href' =>$url , 'text' =>"Category List", 'class' => "btn btn-outline-warning"]) ?><span class="btn"><?= $m->title ?></span>
+        <?= $gem->linkTo(['href' =>$url , 'text' =>"Category List", 'class' => "btn btn-outline-warning"]) ?><span class="btn"><?= $m->title ?></span>
     </div>
 </div>
 <div class="container pad10 outerwrap">
@@ -23,20 +23,20 @@ $assets->add('bootstrap');
     <?php if ( isset($cat->id) && $cat->id > 0 ): ?>
     <div class="form-group row">
         <label class="col-form-label" >Id</label>
-        <?= Gem::plainText(['name' => 'id', 'value' => $cat->id, "readonly"]) ?>
+        <?= $gem->plainText(['name' => 'id', 'value' => $cat->id, "readonly"]) ?>
     </div>
     <?php endif; ?>
      <div class="form-group row">
         <label class="col-form-label" >Name</label>
-        <?= Gem::plainText([ 'name' => 'name', 'value' => $cat->name ]) ?>
+        <?= $gem->plainText([ 'name' => 'name', 'value' => $cat->name ]) ?>
    </div>
     <div class="form-group row">
         <label class="col-form-label" >Name Clean</label>
-        <?= Gem::plainText([ 'name' => 'name_clean', 'value' => $cat->name_clean ]) ?>
+        <?= $gem->plainText([ 'name' => 'name_clean', 'value' => $cat->name_clean ]) ?>
   </div>
    <div class="form-check row">
         <label class="col-form-label" >Enabled</label>
-         <?= Gem::checkbox([ 'name' => 'enabled', 'checked' => $cat->enabled ]) ?>
+         <?= $gem->checkbox([ 'name' => 'enabled', 'checked' => $cat->enabled ]) ?>
       </div>
     <p>
         <input type="submit" value="Save" />

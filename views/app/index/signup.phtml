@@ -1,6 +1,6 @@
 
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $google = $m->google;
 $email = $m->email;
 $mbr = $m->mbr;
@@ -51,7 +51,7 @@ $formid = 'signup';
         <div id='ctblock'>
             <div class="row mb-3">
                 <div class="col-8">
-                    <?= Gem::plainText(['class'=>'idgroup', 'label' => 'Email', 'name' => 'email', 
+                    <?= $gem->plainText(['class'=>'idgroup', 'label' => 'Email', 'name' => 'email', 
                         'value' => $email, 'size' => 50]) ?>
                 </div>
             </div>
@@ -60,66 +60,66 @@ $formid = 'signup';
             <hr>
             <div class="row mb-3" >
                 <div class="col-6">
-                    <?= Gem::plainText(['label' => 'First Name', 'name' => 'fname', 
+                    <?= $gem->plainText(['label' => 'First Name', 'name' => 'fname', 
                         'value' => $mbr->fname, 'size' => 30]) ?>
                  </div>
                 <div class="col-6">
-                     <?= Gem::plainText(['label' => 'Last Name', 'name' => 'lname', 
+                     <?= $gem->plainText(['label' => 'Last Name', 'name' => 'lname', 
                         'value' => $mbr->lname, 'size' => 30]) ?>
                  </div>
             </div>
             <div class="row mb-3">
                 <div class='col'>
-                    <?= Gem::plainText(['label' => 'Address', 'name' => 'addr1', 
+                    <?= $gem->plainText(['label' => 'Address', 'name' => 'addr1', 
                         'value' => $mbr->addr1, 'size' => 50]) ?>
                      <br>
-                     <?= Gem::plainText(['label' => '_', 'name' => 'addr2', 
+                     <?= $gem->plainText(['label' => '_', 'name' => 'addr2', 
                         'value' => $mbr->addr2, 'size' => 50]) ?>
                  </div>
             </div>
             <div class="row mb-3">
                 <div class='col-6'>
-                    <?= Gem::plainText(['label' => 'City', 'name' => 'city', 
+                    <?= $gem->plainText(['label' => 'City', 'name' => 'city', 
                         'value' => $mbr->city, 'size' => 35]) ?>
                     </div>
                  <div class='col-6'>   
-                    <?= Gem::select([ 'class'=>'selectpicker', 'name' => 'state', 'label' => 'State', 
+                    <?= $gem->select([ 'class'=>'selectpicker', 'name' => 'state', 'label' => 'State', 
                                     'list' => $states, 'value' => $mbr->state ]) ?>
                  </div>
             </div>
             <div class="row mb-3">
                 <div class='col-6'>
-                    <?= Gem::plainText(['div'=>'float-right', 'label' => 'Post-Code', 'name' => 'postcode', 
+                    <?= $gem->plainText(['div'=>'float-right', 'label' => 'Post-Code', 'name' => 'postcode', 
                         'value' => $mbr->postcode, 'size' => 8]) ?>
                  </div>
                  <div class='col-6'>   
-                      <?= Gem::select([ 'class'=>'selectpicker', 'name' => 'country_code', 'label' => 'Country', 
+                      <?= $gem->select([ 'class'=>'selectpicker', 'name' => 'country_code', 'label' => 'Country', 
                                     'list' => $countries, 'value' => $mbr->country_code ]) ?>
                  </div>
             </div>
             <div class="row mb-3">
                 <div class='col-5'>
-                    <?= Gem::phone(['class'=>'idgroup', 'label' => 'Phone', 'name' => 'phone', 
+                    <?= $gem->phone(['class'=>'idgroup', 'label' => 'Phone', 'name' => 'phone', 
                         'value' => $mbr->phone, 'size' => 20]) ?>
                  </div>   
             </div>
             <div class="row mb-3">
                 <div class='col-12'>
-                    <?= Gem::multiline(['div'=>'fcell', 'label' => 'Volunteer info', 'name' => 'source', 
+                    <?= $gem->multiline(['div'=>'fcell', 'label' => 'Volunteer info', 'name' => 'source', 
                         'value' => $mbr->ref_source, 'cols' => 50, 'rows' => 3]) ?>
                 </div>   
             </div>
         </div>
-        <?= Gem::xcheck([ 'name' => $xcheck['key'], 'value' =>  $xcheck['value'] ]) ?>
+        <?= $gem->xcheck([ 'name' => $xcheck['key'], 'value' =>  $xcheck['value'] ]) ?>
                  <?php if (!is_null($google) && $google['enabled']): ?>
             <div class="d-flex  justify-content-center"">
-               <?= Gem::invisiCaptcha([ 'site' => $google['site'],
+               <?= $gem->invisiCaptcha([ 'site' => $google['site'],
                    'formid' => $formid, 'ajax'=>'formid_submit()' ]) ?>
             </div>
             <?php endif ?>
         <hr>
         <div class="d-flex  justify-content-center" >
-                <?= Gem::submit(['id' => 'submit',  'name' => 'submit', 'value' => 'Send', 'class' => 'btn btn-outline-primary btn-lg' ]) ?>
+                <?= $gem->submit(['id' => 'submit',  'name' => 'submit', 'value' => 'Send', 'class' => 'btn btn-outline-primary btn-lg' ]) ?>
                 <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
             </div>    
     </form>

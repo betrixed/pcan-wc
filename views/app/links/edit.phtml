@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $assets->add(['bootstrap','DateTime','SummerNote','links-edit']);
 $link = $m->link;
 $url = $m->url;
@@ -48,7 +48,7 @@ if (!empty($link->refid)) {
         </div>
         <?php if (!empty($link->refid)): ?>
             <div class="col-2">
-                <?= Gem::linkTo(['href' => '/admin/blog/edit/' . $link->refid,
+                <?= $gem->linkTo(['href' => '/admin/blog/edit/' . $link->refid,
                     'text' => "Edit Target Blog", 'target' => "_blank", 'class' => "btn btn-default"])
                 ?>
             </div>
@@ -58,9 +58,9 @@ if (!empty($link->refid)) {
             ?>
             <div class="col-2">
                 <form id="addLinkery" action="/admin/linkery/add" method="post">
-                    <?= Gem::hidden(['name' => 'linkid', 'value' => $link->id]) ?>           
-                    <?= Gem::hidden(['name' => 'gallid', 'value' => $linkery['id']]) ?>
-                    <?= Gem::submit(['value' => 'Add to linkery ' . $linkery['name'],
+                    <?= $gem->hidden(['name' => 'linkid', 'value' => $link->id]) ?>           
+                    <?= $gem->hidden(['name' => 'gallid', 'value' => $linkery['id']]) ?>
+                    <?= $gem->submit(['value' => 'Add to linkery ' . $linkery['name'],
                         'class' => "btn btn-primary"])
                     ?>
                 </form>
@@ -73,7 +73,7 @@ if (!empty($link->refid)) {
                  <label class="label"><b>Collections</b> 
                      <div class="box">
                 <?php foreach ($collections as $coll):?>
-                <p><?= Gem::linkTo(['href' => '/admin/linkery/edit/' . $coll['id'], 'text' =>  $coll['name'] ]) ?></p> 
+                <p><?= $gem->linkTo(['href' => '/admin/linkery/edit/' . $coll['id'], 'text' =>  $coll['name'] ]) ?></p> 
                     <?php endforeach ?>
                   </div></label>
                 
@@ -85,56 +85,56 @@ if (!empty($link->refid)) {
     <div class="clear"></div>
     <form id="linkform" name="linkform" method="post" action="<?= $m->post ?>" onsubmit="smotePost()">
 <?php if (!empty($link->refid)): ?>
-                <?= Gem::hidden(['name' => "refid", 'value' => $link->refid]) ?>
+                <?= $gem->hidden(['name' => "refid", 'value' => $link->refid]) ?>
             <?php endif ?>
         <div class='row'>
             <label class="col-form-label" for='sitename'>Site Name</label>
-<?= Gem::plainText(['name' => 'sitename', 'value' => $link->sitename,
+<?= $gem->plainText(['name' => 'sitename', 'value' => $link->sitename,
     'maxlength' => $display['sitename']['max']])
 ?>
         </div>
 
         <div class='row'>
             <label class="col-form-label" for='title'>Title</label>
-<?= Gem::plainText(['name' => 'title', 'value' => $link->title, 'size' => 80,
+<?= $gem->plainText(['name' => 'title', 'value' => $link->title, 'size' => 80,
     'maxlength' => $display['title']['max'], 'class' => "col-restrict"])
 ?>
         </div>
 
         <div class="row">
             <label class="col-form-label" for='url'>URL</label>
-                <?= Gem::plainText(['name' => 'url', 'value' => $link->url, 'size' => 80,
+                <?= $gem->plainText(['name' => 'url', 'value' => $link->url, 'size' => 80,
                     'maxlength' => $display['url']['max'], 'class' => "col-restrict"])
                 ?>
         </div>
         <div class='row pad10'>
             <div class="col-4">
-        <?= Gem::checkbox(['label' => 'Enabled', 'name' => 'enabled',
+        <?= $gem->checkbox(['label' => 'Enabled', 'name' => 'enabled',
             'checked' => $link->enabled])
         ?>
             </div>
 
         </div>
-                <?= Gem::hidden(['name' => 'id', 'value' => $m->linkid]) ?>
+                <?= $gem->hidden(['name' => 'id', 'value' => $m->linkid]) ?>
         <div class="col-4">
-                <?= Gem::select(['label' => 'URL Type', 'name' => 'urltype', 'list' => $urltypes,
+                <?= $gem->select(['label' => 'URL Type', 'name' => 'urltype', 'list' => $urltypes,
                     'value' => $link->urltype])
                 ?>
         </div>
                 <?php if ($m->linkid > 0): ?>
             <div class='row pad10'>
                 <div class="col-4">
-                <?= Gem::number(['label' => 'Image id', 'name' => 'imageid',
+                <?= $gem->number(['label' => 'Image id', 'name' => 'imageid',
                     'value' => $link->imageid])
                 ?>
 
                 </div>
                 <div class="col-3">
-                    <?= Gem::text_value(['label' => 'Session Image Id', 'value' => $m->im_session]) ?>
+                    <?= $gem->text_value(['label' => 'Session Image Id', 'value' => $m->im_session]) ?>
                 </div>
                 <div class="col-5">
                 <?=
-                Gem::datetime(['name' => 'date_created', 'size' => 20,
+                $gem->datetime(['name' => 'date_created', 'size' => 20,
                     'label' => "Created at",
                     'value' => $link->date_created])
                 ?>
@@ -169,8 +169,8 @@ if (!empty($link->refid)) {
     </form>
     <?php if (!empty($image)): ?>
         <form id="imageform" name="imageform" method="post" action="<?= $m->im_post ?>">
-            <?= Gem::hidden(['name' => 'lk_imageid', 'value'=> $image->id] ) ?>
-            <?= Gem::hidden(['name' => 'lk_id', 'value'=> $link->id]) ?>
+            <?= $gem->hidden(['name' => 'lk_imageid', 'value'=> $image->id] ) ?>
+            <?= $gem->hidden(['name' => 'lk_id', 'value'=> $link->id]) ?>
             <div class="row">
                 <div class="col-8">
                 <label for="im_caption">Image Caption for <?= $image->id . ': ' . $image->im_file ?></label>
@@ -183,7 +183,7 @@ if (!empty($link->refid)) {
             
             <div class="row">
                 <div class="col-4">
-                <?= Gem::submit(['value' => 'Update image caption']) ?>
+                <?= $gem->submit(['value' => 'Update image caption']) ?>
                 </div>
             </div>
         </form>

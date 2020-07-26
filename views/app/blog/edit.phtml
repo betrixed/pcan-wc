@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $assets->add(['bootstrap', 'SummerNote', 'DateTime', 'jquery-form', 'blog-edit']);
 $blog = $m->blog;
 $revision = $m->revision;
@@ -45,13 +45,13 @@ $date_saved = new DateTime($revision->date_saved);
 </style>
 <div class='row center' style="padding-top:15px; padding-bottom:0; ">
     <div class="col-2">
-        <span><?= Gem::linkTo(['text'=>"Articles", 'href'=> $module . 'blog',  'class' => $btn_class]) ?></span>
+        <span><?= $gem->linkTo(['text'=>"Articles", 'href'=> $module . 'blog',  'class' => $btn_class]) ?></span>
     </div>
     <div class="col-2">
-        <?= Gem::linkTo(['href'=>$module ."links/blog/" . $blog->id, 'text'=>"Generate Link" , 'target' => '_blank',  'class' => $btn_class]) ?> 
+        <?= $gem->linkTo(['href'=>$module ."links/blog/" . $blog->id, 'text'=>"Generate Link" , 'target' => '_blank',  'class' => $btn_class]) ?> 
     </div>
     <div class="col-2">
-        <?= Gem::linkTo(['href' => $module . "gallery", 'text' => "Galleries",  'target' => '_blank',  'class' => $btn_class]) ?>
+        <?= $gem->linkTo(['href' => $module . "gallery", 'text' => "Galleries",  'target' => '_blank',  'class' => $btn_class]) ?>
     </div>
 </div>
 
@@ -59,7 +59,7 @@ $date_saved = new DateTime($revision->date_saved);
       id="postForm"
       method='post'
       onsubmit='smotePost()'>
-    <?= Gem::hidden(["name" => 'id', "value" => $blog->id]) ?>
+    <?= $gem->hidden(["name" => 'id', "value" => $blog->id]) ?>
 
     <div class="container-fluid">
         <div class='row'>
@@ -67,31 +67,31 @@ $date_saved = new DateTime($revision->date_saved);
                 <div class='form-group'>
                     
                     <label class='col-form-label' for="title">Title</label>
-                    <?= Gem::plainText(['name'=>'title', 'size'=>40, 'value'=> $blog->title]) ?><br>
+                    <?= $gem->plainText(['name'=>'title', 'size'=>40, 'value'=> $blog->title]) ?><br>
                    
                 </div>
                 <div class='form-group'>
                     <label class='col-form-label' for="lock_url">Unlock URL</label>
-                    <?= Gem::checkbox(['name'=>'lock_url', 'size'=>5, 'class'=> "form-check-input"]) ?>
+                    <?= $gem->checkbox(['name'=>'lock_url', 'size'=>5, 'class'=> "form-check-input"]) ?>
                    
                     <label class='col-form-label' for="title_clean">Unique URL</label>
-                     <?= Gem::plainText(['name'=>'title_clean', 'size'=>40, 'value'=> $blog->title_clean]) ?>
+                     <?= $gem->plainText(['name'=>'title_clean', 'size'=>40, 'value'=> $blog->title_clean]) ?>
                 </div>
             </div>
             <div class='col-5 outerwrap'>
 
                 <div class='form-group'>
                      <label class=' col-form-label' for="revision">Revision #</label>
-                    <?= Gem::text_value(['name'=>'revision', 'size'=>4, 'value'=> $revision->revision]) ?>
-                   <?= Gem::select(['name'=>'rev_list','list'=>$m->rev_list, 'class'=>'selectpicker']) ?>
+                    <?= $gem->text_value(['name'=>'revision', 'size'=>4, 'value'=> $revision->revision]) ?>
+                   <?= $gem->select(['name'=>'rev_list','list'=>$m->rev_list, 'class'=>'selectpicker']) ?>
                     <?= '<br>Updated ' .  $date_saved->format('d-M-Y') . ' &nbsp;'  ?> 
                     <a target="_blank" href="/admin/blog/revisions/<?=$blog->id ?>" >View all revisions</a><br>
                      
-                    <?= Gem::submit(['name'=>'save', 'size'=>40, 'value'=> "Perform Action", 'class'=>"btn btn-info btn-lg" ]) ?>
+                    <?= $gem->submit(['name'=>'save', 'size'=>40, 'value'=> "Perform Action", 'class'=>"btn btn-info btn-lg" ]) ?>
                 </div>
                 <div class='form-group'>
                     <label for="class_select">Select style wrapper</label>
-                    <?= Gem::select(['name'=>'style', 'list'=>$stylelist, 'value'=> $blog->style, 'empty' => 'false', 'onChange' =>'wrapStyle()' ]) ?>
+                    <?= $gem->select(['name'=>'style', 'list'=>$stylelist, 'value'=> $blog->style, 'empty' => 'false', 'onChange' =>'wrapStyle()' ]) ?>
                     
                 </div>
 
@@ -120,25 +120,25 @@ $date_saved = new DateTime($revision->date_saved);
              <div class="row">
                  <div class="col-3">
                     <label for="author_id">Author</label>
-                    <?= Gem::number(['name'=>'author_id', 'value' => $blog->revision,  'readonly'=>'readonly' ]) ?>
+                    <?= $gem->number(['name'=>'author_id', 'value' => $blog->revision,  'readonly'=>'readonly' ]) ?>
                  </div>
                  <div class="col-4"> 
-                     <?= Gem::datetime(['name'=>'date_published', 'value' => $revision->date_saved,  'label' => 'Date', 'class'=>"form-control" ]) ?>
+                     <?= $gem->datetime(['name'=>'date_published', 'value' => $revision->date_saved,  'label' => 'Date', 'class'=>"form-control" ]) ?>
                  </div>
              </div>
             
             <div class="row">
                 <div class="col-2">
-                    <?= Gem::checkbox(['name'=>'enabled',   'checked'=>$blog->enabled, 'value'=>1 ]) ?>
+                    <?= $gem->checkbox(['name'=>'enabled',   'checked'=>$blog->enabled, 'value'=>1 ]) ?>
                     <label for="enabled">Enabled</label>
                 </div>
 
             <div class="col-2">
-                <?= Gem::checkbox(['name'=>'featured',   'checked'=>$blog->featured, 'value'=>1 ]) ?>
+                <?= $gem->checkbox(['name'=>'featured',   'checked'=>$blog->featured, 'value'=>1 ]) ?>
                 <label for="featured">Featured</label>
             </div>
             <div class="col-2">
-                <?= Gem::checkbox(['name'=>'comments',   'checked'=>$blog->comments, 'value'=>1 ]) ?>
+                <?= $gem->checkbox(['name'=>'comments',   'checked'=>$blog->comments, 'value'=>1 ]) ?>
                <label for="comments">Comments</label>
             </div>
             </div>
@@ -157,7 +157,7 @@ $date_saved = new DateTime($revision->date_saved);
                     <td class='rightCell'><label for='<?= $name ?>'> <?= $label ?></label></td>
                     <td class='leftCell'>
                         <?php if($meta['data_limit'] <= 80): ?>
-                        <?= Gem::plainText(['name'=>$name, 'size'=>65, 'cols'=>65, 'value'=> $value, 'maxlength' => $meta['data_limit'] ]) ?>
+                        <?= $gem->plainText(['name'=>$name, 'size'=>65, 'cols'=>65, 'value'=> $value, 'maxlength' => $meta['data_limit'] ]) ?>
                     <text-field  maxlength='<?= $meta['data_limit'] ?>' />
                     <?php else: ?>
                     <textarea name="<?= $name ?>" id="<?= $name ?>"  size="60" cols="60" maxlength="<?= $meta['data_limit'] ?>" ><?= $value ?></textarea>
@@ -183,16 +183,16 @@ $date_saved = new DateTime($revision->date_saved);
         <input type="hidden" name="event_blogid" value="<?= $blog->id ?>" />
         <span class="heading">Add Event</span>
         <div class="form-group">
-            <?= Gem::datetime(['label'=> "From Date", 'name' => "fromtime", 'class' => "form-control"]) ?>
+            <?= $gem->datetime(['label'=> "From Date", 'name' => "fromtime", 'class' => "form-control"]) ?>
             
         </div>
         <div class="form-group">
-            <?= Gem::datetime(['label'=> "To Date", 'name' => "totime", 'class' => "form-control"]) ?>
+            <?= $gem->datetime(['label'=> "To Date", 'name' => "totime", 'class' => "form-control"]) ?>
             
         </div>
         <div class="row">
             <div class="col" style="max-width:200px;" >
-            <?= Gem::plainText(['label' => 'Slug', 'name' => "slug", 'maxlength' => 12, 'size'=>12, 'class' => "form-control", 'autocomplete'=>'off']) ?>
+            <?= $gem->plainText(['label' => 'Slug', 'name' => "slug", 'maxlength' => 12, 'size'=>12, 'class' => "form-control", 'autocomplete'=>'off']) ?>
             </div>
         </div>
         <input type="submit" class='btn-danger' value='Add Event'></input>

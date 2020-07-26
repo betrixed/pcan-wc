@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $assets->add(['bootstrap','select', 'DateTime']);
 $tag = $this->tag;
 $url = "/admin/donation/";
@@ -22,17 +22,17 @@ $url = "/admin/donation/";
 <form action="<?= $url . 'search' ?>"  class="form-horizontal" method="get">
     <div class="form-group">
     <div class="col-sm-5">
-        <?= Gem::datetime(['name' => 'fromdate', 'in-label' => 'From Date', "class" => "date"]) ?>
+        <?= $gem->datetime(['name' => 'fromdate', 'in-label' => 'From Date', "class" => "date"]) ?>
     </div>
         <div class="col-sm-5">
-        <?= Gem::datetime(['name' => 'todate', 'in-label' => 'To Date', "class" => "date"]) ?>
+        <?= $gem->datetime(['name' => 'todate', 'in-label' => 'To Date', "class" => "date"]) ?>
     </div>
 </div>
 
 
 <div class="form-group">
     <div class="col-sm-10">
-        <?= Gem::select([ 'list' => ['donate' => 'Donation', 'member' => 'Membership' ], 
+        <?= $gem->select([ 'list' => ['donate' => 'Donation', 'member' => 'Membership' ], 
                 'name'=> "purpose", 'in-label' => 'Purpose' , "size" => 30, "class" => "selectpicker"]) ?>
     </div>
 </div>
@@ -41,7 +41,7 @@ $url = "/admin/donation/";
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <?= Gem::submit(['name' => "Search", "class" => "btn-lg"]) ?>
+            <?= $gem->submit(['name' => "Search", "class" => "btn-lg"]) ?>
         </div>
     </div>
 </form>

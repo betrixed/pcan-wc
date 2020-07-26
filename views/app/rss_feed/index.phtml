@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $url = $m->url;
 $assets->add(['bootstrap','DateTime']);
 
@@ -8,7 +8,7 @@ $assets->add(['bootstrap','DateTime']);
 <?= $assets->inline_css('form-format'); ?>
 
 <div class="page-header">
-    <p><?= Gem::linkTo(['href' => $url . "new", 'text' => "Create new " . $m->table_name]) ?></p>
+    <p><?= $gem->linkTo(['href' => $url . "new", 'text' => "Create new " . $m->table_name]) ?></p>
     <h1>Search  <?= $m->table_name ?></h1>
     
 </div>
@@ -20,38 +20,38 @@ $assets->add(['bootstrap','DateTime']);
 <form action="<?=$url?>search" class="form-horizontal" method="get">
     <div class="row">
     <div class="col-sm-10">
-        <?= Gem::plainText(['label' => 'Id', 'name' => "id", "type" => "number"]) ?>
+        <?= $gem->plainText(['label' => 'Id', 'name' => "id", "type" => "number"]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-10">
-        <?= Gem::plainText(['label' => 'URL', 'name' =>"url", "size" => 30]) ?>
+        <?= $gem->plainText(['label' => 'URL', 'name' =>"url", "size" => 30]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-10">
-        <?= Gem::datetime(['label' => 'Last update' , 'name'=>"last_read", "size" => 20]) ?>
+        <?= $gem->datetime(['label' => 'Last update' , 'name'=>"last_read", "size" => 20]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-10">
-        <?= Gem::plainText(['label' => 'Short name' , 'name'=>"nick_name", "size" => 30]) ?>
+        <?= $gem->plainText(['label' => 'Short name' , 'name'=>"nick_name", "size" => 30]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-10">
-        <?= Gem::plainText(['label' => 'Site', 'name' =>"provider", "size" => 30]) ?>
+        <?= $gem->plainText(['label' => 'Site', 'name' =>"provider", "size" => 30]) ?>
     </div>
 </div>
 
 
     <div class="row">
         <div class="col-sm-offset-2 col-sm-10">
-            <?= Gem::submit([ 'name' => "Search", "class" => "btn btn-info btn-lg"]) ?>
+            <?= $gem->submit([ 'name' => "Search", "class" => "btn btn-info btn-lg"]) ?>
         </div>
     </div>
 </form>

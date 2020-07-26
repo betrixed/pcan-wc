@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $assets->add(['bootstrap']);
 $url = "/admin/donation/";
 
@@ -11,7 +11,7 @@ $url = "/admin/donation/";
 </style>
 <div class="container-fluid">
 <div class="row">
-            <div class="col-2"><?= Gem::linkTo(['href' => $url . "index", 'text' => "Go Back", 'class'=>'btn btn-info']); ?></div>
+            <div class="col-2"><?= $gem->linkTo(['href' => $url . "index", 'text' => "Go Back", 'class'=>'btn btn-info']); ?></div>
           <div class="col-10"><p><span class="title">Search results</span>  <?= $m->criteria ?> </p></div>
 </div>
 </div>
@@ -38,10 +38,10 @@ $url = "/admin/donation/";
             $name = $d['fname'] . ' ' . $d['lname'];
             ?>
             <tr>
-                <td><?= Gem::linkTo(['href' =>$url . "edit/" . $d['id'], 'text' => $name ]) ?></td>
+                <td><?= $gem->linkTo(['href' =>$url . "edit/" . $d['id'], 'text' => $name ]) ?></td>
             <td><?=  $d['created_at'] ?></td>
             <td><?=  $d['member_date'] ?></td>
-            <td><?=  Gem::price( $d['amount'] ) ?></td>
+            <td><?=  $gem->price( $d['amount'] ) ?></td>
 
             </tr>
         <?php endforeach; ?>

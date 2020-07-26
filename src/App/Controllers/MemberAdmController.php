@@ -120,7 +120,7 @@ EOD;
         $post = $_POST;
         $mid = Valid::toInt($post, 'uid', 0);
         try {
-            $emails = $this->getEmails($mid);
+            $emails = $this->getMemberEmails($mid);
             // see if chimpentry exists //
 
             foreach ($emails as $ix => $val) {
@@ -141,7 +141,7 @@ EOD;
                 }
                 
                 if ($val['status'] !== $status) {
-                    $this->setStatus($val['id'], $status);
+                    $this->setEmailStatus($val['id'], $status);
                 }
                 if ( !empty($entry) && $entry->status !== $status) {
                     $entry->status = $status;
@@ -151,7 +151,7 @@ EOD;
         } catch (\Exception $e) {
             $this->flash($e->getMessage());
         }
-        return UserSession::reroute($this->url . 'edit/' . $mid);
+        return $this->reroute($this->url . 'edit/' . $mid);
     }
 
     /**
@@ -275,7 +275,7 @@ EOD;
         }
         $view = $this->getView();
         $m = $view->m;
-         $m->donations = $this->getDonations($mid);
+         $m->donations = $this->getMemberDonations($mid);
         $this->noLayouts();
         return $this->render('partials','member/donations');
 

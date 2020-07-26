@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
     $images = $m->images;
     $gallery = $m->gallery;
     $post = $m->post;
@@ -72,7 +72,7 @@ use WC\HtmlGem as Gem;
         </div>
     </div>
     <div class="col-2">
-        <?= Gem::datetime(['id' =>$dateid,  'name' => $dateid, 'class' => "form-control", 
+        <?= $gem->datetime(['id' =>$dateid,  'name' => $dateid, 'class' => "form-control", 
             'value' => $fup['date_upload' ] ]) ?>
       </div>
     <div class="col-3">
@@ -84,7 +84,7 @@ use WC\HtmlGem as Gem;
     <div class="row">
     <div class="col">
             <?= 
-                Gem::select([ 'in-label' => 'Perform', 'name' => 'image_op',  
+                $gem->select([ 'in-label' => 'Perform', 'name' => 'image_op',  
                     'id' => 'image_op',  'list' => $m->select, 'value' =>$m->select_op,
                         'class'=>'selectpicker']) 
         ?>

@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
     $ubase = "/admin/linkery?orderby="; 
     $link = $ubase . $m->orderby;  
      $page =  $m->page;
@@ -29,7 +29,7 @@ use WC\HtmlGem as Gem;
         <?php foreach($page->items as $linkery): 
             $udate = strtotime($linkery->created_on);  ?>
             <tr>
-    <td class='leftCell'><?= Gem::linkTo(['href'=>$url . 'edit/' . $linkery->id, 'text'=> $linkery->name])?></td>
+    <td class='leftCell'><?= $gem->linkTo(['href'=>$url . 'edit/' . $linkery->id, 'text'=> $linkery->name])?></td>
             <td class='leftCell'><?= $linkery->description  ?></td>
             <td><p><?= date('d-M-Y', $udate) .  ' ' . date('H:i', $udate)  ?></p></td>
         </tr>

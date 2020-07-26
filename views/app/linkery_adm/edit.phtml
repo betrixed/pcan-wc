@@ -1,6 +1,6 @@
 <?php
 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 
 $links = $m->links;
 $linkery = $m->linkery;
@@ -29,20 +29,20 @@ $assets->add(['bootstrap', 'grid']);
     <div class="box">
     <h2>Link Gallery</h2>
     <form id="edit_linkery" method="post" action="<?= $post . "post" ?>" >
-                <?= Gem::hidden(['name' => 'id', 'value' => $linkery->id]) ?>
+                <?= $gem->hidden(['name' => 'id', 'value' => $linkery->id]) ?>
         <div class="row">
             <div class="col">
-<?= Gem::plainText(['label' => 'Name', 'name' => "name", 'value' => $linkery->name]) ?>
+<?= $gem->plainText(['label' => 'Name', 'name' => "name", 'value' => $linkery->name]) ?>
             </div>
         </div>
         <div class="row">
             <div class="col">
-<?= Gem::multiline(['label' => 'Description', 'cols' => 80, 'name' => "description", 'value' => $linkery->description]) ?> 
+<?= $gem->multiline(['label' => 'Description', 'cols' => 80, 'name' => "description", 'value' => $linkery->description]) ?> 
             </div>
         </div>
         <div class="row">
              <div class="col text-center">
-<?= Gem::submit(['value' => "Update details"]) ?>
+<?= $gem->submit(['value' => "Update details"]) ?>
                  </div>
         </div>
     </form>

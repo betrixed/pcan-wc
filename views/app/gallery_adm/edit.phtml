@@ -1,6 +1,6 @@
 <?php
 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 
 $images = $m->images;
 $gallery = $m->gallery;
@@ -44,46 +44,46 @@ $assets->add(['bootstrap', 'grid', 'select','jquery-form', 'gallery-progress', '
 <div class="container-fluid outerwrap">
     <div class="row">
         <div class="col">
-                <?= Gem::linkTo(['href' => '/admin/gallery/edit/' . $name,
+                <?= $gem->linkTo(['href' => '/admin/gallery/edit/' . $name,
                     'class' => $btnclass, 'text' => 'Edit Gallery Record'])
                 ?>
             <div class="boxit">
-                <?= Gem::text_value(['label' => 'Name', 'value' => $name]) ?>
+                <?= $gem->text_value(['label' => 'Name', 'value' => $name]) ?>
             </div>
                 <?php if (!empty($gallery->seriesid)): ?>
                 <div class="boxit">
-                    <?= Gem::text_value(['label' => 'Series',
+                    <?= $gem->text_value(['label' => 'Series',
                         'value' => $gallery->seriesid])
                     ?>
                 </div>
                 <div class="boxit">
-                    <?= Gem::text_value(['label' => 'Previous',
+                    <?= $gem->text_value(['label' => 'Previous',
                         'value' => $gallery->leva_path])
                     ?>
                 </div>
                 <div class="boxit">
-                    <?= Gem::text_value(['label' => 'Next',
+                    <?= $gem->text_value(['label' => 'Next',
                         'value' => $gallery->prava_path])
                     ?>
                 </div>
                 <?php endif ?>
             <div class="boxit">
-<?= Gem::check_value(['checked' => $gallery->view_thumbs,
+<?= $gem->check_value(['checked' => $gallery->view_thumbs,
     'label' => 'View Thumbs'])
 ?>
             </div>
             <div class="boxit">
-        <?= Gem::datetime_value(['label' => 'Last upload',
+        <?= $gem->datetime_value(['label' => 'Last upload',
             'value' => $gallery->last_upload])
         ?>
             </div>
         </div>
     </div>
     <hr>
-    <span class="pull-right"><?= Gem::linkTo(['href' => $post . 'scan/' . $name,
+    <span class="pull-right"><?= $gem->linkTo(['href' => $post . 'scan/' . $name,
             'class' => $btnclass, 'text' => 'Scan ' . $name])
         ?></span>
-    <span class="pull-right"><?= Gem::linkTo(['href' => $post . 'sync/' . $name,
+    <span class="pull-right"><?= $gem->linkTo(['href' => $post . 'sync/' . $name,
             'class' => $btnclass, 'text' => 'Sync ' . $name])
         ?></span>
 
@@ -96,7 +96,7 @@ $assets->add(['bootstrap', 'grid', 'select','jquery-form', 'gallery-progress', '
                     <td><input id="file" type="file" name="files[]" multiple="multple" ></td>
                     <td><input type="submit" value="upload" class='btn-danger' ></td>
                     <td><?= 
-                        Gem::checkbox(['name'=>'thumbs', 'text'=> 'Upload to Thumbs'])
+                        $gem->checkbox(['name'=>'thumbs', 'text'=> 'Upload to Thumbs'])
                         ?>
                 </tr>
             </table>

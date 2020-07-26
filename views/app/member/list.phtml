@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 
 $orderalt = $m->orderalt;
 $col_arrow = $m->col_arrow;
@@ -18,10 +18,10 @@ $assets->add('bootstrap');
 <div class='outerwrap pad10'>
     <div class="container-fluid">
         <?php if ($page->last > 1 ): ?>
-        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link, 'text'=> "First"]) ?>
-        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page='. $page->before, 'text' => "Previous"]) ?>
-        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page=' . $page->next, 'text' => "Next"]) ?>
-        &nbsp; | &nbsp;<?= Gem::linkTo(['href' => $link . '&page=' . $page->last, 'text' => "Last"]) ?>
+        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link, 'text'=> "First"]) ?>
+        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page='. $page->before, 'text' => "Previous"]) ?>
+        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'text' => "Next"]) ?>
+        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page=' . $page->last, 'text' => "Last"]) ?>
     <?php endif ?>
     &nbsp;|&nbsp;  <?= $page->current . "/" . $page->last ?>
     &nbsp;|&nbsp;  
@@ -29,25 +29,25 @@ $assets->add('bootstrap');
         
         <div class="row">
             <div class="col-1">
-                # <span class="titlecol"><?= Gem::linkTo(['href' => $ubase . $orderalt['name'], 'text' => 'Name']) . $col_arrow['name'] ?></span>
+                # <span class="titlecol"><?= $gem->linkTo(['href' => $ubase . $orderalt['name'], 'text' => 'Name']) . $col_arrow['name'] ?></span>
             </div>
             <div class="col-2">
-                <span class="titlecol"><?= Gem::linkTo(['href' => $ubase . $orderalt['surname'], 'text' => 'Surname']) . $col_arrow['surname'] ?></span>
+                <span class="titlecol"><?= $gem->linkTo(['href' => $ubase . $orderalt['surname'], 'text' => 'Surname']) . $col_arrow['surname'] ?></span>
             </div>
             <div class="col-3">
-                <span class="titlecol"><?= Gem::linkTo(['href' => $ubase . $orderalt['email'], 'text' => 'Email']) . $col_arrow['email'] ?></span>
+                <span class="titlecol"><?= $gem->linkTo(['href' => $ubase . $orderalt['email'], 'text' => 'Email']) . $col_arrow['email'] ?></span>
             </div>
             <div class="col-2">
-                <span class="titlecol"><?= Gem::linkTo(['href' => $ubase . $orderalt['phone'], 'text' => 'Phone']) . $col_arrow['phone'] ?></span>
+                <span class="titlecol"><?= $gem->linkTo(['href' => $ubase . $orderalt['phone'], 'text' => 'Phone']) . $col_arrow['phone'] ?></span>
             </div>
             <div class="col-2">
-                <span class="titlecol"><?= Gem::linkTo(['href' => $ubase . $orderalt['city'], 'text' => 'Suburb']) . $col_arrow['city'] ?></span>
+                <span class="titlecol"><?= $gem->linkTo(['href' => $ubase . $orderalt['city'], 'text' => 'Suburb']) . $col_arrow['city'] ?></span>
             </div>
             <div class="col-1">
-                <span class="titlecol"><?= Gem::linkTo(['href' => $ubase . $orderalt['cdate'], 'text' => 'Created']) . $col_arrow['cdate'] ?></span>
+                <span class="titlecol"><?= $gem->linkTo(['href' => $ubase . $orderalt['cdate'], 'text' => 'Created']) . $col_arrow['cdate'] ?></span>
             </div>
             <div class="col-1">
-                <span class="titlecol"><?= Gem::linkTo(['href' => $ubase . $orderalt['status'], 'text' => 'Status']) . $col_arrow['status'] ?></span>
+                <span class="titlecol"><?= $gem->linkTo(['href' => $ubase . $orderalt['status'], 'text' => 'Status']) . $col_arrow['status'] ?></span>
             </div>
         </div>
         <hr>
@@ -66,7 +66,7 @@ $assets->add('bootstrap');
                 $rno += 1; ?>
             <div class="row">
             <div class="col-3">
-                 <?= $rno . ' ' . Gem::linkTo(['href' => '/admin/member/edit/' . $row['id'], 'text' => $row['fname'] . ' &nbsp; ' . $row['lname'] ]) ?>
+                 <?= $rno . ' ' . $gem->linkTo(['href' => '/admin/member/edit/' . $row['id'], 'text' => $row['fname'] . ' &nbsp; ' . $row['lname'] ]) ?>
                 </div>
                 <div class="col-3">
                     <?= $row['email_address'] ?>

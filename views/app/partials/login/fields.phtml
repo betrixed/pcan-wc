@@ -21,19 +21,19 @@ $formid = $m->formid;
         </div>
     <?php endif ?>
     <?php if (isset($xcheck)): ?>
-        <?= Gem::xcheck(['name' => $xcheck['key'], 'value' => $xcheck['value']]) ?>
+        <?= $gem->xcheck(['name' => $xcheck['key'], 'value' => $xcheck['value']]) ?>
     <?php endif ?>
     <div class="row align-items-center text-center idrow">
         <div class="col-6">
             <?=
-            Gem::plainText(['label' => 'Email', 'name' => 'email',
+            $gem->plainText(['label' => 'Email', 'name' => 'email',
                 'class' => 'idgroup', 'value' => $m->email])
             ?>
         </div>
         <div class="col-1"><span style="font-size:1.8em;">Or</span></div>
         <div class="col-5">
             <?=
-            Gem::plainText(['label' => 'Alias', 'name' => 'alias',
+            $gem->plainText(['label' => 'Alias', 'name' => 'alias',
                 'class' => 'idgroup', 'value' => $m->alias])
             ?>
         </div>
@@ -42,25 +42,25 @@ $formid = $m->formid;
 
         <div class="col">
             <?=
-            Gem::password(['name' => 'password', 'label' => 'Password',
+            $gem->password(['name' => 'password', 'label' => 'Password',
                 'value' => $m->password, 'class' => 'pwinput'])
             ?>
         </div>
     </div>
     <div class="d-flex  justify-content-center" >
-    <?= Gem::submit(['id' => 'submit', 'name' => 'submit', 'value' => 'Login', 'class' => 'btn btn-outline-primary btn-lg']) ?>
+    <?= $gem->submit(['id' => 'submit', 'name' => 'submit', 'value' => 'Login', 'class' => 'btn btn-outline-primary btn-lg']) ?>
         <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
     </div>  
     <hr>
     <?php if (!is_null($google) && $google['enabled']): ?>
         <div class="d-flex  justify-content-center"">
-    <?= Gem::invisiCaptcha(['site' => $google['site'], 'formid' => $formid, 'ajax' => 'formid_submit()']) ?>
+    <?= $gem->invisiCaptcha(['site' => $google['site'], 'formid' => $formid, 'ajax' => 'formid_submit()']) ?>
         </div>
         <?php endif ?>
 </div>
 <div class="row">
     <div class="col text-right"><?=
-        Gem::linkTo(['href' => '/login/forgot',
+        $gem->linkTo(['href' => '/login/forgot',
             'text' => 'Forgot password - email reset token',
             'class' => 'btn btn-outline-info'])
         ?></div>

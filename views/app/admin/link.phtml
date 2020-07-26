@@ -1,5 +1,5 @@
 <?php 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $assets->add('bootstrap');
 
 $url = $m->url;
@@ -17,11 +17,11 @@ $col_arrow = $m->col_arrow;
             <span><b>Links</b></span> 
         </div>
         <div class="col-8">
-&nbsp;&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $url . 'new', 'text' => 'New link record']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $ref . '&page=1', 'text' => 'First']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $ref . '&page='. $page->before, 'text' => 'Previous']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $ref . '&page='. $page->next, 'text' => 'Next']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= Gem::linkTo(['href' => $ref . '&page='. $page->last, 'text' => 'Last']) ?>&#x3009;
+&nbsp;&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $url . 'new', 'text' => 'New link record']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $ref . '&page=1', 'text' => 'First']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $ref . '&page='. $page->before, 'text' => 'Previous']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $ref . '&page='. $page->next, 'text' => 'Next']) ?>&#x3009;
+&nbsp;-&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $ref . '&page='. $page->last, 'text' => 'Last']) ?>&#x3009;
 &nbsp;&nbsp;Page <?= $page->current . " of " .  $page->last ?>
         </div>
     </div>
@@ -31,11 +31,11 @@ $col_arrow = $m->col_arrow;
 <table class='table table-striped'>
     <thead>
         <tr>
-             <th><?= Gem::linkTo(['href' => $ubase . $orderalt['enabled'], 'text' => "Enabled" . $col_arrow['enabled']]) ?></th>
-           <th><?= Gem::linkTo(['href' => $ubase . $orderalt['title'], 'text' => "Title" . $col_arrow['title']]) ?></th>
-            <th><?= Gem::linkTo(['href' => $ubase . $orderalt['site'], 'text' => "Site" . $col_arrow['site']]) ?></th>
-            <th><?= Gem::linkTo(['href' => $ubase . $orderalt['type'], 'text' => "Type" . $col_arrow['type']]) ?></th>
-            <th><?= Gem::linkTo(['href' => $ubase . $orderalt['date'], 'text' => "Date" . $col_arrow['date']]) ?></th>
+             <th><?= $gem->linkTo(['href' => $ubase . $orderalt['enabled'], 'text' => "Enabled" . $col_arrow['enabled']]) ?></th>
+           <th><?= $gem->linkTo(['href' => $ubase . $orderalt['title'], 'text' => "Title" . $col_arrow['title']]) ?></th>
+            <th><?= $gem->linkTo(['href' => $ubase . $orderalt['site'], 'text' => "Site" . $col_arrow['site']]) ?></th>
+            <th><?= $gem->linkTo(['href' => $ubase . $orderalt['type'], 'text' => "Type" . $col_arrow['type']]) ?></th>
+            <th><?= $gem->linkTo(['href' => $ubase . $orderalt['date'], 'text' => "Date" . $col_arrow['date']]) ?></th>
         </tr>
     </thead>
     <tbody>
@@ -62,8 +62,8 @@ $col_arrow = $m->col_arrow;
     <?php endforeach ?>
     </tbody>
 </table>
-        <?= Gem::hidden(['name' => 'page', 'value' => $page->current ]) ?>
-          <?= Gem::hidden(['name' => 'orderby', 'value' => $m->orderby ]) ?>
+        <?= $gem->hidden(['name' => 'page', 'value' => $page->current ]) ?>
+          <?= $gem->hidden(['name' => 'orderby', 'value' => $m->orderby ]) ?>
         
         <div class="row center">
         <div class="form-group">
@@ -72,7 +72,7 @@ $col_arrow = $m->col_arrow;
             <option value="1">Enable</option>
             <option value="0">Disable</option>
         </select>
-            <?= Gem::submit(['value' => 'Save', 'class' => "btn btn-warning"]) ?>
+            <?= $gem->submit(['value' => 'Save', 'class' => "btn btn-warning"]) ?>
         </div>
         </div>
     </form>

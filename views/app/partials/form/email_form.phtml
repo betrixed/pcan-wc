@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $url = $m->url;
 $rec = $m->rec;
 $xcheck = $m->xcheck;
@@ -19,46 +19,46 @@ $assets->add('validate');
 <h3>Send email message to <?= $app->get('organization','our organization') ?>.</h3>
     <hr>
         <?php if ($m->sub === 1): ?>
-            <?= Gem::hidden([ 'name' => 'sub', 'value' =>  $m->sub]) ?>
+            <?= $gem->hidden([ 'name' => 'sub', 'value' =>  $m->sub]) ?>
             <?php endif ?>
            <?php if ($recid): ?>         
-               <?= Gem::hidden([ 'name' => 'id', 'value' =>  $recid]) ?>
+               <?= $gem->hidden([ 'name' => 'id', 'value' =>  $recid]) ?>
             <div class="form-group row">
                 <div class="col-5">
-                        <?= Gem::datetime([ 'label' =>'Date sent' ,'name' => 'created_on', 
+                        <?= $gem->datetime([ 'label' =>'Date sent' ,'name' => 'created_on', 
                                         'value' => $rec->senddate , "readonly", 'class' => 'form-control']) ?>
                 </div>
             </div>
             <?php endif ?>
         <div class="form-group row">
             <div class="col-4">
-                     <?= Gem::plainText([ 'label' =>'Name' ,'name' => 'name', 'size' => 16,
+                     <?= $gem->plainText([ 'label' =>'Name' ,'name' => 'name', 'size' => 16,
                                         'value' => $rec->name , 'class' => 'form-control']) ?>
             </div>
             <div class="col-4">
-                    <?= Gem::email([ 'label' => 'Your email address' ,'name' => 'email',
+                    <?= $gem->email([ 'label' => 'Your email address' ,'name' => 'email',
                                         'value' => $rec->email , 'class' => 'form-control']) ?>
             </div>
             <div class="col-4">
-                     <?= Gem::phone([ 'label' =>'Phone number' ,'name' => 'telephone', 'size' => 16,
+                     <?= $gem->phone([ 'label' =>'Phone number' ,'name' => 'telephone', 'size' => 16,
                                         'value' => $rec->telephone , 'class' => 'form-control']) ?>
             </div>
         </div>
             <div class="d-flex form-group">
                 <label>Message</label>
-             <?= Gem::multiline([ 'name' => 'body', 'cols' => 80, 'rows' => 5,'value' => $rec->body ]) ?>
+             <?= $gem->multiline([ 'name' => 'body', 'cols' => 80, 'rows' => 5,'value' => $rec->body ]) ?>
             </div>
         <hr>
-            <?= Gem::xcheck([ 'name' => $xcheck['key'], 'value' =>  $xcheck['value'] ]) ?>
+            <?= $gem->xcheck([ 'name' => $xcheck['key'], 'value' =>  $xcheck['value'] ]) ?>
         
             <div class="d-flex  justify-content-center" >
-                <?= Gem::submit(['id' => 'submit',  'name' => 'submit', 'value' => 'Send', 'class' => 'btn btn-outline-primary btn-lg' ]) ?>
+                <?= $gem->submit(['id' => 'submit',  'name' => 'submit', 'value' => 'Send', 'class' => 'btn btn-outline-primary btn-lg' ]) ?>
                 <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
             </div>    
         <hr>
          <?php if (!is_null($google) && $google['enabled']): ?>
             <div class="d-flex  justify-content-center"">
-               <?= Gem::invisiCaptcha([ 'site' => $google['site'], 'formid' => $formid, 'ajax'=>'formid_submit()']) ?>
+               <?= $gem->invisiCaptcha([ 'site' => $google['site'], 'formid' => $formid, 'ajax'=>'formid_submit()']) ?>
             </div>
         <?php endif ?>
  <?php if (is_null($google) || !$google['enabled']) {

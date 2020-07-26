@@ -1,5 +1,5 @@
 <?php 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 use App\Link\BlogExport as Import;
 $packs = $m->packs;
 $url= $m->url;
@@ -39,7 +39,7 @@ $assets->add(['bootstrap', 'select']);
                 $rowid += 1;
             ?>
             <tr>
-                <td> <?= Gem::checkbox(['name' => 'op-' . $rowid, 'value' => $pack['file'] ]) ?></td>
+                <td> <?= $gem->checkbox(['name' => 'op-' . $rowid, 'value' => $pack['file'] ]) ?></td>
                 <td><?= $pack['compare'] ?></td>
                 <td class="leftCell"><?= $blog['title'] ?></td>
                 <td><?= $pubdate ?></td>
@@ -48,10 +48,10 @@ $assets->add(['bootstrap', 'select']);
                 <?php endforeach ?>
         </tbody>
     </table>
-         <?= Gem::select(['name' => 'bksel', 'list' => Import::importOptions(), 
+         <?= $gem->select(['name' => 'bksel', 'list' => Import::importOptions(), 
              'class' => 'selectpicker']) ?>
-      <?= Gem::submit(['value' => 'Execute']) ?>
-    <?= Gem::hidden(['name' => 'args', 'value' => $m->args]) ?>
+      <?= $gem->submit(['value' => 'Execute']) ?>
+    <?= $gem->hidden(['name' => 'args', 'value' => $m->args]) ?>
      </form>
 </div>
 

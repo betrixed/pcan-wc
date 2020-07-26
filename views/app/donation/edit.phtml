@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $assets->add(['bootstrap', 'DateTime']);
 $url = "/admin/donation/";
 $donate = $m->donation;
@@ -13,7 +13,7 @@ $donate = $m->donation;
 </style>
 <div class="container">
 <div class="row">
-            <div class="previous"><?= Gem::linkTo(['href' => $url . "index", 'text' => 'Donations']) ?></div>
+            <div class="previous"><?= $gem->linkTo(['href' => $url . "index", 'text' => 'Donations']) ?></div>
 </div>
 
 <div class="page-header">
@@ -26,33 +26,33 @@ $donate = $m->donation;
 
 <div class="row">
     <div class="col-sm-5">
-        <?= Gem::plainText(['in-label' => 'Amount', 'name' => "amount", "type" => "number", 'inlabel' => 'Amount', 'value' => $donate->amount]) ?>
+        <?= $gem->plainText(['in-label' => 'Amount', 'name' => "amount", "type" => "number", 'inlabel' => 'Amount', 'value' => $donate->amount]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-5">
-        <?= Gem::select(['in-label' => 'Purpose', 'name' => "purpose",   "class" => "selectpicker", 'list' => $m->purpose, 'value' => $donate->purpose]) ?>
+        <?= $gem->select(['in-label' => 'Purpose', 'name' => "purpose",   "class" => "selectpicker", 'list' => $m->purpose, 'value' => $donate->purpose]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-5">
-        <?= Gem::datetime(['in-label' => 'Entered', 'name' => "created_at", "size" => 20, 'value' => $donate->created_at]) ?>
+        <?= $gem->datetime(['in-label' => 'Entered', 'name' => "created_at", "size" => 20, 'value' => $donate->created_at]) ?>
     </div>
         <div class="col-sm-5">
-       <?= Gem::datetime(['in-label' => 'Date for', 'name' => "member_date", "size" => 20,'value' => $donate->member_date ]) ?>
+       <?= $gem->datetime(['in-label' => 'Date for', 'name' => "member_date", "size" => 20,'value' => $donate->member_date ]) ?>
     </div>
 </div>
 
 
 
-        <?= Gem::hidden(['name' => "id", "value" => $donate->id]) ?>
-    <?= Gem::hidden(['name' => "memberid", "value" => $donate->memberid]) ?>
+        <?= $gem->hidden(['name' => "id", "value" => $donate->id]) ?>
+    <?= $gem->hidden(['name' => "memberid", "value" => $donate->memberid]) ?>
 
     <div class="row">
         <div class="col-sm-offset-2 col-sm-10">
-            <?= Gem::submit(['value' => 'Save']) ?>
+            <?= $gem->submit(['value' => 'Save']) ?>
         </div>
     </div>
 </form>

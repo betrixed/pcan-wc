@@ -1,5 +1,5 @@
 <?php
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
     $gallery = $m->gallery;
     $assets->add('bootstrap');
     if (!empty($gallery->id)) {
@@ -31,10 +31,10 @@ use WC\HtmlGem as Gem;
                 $sval = 'Create';
             ?>
            <h1>Create Image Gallery</h1>
-            <?=Gem::hidden(['name' => 'id', 'value' =>  $gallery->id ]) ?>
+            <?=$gem->hidden(['name' => 'id', 'value' =>  $gallery->id ]) ?>
             <div class="row">
             <label for="name" class="control-label">Name</label>
-            <?=Gem::plainText(['name' => 'name', 'value' =>  $name  ]) ?>
+            <?=$gem->plainText(['name' => 'name', 'value' =>  $name  ]) ?>
             </div>
             <?php else: 
                 $sval = 'Update';
@@ -43,16 +43,16 @@ use WC\HtmlGem as Gem;
             <h1>Update Image Gallery</h1>
                 <div class="row">
                     <label for="name" class="control-label">Name</label>
-                    <?=Gem::plainText(['name' => 'name', 'value' =>  $name, 'readonly'  ]) ?>
+                    <?=$gem->plainText(['name' => 'name', 'value' =>  $name, 'readonly'  ]) ?>
                 </div>
             <?php endif ?>
         <div class="row">
             <label for="description" class="control-label">Description</label>
-            <?=Gem::multiline(['cols' => 50, 'name' => 'description', 'value' =>  $gallery->description   ]) ?>
+            <?=$gem->multiline(['cols' => 50, 'name' => 'description', 'value' =>  $gallery->description   ]) ?>
          </div>
         <div class="row">
             <div class="col">
-            <?=Gem::submit(['value' => $sval, 'class'=>'btn btn-warning btn-lg']) ?>
+            <?=$gem->submit(['value' => $sval, 'class'=>'btn btn-warning btn-lg']) ?>
             </div>
         </div>
     </form>

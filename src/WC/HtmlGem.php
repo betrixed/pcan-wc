@@ -4,25 +4,38 @@ namespace WC;
 
 use App\Link\MenuTree;
 
+class Money {
+    private $moneyfmt;
+    private $sym_dollar;
+     
+    public function __construct(string $lang = 'en-AU')
+    {
+        $this->moneyfmt = \numfmt_create($lang, \NumberFormatter::CURRENCY);
+        $this->sym_dollar = $this->moneyfmt->getSymbol(\NumberFormatter::INTL_CURRENCY_SYMBOL);
+    }
+    
+    public function format($value) : string
+    {
+        return $this->moneyfmt->formatCurrency(floatval($value),$this->sym_dollar);
+    }
+}
+        
+/** generate basic html for common layouts 
+    Common controls require an instance
+ *  */
 class HtmlGem
 {
-    static private $id_add = 100;
-    static private $moneyfmt;
-    static private $sym_dollar;
+    private $id_add = 100;
+     
+    static public function moneyFormat(string $lang = 'en-AU') {
+        return new Money($lang);
+    }
     
-    static public function getMoneyFmt() {
-        if (!isset(static::$moneyfmt)) {
-            static::$moneyfmt = \numfmt_create('en-AU', \NumberFormatter::CURRENCY);
-            static::$sym_dollar =static::$moneyfmt->getSymbol(\NumberFormatter::INTL_CURRENCY_SYMBOL);
-        }
-        return static::$moneyfmt;
-     }
-    
-    static private function ensureIdValue(&$pset, $value = null)
+    private function ensureIdValue(&$pset, $value = null)
     {
         if (isset($pset['name']) && !isset($pset['id'])):
-            static::$id_add++;
-            $pset['id'] = $pset['name'] . static::$id_add;
+            $this->id_add++;
+            $pset['id'] = $pset['name'] . $this->id_add;
             if (!isset($pset['value'])):
                 if (!empty($value)) {
                     $pset['value'] = $value;
@@ -93,9 +106,9 @@ class HtmlGem
         return static::getTag($node, ['type' => 'submit', 'value' => 'Submit']) . PHP_EOL;
     }
 
-    static function checkbox(array $pset)
+    public function checkbox(array $pset)
     {
-        static::ensureIdValue($pset);
+        $this->ensureIdValue($pset);
         $id = $pset['id'];
         $out = '';
         $wrapdiv = isset($pset['div']) ? $pset['div'] : false;
@@ -247,9 +260,9 @@ EOD;
         return static::getTag($node, ['type' => 'hidden']);
     }
 
-    static function inputType(array $pset, $type = '')
+    public function inputType(array $pset, $type = '')
     {
-        static::ensureIdValue($pset);
+        $this->ensureIdValue($pset);
         $id = $pset['id'];
         $out = '';
         $wrapdiv = isset($pset['div']) ? $pset['div'] : false;
@@ -281,17 +294,17 @@ EOD;
      * @param array $pset
      * @return string
      */
-    static function plainText(array $pset)
+    public function plainText(array $pset)
     {
-        return static::inputType($pset, 'text');
+        return $this->inputType($pset, 'text');
     }
 
-    static function number(array $pset)
+    public function number(array $pset)
     {
-        return static::inputType($pset, 'number');
+        return $this->inputType($pset, 'number');
     }
 
-    static function email(array $pset)
+    public function email(array $pset)
     {
         if (!isset($pset['placeHolder'])) {
             $pset['placeHolder'] = 'your@email.domain';
@@ -302,31 +315,27 @@ EOD;
         return static::inputType($pset, 'email');
     }
 
-    static function hidden($node)
+    public function hidden($node)
     {
-        return static::inputType($node, 'hidden');
+        return $this->inputType($node, 'hidden');
     }
 
-    static function money(array $pset)
+    public function money(array $pset)
     {
-        return static::inputType($pset, 'money');
+        return $this->inputType($pset, 'money');
     }
 
-    static function phone(array $pset)
+    public function phone(array $pset)
     {
-        return static::inputType($pset, 'tel');
+        return $this->inputType($pset, 'tel');
     }
 
-    static function password(array $pset)
+    public function password(array $pset)
     {
-        return static::inputType($pset, 'password');
+        return $this->inputType($pset, 'password');
     }
 
-    static function price($value)
-    {
-        $fmt = static::getMoneyFmt();
-        return $fmt->formatCurrency(floatval($value),static::$sym_dollar);
-    }
+
 
     static function addAttr($name, $pset)
     {
@@ -336,7 +345,7 @@ EOD;
             return "";
     }
 
-    static function linkTo($pset)
+    public function linkTo($pset)
     {
         if (isset($pset['href'])):
             $href = $pset['href'];
@@ -369,9 +378,9 @@ EOD;
         return $out;
     }
 
-    static function dropDown(array $pset)
+    public function dropDown(array $pset)
     {
-        static::ensureIdValue($pset);
+        $this->ensureIdValue($pset);
         
         $out = "<li class=\"nav-item dropdown\">" . PHP_EOL;
         $menuName = isset($pset['root']) ? $pset['root'] : -1;
@@ -441,10 +450,10 @@ EOD;
         return $out;
     }
 
-    static function select(array $pset): string
+    public function select(array $pset): string
     {
         
-        static::ensureIdValue($pset);
+        $this->ensureIdValue($pset);
         $out = '';
         if (isset($pset['div'])) {
             $out .= static::div_class($pset['div']);
@@ -469,9 +478,9 @@ EOD;
         return $out . PHP_EOL;
     }
 
-    static function datetime($pset)
+    public  function datetime($pset)
     {
-        static::ensureIdValue($pset);
+        $this->ensureIdValue($pset);
         $id = $pset['id'];
         $dateid = 'pick' . $pset['id'];
         $out = "<div class='input-group date' id='$dateid' data-target='nearest'>" . PHP_EOL;
@@ -520,9 +529,9 @@ EOD;
         }
         return [null,null];
      }
-    static function multiline($pset)
+    public  function multiline($pset)
     {
-        static::ensureIdValue($pset);
+        $this->ensureIdValue($pset);
         $out = '';
         $id = $pset['id'];
         if (isset($pset['div'])) {

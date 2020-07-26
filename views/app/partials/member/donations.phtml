@@ -1,7 +1,8 @@
 <?php
-use WC\HtmlGem as Gem;
+Use WC\HtmlGem;
 $donations = $m->donations;
 $btnclass = 'btn btn-outline-info';
+$fmt = Html::moneyFormat('en-AU');
 ?>
 <div class='container' >
     <div id='dnwrap' class='row'>
@@ -15,9 +16,9 @@ $btnclass = 'btn btn-outline-info';
             Amount
         </div>
     </div>
-
+    
     <?php foreach($donations as $dn): ?>
-        <div class="row" id="dnid<?= $dn['donateId'] ?>">
+        <div class="row" id="dnid<?= $dn['id'] ?>">
             <div class="col-2 text-center">
                 <span><?= $dn['member_date'] ?></span>
             </div>
@@ -26,7 +27,7 @@ $btnclass = 'btn btn-outline-info';
                 <span><?= $dn['purpose'] ?></span>
             </div>
             <div class="col-2 text-right">
-                <span class="align-right"><?= Gem::price($dn['amount']) ?></span>
+                <span class="align-right"><?= $fmt->format($dn['amount']) ?></span>
             </div>
         </div>
     <?php endforeach ?>

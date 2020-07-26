@@ -1,6 +1,6 @@
 <?php
 // This is a insert 
-use WC\HtmlGem as Gem;
+$gem = $this->htmlgem;
 $catset = $m->catset;
 $catList = $catset->catlist;
 $catValues = implode(",",$catset->available);
@@ -22,7 +22,7 @@ $url=$m->url;
              $catid = "cat" . $rowid;   
              $checked = ($cat['blog_id'] > 0) ? 1 : 0;
              ?>    
-         <td class='leftCell'><?= Gem::checkbox(['name'=>$catid, 'value'=> $cat['id'], 'checked' => $checked]) ?>
+         <td class='leftCell'><?= $gem->checkbox(['name'=>$catid, 'value'=> $cat['id'], 'checked' => $checked]) ?>
              <?=$cat['name']?></td>
    <?php endforeach ?>
    </tr>
