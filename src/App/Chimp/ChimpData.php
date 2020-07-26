@@ -12,30 +12,36 @@ use App\Models\ChimpEntry;
 use App\Models\MemberEmail;
 use App\Models\Member;
 use WC\App;
-
-require_once PHP_DIR . '/chimpv3/vendor/autoload.php';
-
 /**
  * Description of chimplists
  *
  * @author michael
  */
-class ChimpData {
-
-    const TABLE = 'chimp_lists';
-
-    public static $LOCAL_ZONE = null;
-
-    static function classInit() {
-        if (is_null(static::$LOCAL_ZONE)) {
-            static::$LOCAL_ZONE = new \DateTimeZone('Australia/Sydney');
+trait ChimpData {
+    protected $chimp_api = null;
+    
+    public function getApi() {
+        if ($this->chimp_api === null) {
+            $app = $this->app;
+            require_once $app->php_dir . '/chimpv3/vendor/autoload.php';
+            $s = $app->getSecrets();
+            if( isset($s['chimp'])) {      
+                $this->chimp_api = new Api($s['chimp']);
+            }
+            else {
+                throw new \Exception("Mail Chimp settings not found");
+            }
         }
+        return $this->api;
     }
 
-    static function defaultList() {
-        $data = App::instance()->get_secrets();
-        $listrecid = $data['chimp']['default-list'];
-        return ChimpLists::findFirstById($listrecid);
+    public function defaultList() : ?ChimpLists 
+    {
+        $api = $this->getApi();
+        if ($api) {
+            return ChimpLists::findFirstById($api->getDefaultListId());
+        }
+        return null;   
     }
 
     static function compare_dates($date1, $date2) {
@@ -50,11 +56,7 @@ class ChimpData {
         return 1;
     }
 
-    static function cnvDateTime($chimpTime) {
-        $d1 = new \DateTime($chimpTime);
-        $d1->setTimezone(static::$LOCAL_ZONE);
-        return $d1->format('Y-m-d H:i:s');
-    }
+    
 
     /** return a ChimpLists model object, from a JSON record
      * 
@@ -79,11 +81,9 @@ class ChimpData {
         return $chimplist;
     }
 
-    static function allLists() {
-        $allLists = [];
-        static::classInit();
-        $db = new DbQuery();
-        $allLists = $db->objectSet("select * from " . static::TABLE);
+    public function allLists() {
+        $qry = new DbQuery($this->db);
+        $allLists = $qry->objectSet("select * from chimp_lists");
         return $allLists;
     }
 
@@ -100,9 +100,9 @@ class ChimpData {
      * @param type $email
      * @return type
      */
-    static function getEmailStatus($email) {
-        $list = static::defaultList();
-        $info = static::getMemberInfo($list, $email);
+    public function getEmailStatus($email) {
+        $list = $this->defaultList();
+        $info = $this->getMemberInfo($list, $email);
         $id = $list->id;
         $entry = ($info !== false) ? static::byUniqueId($id, $info->unique_email_id) : false;
         return [$list, $info, $entry];
@@ -111,11 +111,11 @@ class ChimpData {
     /**
      * email is an email address, not a record id 
      */
-    static function getMemberInfo($list, $email) {
-        $api = Api::instance()->listApi();
+     public function getMemberInfo($list, $email) {
+        $list_api = $this->getApi()->listApi();
 
         try {
-            $result = $api->getMemberInfo($list->listid, $email);
+            $result = $list_api->getMemberInfo($list->listid, $email);
             return $result;
         } catch (MailchimpAPIException $me) {
             return false;
@@ -196,21 +196,22 @@ class ChimpData {
      * 
      * @return array of ChimpList records
      */
-    static function sync() {
+    public function chimp_sync() {
         $allLists = [];
-        static::classInit();
-
-        $db = Server::db();
-        $db->execute("LOCK TABLES " . static::TABLE . " WRITE");
+        $api = $this->getApi();
+        
+        $db = $this->db;
+        $db->execute("LOCK TABLES chimp_lists WRITE");
         try {
             $db->execute("SET autocommit=0");
-            $json = Api::instance()->getLists();
+            $json = $api->getLists();
 
             foreach ($json->lists as $list) {
                 $stats = $list->stats;
-                $stats->last_sub_date = static::cnvDateTime($stats->last_sub_date);
-                $stats->last_unsub_date = static::cnvDateTime($stats->last_unsub_date);
-                $stats->campaign_last_sent = static::cnvDateTime($stats->campaign_last_sent);
+                $stats->last_sub_date = $api->cnvDateTime($stats->last_sub_date);
+                $stats->last_unsub_date = $api->cnvDateTime($stats->last_unsub_date);
+                $stats->campaign_last_sent = $api->cnvDateTime($stats->campaign_last_sent);
+                
                 $chimplist = ChimpLists::findFirstByListid($list->id);
                 if ($chimplist === false) {
                     $chimplist = static::createChimpList($list);
@@ -276,7 +277,7 @@ class ChimpData {
         }
     }
 
-    static function syncMembers(ChimpLists $list) {
+    public function syncMembers(ChimpLists $list) {
         $listid = $list->listid;
         $recid = $list->id;
         $offset = 0;
@@ -285,13 +286,13 @@ class ChimpData {
             'count' => 10
         ];
 
-        static::classInit();
-        $db = Server::db();
+        $api = $this->getApi();
+        $db = $this->db;
         $total = 0;
 
         while (true) {
             //$response = Api::instance()->doCurl('GET', "lists/$listid/members", $params);
-            $json = Api::instance()->getMembers($listid, $params);
+            $json = $api->getMembers($listid, $params);
             //$json = json_decode($response->body);
             $ct = count($json->members);
             $total += $ct;
@@ -313,11 +314,11 @@ class ChimpData {
                 // tags -- []
 
                 $status = $memberClass->status;
-                $last_update = static::cnvDateTime($memberClass->last_changed);
+                $last_update = $api->cnvDateTime($memberClass->last_changed);
                 $uniqueid = $memberClass->unique_email_id;
                 $mcid = $memberClass->id;
                 $email_address = $memberClass->email_address;
-                $create_date = static::cnvDateTime($memberClass->timestamp_opt);
+                $create_date = $api->cnvDateTime($memberClass->timestamp_opt);
                 // see if this has been done, and has lastupdate
                 $entry_rec = static::byUniqueId($recid, $uniqueid);
 

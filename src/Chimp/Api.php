@@ -12,7 +12,7 @@ class Api extends \Prefab {
     
     private $mChimp;
     
-    public function &getConfig()
+    public function getConfig()
     {
         if (is_null($this->mChimp)) {
             $f3 = \Base::instance();

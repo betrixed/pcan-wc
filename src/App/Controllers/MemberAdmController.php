@@ -5,23 +5,25 @@ namespace App\Controllers;
 use App\Models\Donation;
 use App\Models\Member;
 use App\Models\MemberEmail;
+use App\Models\ChimpEntry;
+use App\Models\ChimpLists;
+
 use WC\Db\Server;
 use WC\Db\DbQuery;
 use WC\UserSession;
 
 use App\Link\PageInfo;
 use WC\Valid;
-use App\Models\ChimpEntry;
-use App\Models\ChimpLists;
+
 use Phalcon\Mvc\Controller;
 
-use App\Chimp\ChimpData;
+
 
 class MemberAdmController extends Controller {
 use \WC\Mixin\Auth;
 use \WC\Mixin\ViewPhalcon;
 use \App\Link\MemberData;
-
+use \App\Chimp\ChimpData;
     public $url = "/admin/member/";
 
     public function getAllowRole() : string
@@ -130,7 +132,7 @@ EOD;
                     $status = $entry->status;
                 }
                 // Go to mail chimp for current status
-                list($list, $info, $entry) = ChimpData::getEmailStatus($val['email_address']);
+                list($list, $info, $entry) = $this->getEmailStatus($val['email_address']);
                 
                 if ($info !== false) {
                     if ($status !== $info->status) {
@@ -171,7 +173,7 @@ EOD;
                             // new email for member id
                             // check mail-chimp status
                             // info[ list, Member info, entry ] 
-                            $info = ChimpData::getEmailStatus($email);
+                            $info = $this->getEmailStatus($email);
                             if (!empty($info[1])) {
                                 $status = 'mail-chimp';
                                 // does a ChimpEntry record exist?
@@ -199,8 +201,8 @@ EOD;
                     $eid = intval(substr($ix, 5));
                     $status = Valid::toStr($post, 'stat' . $eid, '');
                     if ($status === 'no-chimp') {
-                        $list = ChimpData::defaultList();
-                        $entry = ChimpData::addMemberEmail($list, $eid);
+                        $list = $this->defaultList();
+                        $entry = $this->addMemberEmail($list, $eid);
                         if ( !empty($entry)) {
                             $me = MemberEmail::findFirstById($eid);
                             $me->status = $entry->status;

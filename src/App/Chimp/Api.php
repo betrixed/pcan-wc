@@ -12,29 +12,31 @@ use WC\App;
 class Api {
     
     private $mChimp;
+    protected $LOCAL_TIMEZONE = null;
     
-    static private $instance;
-    
-    static function instance() {
-        if (empty(static::$instance)) {
-            static::$instance = new Api();
-        }
-        return static::$instance;
+    public function cnvDateTime($chimpTime) {
+        $d1 = new \DateTime($chimpTime);
+        $d1->setTimezone($this->LOCAL_TIMEZONE);
+        return $d1->format('Y-m-d H:i:s');
     }
-    public function getConfig()
+    
+    public function getDefaultListId () : int {
+        return intval($this->mChimp['default-list']);
+        
+    }
+    public function getOptions() : ?array
     {
-        if (is_null($this->mChimp)) {
-            $sec = App::instance()->get_secrets();
-            if (isset($sec['chimp']))
-            {
-                $this->mChimp = &$sec['chimp'];
-            }
-        }
         return $this->mChimp;
     }
+    public function __construct(array $options) 
+    {
+        $this->mChimp = $options;
+        $this->LOCAL_TIMEZONE = new \DateTimeZone(date_default_timezone_get());
+    }
+/**
     public function doCurl($opType, $op, $params = [])
     {
-        $mChimp = $this->getConfig();
+        $mChimp = $this->mChimp;
         $prefix = $mChimp['uri'];
         $key = $mChimp['key'];
         $curl = new Curl();
@@ -81,9 +83,9 @@ class Api {
         }
         return null;
     }    
-    
+    */
     public function getMembers($list_id, $parameters = []) {
-         $cfg = $this->getConfig();
+         $cfg = $this->mChimp;
         
         $lists = new MailchimpLists($cfg['key'], $cfg['user']);
         
@@ -91,7 +93,7 @@ class Api {
     }
     
     public function listApi() {
-        $cfg = $this->getConfig();
+        $cfg = $this->mChimp;
         return new MailchimpLists($cfg['key'], $cfg['user']);
     }
     public function getLists($params = []) {
