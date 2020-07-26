@@ -7,11 +7,11 @@ use WC\Db\DbQuery;
  *
  * @author Michael Rynn
  */
-class ImageView
+trait ImageView
 {
     // Make an object,  id, galleryid,  im_path, im_file, im_width, im_caption using query
-    static public function getData($id) {
-        $db = new DbQuery();
+    public function getData($id) {
+        $qry = new DbQuery($this->db);
 $sql = <<<ESQL
 SELECT M.id, G.id as galleryid, CONCAT( '/', G.path , '/') as im_path,
  M.name as im_file, M.width as im_width, 
@@ -19,7 +19,7 @@ SELECT M.id, G.id as galleryid, CONCAT( '/', G.path , '/') as im_path,
  FROM image M join gallery G on G.id = M.galleryid
  WHERE M.id = :id limit 1
 ESQL;
-        $result = $db->objectSet($sql, [':id'=>$id] );
+        $result = $qry->objectSet($sql, [':id'=>$id] );
         if (!empty($result)) {
             $img = $result[0];
             $fname  = pathinfo(  $img->im_file, PATHINFO_FILENAME);
@@ -29,20 +29,20 @@ ESQL;
         }
         return null;
     }
-    static public function getGalleryCount($imageid) {
-        $db = Server::db();
+    public function getGalleryCount($imageid) {
+        $db = $this->db;
         $result = $db->exec("select count(*) as gct from img_gallery g where g.imageid = :id"
                 , [':id' => $imageid]);
         return $result[0]['gct'];
     }
-    static public function updateDescription($imageid, $new_description)
+    public function updateDescription($imageid, $new_description)
     {
-        $db = Server::db();
+        $db = $this->db;
         return $db->exec("update image set description = :ndesc where id = :id", [':ndesc' => $new_description, ':id' => $imageid]);
     }
-    static public function updateThumbExt($img_id, $thumb_ext)
+    public function updateThumbExt($img_id, $thumb_ext)
     {
-        $db = Server::db();
+        $db = $this->db;
         return $db->exec("update image set thumb_ext = :ext where id = :imgid", [':imgid' => $img_id, ':ext' => $thumb_ext]);
     }
 }

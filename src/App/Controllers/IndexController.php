@@ -37,7 +37,7 @@ class IndexController extends Controller
 
     private function events()
     {
-        $db = Server::db();
+        $db = $this->db;
         if ($db->getType() === 'sqlite') {
             $nowfn1 = "datetime( B.fromtime) > datetime('now')";
             $nowfn2 = "datetime( B.totime) > datetime('now')";
@@ -60,7 +60,7 @@ class IndexController extends Controller
     order by B.fromtime
 EOQ;
 
-        return (new DbQuery())->arraySet($qry);
+        return (new DbQuery($this->db))->arraySet($qry);
     }
 
     private function main()
@@ -81,7 +81,7 @@ EOQ;
       limit 20
       EOQ;
 
-        return (new DbQuery())->arraySet($qry);
+        return (new DbQuery($this->db))->arraySet($qry);
     }
    protected function getMaxHeight(array $images)
    {
@@ -102,22 +102,21 @@ EOQ;
     order by IM.date_upload desc
     LIMIT 4
    EOQ;
-         return (new DbQuery())->arraySet($qry);
+         return (new DbQuery($this->db))->arraySet($qry);
     }
     public function indexAction()
     {
-        $assets = \WC\Assets::instance();
+        $assets = $this->assets;
         $assets->add('bootstrap');
         $assets->minify("pcan_home");
 
         $view = $this->getView();
 
-        /*$cache = FileCache::modelCache();
+        $cache = $this->file_cache;
         $cache_key = 'IndexIndex';
         $m = $cache->get($cache_key, null);
        
         if (is_null($m)) {
-         */
             $m = $view->m;
             $m->sides = $this->sides();
             $m->main = $this->main();
@@ -127,17 +126,17 @@ EOQ;
             
             $m->title = "PCAN Home";
 
-            $panels = LinksOps::byType('Panel');
+            $panels = LinksOps::byType($this->db, 'Panel');
             if ($panels['ct'] > 0) {
                 $m->topPanels = &$panels['rows'];
             } else {
                 $m->topPanels = [];
             }
-           /*$cache->set($cache_key, $m);
+            $cache->set($cache_key, $m);
         } else {
-           
-        }*/
          $view->m = $m;
+        }
+
 
 
         /*
@@ -155,7 +154,8 @@ EOQ;
       where urltype='Side' and enabled = 1
       order by date_created desc
       EOQ;
-        return (new DbQuery())->arraySet($qry);
+        $db = $this->db;
+        return (new DbQuery($db))->arraySet($qry);
     }
 
     function linksAction()

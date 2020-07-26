@@ -12,7 +12,7 @@ use WC\UserSession;
 use WC\Db\Server;
 use WC\Db\DbQuery;
 
-class LinksView   {
+trait LinksView   {
 
     static public function byTitle($title) {
         $result = new Links();
@@ -62,8 +62,8 @@ class LinksView   {
         ];
     }
 
-    static public function deleteId($id) {
-        $db = Server::db();
+    public function deleteId($id) {
+        $db = $this->db;
         $db->execute('delete from links where id = ?', [$id]);
     }
 
@@ -72,7 +72,7 @@ class LinksView   {
        Recent remote links below front page article
      * @return array ; record set;
      */
-    static public function homeLinks() : array {
+    public function homeLinks() : array {
         // 
         $sql = <<<EOD
 select id, url, title, sitename, summary, urltype, date_created 
@@ -82,7 +82,7 @@ select id, url, title, sitename, summary, urltype, date_created
   order by date_created desc
  limit  20
 EOD;
-        $qry = new DbQuery();
+        $qry = new DbQuery($this->db);
         $params['rows'] = $qry->arraySet($sql);
         $params['ct'] = count($params['rows']);
 
@@ -93,7 +93,7 @@ EOD;
        Recent blog links below front page article
      * @return array ; record set;
      */
-    static public function byType($linkType) : array {
+     public function byType($linkType) : array {
         $sql = <<<EOD
 select id, url, title, sitename, summary, urltype, date_created 
   from links
@@ -102,7 +102,7 @@ select id, url, title, sitename, summary, urltype, date_created
   order by date_created desc
  limit  20
 EOD;
-        $qry = new DbQuery();
+        $qry = new DbQuery($this->db);
         $rows = $qry->arraySet($sql, [':utype' => $linkType]);
         $params['ct'] = count($rows);
         $params['rows'] = $rows;
@@ -232,9 +232,8 @@ EOD;
      * @param integer $id
      * @param integer $op
      */
-    static public function setEnableId($id, $op) {
-        $db = Server::db();
-
+    public function setEnableId($id, $op) {
+        $db = $this->db;
         $db->execute("update links set enabled = ? where id = ?", [$op, $id]);
     }
 

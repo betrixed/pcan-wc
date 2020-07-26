@@ -7,7 +7,7 @@
     <div class="row" >
         <div class="col-3">
             <?php
-            $sid = UserSession::sessionName();
+            $sid = $this->user_session->getUserName();
             if ($sid !== 'NULL') {
                 echo("<a href=\"/end_session\">End Session: " . $sid . "</a>");
             }

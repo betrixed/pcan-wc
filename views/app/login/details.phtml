@@ -1,7 +1,7 @@
 <?php
 use \WC\HtmlGem as Gem;
 use \WC\UserSession;
-$us = UserSession::read();
+$us = $this->user_session;
 ?>
 <style>
     span.detail {
@@ -25,12 +25,12 @@ $us = UserSession::read();
             <br><label>Account role tokens:</label>  
         </div>
         <div class="col-8">
-            <span class="detail"> <?= $us->userName ?></span>
-            <br><span class="detail"> <?= $us->email ?></span>
-            <br><span class="detail"> <?= $us->roles() ?></span>
+            <span class="detail"> <?= $us->getUserName() ?></span>
+            <br><span class="detail"> <?= $us->getUserEmail() ?></span>
+            <br><span class="detail"> <?= implode(',',$us->getUserRoles()) ?></span>
         </div>
     </div>
-    <?php if (UserSession::auth(['Admin','Editor'])): ?>
+    <?php if ($us->auth(['Admin','Editor'])): ?>
     <div class="row gap">
         <div class="col text-center">
             <a href="/admin/dash" class="btn btn-large btn-outline btn-info">Dash</a>

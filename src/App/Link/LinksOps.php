@@ -93,7 +93,7 @@ EOD;
        Recent blog links below front page article
      * @return array ; record set;
      */
-    static public function byType($linkType) : array {
+    static public function byType($db,$linkType) : array {
         $sql = <<<EOD
 select id, url, title, sitename, summary, urltype, date_created 
   from links
@@ -102,7 +102,7 @@ select id, url, title, sitename, summary, urltype, date_created
   order by date_created desc
  limit  20
 EOD;
-        $qry = new DbQuery();
+        $qry = new DbQuery($db);
         $rows = $qry->arraySet($sql, [':utype' => $linkType]);
         $params['ct'] = count($rows);
         $params['rows'] = $rows;

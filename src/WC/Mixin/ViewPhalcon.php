@@ -33,7 +33,7 @@ trait ViewPhalcon {
         return $this->view; // magic view service getter in Phalcon
     }
     public function flash($msg, $extra = null, $status = 'info') {
-        UserSession::flash($msg, $extra, $status);
+        $this->user_session->flash($msg, $extra, $status);
     }
 
     public function initialize() {
@@ -81,11 +81,11 @@ trait ViewPhalcon {
         return $view->getContent();
     }
     
-    static function  simpleView($path, $params) {
+    function  simpleView($path, $params) {
         $view = new Simple();
         // ViewDir must be string!
         // Simple View doesn't know about alternate paths, so try each in turn.
-        $app = App::instance();
+        $app = $this->app;
         $plates = $app->plates;
         $ext = $plates->ext;
         $found = false;

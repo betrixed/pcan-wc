@@ -16,7 +16,7 @@ use WC\Db\DbQuery;
 use WC\Mixin\ViewPhalcon;
 use Phalcon\Mvc\Controller;
 use Phalcon\Db\Column;
-use App\Link\GalleryView;
+
 use WC\App;
 
 class ImageOp {
@@ -67,7 +67,7 @@ class VisibleOp extends ImageOp {
 
     public function doThing() {
 
-        GalleryView::setVisible($this->galleryid, $this->imageid, $this->value);
+        $this->setVisible($this->galleryid, $this->imageid, $this->value);
     }
 
 }
@@ -78,14 +78,14 @@ class DeleteOp extends ImageOp {
         $controller = $this->controller;
         $img_id = $this->imageid;
         $gallery_id = $this->galleryid;
-        $galcount = GalleryView::countImgGallery($img_id);
+        $galcount = $this->countImgGallery($img_id);
         if ($galcount > 1) {
 // remove reference
-            GalleryView::removeRef($img_id, $gallery_id);
+            $this->removeRef($img_id, $gallery_id);
             $msg = "Removed reference to image: id = " . $img_id;
         } else {
 // remove reference, image and file
-            GalleryView::removeRef($img_id, $gallery_id);
+            $this->removeRef($img_id, $gallery_id);
             $myimg = Image::findFirstById($img_id);
             $mygal = Gallery::findFirstById($myimg->galleryid);
             $dpath = $controller->getWebDir() . $mygal->path . "/";
@@ -120,7 +120,8 @@ class GalleryAdmController extends Controller {
 
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;
-
+    use \App\Link\GalleryView;
+    
     private $syncUrl = 'http://parracan.org';
     private $editList = [];
     protected $url = '/admin/gallery/';
@@ -129,7 +130,7 @@ class GalleryAdmController extends Controller {
 
     public function getWebDir(): string {
         if (empty($this->webdir)) {
-            $this->webdir = App::instance()->WEB . DIRECTORY_SEPARATOR;
+            $this->webdir = $this->app->web_dir . DIRECTORY_SEPARATOR;
         }
         return $this->webdir;
     }
@@ -226,7 +227,7 @@ class GalleryAdmController extends Controller {
     public function indexAction() {
         $view = $this->getView();
         $m = $view->m;
-        GalleryView::pageList($m, Valid::toInt($_GET, 'page', 1));
+        $this->pageList($m, Valid::toInt($_GET, 'page', 1));
 
         $m->title = 'Gallerys List';
         $m->url = $this->url . 'edit/';
@@ -294,7 +295,7 @@ class GalleryAdmController extends Controller {
     }
     private function scanMissing($gal) {
         $dpath = $this->getDirPath($gal);
-        $imglist = GalleryView::getImages($gal->id);
+        $imglist = $this->getImages($gal->id);
         foreach ($imglist as $img) {
             $ipath = $dpath . DIRECTORY_SEPARATOR . $img['name'];
             if (!file_exists($ipath)) {
@@ -339,7 +340,7 @@ class GalleryAdmController extends Controller {
 
             $fileset = static::dirFileList($dpath);
             $imglist = $gal->getRelated('Image');
-            //GalleryView::getImages($gal->id); //should be empty?
+            
 
             $lookup = [];
             // setup association lookup by file name
@@ -395,7 +396,7 @@ class GalleryAdmController extends Controller {
 
         if ($ok) {
             $this->scanUnregistered($gal);
-            return UserSession::reroute($this->url . "edit/" . $gal->name);
+            return $this->reroute($this->url . "edit/" . $gal->name);
         } else {
             if ($isnew) {
                 $view = $this->getView();
@@ -461,8 +462,8 @@ class GalleryAdmController extends Controller {
             $link->visible = 1;
             $link->create();
         }
-        $sess = \WC\UserSession::instance();
-        $sess->setKey('imageid', $image_id);
+       
+        $this->user_session->setKey('imageid', $image_id);
         return $active;
     }
 
@@ -558,7 +559,7 @@ class GalleryAdmController extends Controller {
         if ($gal) {
             $this->scanMissing($gal);
         }
-        return UserSession::reroute($this->url . 'images/' . $name);
+        return $this->reroute($this->url . 'images/' . $name);
     }
 
     public function scanAction($name) {
@@ -566,7 +567,7 @@ class GalleryAdmController extends Controller {
         $gal = $this->getGalleryFiles($m, $name);
         if ($gal) {
             $this->scanUnregistered($gal);
-            return UserSession::reroute($this->url . 'images/' . $name);
+            return $this->reroute($this->url . 'images/' . $name);
         } else {
             $this->flash("Gallery not found: " . $name);
             return $this->invalid([]);
@@ -610,7 +611,7 @@ class GalleryAdmController extends Controller {
 
     private function getSeriesSelect() {
 
-        $data = (new DbQuery())->arraySet('select * from series order by name');
+        $data = (new DbQuery($this->db))->arraySet('select * from series order by name');
         $select[0] = ' ';
         foreach ($data as $row) {
             $select[$row['id']] = $row['name'];
@@ -619,7 +620,7 @@ class GalleryAdmController extends Controller {
     }
 
     private function constructModel($galrec, $op = "edit"): WConfig {
-        $image_set = GalleryView::getImages($galrec->id);
+        $image_set = $this->getImages($galrec->id);
         $select['noop'] = ' ';
         $select['edit'] = 'Edit';
         $select['show'] = 'Show';
@@ -636,7 +637,9 @@ class GalleryAdmController extends Controller {
         $m->images = $image_set;
         $m->post = $this->url;
         $m->isAjax = false;
-        $us = UserSession::read();
+        $us = $this->user_session;
+        $us->read();           
+                    
         $m->sessImageId = (!empty($us)) ? $us->getKey('imageid') : 0;
         $elist = [];
         if ($op == "edit" && count($this->editList) > 0) {

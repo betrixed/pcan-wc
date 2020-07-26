@@ -7,12 +7,11 @@ namespace App\Controllers;
  */
 use WC\Db\Server;
 use App\Link\PageInfo;
-use App\Link\LinksView;
 use App\Models\Links;
 use App\Models\Image;
-use App\Link\ImageView;
+
 use App\Models\Blog;
-use App\Link\LinkGallery;
+
 use App\Link\BlogView;
 use WC\Valid;
 use WC\Text;
@@ -24,7 +23,11 @@ class LinksAdmController extends Controller {
 
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;
-
+    use \App\Link\LinksView;
+    use \App\Link\LinkGallery;
+    use \App\Link\ImageView;
+    use \WC\Mixin\HtmlPurify;
+    
     private $syncUrl = 'http://parracan.org';
     private $editList = [];
     private $url = '/admin/link/';
@@ -40,7 +43,7 @@ class LinksAdmController extends Controller {
         $m->numberPage = Valid::toInt($request, "page", 1);
         $m->orderby = Valid::toStr($request, 'orderby', null);
 
-        $m->order_field = LinksView::indexOrderBy($m, $m->orderby);
+        $m->order_field = self::indexOrderBy($m, $m->orderby);
 
         $m->url = $this->url;
         $m->page = $this->listPageNum($m->numberPage, 12, $m->order_field);
@@ -56,8 +59,8 @@ class LinksAdmController extends Controller {
                 . " order by " . $orderby
                 . " limit " . $pageRows . " offset " . $start;
 
-        $db = new DbQuery();
-        $results = $db->arraySet($sql);
+        $qry = new DbQuery($this->db);
+        $results = $qry->arraySet($sql);
 
         $maxrows = !empty($results) ? $results[0]['full_count'] : 0;
         return new PageInfo($numberPage, $pageRows, $results, $maxrows);
@@ -120,8 +123,8 @@ class LinksAdmController extends Controller {
         $m = $view->m;
         $m->post = '/admin/link/post';
         $m->url = $this->url;
-        $m->display = LinksView::display();
-        $m->urltypes = LinksView::getUrlTypes();
+        $m->display = self::display();
+        $m->urltypes = self::getUrlTypes();
         return $this->render('links', 'edit');
     }
 
@@ -130,11 +133,11 @@ class LinksAdmController extends Controller {
         $m = $view->m;
         $m->link = $rec;
         $m->linkid = $id;
-        $m->collections = LinkGallery::byLink($id);
+        $m->collections = $this->byLink($id);
         $m->title = 'Edit link ' . $id;
-        $m->image = empty($rec->imageid) ? null : ImageView::getData($rec->imageid);
+        $m->image = empty($rec->imageid) ? null : $this->getData($rec->imageid);
 
-        $us = UserSession::instance();
+        $us = $this->user_session;
         $m->im_session = $us->getKey('imageid');
         $m->im_post = "/admin/link/image";
         $m->linkery = is_null($us) ? null : $us->getKey('linkery');
@@ -172,7 +175,7 @@ class LinksAdmController extends Controller {
                 $id = intval(substr($key, 3));
                 if ($id > 0) {
                     if ($op !== intval($item)) {
-                        LinksView::setEnableId($id, $op);
+                        $this->setEnableId($id, $op);
                     }
                 }
             endif;
@@ -186,7 +189,7 @@ class LinksAdmController extends Controller {
         $post = $_POST;
         $id = Valid::toInt($post, "id", 0);
         if ($id > 0) {
-            LinksView::deleteId($id);
+            $this->deleteId($id);
         }
         $this->f3->reroute('admin/link');
     }
@@ -215,7 +218,7 @@ class LinksAdmController extends Controller {
                  $op = "created";
             }
             $this->flash("Link " . $link->id . " $op");
-            return UserSession::reroute($this->url . 'edit/' . $link->id);
+            return $this->reroute($this->url . 'edit/' . $link->id);
         } catch (\Exception $e) {
             $this->flash($e->getMessage());
         }
@@ -230,7 +233,7 @@ class LinksAdmController extends Controller {
         $link->sitename = Valid::toStr($post, 'sitename', 'Here');
         $link->date_created = Valid::toDateTime($post, 'date_created');
         $link->title = Valid::toStr($post, 'title', "");
-        $link->summary = Valid::toHtml($post,'summary');
+        $link->summary = $this->purify($post,'summary');
         $link->enabled = Valid::toBool($post, 'enabled', 0);
         $link->imageid = Valid::toInt($post, 'imageid');
 

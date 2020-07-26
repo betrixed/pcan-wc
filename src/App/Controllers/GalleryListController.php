@@ -12,11 +12,10 @@ use Phalcon\Mvc\Controller;
 use WC\App;
 use WC\Valid;
 use WC\Db\DbQuery;
-use App\Link\GalleryView;
 
 class GalleryListController extends Controller {
-use \WC\Mixin\ViewPhalcon;
-
+    use \WC\Mixin\ViewPhalcon;
+    use \App\Link\GalleryView;
     /* navigate the images in a particular folder , or a folder indexed with a name */
 
     /* to start off with, just the images in /image/upload/ */
@@ -72,7 +71,7 @@ use \WC\Mixin\ViewPhalcon;
         $gal = $this->getGalleryName($name);
         
         if ($gal) {
-            $m->images = GalleryView::getImages($gal->id);
+            $m->images = $this->getImages($gal->id);
             $m->gallery = $gal;
             $prevlink = $gal->leva_path;
             $nextlink = $gal->prava_path;
@@ -124,7 +123,7 @@ use \WC\Mixin\ViewPhalcon;
     protected function galleryIndex() {
         $view = $this->getView();
         $m = $view->m;
-        GalleryView::pageList($m,Valid::toInt($_GET,'page',1));
+        $this->pageList($m,Valid::toInt($_GET,'page',1));
         
         $m->title = 'Gallery Index';
         $m->url = $this->viewPost . 'edit/';   

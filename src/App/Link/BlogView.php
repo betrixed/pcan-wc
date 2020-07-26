@@ -15,15 +15,11 @@ use WC\App;
  */
 
 
-class BlogView  {
-    static public function hasPrefix($s, $p) {
-        $p1 = strlen($p);
-        return ($p1 <= strlen($s) && $p1 > 0 && substr($s, 0, $p1) === $p);
-    }
+trait BlogView  {
 
     // return highest revision number plus 1
-   static function  newRevision(Blog $blog) : int {
-        $q = new DbQuery();
+   function  newRevision(Blog $blog) : int {
+        $q = new DbQuery($this->db);
         $result = $q->arrayColumn('SELECT MAX(revision) as max_revision from blog_revision where blog_id = :bid',
                                                 ['bid' => $blog->id], ['bid'=>Column::BIND_PARAM_INT]);
         if (!empty($result)) {
@@ -31,7 +27,7 @@ class BlogView  {
         }
         return 1;
    }
-    static function pageFromRequest($m) {
+   function pageFromRequest( $m) {
         $request = $_GET;
         $m->args = $_SERVER['QUERY_STRING'];
         $m->numberPage = Valid::toInt($request, 'page', 1);
@@ -54,7 +50,7 @@ EOS;
         }
         $sql .= " ORDER BY  " . $m->order_field
                 . " LIMIT " . $m->grabsize . " OFFSET " . $m->start;
-        $qry = new DbQuery();
+        $qry = new DbQuery($this->db);
 
         $results = $qry->arraySet($sql, $binders);
 
@@ -72,7 +68,7 @@ EOS;
         $m->isEditor = true;
 
     }
-        static public  function getMetaTags($id) {
+        public  function getMetaTags($id) {
 // setup metatag info
         $sql = "select m.id, m.meta_name,"
                 . "m.template, m.data_limit, b.blog_id, b.content"
@@ -80,7 +76,7 @@ EOS;
                 . " left join blog_meta b on b.meta_id = m.id"
                 . " and b.blog_id = :blogId";
 // form with m_attr_value as labels, content as edit text.
-        $db =  new DbQuery();
+        $db =  new DbQuery($this->db);
         $results = $db->arraySet($sql, ['blogId' => $id]);
         if ($results) {
             return $results;
@@ -93,8 +89,8 @@ EOS;
      * Delete related constraints and blog id in one transaction
      * @param type $id
      */
-     static public function fullDelete($id) {
-         $db = Server::db();
+     public function fullDelete($id) {
+         $db = $this->db;
          $db->begin();
          
          $db->exec('delete from blog_meta where blog_id = ?', $id);
@@ -117,7 +113,7 @@ EOS;
          return $rev;
      }
      
-    static public function getMetaTagHtml($id, &$meta) {
+    public function getMetaTagHtml($id, &$meta) {
         // setup metatag info
         $sql = <<<EOD
 select m.*, b.content
@@ -126,7 +122,7 @@ select m.*, b.content
     and b.blog_id = :id
     order by meta_name
 EOD;
-        $db = new DbQuery();
+        $db = new DbQuery($this->db);
         $results = $db->arraySet($sql, ['id' => $id]);
         //$scheme = $server['REQUEST_SCHEME'];
         $sitePrefix = 'http' . '://' . $_SERVER['HTTP_HOST'];
@@ -138,8 +134,8 @@ EOD;
                     $content = str_replace("'", "&apos;", $row['content']);
                     // replace ' with &apos; 
                     
-                    if ($row['prefix_site'] && !static::hasPrefix($content, "http")) {
-                        if (!static::hasPrefix($content, '/')) {
+                    if ($row['prefix_site'] && !Valid::startsWith($content, "http")) {
+                        if (!Valid::startsWith($content, '/')) {
                             $content = '/' . $content;
                         }
                         $content = $sitePrefix . $content;
@@ -155,8 +151,8 @@ EOD;
     /**
      * Get all the styles as array[ class ] == (style name)
      */
-    static public function &getStyleList() {
-        $db = Server::db();
+    public function &getStyleList() {
+        $db = $this->db;
         $styles = $db->exec('select style_class, style_name from blog_style');
         $stylelist = [];
         foreach($styles as $row) {
@@ -166,11 +162,11 @@ EOD;
     }
     // return stdClass with properties cat_blogid, catlist (blog_category records), and string-comma list of 
     // categories.
-    static public function getCategorySet($id) {
+    public function getCategorySet($id) {
         $sql = "select c.id, c.name, c.name_clean, b.blog_id from blog_category c"
                 . " left outer join blog_to_category b on b.category_id = c.id"
                 . " and b.blog_id = :blogid order by c.name";
-        $db = new DbQuery();
+        $db = new DbQuery($this->db);
         $results = $db->arraySet($sql, ['blogid' => $id],['blogid' => Column::BIND_PARAM_INT]);
         $values = [];
         $slugs = [];
@@ -201,33 +197,20 @@ EOD;
         return $catset;
     }
     
-    static public function listCategoryId($catid) 
+    public function listCategoryId($catid) 
     {
         $sql =  'select b.id, b.date_published, b.title, b.title_clean from blog b ' .
                     ' join blog_to_category bc on b.id = bc.blog_id and b.enabled = 1 and bc.category_id = :catid' .
                     '  order by b.issue desc, b.id asc';
-        $db = Server::db();
+        $db = $this->db;
         $results = $db->exec($sql, [':catid' => $catid]);
         return $results ? $results : [];    
     }
-    static public function url_slug($str)
-    {
-        #convert case to lower
-        $str = strtolower($str);
-        #remove special characters
-        $str = preg_replace('/[^a-zA-Z0-9]/i', ' ', $str);
-        #remove white space characters from both side
-        $str = trim($str);
-        #remove double or more space repeats between words chunk
-        $str = preg_replace('/\s+/', ' ', $str);
-        #fill spaces with hyphens
-        $str = preg_replace('/\s+/', '-', $str);
-        return $str;
-    }
+    
     /**
      * Return an unused URL, from title slug and date
      */
-    static public function unique_url($blogid, $slug) {
+    public function unique_url($blogid, $slug) {
         $sql = 'select count(*) as dupe from blog where title_clean = :tc';
         $isUpdate = !is_null($blogid) && ($blogid > 0);
         $params['tc'] = $slug;
@@ -238,7 +221,7 @@ EOD;
             $params['bid'] = $blogid;
              $bind['bid'] = Column::BIND_PARAM_INT;
         }
-        $db = new DbQuery();
+        $db = new DbQuery($this->db);
         
         $tryCount = 0;
 
@@ -261,9 +244,9 @@ EOD;
         return $params['tc'];
     }
 
-    static public function getEvents($id) {
+    public function getEvents($id) {
         $sql = "select e.* from event e where e.blogId = :blogId";
-        $db = new DbQuery();
+        $db = new DbQuery($this->db);
         $results = $db->arraySet($sql, ['blogId' => $id]);
         if ($results) {
             return $results;

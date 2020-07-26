@@ -8,6 +8,7 @@ namespace App\Controllers;
  * @author Michael Rynn
  */
 use App\Models\UserEvent;
+use App\Link\UserRoles;
 use App\Models\Users;
 use App\Models\ResetCode;
 use WC\Db\Server;
@@ -31,7 +32,7 @@ class LoginController extends Controller {
             return $this->secure_connect();
         }
         $view = $this->getView();
-        if (UserSession::isLoggedIn('User')) {
+        if ($this->user_session->isLoggedIn('User')) {
             return $this->render('login','details');
         }
         $m = $view->m;
@@ -44,13 +45,13 @@ class LoginController extends Controller {
         
     }
    function endAction() {
-       UserSession::nullify();
+       $this->user_session->nullify();
        $this->response->redirect('/',true);
    }
     function checkoutAction() {
-        $ud = UserSession::read();
+        $ud = $this->user_session;
         $view = $this->getView();
-        if (!empty($ud)) {
+        if (!$ud->isEmpty()) {
             $ud->wipe();
             return $this->render('login','logout');
         } else {
@@ -91,7 +92,6 @@ class LoginController extends Controller {
     function errorChangePwd($msg) {
         $logger = new \Log('login.log');
         $logger->write('Password change - ' . $msg);
-        $f3 = $this->f3;
         $this->flash($msg);
         $this->changePwdView();
     }
@@ -103,8 +103,8 @@ class LoginController extends Controller {
         echo $this->view->render();
     }
 
-    function changePwdPost($f3, $args) {
-        $post = &$f3->ref('POST');
+    function changePwdPost() {
+        $post = $_POST;
         $newpwd = Valid::toStr($post, 'new_pwd', null);
         $chkpwd = Valid::toStr($post, 'confirm_pwd', null);
         $email = Valid::toEmail($post, 'email');
@@ -136,11 +136,11 @@ class LoginController extends Controller {
         echo $view->render();
     }
 
-    function changePwd($f3, $args) {
-        if (!UserSession::https($f3)) {
+    function changePwd() {
+        if (!$this->app->https()) {
             return;
         }
-        $req = &$f3->ref('REQUEST');
+        $req = $_REQUEST;
         $view = $this->view;
         $view->header = "Change password";
         $this->changePwdView();
@@ -154,9 +154,8 @@ class LoginController extends Controller {
         echo $view->render();
     }
 
-    function resetPwd($f3, $args) {
-        $req = &$f3->ref('REQUEST');
-        $code = $args['code'];
+    function resetPwd($code) {
+        $req = $_REQUEST;
 
         ResetCode::deleteOldCodes();
         $valid = ResetCode::byCode($code);
@@ -179,7 +178,7 @@ class LoginController extends Controller {
             $this->changePwdView();
         } else {
             $this->flash('Code is invalid or expired');
-            UserSession::reroute('\login\changepwd');
+            $this->user_session->reroute('\login\changepwd');
         }
     }
 
@@ -195,12 +194,12 @@ class LoginController extends Controller {
         echo $view->render();
     }
 
-    function forgot($f3, $args) {
+    function forgot() {
         $this->forgotView();
     }
 
-    function forgotPost($f3, $args) {
-        $post = &$f3->ref('POST');
+    function forgotPost() {
+        $post = $_POST;
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
             $this->errorForgot('Google error ' . $verify['errorcode']);
@@ -272,7 +271,9 @@ class LoginController extends Controller {
         $post = $_POST;
         $view = $this->getView();
         $m = $view->m;
-
+        $user_session = $this->user_session;
+        $user_session->read(); 
+        
         if (!$this->xcheckResult($post)) {
             return $this->errorLogin('Cross script protection failure');
 
@@ -282,9 +283,9 @@ class LoginController extends Controller {
         if (!$verify['success']) {
             return $this->errorLogin('Google error ' . $verify['errorcode']);
         }
-        $ud = UserSession::read();
-        if (!empty($ud)) {
-            $ud->wipe();
+
+        if (!$user_session->isEmpty()) {
+            $user_session->wipe();
         }
          
         $m->email = Valid::toEmail($post, "email");
@@ -304,9 +305,9 @@ class LoginController extends Controller {
                 return $this->errorLogin('Authentication Failure');
 
             } else {
-                $data = UserSession::instance();
-                $data->setUser($user);
-                $data->addFlash("Logged in as " . $data->userName);
+                $roles = UserRoles::getRoleList($this->db, $user->id);
+                $user_session->setUser($user, $roles);
+                $user_session->addFlash("Logged in as " . $user_session->getUserName());
                 $this->noLayouts();
                 return $this->render('login','details');
             }
@@ -324,8 +325,8 @@ class LoginController extends Controller {
         $this->signupView();
     }
 
-    function signupPost($f3, $args) {
-        $post = &$f3->ref('POST');
+    function signupPost() {
+        $post = $_POST;
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
             $this->errorSignup('Google error ' . $verify['errorcode']);
@@ -400,8 +401,7 @@ class LoginController extends Controller {
     }
 
     function signupView() {
-        $f3 = $this->f3;
-        if (!UserSession::https($f3)) {
+        if (!$this->app->https()) {
             return;
         }
         $view = $this->view;
@@ -415,7 +415,7 @@ class LoginController extends Controller {
         echo $view->render();
     }
 
-    function signup($f3, $args) {
+    function signup() {
         $view = $this->view;
         $view->rec = new User();
         $view->message = '';

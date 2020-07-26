@@ -20,11 +20,11 @@ class DashController extends Controller {
     }
     public function cmdAction($fn) {
         if ($fn === "asset_cache") {
-            \WC\Assets::instance()->clearCache();
+            $this->assets->clearCache();
            return "Asset cache cleared";
         }
         else if ($fn === "model_cache") {
-            (FileCache::modelCache()->clear());
+            $this->file_cache->clear();
             return "Model cache cleared";
         }
         else if ($fn === "metadata_cache") {
@@ -58,9 +58,5 @@ class DashController extends Controller {
         phpinfo();
 
     }
-    
-    function redirect($f3, $args) {
-        $this->flash('Redirected');
-        UserSession::reroute('/dash');
-    }
+
 }

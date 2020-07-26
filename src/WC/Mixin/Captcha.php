@@ -22,10 +22,11 @@ trait Captcha {
  * @return array 
  */
     public function captchaSettings() {
-        if (UserSession::isLoggedIn('User')) {
+        
+        if ($this->user_session->isLoggedIn('User')) {
              return ['enabled' => false];
         }
-        $cfg =  App::instance()->get_secrets();
+        $cfg = $this->app->getSecrets();
         if ( isset($cfg) && isset($cfg['ReCaptcha'])) {
            return $cfg['ReCaptcha'];
         }
@@ -60,10 +61,10 @@ trait Captcha {
      */
     public function xcheckView($model) {
         
-        $us = UserSession::read();
+        $us = $this->user_session;
         // Its never null after a read!
-        if (is_null($us) || empty($us->userName)) {
-            $us = UserSession::guestSession();
+        if ($us->isEmpty()) {
+            $us->guestSession();
         }
         $model->us = $us;
         $security = $this->security;
@@ -82,10 +83,7 @@ trait Captcha {
      * @return boolean
      */
     public function xcheckResult() : bool{
-        $us = UserSession::read();
-        if (is_null($us)) {
-            return false;
-        }
+        $us = $this->user_session;
         $xcheck = $us->getKey("xcheck");
         if (!empty($xcheck) && isset($xcheck['key']) && isset($xcheck['value'])) {
             $key = $xcheck['key'];

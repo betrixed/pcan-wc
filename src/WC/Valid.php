@@ -60,24 +60,34 @@ class Valid {
         }
         return $apiresponse;
     }
-    static function startsWith($str, $pre)
+    /**
+     * 
+     * @param string $s
+     * @param string $p
+     * @return bool
+     */
+    static function startsWith(string $s, string $p) : bool
     {
-        $len = strlen($pre);
-        return (substr($str,0,$len) == $pre);
+        $n = strlen($p);
+        return ($n <= strlen($s) && ($n > 0) && substr($s, 0, $n) === $n);
     }
     
-    static public function toHtml($req, $ix) : string
+    static public function url_slug($str)
     {
-        $app =  \WC\App::instance();
-        require_once  $app->vendor  . '/ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
-     
-         if (!isset($req[$ix])) {
-            return  "";
-        }
-        $config = \HTMLPurifier_Config::createDefault();
-        $purifier = new \HTMLPurifier($config);
-        return $purifier->purify($req[$ix]);
+        #convert case to lower
+        $str = strtolower($str);
+        #remove special characters
+        $str = preg_replace('/[^a-zA-Z0-9]/i', ' ', $str);
+        #remove white space characters from both side
+        $str = trim($str);
+        #remove double or more space repeats between words chunk
+        $str = preg_replace('/\s+/', ' ', $str);
+        #fill spaces with hyphens
+        $str = preg_replace('/\s+/', '-', $str);
+        return $str;
     }
+    
+    
     /**
      * 
      * @param type $req

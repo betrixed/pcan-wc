@@ -5,16 +5,16 @@ namespace App\Link;
 use WC\Valid;
 use WC\Db\Server;
 use WC\Db\DbQuery;
-use App\Models\MemberEmail;
-use App\Models\Member;
 /**
  * Description of member
  *
  * @author michael
  */
-class LinkData   {
-
-    static public function getOrderBy($m, $orderby)
+trait MemberData {
+    /** 
+     * set orderby fields of model $m, given current value index
+     */
+    static public function orderBy($m, $orderby)
     {
         if (is_null($orderby))
         {
@@ -43,6 +43,7 @@ class LinkData   {
         switch($orderby)
         {
             default:
+                $orderby = 'name';
             case 'name':
                 $alt_list['name'] = 'name-alt';
                 $col_arrow['name'] = '&#8595;';
@@ -121,97 +122,49 @@ class LinkData   {
         $m->col_arrow = $col_arrow;
         return $order_field;
     }
+    
+    static function memberNamePhone($fname, $lname, $phone) {
+        return Member::findFirst(
+            ['fname = ? and lname = ? and phone = ?', 
+            [$fname, $lname, $phone], 
+            [Column::BIND_PARAM_STR, Column::BIND_PARAM_STR, Column::BIND_PARAM_STR]
+            ]);
+    }
+    
     /**
      * 
-     * @param string $email
-     * @return array [ member, member_email]
-     */
-    static function  byEmail($email) : array {
-        $me = MemberEmail::findFirstByEmailAddress($email);
-        
-        if (!empty($me)) {
-            $mbr = Member::findFirstById($me->memberid);
-            return [$mbr, $me];
-        }
-        return [false, false];
-    }
-    
-    /** update status field on record id
-     * 
-     * @param type $id
-     * @param type $status
-     */
-    static function setStatus($id, $status) {
-        $sql = "update member_email set status = :stat where id = :id";
-        $db = Server::db();
-        $db->execute($sql, ['id' => $id, 'stat' => $status]);
-    }
-    /** Get emails of member record */
-    static function getEmails($id) {
-        $sql = "select e.* from member_email e where e.memberid = :mid";
-        $results = (new DbQuery())->arraySet($sql, ['mid' => $id]);
-        if ($results) {
-            return $results;
-        } else {
-            return [];
-        }
-    }  
-    static function getDonations($id) {
-        $sql = "select d.* from donation d where d.memberid = :mid order by d.member_date";
-        $results = (new DbQuery())->arraySet($sql, ['mid' => $id]);
-        if ($results) {
-            return $results;
-        } else {
-            return [];
-        }
-    }   
-    
-    
-    static function assignPost($post, $m) {
-        $default = '';
-        $m->id = Valid::toInt($post,'id',0);
-        $m->fname = Valid::toStr($post,'fname',$default);
-        $m->lname = Valid::toStr($post,'lname',$default);
-        $m->phone = Valid::toPhone($post,'phone',$default);
-        $m->addr1 = Valid::toStr($post,'addr1',$default);
-        $m->addr2 = Valid::toStr($post,'addr2',$default);
-        $m->postcode = Valid::toStr($post,'postcode',$default);
-        $m->city = Valid::toStr($post,'city',$default);
-        $m->state = Valid::toStr($post,'state',$default);
-        $m->country_code = Valid::toStr($post,'country_code',$default);
-        $m->ref_source = Valid::toStr($post,'source',$default);
-        $m->status = Valid::toStr($post,'status','no-email');
-    }
-    /**
-     * Return member record, and flag if new
      * @param array $post
-     * @param WC\WConfig $m - model object for form re-entry
      * @return array[ record, bool (isNew) ]
      * This does not write back to database.
      */
-    static function assignMember($m)
+    static function assignPost(&$post)
     {
         $errorList = [];
-        $default = "";
+        
+        $id = Valid::toInt($post,'id',0);
+        
+        $fname = Valid::toStr($post,'fname',"");
+        $lname = Valid::toStr($post,'lname',"");
+        $phone = Valid::toPhone($post,'phone',"");
+        if (!empty($phone)) {
 
-        if (!empty($m->phone)) {
-            if (!Valid::has_GEnDigits($m->phone,8)) {
+            if (!Valid::has_GEnDigits($phone,8)) {
                 $errorList[] = ['phone','Phone no. must have at least 8 digits'];
             }
         }
         
-        if ($m->id > 0) {   
-            $rec = Member::findFirstById($m->id);
+        if ($id > 0) {   
+            $rec = Member::byId($id);
             $isNew = false;
         }
         else {
             // see if record exists by phone
-            $rec = Member::findFirst(
-                    "fname='$m->fname' AND lname='$m->lname' AND phone='$m->phone'");
+            $rec = static::memberNamePhone($fname, $lname, $phone);
             
-            if (empty($rec)) {
+            if ($rec === false) {
                 $rec = new Member();
                 $isNew = true;
+
             }
             else {
                $isNew = false;
@@ -219,25 +172,28 @@ class LinkData   {
         }
         
         
-        $rec->phone = $m->phone;
-        $rec->fname = $m->fname;
-        $rec->lname = $m->lname;          
+        $rec['phone'] = $phone;
+        $rec['fname'] = $fname;
+        $rec['lname'] = $lname;          
         
-        $rec->addr1 = $m->addr1;
-        $rec->addr2 = $m->addr2;
-        $rec->postcode = $m->postcode;
-        $rec->city = $m->city;
-        $rec->state = $m->state;
-        $rec->country_code = $m->country_code;
-        $rec->ref_source = $m->ref_source;
-        $rec->status = $m->status;
+        $rec['addr1'] = Valid::toStr($post,'addr1',"");
+        $rec['addr2'] = Valid::toStr($post,'addr2',"");
+        $rec['postcode'] = Valid::toStr($post,'postcode',"");
+        $rec['city'] = Valid::toStr($post,'city',"");
+        $rec['state'] = Valid::toStr($post,'state',"");
+        $rec['country_code'] = Valid::toStr($post,'country_code',"");
+
+        $rec['source'] = Valid::toStr($post,'source',"");
         $today = Valid::now();
         if ($isNew) {
-            $rec->create_date = $today;
-            $rec->phpjson = json_encode([]);
+            $rec['create_date'] = $today;
+            $rec['phpjson'] = json_encode([]);
+            $rec['status'] =  'no-email';
         }
-
-        $rec->last_update = $today;  
+        else {
+            $rec['status'] = Valid::toStr($post,'status',"");
+        }
+        $rec['last_update'] = $today;  
         return [$rec, $isNew];
     }
 }

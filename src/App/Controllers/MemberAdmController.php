@@ -14,13 +14,13 @@ use WC\Valid;
 use App\Models\ChimpEntry;
 use App\Models\ChimpLists;
 use Phalcon\Mvc\Controller;
-use App\Link\LinkData;
-use App\Link\MemberData;
+
 use App\Chimp\ChimpData;
 
 class MemberAdmController extends Controller {
 use \WC\Mixin\Auth;
 use \WC\Mixin\ViewPhalcon;
+use \App\Link\MemberData;
 
     public $url = "/admin/member/";
 
@@ -32,7 +32,7 @@ use \WC\Mixin\ViewPhalcon;
         $view = $this->getView();
         $m = $view->m;
         
-        $db = new DbQuery();
+        $db = new DbQuery($this->db);
         
         $req = $_REQUEST;
         
@@ -43,7 +43,7 @@ use \WC\Mixin\ViewPhalcon;
             $page = 0;
         }
         $orderby = Valid::toStr($req, 'orderby', null);
-        $order_field = LinkData::getOrderBy($m, $orderby);
+        $order_field = self::getOrderBy($m, $orderby);
         $sql = <<<EOD
 select M.*, ME.email_address, ME.status as email_status,
     count(*) over() as full_count
@@ -76,12 +76,12 @@ EOD;
         $view = $this->getView();
         $m = $view->m;
         $m->url = $this->url;
-        \WC\Assets::instance()->add(['bootstrap','member-js']);
+        $this->assets->add(['bootstrap','member-js']);
         $rec = $m->rec;
         $id = $rec->id;
         if ($id > 0) {
-            $m->emails = LinkData::getEmails($id);
-            $m->donations = LinkData::getDonations($id);
+            $m->emails = $this->getMemberEmails($id);
+            $m->donations = $this->getMemberDonations($id);
         } else {
             $m->emails = [];
             $m->donations = [];
@@ -118,7 +118,7 @@ EOD;
         $post = $_POST;
         $mid = Valid::toInt($post, 'uid', 0);
         try {
-            $emails = LinkData::getEmails($mid);
+            $emails = $this->getEmails($mid);
             // see if chimpentry exists //
 
             foreach ($emails as $ix => $val) {
@@ -139,7 +139,7 @@ EOD;
                 }
                 
                 if ($val['status'] !== $status) {
-                    LinkData::setStatus($val['id'], $status);
+                    $this->setStatus($val['id'], $status);
                 }
                 if ( !empty($entry) && $entry->status !== $status) {
                     $entry->status = $status;
@@ -273,7 +273,7 @@ EOD;
         }
         $view = $this->getView();
         $m = $view->m;
-         $m->donations = MemberData::getDonations($mid);
+         $m->donations = $this->getDonations($mid);
         $this->noLayouts();
         return $this->render('partials','member/donations');
 

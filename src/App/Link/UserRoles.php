@@ -10,8 +10,8 @@ use WC\Db\DbQuery;
  */
 class UserRoles
 {
-    static function getRoleList($userId) {
-       $qry = new DbQuery();
+    static function getRoleList($db, $userId) {
+       $qry = new DbQuery($db);
        
        $sql = <<<EOD
 SELECT  G.name from user_group G

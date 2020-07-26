@@ -10,7 +10,7 @@ use WC\Valid;
 use WC\DB\Server;
 use App\Models\Blog;
 use App\Link\LinksOps;
-use App\Link\BlogView;
+
 use App\Link\PageInfo;
 use App\Models\Links;
 use App\Models\Event;
@@ -23,7 +23,10 @@ class BlogAdmController extends Controller
 {
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Auth;
-         public function getAllowRole() {
+    use \WC\Mixin\HtmlPurify;
+    use \App\Link\BlogView;
+    
+    public function getAllowRole() {
         return 'Admin';
     }
     public $url = '/admin/blog/';
@@ -104,14 +107,14 @@ class BlogAdmController extends Controller
             $newUrl = strip_tags(Valid::toStr($post, 'title_clean'));
 
             if ($newUrl !== $oldUrl) {
-                $blog->title_clean = BlogView::unique_url($blogid, $newUrl);
+                $blog->title_clean = $this->unique_url($blogid, $newUrl);
                 $autoUrl = False;
             }
         }
 
         if ($titleChanged && $autoUrl) {
-            $newUrl = BlogView::url_slug($blog->title);
-            $blog->title_clean = BlogView::unique_url($blogid, $newUrl);
+            $newUrl = Valid::url_slug($blog->title);
+            $blog->title_clean = $this->unique_url($blogid, $newUrl);
         }
     }
 
@@ -124,9 +127,9 @@ class BlogAdmController extends Controller
         
         $action = Valid::toStr($post,'rev_list');
         if ($action === 'Revision') {
-            $blog->revision = BlogView::newRevision($blog);
+            $blog->revision = $this->newRevision($blog);
         }
-        $revision->content = Valid::toHtml($post,'article');
+        $revision->content = $this->purify($post,'article');
         $revision->date_saved = Valid::now();
 
         $blog->style = $post['style'];
@@ -142,7 +145,7 @@ class BlogAdmController extends Controller
     {
         $err = implode(PHP_EOL, $e->errorInfo);
         $this->flash($err);
-        UserSession::reroute('/admin/blog/edit/' . $blogid);
+        $this->reroute('/admin/blog/edit/' . $blogid);
         return false;
     }
 
@@ -156,14 +159,14 @@ class BlogAdmController extends Controller
 
         if (empty($blog)) {
             $this->flash("blog does not exist " . $check_id);
-            return UserSession::reroute('/admin/blog/index');
+            return $this->reroute('/admin/blog/index');
         }
 // set updatable things
 
         $old_tc = $blog->title_clean;
         $update = new WConfig();
         $update->blog = $blog;
-        $update->revision = BlogView::linkedRevision($blog);
+        $update->revision = $this->linkedRevision($blog);
         $this->setBlogFromPost($post, $update);
         $update_link = ($old_tc !== $blog->title_clean);
         try {
@@ -189,8 +192,8 @@ class BlogAdmController extends Controller
         if ($update_link) {
             LinksOps::setBlogURL($blogid, $blog->title_clean);
         }
-        $metatags = BlogView::getMetaTags($blogid);
-        $db = Server::db();
+        $metatags = $this->getMetaTags($blogid);
+        $db = $this->db;
         $inTrans = false;
         foreach ($metatags as $mtag) {
 // key = metatag-#id
@@ -222,7 +225,7 @@ class BlogAdmController extends Controller
         if ($inTrans) {
             $db->commit();
         }
-        return UserSession::reroute($this->url . 'edit/' . $blog->id);
+        return $this->reroute($this->url . 'edit/' . $blog->id);
         //$this->editForm();
     }
 
@@ -249,7 +252,7 @@ class BlogAdmController extends Controller
          $this->noLayouts();
          $m = $view->m;
          $m->blog = Blog::findFirstById($bid);
-         $m->revision = BlogView::getRevision($bid,$rid);
+         $m->revision = $this->getRevision($bid,$rid);
          $m->asHTML = $this->request->getQuery('html') ?? 0;
          return $this->render('blog','revget');
     }
@@ -271,7 +274,7 @@ class BlogAdmController extends Controller
             }
         }
         if (count($list) > 0) {
-            $db = Server::db();
+            $db = $this->db;
             $val = 0;
 
             switch ($op) {
@@ -301,7 +304,7 @@ class BlogAdmController extends Controller
         }
         $db->commit();
         $args = $post['args'];
-        UserSession::reroute($this->url . 'index/?' . $args);
+        $this->reroute($this->url . 'index/?' . $args);
     }
 
     public function postnewAction()
@@ -310,7 +313,7 @@ class BlogAdmController extends Controller
         $blog = new blog();
         $post = $_POST;
 
-        $us = UserSession::instance();
+        $us = $this->user_session;
 
         $blog->featured = 0;
         $blog->enabled = 0;
@@ -330,7 +333,7 @@ class BlogAdmController extends Controller
         } catch (\PDOException $e) {
             return $this->errorPDO($e, 'new');
         }
-        return UserSession::reroute($this->url . 'edit/' . $blog->id);
+        return $this->reroute($this->url . 'edit/' . $blog->id);
     }
 
     /**
@@ -354,16 +357,16 @@ class BlogAdmController extends Controller
         //$fileset = $this->getBlogFiles($id);
         //$view->upfiles = $fileset;
 
-
-        $db = new DbQuery();
-        $styles = $db->arraySet('select style_class, style_name from blog_style');
+        $db = $this->db;
+        $qry = new DbQuery($db);
+        $styles = $qry->arraySet('select style_class, style_name from blog_style');
         $stylelist = [];
         foreach ($styles as $row) {
             $stylelist[$row['style_class']] = $row['style_name'];
         }
         $id = $blog->id;
         
-        //$model->revision = BlogView::linkedRevision($blog);
+        
         
         $all_revisions = $blog->getRelated('BlogRevision');
        
@@ -382,9 +385,9 @@ class BlogAdmController extends Controller
         
         $model->title = '#' . $id;
         $model->stylelist = $stylelist;
-        $model->catset = BlogView::getCategorySet($id);
-        $model->events = BlogView::getEvents($id);
-        $model->metatags = BlogView::getMetaTags($id);
+        $model->catset = $this->getCategorySet($id);
+        $model->events = $this->getEvents($id);
+        $model->metatags = $this->getMetaTags($id);
         $model->content = 
         $model->url = $this->url;
 
@@ -415,7 +418,7 @@ class BlogAdmController extends Controller
                         $sql = "delete from event where id = :id";
                         break;
                 }
-                $db = Server::db();
+                $db = $this->db;
                 for ($ix = 1; $ix <= $chkct; $ix++) {
                     $chkname = "chk" . $ix;
                     $chkvalue = Valid::toInt($post, $chkname);
@@ -425,7 +428,7 @@ class BlogAdmController extends Controller
                 }
             }
 
-            $m->events = BlogView::getEvents($blog_id);
+            $m->events = $this->getEvents($blog_id);
         } 
         $m->url = $this->url;
 
@@ -455,7 +458,7 @@ class BlogAdmController extends Controller
                 $view = $this->getView();
                 $m = $view->m;
                 $m->url = $this->url;
-                $m->events = BlogView::getEvents($bid);
+                $m->events = $this->getEvents($bid);
                 $this->noLayouts();
                 return $this->render('partials', 'blog/event_dates');
             }
@@ -466,12 +469,12 @@ class BlogAdmController extends Controller
     {
 
         $post = $_POST;
-
-        $query = new DbQuery();
+        $db = $this->db;
+        $query = new DbQuery($db);
 
         $blog_id = Valid::toInt($post, 'blogid');
         $chkct = Valid::toInt($post, 'chkct');
-        $db = Server::db();
+        $db = $this->db;
         $db->begin();
         $id = 0;
         // get all the existing category ids
@@ -509,7 +512,7 @@ class BlogAdmController extends Controller
         }
         $db->commit();
         $view = $this->getView();
-        $view->m->catset = BlogView::getCategorySet($blog_id);
+        $view->m->catset = $this->getCategorySet($blog_id);
         $this->noLayouts();
         return $this->render('partials', 'blog/category');
     }
@@ -519,7 +522,7 @@ class BlogAdmController extends Controller
     {
         $view = $this->getView();
         $m = $view->m;
-        BlogView::pageFromRequest($m);
+        $this->pageFromRequest($m);
         return $this->render('admin', 'blog');
     }
 

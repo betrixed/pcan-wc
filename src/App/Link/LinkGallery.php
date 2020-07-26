@@ -10,33 +10,33 @@ use Phalcon\Db\Column;
  *
  * @author Michael Rynn
  */
-class LinkGallery 
+trait LinkGallery 
 {
 
-    static public function removeRef($linkid, $gallid)
+    public function removeRef($linkid, $gallid)
     {
-        $db = Server::db();
+        $db = $this->db;
         return $db->execute(["delete from link_gallery where linkid = :lid and gallid = :gid",
                     ':lid' => $linkid, ':gid' => $gallid]);
     }
 
-    static public function byLink ( $linkid ) {
+    public function byLink ( $linkid ) {
 
-            return (new DbQuery())->arraySet("select G.* from link_gallery G "
+            return (new DbQuery($this->db))->arraySet("select G.* from link_gallery G "
                     . " join linktogallery L on G.id = L.gallid "
                     . " where L.linkid = :lid",
                     ['lid' => $linkid], ['lid' => Column::BIND_PARAM_INT]
                     );
     }
     
-    static public function getAllLinks($id)
+    public function getAllLinks($id)
     {
          
         $sql = <<<EOD
 select i.* from links i
     join linktogallery k on i.id = k.linkid and k.gallid = :id    
 EOD;
-        return (new DbQuery())->arraySet($sql, [':id' => $id]);
+        return (new DbQuery($this->db))->arraySet($sql, [':id' => $id]);
     }
 
 
