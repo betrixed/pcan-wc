@@ -1,17 +1,17 @@
 <?php
 namespace WC\DB;
 
-use WC\App;
-
 class DiffReport {
     public $log;
     public $diffcount;
     public $sch1;
     public $sch2;
+    public $schema_dir;
     
-    public function __construct() {
+    public function __construct(string $schemaDir) {
         $this->log = '';
         $this->diffcount = 0;
+        $this->schema_dir = $schemaDir;
     }
     
     // fake DB interface by logging
@@ -294,7 +294,7 @@ class DiffReport {
     }
     public function doCompareSchema($s1, $s2)
     {
-        $sdir = App::instance()->getSchemaDir();
+        $sdir = $this->schema_dir;
         
         $this->sch1 = SchemaDef::fromFile($sdir . $s1 . '.schema');
         $this->sch2 = SchemaDef::fromFile($sdir . $s2 . '.schema');
