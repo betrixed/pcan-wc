@@ -11,16 +11,17 @@ namespace App\Link;
 use WC\UserSession;
 use WC\Db\Server;
 use WC\Db\DbQuery;
+use App\Models\Links;
 
-class LinksOps  {
+trait LinksOps  {
 
-    static public function byTitle($title) {
+    static function links_byTitle($title) {
         $result = new Links();
         return $result->load(['title = ?', $title]);
     }
 
     // some harder to extract metadata, for size of form fields
-    static public function display() {
+    static public function links_display() {
         return [
             'id' => [
                 'type' => 'int',
@@ -62,17 +63,17 @@ class LinksOps  {
         ];
     }
 
-    static public function deleteId($id) {
-        $db = Server::db();
+    public function links_deleteId($id) {
+        $db = $this->db;
         $db->execute('delete from links where id = ?', [$id]);
     }
 
     /**
      * 
-       Recent remote links below front page article
+       Recent list of remote links below front page article
      * @return array ; record set;
      */
-    static public function homeLinks() : array {
+    public function homeLinks( ) : array {
         // 
         $sql = <<<EOD
 select id, url, title, sitename, summary, urltype, date_created 
@@ -82,7 +83,7 @@ select id, url, title, sitename, summary, urltype, date_created
   order by date_created desc
  limit  20
 EOD;
-        $qry = new DbQuery();
+        $qry = new DbQuery($this->db);
         $params['rows'] = $qry->arraySet($sql);
         $params['ct'] = count($params['rows']);
 
@@ -93,7 +94,7 @@ EOD;
        Recent blog links below front page article
      * @return array ; record set;
      */
-    static public function byType($db,$linkType) : array {
+    function links_byType($linkType) : array {
         $sql = <<<EOD
 select id, url, title, sitename, summary, urltype, date_created 
   from links
@@ -102,7 +103,7 @@ select id, url, title, sitename, summary, urltype, date_created
   order by date_created desc
  limit  20
 EOD;
-        $qry = new DbQuery($db);
+        $qry = new DbQuery($this->db);
         $rows = $qry->arraySet($sql, [':utype' => $linkType]);
         $params['ct'] = count($rows);
         $params['rows'] = $rows;
@@ -205,24 +206,24 @@ EOD;
         return $order_field;
     }
 
-    static function setBlogURL($blogid, $slug) {
+    function links_setBlogURL($blogid, $slug) {
         try {
-            $link = Rec::findFirst(['refid = :rid', ':rid' => $blogid]);
+            $link = Links::findFirst(['refid = :rid', ':rid' => $blogid]);
         } catch (\PDOException $e) {
             $err = $e->errorInfo;
-            UserSession::flash('No link record yet: ' . $err[0] . ' ' . $err[1]);
-            $link = false;
+            $this->flash('No link record yet: ' . $err[0] . ' ' . $err[1]);
+            $link = null;
             return;
         }
-        if ($link !== false) {
+        if (!empty($link)) {
             // update the link title and url automagically
             // $link['title'] = $blog['title'];
-            $link['url'] = "/article/" . $slug;
+            $link->url = "/article/" . $slug;
             try {
                 $link->update(); // will fail if duplicate
             } catch (\PDOException $e) {
                 $err = $e->errorInfo;
-                UserSession::flash('Link update failed: ' . $err[0] . ' ' . $err[1]);
+               $this->flash('Link update failed: ' . $err[0] . ' ' . $err[1]);
             }
         }
     }
@@ -232,9 +233,8 @@ EOD;
      * @param integer $id
      * @param integer $op
      */
-    static public function setEnableId($id, $op) {
-        $db = Server::db();
-
+    static public function links_enableId($id, $op) {
+        $db = $this->db;
         $db->execute("update links set enabled = ? where id = ?", [$op, $id]);
     }
 

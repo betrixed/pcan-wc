@@ -9,7 +9,7 @@ use WC\UserSession;
 use WC\Valid;
 use WC\DB\Server;
 use App\Models\Blog;
-use App\Link\LinksOps;
+
 
 use App\Link\PageInfo;
 use App\Models\Links;
@@ -25,7 +25,7 @@ class BlogAdmController extends Controller
     use \WC\Mixin\Auth;
     use \WC\Mixin\HtmlPurify;
     use \App\Link\BlogView;
-    
+    use \App\Link\LinksOps;
     public function getAllowRole() {
         return 'Admin';
     }
@@ -190,7 +190,7 @@ class BlogAdmController extends Controller
         }
         $blogid = $blog->id;
         if ($update_link) {
-            LinksOps::setBlogURL($blogid, $blog->title_clean);
+            $this->links_setBlogURL($blogid, $blog->title_clean);
         }
         $metatags = $this->getMetaTags($blogid);
         $db = $this->db;

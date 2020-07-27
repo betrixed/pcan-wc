@@ -1,0 +1,50 @@
+<?php
+    $page = $m->page;
+    $url = $m->url;
+    $gem = $this->htmlgem;
+    $bclass = "btn btn-info"
+?>
+
+<style>
+    .btn {
+        border-radius:10px;
+        margin-right:10px;
+    }
+</style>
+
+<div class="container body-wrap">
+    <?php if($page->last > 1): ?>
+    <div class="btn-group">
+        <?= $gem->linkTo(['href' => $url . 'new', 'text' => "Create New User", 'class' => $bclass ]) ?>
+        <?= $gem->linkTo(['href' => $url, 'text' => "First", 'class' => $bclass , 'icon'=> 'fa fa-fast-backward' ]) ?>
+        <?= $gem->linkTo(['href' => $url . '?page=' . $page->before , 'text' => "Previous", 'class' => $bclass , 'icon'=> 'fa fa-step-backward' ]) ?>
+        <?= $gem->linkTo(['href' => $url . '?page=' . $page->next , 'text' => "Next", 'class' => $bclass , 'icon'=> 'fa fa-step-forward' ]) ?>
+        <?= $gem->linkTo(['href' => $url . '?page=' . $page->last , 'text' => "Last", 'class' => $bclass , 'icon'=> 'fa fa-fast-forward' ]) ?>
+    </div>
+       <?php endif ?>
+<span class="help-inline">Page <?= $page->current . "/" . $page->last ?></span>
+</div>
+<div class='container outerwrap'>
+<table class="table table-bordered table-striped" align="center">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach( $page->items as $item): ?>
+        <tr>
+            <td><?= $item->id ?></td>
+            <td><?= $item->name ?></td>
+            <td class='left'><?= $gem->linkTo(['href' => $url . 'edit/' . $item->id, 
+                'text' => $item->email, 'class' => "btn",'icon' => 'fa fa-pencil' ]) ?></td>
+            <td><?= $item->status ?></td>
+        </tr>
+    <?php endforeach ?>
+    </tbody>
+</table>
+</div>

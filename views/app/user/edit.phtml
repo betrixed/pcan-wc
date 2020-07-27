@@ -1,0 +1,188 @@
+<?php 
+    $user = $m->user;
+    $url = $m->url;
+    $user = $m->user;
+    $successLogins = $m->successLogins;
+    $passwordChanges = $m->passwordChanges;
+    $resetPasswords = $m->resetPasswords;
+    $groups = $m->groups;
+    $gem = $this->htmlgem;
+?>
+
+<form method="post" action="/admin/user/post" autocomplete="off">
+
+<div class='container outerwrap'>
+    <div class='row'>
+        <?= $gem->linkTo(['href' => $url, 'text' => "User Index" ]) ?>
+        <?= $gem->submit(['name' => 'save']) ?>    
+    </div>
+</div>
+
+<div class="container-fluid body-wrap">
+    <h2>Edit User</h2>
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#A" data-toggle="tab">Basic</a></li>
+        <li><a href="#B" data-toggle="tab">Successful Logins</a></li>
+        <li><a href="#C" data-toggle="tab">Password Changes</a></li>
+        <li><a href="#D" data-toggle="tab">Reset Passwords</a></li>
+        <li><a href="#E" data-toggle="tab">Groups</a></li>
+    </ul>
+    <hr>
+<div class="tabbable outerwrap">
+    <div class="tab-content">
+        <div class="tab-pane active" id="A">
+            
+            <?= $gem->hidden(['name' => 'id', 'value' => $user->id]) ?>
+
+            <div class="span4">
+
+                <div class="form-group">
+                    <?= $gem->plainText(['label' => 'Name', 'name' => 'name', 'value' => $user->name]) ?>
+                </div>
+
+            </div>
+
+            <div class="span4">
+
+                <div class="form-group">
+                    <?= $gem->plainText(['label' => 'E-Mail', 'name' => 'email', 'value' => $user->email]) ?>
+                </div>
+
+                <div class="form-group">
+                    <?= $gem->plainText(['label' => 'Status', 'name' => 'status', 'value' => $user->status]) ?>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="tab-pane" id="B">
+                <table class="table table-bordered table-striped" align="center">
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>Date</th>
+                            <th>User Agent</th>
+                        </tr>
+                    </thead>
+                    <?php if (!empty($successLogins)): ?>
+                    <tbody>
+                        <?php foreach($successLogins as $login): ?>
+                        <tr>
+                            <td><?= $login->created_at ?></td>
+                            <td><?= $login->status_ip ?></td>
+                            <td><?= $login->data ?></td>
+                        </tr>
+                        <?php endforeach ?>
+                    </tbody>
+                    <?php else: ?>
+                        <tr><td colspan="3" align="center">User does not have successful logins</td></tr>
+                    <?php endif ?>
+                </table>
+        </div>
+
+        <div class="tab-pane" id="C">
+                <table class="table table-bordered table-striped" align="center">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>IP Address</th>
+                            <th>User Agent</th>
+                        </tr>
+                    </thead>
+                     <?php if(!empty($passwordChanges)): ?>
+                    <tbody>
+                    <?php foreach($passwordChanges  as $change ): ?>
+                        <tr>
+                            <td><?= $change->created_at ?></td>
+                            <td><?= $change->status_ip ?></td>
+                            <td><?= $change->data ?></td>     
+                        </tr>
+                    <?php endforeach ?>
+                          </tbody>
+                          <?php else: ?>
+                        <tr><td colspan="3" align="center">User has not changed his/her password</td></tr>
+                    <?php endif ?>
+                </table>
+        </div>
+
+        <div class="tab-pane" id="D">
+            <?= $gem->linkTo(['href' => $url . 'sendConfirmation/' . $user->id, 
+                               'text'=> "Email Password Reset" , 'class' => 'btn'     ]) ?>
+                <table class="table table-bordered table-striped" align="center">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>IP</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <?php if (!empty($resetPasswords)): ?>
+                         
+                    <tbody>
+                        
+                    <?php foreach($resetPasswords  as $reset): ?>
+                        <tr>
+                            <td><?= $reset->created_at ?></td>
+                            <td><?= $reset->status_ip ?></td>
+                            <td><?= $reset->data ?></td>
+                        </tr>
+                    <?php endforeach ?>
+                          </tbody>
+                    <?php else: ?>
+
+                        <tr><td colspan="3" align="center">User has not requested reset his/her password</td></tr>
+                        <?php endif ?>
+                </table>
+            </p>
+        </div>
+        <div class="tab-pane" id="E">
+            <?= $gem->linkTo(['href' => $url . 'groups/' . $user->id, 
+                               'text'=> "Edit Groups" , 'class' => 'btn'     ]) ?>
+
+                <table class="table table-bordered table-striped" align="center">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Id</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <?php if (!empty($groups)): ?>
+
+                    <tbody>
+                    
+                    <?php foreach($groups as $group): ?>
+                        <tr>
+                            <td><?= $group->name ?></td>
+                            <td><?= $group->status ?></td>
+                            <td><?= $group->created_at ?></td>
+                         </tr>
+                    <?php endforeach ?>
+                          </tbody>
+                    <?php else: ?>
+                        <tr><td colspan="4" align="center">User has no groups assigned</td></tr>
+                    <?php endif ?>
+                </table>
+   
+        </div>
+
+    </div>
+</div>
+
+</form>
+<hr>
+<form id="deleteUser" method="post" action="<?= $url . 'delete'?>">
+<div>
+     <?= $gem->hidden(['name' => 'userId', 'value' => $user->id]) ?>
+    <?= $gem->submit(['value' => "Delete User", 'class'=>'btn']) ?>
+</div>
+    <hr>
+</form>
+<form id="sendConfirm" method="post" action="<?= $url . 'sendConfirm'?>">
+<div>
+   <?= $gem->hidden(['name' => 'userId', 'value' => $user->id]) ?>
+    <?= $gem->submit(['value' => "Send Confirm Email", 'class'=>'btn']) ?>
+</div>
+</form>

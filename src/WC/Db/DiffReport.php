@@ -1,5 +1,5 @@
 <?php
-namespace WC\DB;
+namespace WC\Db;
 
 class DiffReport {
     public $log;

@@ -159,7 +159,7 @@ EOD;
      * @param type $f3
      * @param type $args
      */
-    public function empostAction() {
+    public function  post() {
         $post = $_POST;
         $mid = Valid::toInt($post, 'mid', 0);
         try {
@@ -217,10 +217,12 @@ EOD;
        return $this->editId($mid);
     }
 
-    public function post($f3, $args) {
-        $post = &$f3->ref('POST');
-
-        list($rec, $isNew) = Member::assignPost($post);
+    public function empostAction() {
+        $post = $_POST;
+        $m = $this->getViewModel();
+        
+        self::assignPost($post, $m);
+        list($rec, $isNew) = self::assignMember($m);
 
         $saved = false;
         try {
@@ -235,7 +237,7 @@ EOD;
         }
         if ($saved) {
             $this->flash("Record updated");
-            $f3->reroute($this->url . "edit/" . $rec['id']);
+            $this->reroute($this->url . "edit/" . $rec['id']);
         } else {
             // redit same record data
             // show any errors

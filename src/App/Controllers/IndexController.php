@@ -6,7 +6,7 @@ use Phalcon\Mvc\Controller;
 //use WC\Db\Server;
 use WC\Assets;
 use WC\Db\DbQuery;
-use App\Link\LinksOps;
+
 use WC\Db\Server;
 use WC\App;
 use WC\FileCache;
@@ -18,7 +18,7 @@ class IndexController extends Controller
 {
 
     use \WC\Mixin\ViewPhalcon;
-
+    use \App\Link\LinksOps;
 
     /*
       private function getModelCache($storageDir)
@@ -126,7 +126,7 @@ EOQ;
             
             $m->title = "PCAN Home";
 
-            $panels = LinksOps::byType($this->db, 'Panel');
+            $panels = $this->links_byType('Panel');
             if ($panels['ct'] > 0) {
                 $m->topPanels = &$panels['rows'];
             } else {
@@ -170,9 +170,9 @@ EOQ;
         $m->links = $cache->get($cache_key, null);
         if (empty($m->links)) {
             if (!empty($linkType)) {
-                $m->links = LinksOps::byType($linkType);
+                $m->links = $this->links_byType($linkType);
             } else {
-                $m->links = LinksOps::homeLinks();
+                $m->links = $this->homeLinks();
             }
             $cache->set($cache_key, $m->links);
         }
