@@ -250,7 +250,7 @@ class UserSession
      */
     public function getFlash(): ?array
     {
-        $out = $this->keys['flash'] ?? null;
+        $out = $this->data->keys['flash'] ?? null;
         if (!empty($out)) {
             $this->clearFlash();
         }
@@ -262,7 +262,7 @@ class UserSession
      */
     public function clearFlash()
     {
-        $this->keys['flash'] = [];
+        $this->data->keys['flash'] = [];
         $this->delayWrite();
     }
 

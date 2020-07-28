@@ -46,8 +46,15 @@ class DashController extends Controller {
         }
     }
     public function showAction() {  
-        $view = $this->getView();
-        $view->title = "Dash";
+        $m = $this->getViewModel();
+        $m->title = "Dash";
+        $m->extensions = get_loaded_extensions();
+        $m->need_extensions = ['intl','pdo_mysql'];
+        foreach($m->need_extensions as $name) {
+            if (!in_array($name, $m->extensions)) {
+                $this->flash("Extension " . $name . " not loaded");
+            }
+        }
         return $this->render('admin','dash');
     }
     
