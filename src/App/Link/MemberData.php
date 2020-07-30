@@ -97,7 +97,7 @@ trait MemberData
                 break;
             case 'cdate-alt':
                 $col_arrow['mdate'] = '&#8593;';
-                $order_field = 'M.last_update desc';
+                $order_field = 'M.create_date desc';
                 break;
             case 'email-alt':
                 $col_arrow['email'] = '&#8593;';
@@ -262,12 +262,6 @@ trait MemberData
         }
     }
     
-    static function memberNamePhone($fname, $lname, $phone) {
-        return Member::findFirst(
-            ['fname = ? and lname = ? and phone = ?', 
-            [$fname, $lname, $phone], 
-            [Column::BIND_PARAM_STR, Column::BIND_PARAM_STR, Column::BIND_PARAM_STR]
-            ]);
-    }
+
 
 }

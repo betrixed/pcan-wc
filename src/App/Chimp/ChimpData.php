@@ -12,6 +12,7 @@ use App\Models\ChimpEntry;
 use App\Models\MemberEmail;
 use App\Models\Member;
 use WC\App;
+use Phalcon\Db\Column;
 /**
  * Description of chimplists
  *
@@ -56,7 +57,17 @@ trait ChimpData {
         return 1;
     }
 
-    
+    static function memberNamePhone($fname, $lname, $phone) {
+        return Member::findFirst([
+            'conditions' =>
+             'fname = :fn: and lname = :ln: and phone = :ph:',
+            'bind' => 
+            ['fn' => $fname, 'ln' => $lname, 'ph' => $phone], 
+            
+            'bindTypes' => 
+            ['fn' => Column::BIND_PARAM_STR, 'ln' >= Column::BIND_PARAM_STR, 'ph' => Column::BIND_PARAM_STR]
+            ]);
+    }
 
     /** return a ChimpLists model object, from a JSON record
      * 
@@ -363,7 +374,8 @@ trait ChimpData {
                     $member_rec = Member::findFirstById($email_rec->memberid);
                     $newMember = false;
                 } else {
-                    $member_rec = Member::byPhone($fname, $lname, $phone);
+                    
+                    $member_rec = self::memberNamePhone($fname, $lname, $phone);
                     if (empty($member_rec)) {
                         $member_rec = new Member();
                         $newMember = true;

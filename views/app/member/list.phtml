@@ -12,9 +12,14 @@ $ubase =  $m->url . $pgsize . "&orderby=";
 $link = $ubase . $m->orderby;  
 
 $assets->add('bootstrap');
+$btnClass = "btn btn-outline-info left-sep";
 ?>
 
-
+<style>
+    .left-sep {
+        margin-left : 50px;
+    }
+</style>
 <div class='outerwrap pad10'>
     <div class="container-fluid">
         <?php if ($page->last > 1 ): ?>
@@ -25,7 +30,8 @@ $assets->add('bootstrap');
     <?php endif ?>
     &nbsp;|&nbsp;  <?= $page->current . "/" . $page->last ?>
     &nbsp;|&nbsp;  
-        <a href="/admin/member/new" >New Record</a> &nbsp;|&nbsp;  
+    <?= $gem->linkTo(['href' => '/admin/member/new', 'class' => $btnClass, 'text' => 'New Record']) ?>
+    <?= $gem->linkTo(['href' => '/admin/member/status?' . $m->req_query , 'class' => $btnClass, 'text' => 'Review All Status']) ?>
         
         <div class="row">
             <div class="col-1">

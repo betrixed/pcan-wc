@@ -37,6 +37,7 @@ use \App\Chimp\ChimpData;
         $db = new DbQuery($this->db);
         
         $req = $_REQUEST;
+        $req_query = $_SERVER['QUERY_STRING'];
         
         $pageAll = Valid::toStr($req, 'page', 'all');
         if (is_numeric($pageAll)) {
@@ -48,8 +49,10 @@ use \App\Chimp\ChimpData;
         $order_field = self::getOrderBy($m, $orderby);
         $sql = <<<EOD
 select M.*, ME.email_address, ME.status as email_status,
-    count(*) over() as full_count
-  from member M left outer join member_email ME on ME.memberid = M.id
+  count(*) over() as full_count
+  from member M 
+  left outer join member_email ME on ME.memberid = M.id
+  where M.status not in ('cleaned', 'unsubscribed', 'deceased')
 EOD;
         $params = [];
         $sql .= " order by " . $order_field;
@@ -67,6 +70,7 @@ EOD;
         }
         $paginator = new PageInfo($page, $pgsize, $results, $total);
 
+        $m->req_query = $req_query;
         $m->page = $paginator;
         $m->url = "/admin/member/list";
         $m->pgsize = $pgsize;
@@ -111,10 +115,45 @@ EOD;
         return $this->editId($mid);
     }
 
+    public function updateStatusAction() {
+        $sql = "status <> 'unsubscribed' and status <> 'cleaned' or status is null";
+        $mb_email_set = MemberEmail::find($sql);
+        $req_query = $_SERVER['QUERY_STRING'];
+        
+        try {
+        foreach($mb_email_set as $mb_email) {
+            $entry = ChimpEntry::findFirstByEmailid($mb_email->id);
+            if (empty($entry)) {
+                $status = 'no-chimp';
+            }
+            else {
+                $status = $entry->status;
+            }
+            list($list, $info, $entry) = $this->getEmailStatus($mb_email->email_address);
+            if ($info !== false) {
+                    if ($status !== $info->status) {
+                        $status = $info->status;
+                    }    
+                    
+            }
+            if ($mb_email->status !== $status) {
+                $mb_email->status = $status;
+                $mb_email->update();
+            }
+            if ( !empty($entry) && ($entry->status !== $status)) {
+                $entry->status = $status;
+                $entry->update();
+            }
+        }
+        }
+        catch(\Exception $ex) {
+            $this->flash($ex->getMessage());
+        }
+        $this->reroute('\admin\member\list?' . $req_query);
+    }
     /**
      * Get latest mail chimp status for all emails, and redisplay
-     * @param type $f3
-     * @param type $args
+
      */
     public function updateAction() {
         $post = $_POST;
@@ -122,7 +161,7 @@ EOD;
         try {
             $emails = $this->getMemberEmails($mid);
             // see if chimpentry exists //
-
+            $hasSubscription = false;
             foreach ($emails as $ix => $val) {
                 $entry = ChimpEntry::findFirstByEmailid($val['id']);
                 // get currently recorded status
@@ -137,7 +176,10 @@ EOD;
                 if ($info !== false) {
                     if ($status !== $info->status) {
                         $status = $info->status;
-                    }                  
+                    }   
+                    if (!$hasSubscription) {
+                        $hasSubscription = ($status === 'subscribed');
+                    }
                 }
                 
                 if ($val['status'] !== $status) {
@@ -146,6 +188,13 @@ EOD;
                 if ( !empty($entry) && $entry->status !== $status) {
                     $entry->status = $status;
                     $entry->update();
+                }
+            }
+            if (!$hasSubscription) {
+                $member = Member::findFirstById($mid);
+                if (!empty($member) && ($member->status === 'subscribed')) {
+                    $member->status = $status;
+                    $member->update();
                 }
             }
         } catch (\Exception $e) {
@@ -237,7 +286,7 @@ EOD;
         }
         if ($saved) {
             $this->flash("Record updated");
-            $this->reroute($this->url . "edit/" . $rec['id']);
+            $this->reroute($this->url . "edit/" . $rec->id);
         } else {
             // redit same record data
             // show any errors

@@ -19,8 +19,7 @@ use App\Link\PageInfo;
 use App\Models\Member;
 use App\Models\MemberEmail;
 use App\Models\ChimpLists;
-use App\Chimp\ChimpData;
-use App\Link\MemberData;
+
 use Phalcon\Db\Column;
 
 function gen_array(string &$outs, $prop, &$obj) {
@@ -64,6 +63,9 @@ function gen_object(string &$outs, $prop, $obj) {
 class ChimpListsController extends \Phalcon\Mvc\Controller {
 use \WC\Mixin\Auth;
 use \WC\Mixin\ViewPhalcon;
+use \App\Chimp\ChimpData;
+use \App\Link\MemberData;
+
     //put your code here
     public function getAllowRole() {
         return 'Chimp';
@@ -71,7 +73,7 @@ use \WC\Mixin\ViewPhalcon;
 
     public function indexAction() {
         $view = $this->getView();
-        $view->m->data = ChimpData::allLists();
+        $view->m->data = $this->allLists();
         return  $this->render('chimp','lists');
     }
     
@@ -95,7 +97,7 @@ use \WC\Mixin\ViewPhalcon;
         $m = $view->m;
         $orderby = Valid::toStr($req, 'orderby', null);
         
-        $order_field = MemberData::orderBy($m, $orderby);
+        $order_field = self::getOrderBy($m, $orderby);
 $sql = <<<EOD
 select count(*) over() as full_count, M.*, ME.email_address, CE.status as mcstatus from member M 
  join member_email ME on ME.memberid = M.id
@@ -114,8 +116,8 @@ EOD;
             $bind['ct'] = Column::BIND_PARAM_INT;
             $bind['start'] = Column::BIND_PARAM_INT;
         }
-         $db = new DbQuery();
-        $results = $db->arraySet($sql,$params, $bind);
+         $qry = new DbQuery($this->db);
+        $results = $qry->arraySet($sql,$params, $bind);
         $total = (count($results) > 0) ? $results[0]['full_count'] : 0;
         if ($page === 0) {
             $pgsize = $total;
@@ -135,27 +137,17 @@ EOD;
         return false;
     }
     public function downsyncAction() {
-        $all = ChimpData::sync(); // sync lists
+        $all = $this->chimp_sync(); // sync lists
         // sync each list
         try {
             foreach($all as $rec) {
-                ChimpData::syncMembers($rec);
+                $this->syncMembers($rec);
             }
            
         } catch (\Exception $e) {
             $this->flash($e->getMessage());
         }
         return $this->indexAction();
-    }
-    
-    public function sync($f3, $args) {
-        $id = $args['lid'];
-        $list = ChimpLists::getById($id);
-        $list->syncMembers();
-       
-        $this->members($f3,$args);
-        
-       
     }
     
 }
