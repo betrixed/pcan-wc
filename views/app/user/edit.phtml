@@ -7,57 +7,61 @@
     $resetPasswords = $m->resetPasswords;
     $groups = $m->groups;
     $gem = $this->htmlgem;
+    $btn_class = "btn btn-outline-info";
 ?>
 
+<style>
+    .btn {
+        margin-left:30px;
+    }
+    
+    .label {
+        min-width: 150px;
+        text-align:right;
+    }
+</style>
 <form method="post" action="/admin/user/post" autocomplete="off">
 
 <div class='container outerwrap'>
     <div class='row'>
-        <?= $gem->linkTo(['href' => $url, 'text' => "User Index" ]) ?>
-        <?= $gem->submit(['name' => 'save']) ?>    
+        <?= $gem->linkTo(['href' => $url, 'text' => "User Index" , 'class' => $btn_class ]) ?>
+         
     </div>
 </div>
 
 <div class="container-fluid body-wrap">
     <h2>Edit User</h2>
 
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#A" data-toggle="tab">Basic</a></li>
-        <li><a href="#B" data-toggle="tab">Successful Logins</a></li>
-        <li><a href="#C" data-toggle="tab">Password Changes</a></li>
-        <li><a href="#D" data-toggle="tab">Reset Passwords</a></li>
-        <li><a href="#E" data-toggle="tab">Groups</a></li>
+    <ul class="nav nav-tabs" id="usertab" role="tablist">
+        <li class="nav-item"><a id="basic-tab" class="nav-link active" href="#basic" data-toggle="tab" role="tab" aria-controls="basic">Basic</a></li>
+        <li class="nav-item"><a id="logins-tab" class="nav-link" href="#logins" data-toggle="tab" role="tab" aria-controls="logins" >Successful Logins</a></li>
+        <li class="nav-item"><a class="nav-link" href="#C" data-toggle="tab" role="tab">Password Changes</a></li>
+        <li class="nav-item"><a class="nav-link" href="#D" data-toggle="tab" role="tab">Reset Passwords</a></li>
+        <li class="nav-item"><a class="nav-link" href="#E" data-toggle="tab" role="tab">Groups</a></li>
     </ul>
     <hr>
 <div class="tabbable outerwrap">
     <div class="tab-content">
-        <div class="tab-pane active" id="A">
+        <div class="tab-pane active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
             
             <?= $gem->hidden(['name' => 'id', 'value' => $user->id]) ?>
 
-            <div class="span4">
+            <div class="row">
 
-                <div class="form-group">
+                <div class="col-6">
                     <?= $gem->plainText(['label' => 'Name', 'name' => 'name', 'value' => $user->name]) ?>
-                </div>
 
-            </div>
+                    <br><?= $gem->plainText(['label' => 'E-Mail', 'name' => 'email', 'value' => $user->email]) ?>
 
-            <div class="span4">
-
-                <div class="form-group">
-                    <?= $gem->plainText(['label' => 'E-Mail', 'name' => 'email', 'value' => $user->email]) ?>
-                </div>
-
-                <div class="form-group">
-                    <?= $gem->plainText(['label' => 'Status', 'name' => 'status', 'value' => $user->status]) ?>
+                    <br><?= $gem->plainText(['label' => 'Status', 'name' => 'status', 'value' => $user->status]) ?>
                 </div>
 
 
             </div>
+            
         </div>
 
-        <div class="tab-pane" id="B">
+        <div class="tab-pane" id="logins" role="tabpanel" aria-labelledby="logins-tab">
                 <table class="table table-bordered table-striped" align="center">
                     <thead>
                         <tr>

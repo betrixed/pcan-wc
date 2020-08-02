@@ -29,24 +29,29 @@ class UserLog
     protected $db;
     protected $qry;
 
-    public function __construct($db)
+    
+    static public function getEvents($etype, $id) : array
     {
-        $this->db = $db;
-        $this->qry = null;
-    }
-
-    public function getEvents($etype, $id)
-    {
-
+        global $container;
+        $qry = $container->get('dbq');
         $sql = <<<EOD
 select * from user_event where event_type = ? and user_id = ?
 EOD;
-        if (!$this->qry) {
-            $this->qry = new DbQuery($this->db);
-        }
-        return $this->qry->objectSet($sql, [$etype, $id]);
+
+        return $qry->objectSet($sql, [$etype, $id]);
     }
 
+    static public function login($id, $ip, $agent) 
+    {
+        $event = new UserEvent();
+        $event->status_ip = $ip;
+        $event->data = $agent;
+
+        $event->created_at = Valid::now();
+        $event->event_type = self::PW_LOGIN;
+        $event->user_id = $id;
+        $event->create();        
+    }
     static public function logPwdChange($id, $ip, $agent)
     {
         $event = new UserEvent();
@@ -54,22 +59,34 @@ EOD;
         $event->data = $agent;
 
         $event->created_at = Valid::now();
-        $event->event_type = UserEvent::PW_CHANGE;
+        $event->event_type = self::PW_CHANGE;
         $event->user_id = $id;
         $event->create();
     }
 
-    public function deleteOldCodes()
+    static public function deleteOldCodes()
     {
+        global $container;
+        
         $yesterday = new \DateTime();
         $yesterday->sub(new \DateInterval("P2D"));
         $ystr = $yesterday->format(Valid::DATE_TIME_FMT);
-        $result = $this->db->execute("delete from reset_code where created_at < ?", $ystr);
+        $db = $container->get('db');
+        $result = $db->execute("delete from reset_code where created_at < ?", $ystr);
         return $result;
     }
-
-    public function newUserConfirm(Users $user, $event_type, $request = null)
+    
+    /**
+     * Reset password is almost same as new user confirm
+     * @param Users $user
+     * @param type $event_type
+     * @param type $request
+     * @return boolean
+     */
+    static function newUserConfirm(Users $user, $event_type, string $ip, string $data) : string
     {
+        global $container;
+        
         $this->deleteOldCodes();
 
         // Make a user event, and a resetcode
@@ -77,25 +94,23 @@ EOD;
 
         $event->event_type = $event_type;
 
+        $event->status_ip = $ip;
+        $event->data = $data;
 
-        if (is_object($request)) {
-            $event->status_ip = $request->getServerAddress();
-            $event->data = $request->getUserAgent();
-        } else if (is_string($request)) {
-            $event->status_ip = "Confirm Email";
-            $event->data = $request;
-        }
         $stamp = Valid::now();
         $event->created_at = $stamp;
-
+        $code = Valid::randomStr();
         $resetcode = new ResetCode();
-        $resetcode->code = Valid::randomStr();
+        $resetcode->code = $code;
         $resetcode->created_at = $stamp;
 
-        $db = $this->db;
-        $db->begin();
+        $db = $container->get('db');
+        
         try {
-            $user->create();
+            $db->begin();
+            if (empty($user->id)) {
+                $user->create();
+            }
             $id = $user->id;
             $resetcode->user_id = $id;
             $event->user_id = $id;
@@ -103,9 +118,9 @@ EOD;
             $event->create();
             $db->commit();
         } catch (\PDOException $pd) {
-            return false;
+            throw new \Exception('Error in Confirm Code', $pd->getCode(), $pd);
         }
-        return true;
+        return $code;
     }
 
 }

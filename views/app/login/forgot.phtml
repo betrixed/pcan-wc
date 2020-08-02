@@ -1,0 +1,118 @@
+<?php
+$gem = $this->htmlgem;
+$google = $m->google;
+$xcheck = $m->xcheck;
+$formid = 'getPWReset';
+$assets->add('bootstrap');
+?>
+<div  class="container  outerwrap pad10" style="max-width:50em" >
+    <div class="row pad10">
+        <h4>Send password reset token</h4>
+    </div>
+    <form id="<?= $formid ?>" method='post' action='/login/forgotPost' >
+        <?= $gem->email(['label' => 'Email', 'name' => 'email', 
+            'class' => 'form-control', 'value' => $m->email, 'size' => 60, "required"]) ?>
+            <?php if (isset($xcheck)): ?>
+        <?= $gem->xcheck(['name' => $xcheck['key'], 'value' => $xcheck['value']]) ?>
+    <?php endif ?>
+        <?php if (!is_null($google) && $google['enabled']): ?>
+            <div class="d-flex  justify-content-center"">
+        <?= $gem->invisiCaptcha(['site' => $google['site'], 'formid' => $formid, 'ajax' => 'formid_submit()']) ?>
+            </div>
+        <?php endif ?>
+    </form>
+</div>
+
+
+<?php
+$blob = <<<EOJS
+<script>
+function formid_submit() {
+    var fm = $("#$formid");
+    var purl = fm.attr('action');
+    var request_method =fm.attr("method");
+    var form_data = fm.serialize();
+
+    $.ajax({
+            type: request_method,
+            url:  purl,
+            data: form_data
+        }).done(function(response) {
+             $("#login-fields").html(response);
+        }) ;
+        
+    $("#submit").hide();
+    $("#loading").show();
+}    
+</script>
+EOJS;
+$assets->addJS($blob);
+?>
+
+
+
+<?php
+$blob = <<<EOJS
+<script>         
+function prep_valid() {
+  // Initialize form validation on the registration form.
+  // It has the name attribute "registration"
+
+  $("#$formid").validate({
+    // Specify validation rules
+    rules: {
+      // The key name on the left side is the name attribute
+      // of an input field. Validation rules are defined
+      // on the right side
+      
+      email: {
+        required: true,
+        email: true
+        }
+    },
+    // Specify validation error messages
+    messages: {
+      password: "Must be 8 or more characters",
+      email: "Please enter a valid email address",
+      alias: "Name registered with email"
+    },
+    // Make sure the form is submitted to the destination defined
+    // in the "action" attribute of the form when valid
+    submitHandler: function(form) {
+        if (grecaptcha.getResponse()) {
+            formid_submit();
+        }else{
+            grecaptcha.reset();
+            grecaptcha.execute();
+        } 
+    }
+  });
+}
+</script>
+EOJS;
+$assets->addJS($blob);
+?>
+
+<?php if (empty($m->google) || ($m->google['enabled']===false)): 
+// Fake google function
+$blob = <<<EOJS
+<script>
+ var grecaptcha = {
+    getResponse: function() { return true; }
+ };
+</script>
+EOJS;
+$assets->addJS($blob);
+endif ?>
+
+<?php
+$blob = <<<EOJS
+<script>
+function doprep() {
+    prep_valid();      
+};
+window.onload = doprep; 
+</script>
+EOJS;
+$assets->addJS($blob);
+?>

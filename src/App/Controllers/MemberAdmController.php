@@ -116,7 +116,10 @@ EOD;
     }
 
     public function updateStatusAction() {
-        $sql = "status <> 'unsubscribed' and status <> 'cleaned' or status is null";
+        $sql = <<<EOS
+status <> 'unsubscribed' and status <> 'cleaned' 
+or status is null
+EOS;                
         $mb_email_set = MemberEmail::find($sql);
         $req_query = $_SERVER['QUERY_STRING'];
         

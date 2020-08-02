@@ -7,8 +7,8 @@ use WC\DbQuery;
 use WC\App;
 use App\Models\Blog;
 use Phalcon\Db\Column;
-use App\Link\BlogView;
 use Masterminds\HTML5;
+use App\Link\RevisionOp;
 use App\Link\BlogView;
 /**
  * Change a blog article into JSON package.
@@ -110,7 +110,7 @@ class BlogExport {
         
         if (!empty($blog->id)) {
             $revision = new BlogRevision();
-            $revision->revision = BlogView::newRevision($blog);
+            $revision->revision = RevisionOp::newRevision($blog);
         }
         else {
             $revision = new BlogRevision();
@@ -206,11 +206,13 @@ class BlogExport {
     }
 
     static public function package($id): array {
+        global $container;
+        
         $blog = Blog::findFirstById($id);
         // get essential data for json, not by keys of this DB
-        $revision = BlogView::linkedRevision($blog);
+        $revision = RevisionOp::linkedRevision($blog);
         if ($revision->revision > 1) {
-            $first = BlogView::getRevision($blog->id, 1);
+            $first = RevisionOp::getRevision($blog->id, 1);
         }
         else {
             $first = $revision;

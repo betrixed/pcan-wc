@@ -9,25 +9,20 @@ use App\Models\Blog;
 use App\Models\BlogRevision;
 use WC\Valid;
 use WC\App;
+
 /**
  *
  * @author Michael Rynn
  */
-
-
-trait BlogView  {
+class BlogView
+{
 
     // return highest revision number plus 1
-   function  newRevision(Blog $blog) : int {
-        $q = new DbQuery($this->db);
-        $result = $q->arrayColumn('SELECT MAX(revision) as max_revision from blog_revision where blog_id = :bid',
-                                                ['bid' => $blog->id], ['bid'=>Column::BIND_PARAM_INT]);
-        if (!empty($result)) {
-            return intval($result[0]) + 1;
-        }
-        return 1;
-   }
-   function pageFromRequest( $m) {
+
+    static function pageFromRequest($m)
+    {
+        global $container;
+
         $request = $_GET;
         $m->args = $_SERVER['QUERY_STRING'];
         $m->numberPage = Valid::toInt($request, 'page', 1);
@@ -50,7 +45,7 @@ EOS;
         }
         $sql .= " ORDER BY  " . $m->order_field
                 . " LIMIT " . $m->grabsize . " OFFSET " . $m->start;
-        $qry = new DbQuery($this->db);
+        $qry = $container->get('dbq');
 
         $results = $qry->arraySet($sql, $binders);
 
@@ -60,15 +55,22 @@ EOS;
         $items = $qry->arraySet("select id, name from blog_category");
         $selcat = ['0' => 'Any'];
         if (!empty($items)) {
-            foreach($items as $row) {
+            foreach ($items as $row) {
                 $selcat[$row['id']] = $row['name'];
             }
         }
         $m->catItems = $selcat;
         $m->isEditor = true;
-
     }
-        public  function getMetaTags($id) {
+
+    /** get metatags for $blogid
+     * 
+     * @param int $id
+     * @return array
+     */
+    static public function getMetaTags($id): array
+    {
+        global $container;
 // setup metatag info
         $sql = "select m.id, m.meta_name,"
                 . "m.template, m.data_limit, b.blog_id, b.content"
@@ -76,141 +78,102 @@ EOS;
                 . " left join blog_meta b on b.meta_id = m.id"
                 . " and b.blog_id = :blogId";
 // form with m_attr_value as labels, content as edit text.
-        $db =  new DbQuery($this->db);
-        $results = $db->arraySet($sql, ['blogId' => $id]);
+
+        $qry = $container->get('dbq');
+        $results = $qry->arraySet($sql, ['blogId' => $id]);
         if ($results) {
             return $results;
-        }
-        else {
+        } else {
             return [];
         }
     }
-    /** 
+
+    /**
      * Delete related constraints and blog id in one transaction
      * @param type $id
      */
-     public function fullDelete($id) {
-         $db = $this->db;
-         $db->begin();
-         
-         $db->exec('delete from blog_meta where blog_id = ?', $id);
-         $db->exec('delete from blog_to_category where blog_id = ?', $id);
-         $db->exec('delete from event where blogid = ?', $id);
-         $db->exec('delete from blog where id = ?', $id);
-         
-         $db->commit();
-         
-     }
-     
-     static public function linkedRevision($blog) {
-         return static::getRevision($blog->id, $blog->revision);
-     }
-     static public function getRevision($bid,$rid) {
-         $rev = BlogRevision::findFirst([
-                    'conditions' => 'blog_id = :bid: and revision = :rev:',
-                    'bind' => [ 'bid' => intval($bid), 'rev' => intval($rid) ]
-         ]);
-         return $rev;
-     }
-     
-    public function getMetaTagHtml($id, &$meta) {
-        // setup metatag info
-        $sql = <<<EOD
-select m.*, b.content
-    from meta m
-    join blog_meta b on b.meta_id = m.id
-    and b.blog_id = :id
-    order by meta_name
-EOD;
-        $db = new DbQuery($this->db);
-        $results = $db->arraySet($sql, ['id' => $id]);
-        //$scheme = $server['REQUEST_SCHEME'];
-        $sitePrefix = 'http' . '://' . $_SERVER['HTTP_HOST'];
-    
-        if ($results && count($results) > 0) {
-            if (is_array($meta)) {
-                $meta_tags = [];
-                foreach ($results as $row) {
-                    $content = str_replace("'", "&apos;", $row['content']);
-                    // replace ' with &apos; 
-                    
-                    if ($row['prefix_site'] && !Valid::startsWith($content, "http")) {
-                        if (!Valid::startsWith($content, '/')) {
-                            $content = '/' . $content;
-                        }
-                        $content = $sitePrefix . $content;
-                    }
-                    $meta_tags[] = str_replace("{}", $content, $row ['template']);
-                }
-                $meta = $meta_tags;
-            }
-        } else
-            $results = array();
-        return $results;
+    static public function fullDelete($id)
+    {
+        global $container;
+        $db = $container->get('db');
+        $db->begin();
+
+        $db->execute('delete from blog_meta where blog_id = ?', $id);
+        $db->execute('delete from blog_to_category where blog_id = ?', $id);
+        $db->execute('delete from event where blogid = ?', $id);
+        $db->execute('delete from blog_revision where blog_id = ?', $id);
+        $db->execute('delete from blog where id = ?', $id);
+        $db->commit();
     }
+
     /**
      * Get all the styles as array[ class ] == (style name)
      */
-    public function &getStyleList() {
-        $db = $this->db;
-        $styles = $db->exec('select style_class, style_name from blog_style');
+    static public function getStyleList(): array
+    {
+        global $container;
+        $qry = $container->get('dbq');
+        $styles = $qry->arraySet('select style_class, style_name from blog_style');
         $stylelist = [];
-        foreach($styles as $row) {
-            $stylelist[   $row['style_class'] ] = $row['style_name'];
+        foreach ($styles as $row) {
+            $stylelist[$row['style_class']] = $row['style_name'];
         }
-        return stylelist;
+        return $stylelist;
     }
+
     // return stdClass with properties cat_blogid, catlist (blog_category records), and string-comma list of 
     // categories.
-    public function getCategorySet($id) {
+    static public function getCategorySet($id)
+    {
+        global $container;
+
         $sql = "select c.id, c.name, c.name_clean, b.blog_id from blog_category c"
                 . " left outer join blog_to_category b on b.category_id = c.id"
                 . " and b.blog_id = :blogid order by c.name";
-        $db = new DbQuery($this->db);
-        $results = $db->arraySet($sql, ['blogid' => $id],['blogid' => Column::BIND_PARAM_INT]);
+        $qry = $container->get('dbq');
+        $results = $qry->arraySet($sql, ['blogid' => $id], ['blogid' => Column::BIND_PARAM_INT]);
         $values = [];
         $slugs = [];
         $available = [];
         if (!empty($results)) {
-            foreach($results as $row)
-            {
-                if ($row['id'] > 0)
-                {
+            foreach ($results as $row) {
+                if ($row['id'] > 0) {
                     $name = $row['name'];
-                    if ($row['blog_id'] > 0)
-                    {
-                        $values[] = $name; 
+                    if ($row['blog_id'] > 0) {
+                        $values[] = $name;
                         $slugs[] = $row['name_clean'];
-                    }  
-                    else {
-                        $available[] = $name; 
+                    } else {
+                        $available[] = $name;
                     }
                 }
             }
         }
-         $catset = new \stdClass();
-         $catset->cat_blogid = $id;
+        $catset = new \stdClass();
+        $catset->cat_blogid = $id;
         $catset->catlist = $results;
         $catset->values = $values;
         $catset->available = $available;
         $catset->slugs = $slugs;
         return $catset;
     }
-    
-    public function listCategoryId($catid) 
+
+    static public function listCategoryId($catid)
     {
-        $sql =  'select b.id, b.date_published, b.title, b.title_clean from blog b ' .
-                    ' join blog_to_category bc on b.id = bc.blog_id and b.enabled = 1 and bc.category_id = :catid' .
-                    '  order by b.issue desc, b.id asc';
-        $db = $this->db;
-        $results = $db->exec($sql, [':catid' => $catid]);
-        return $results ? $results : [];    
+        global $container;
+        $sql = 'select b.id, b.date_published, b.title, b.title_clean from blog b ' .
+                ' join blog_to_category bc on b.id = bc.blog_id and b.enabled = 1 and bc.category_id = :catid' .
+                '  order by b.issue desc, b.id asc';
+        $qry = $container->get('dbq');
+        $results = $qry->arraySet($sql, [':catid' => $catid]);
+        return empty($results) ? [] : $results;
     }
-    
+
     /**
      * Return an unused URL, from title slug and date
      */
-    public function unique_url($blogid, $slug) {
+    static public function unique_url($blogid, $slug)
+    {
+        global $container;
         $sql = 'select count(*) as dupe from blog where title_clean = :tc';
         $isUpdate = !is_null($blogid) && ($blogid > 0);
         $params['tc'] = $slug;
@@ -219,15 +182,15 @@ EOD;
 // exclude self from search, in case of no change?
             $sql .= ' and id <> :bid';
             $params['bid'] = $blogid;
-             $bind['bid'] = Column::BIND_PARAM_INT;
+            $bind['bid'] = Column::BIND_PARAM_INT;
         }
-        $db = new DbQuery($this->db);
-        
+        $qry = $container->get('dbq');
+
         $tryCount = 0;
 
         $date = new \DateTime();
         while ($tryCount < 5) {
-            $results = $db->arraySet($sql,$params,$bind);
+            $results = $qry->arraySet($sql, $params, $bind);
             $count = empty($results) ? 0 : intval($results[0]['dupe']);
             if ($count === 0) {
                 break;
@@ -244,17 +207,15 @@ EOD;
         return $params['tc'];
     }
 
-    public function getEvents($id) {
+    static public function getEvents($id)
+    {
+        global $container;
         $sql = "select e.* from event e where e.blogId = :blogId";
-        $db = new DbQuery($this->db);
-        $results = $db->arraySet($sql, ['blogId' => $id]);
-        if ($results) {
-            return $results;
-        } else {
-            return [];
-        }
+        $qry = $container->get('dbq');
+        $results = $qry->arraySet($sql, ['blogId' => $id]);
+        return empty($results) ? [] : $results;
     }
-  
+
     /**
      * Fill $model  query order information
      * 
@@ -265,8 +226,7 @@ EOD;
      */
     static public function viewOrderBy($model, $orderby)
     {
-        if (is_null($orderby))
-        {
+        if (is_null($orderby)) {
             $orderby = 'date-alt';
         }
         $alt_list = array(
@@ -280,10 +240,9 @@ EOD;
             'title' => '',
             'author' => '',
             'slug' => ''
-        );  
-        switch($orderby)
-        {
-                case 'slug':
+        );
+        switch ($orderby) {
+            case 'slug':
                 $alt_list['slug'] = 'slug-alt';
                 $col_arrow['slug'] = '&#8595;';
                 $order_field = 'B.title_clean asc';
@@ -303,30 +262,68 @@ EOD;
                 $col_arrow['author'] = '&#8595;';
                 $order_field = 'author_name asc, R.date_saved desc';
                 break;
-             case 'title-alt':
+            case 'title-alt':
                 $col_arrow['title'] = '&#8593;';
                 $order_field = 'B.title desc';
-                break;   
-        case 'slug-alt':
+                break;
+            case 'slug-alt':
                 $col_arrow['slug'] = '&#8593;';
                 $order_field = 'B.title_clean desc';
                 break;
             case 'author-alt':
-                 $col_arrow['author'] = '&#8593;';
-                 $order_field = 'author_name desc, R.date_saved desc';
-                 break;    
+                $col_arrow['author'] = '&#8593;';
+                $order_field = 'author_name desc, R.date_saved desc';
+                break;
             case 'date-alt':
             default:
                 $col_arrow['date'] = '&#8593;';
                 $order_field = 'B.date_saved desc';
                 $orderby = 'date-alt';
-                break;             
-                
+                break;
         }
         $model->orderalt = $alt_list;
         $model->orderby = $orderby;
         $model->col_arrow = $col_arrow;
         return $order_field;
     }
-   
+
+    static public function getMetaTagHtml(int $id, array &$meta, string $hostUrl): array
+    {
+        global $container;
+        $qry = $container->get('dbq');
+        // setup metatag info
+        $sql = <<<EOD
+select m.*, b.content
+    from meta m
+    join blog_meta b on b.meta_id = m.id
+    and b.blog_id = :id
+    order by meta_name
+EOD;
+        $results = $qry->arraySet($sql, ['id' => $id]);
+        //$scheme = $server['REQUEST_SCHEME'];
+        //$sitePrefix = 'http' . '://' . $_SERVER['HTTP_HOST'];
+
+        if (!empty($results)) {
+            if (is_array($meta)) {
+                $meta_tags = [];
+                foreach ($results as $row) {
+                    $content = str_replace("'", "&apos;", $row['content']);
+                    // replace ' with &apos; 
+
+                    if ($row['prefix_site'] && !Valid::startsWith($content, "http")) {
+                        if (!Valid::startsWith($content, '/')) {
+                            $content = '/' . $content;
+                        }
+                        $content = $hostUrl . $content;
+                    }
+                    $meta_tags[] = str_replace("{}", $content, $row ['template']);
+                }
+                $meta = $meta_tags;
+            }
+        } else {
+            $results = [];
+        }
+        return $results;
+    }
+
 }

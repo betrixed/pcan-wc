@@ -209,7 +209,6 @@ EOD;
              return $this->menuView($mit);
         } 
 
-        $db = Server::db();
         $blog = Blog::findFirst(['title_clean = :tc:', 'bind' => ['tc' => $title]]);
 
         if (empty($blog)) {

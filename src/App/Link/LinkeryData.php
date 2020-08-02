@@ -18,23 +18,20 @@ use WC\Valid;
  *
  * @author michael
  */
-class LinkeryData {
+trait LinkeryData {
 
-    //put your code here
-    const URL = "linkery/";
-
-    static public function getAllLinks($id) {
+    protected function getAllLinks($id) {
 
         $sql = <<<EOD
 select i.* from links i
     join linktogallery k on i.id = k.linkid and k.gallid = :id    
 EOD;
-        $results = (new DbQuery())->objectSet($sql,
+        $results = (new DbQuery($this->db))->objectSet($sql,
                 ['id' => $id], ['id' => Column::BIND_PARAM_INT]);
         return $results;
     }
 
-    static function listPageNum($numberPage, $pageRows, $orderby) {
+    protected function listPageNum($numberPage, $pageRows, $orderby) {
         $start = ($numberPage - 1) * $pageRows;
         $sql = <<<EOD
 select b.*, count(*) over() as full_count
@@ -44,7 +41,7 @@ select b.*, count(*) over() as full_count
 EOD;
 
 
-        $results = (new DbQuery())->objectSet($sql,
+        $results = (new DbQuery($this->db))->objectSet($sql,
                 ['pgsize' => $pageRows,
                     'pgstart' => $start],
                 ['pgsize' => Column::BIND_PARAM_INT,
@@ -55,13 +52,13 @@ EOD;
         return new PageInfo($numberPage, $pageRows, $results, $maxrows);
     }
 
-    static function linkeryPage($m) {
+    protected function linkeryPage($m) {
         $numberPage = Valid::toInt($_REQUEST, 'page', 1);
         $orderby = 'name';
         $order_field = 'b.name desc';
 
         $m->orderby = $orderby;
-        $m->page = static::listPageNum($numberPage, 12, $order_field);
+        $m->page = $this->listPageNum($numberPage, 12, $order_field);
     }
 
 }

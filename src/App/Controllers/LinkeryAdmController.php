@@ -6,7 +6,7 @@ namespace App\Controllers;
 
 use App\Models\LinkGallery;
 use App\Models\LinkLinkery;
-use App\Link\LinkeryData;
+
 use WC\UserSession;
 use WC\Valid;
 
@@ -14,21 +14,16 @@ class LinkeryAdmController extends \Phalcon\Mvc\Controller
 {
 use \WC\Mixin\Auth;
 use \WC\Mixin\ViewPhalcon;
-
+use \App\Link\LinkeryData;
     private $editList = [];
-    protected $url;
-
-    public function onConstruct()
-    {
-        $this->url = '/admin/' . LinkeryData::URL;
-    }
+    protected $url = '/admin/linkery/';
 
     public function indexAction()
     {
         $view = $this->getView();
         $m = $view->m;
-        LinkeryData::linkeryPage($m);
-        $m->url = '/admin/' . LinkeryData::URL;
+        $this->linkeryPage($m);
+        $m->url = $this->url;
         return $this->render('linkery_adm', 'index');
     }
 
@@ -189,7 +184,7 @@ use \WC\Mixin\ViewPhalcon;
         $m = $view->m;
         $m->linkery = $gal;
         $id = $gal->id;
-        $m->links = LinkeryData::getAllLinks($id);
+        $m->links = $this->getAllLinks($id);
 
         $us = UserSession::instance();
         $us->setKey('linkery', ['id' => $id, 'name' => $gal->name]);

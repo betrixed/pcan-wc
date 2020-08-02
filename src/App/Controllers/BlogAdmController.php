@@ -5,30 +5,34 @@ namespace App\Controllers;
 /**
  * @author Michael.Rynn
  */
-use WC\UserSession;
+
 use WC\Valid;
 use WC\DB\Server;
-use App\Models\Blog;
 
+use App\Models\{Blog, Links,Event,BlogRevision};
 
-use App\Link\PageInfo;
-use App\Models\Links;
-use App\Models\Event;
-use App\Models\BlogRevision;
 use Phalcon\Mvc\Controller;
 use WC\Db\DbQuery;
 use WC\WConfig;
+use App\Link\{
+    PageInfo,
+    BlogView,
+    LinksOps
+};
 
 class BlogAdmController extends Controller
 {
+
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Auth;
     use \WC\Mixin\HtmlPurify;
-    use \App\Link\BlogView;
-    use \App\Link\LinksOps;
-    public function getAllowRole() {
+    use \App\Link\RevisionOp;
+
+    public function getAllowRole()
+    {
         return 'Admin';
     }
+
     public $url = '/admin/blog/';
     private $editAssets = ['bootstrap', 'SummerNote', 'DateTime', 'jquery-form', 'blog-edit'];
 
@@ -69,13 +73,12 @@ class BlogAdmController extends Controller
         }
     }
 
-    
     public function editAction($id)
     {
         $blog = Blog::findFirstById($id);
         $view = $this->getView();
         $m = $view->m;
-        $m->airmode = $this->request->getQuery('airmode','int',0);
+        $m->airmode = $this->request->getQuery('airmode', 'int', 0);
         $m->blog = $blog;
         return $this->editForm();
     }
@@ -122,23 +125,21 @@ class BlogAdmController extends Controller
     {
         $blog = $m->blog;
         $revision = $m->revision;
-        
+
         $this->setBlogTitle($post, $blog);
-        
-        $action = Valid::toStr($post,'rev_list');
+
+        $action = Valid::toStr($post, 'rev_list');
         if ($action === 'Revision') {
-            $blog->revision = $this->newRevision($blog);
+            $blog->revision = $this->newRevisionId($blog);//RevisionOp
         }
-        $revision->content = $this->purify($post,'article');
+        $revision->content = $this->purify($post, 'article');
         $revision->date_saved = Valid::now();
 
         $blog->style = $post['style'];
-       
+
         $blog->featured = Valid::toBool($post, 'featured');
         $blog->enabled = Valid::toBool($post, 'enabled');
         $blog->comments = Valid::toBool($post, 'comments');
-
-       
     }
 
     private function errorPDO($e, $blogid)
@@ -166,7 +167,7 @@ class BlogAdmController extends Controller
         $old_tc = $blog->title_clean;
         $update = new WConfig();
         $update->blog = $blog;
-        $update->revision = $this->linkedRevision($blog);
+        $update->revision = $this->getLinkedRevision($blog);//RevisionOp
         $this->setBlogFromPost($post, $update);
         $update_link = ($old_tc !== $blog->title_clean);
         try {
@@ -179,8 +180,7 @@ class BlogAdmController extends Controller
                 $new_revision->setContent($revision->getContent());
                 $new_revision->setDateSaved($revision->getDateSaved());
                 $new_revision->create(); // a create using old record object fails silently
-            }
-            else {
+            } else {
                 // update existing revision
                 $revision->update();
             }
@@ -192,7 +192,7 @@ class BlogAdmController extends Controller
         if ($update_link) {
             $this->links_setBlogURL($blogid, $blog->title_clean);
         }
-        $metatags = $this->getMetaTags($blogid);
+        $metatags = BlogView::getMetaTags($blogid);
         $db = $this->db;
         $inTrans = false;
         foreach ($metatags as $mtag) {
@@ -231,31 +231,33 @@ class BlogAdmController extends Controller
 
     public function revisionsAction($bid)
     {
-         $view = $this->getView();
-         $m = $view->m;
-         $blog = Blog::findFirstById($bid);
-         $m->blog = $blog;
-         $all = $blog->getRelated('BlogRevision');
-         $list = [];
-         foreach($all as $revision) {
-             $item = new WConfig();
-             $item->id = $revision->revision;
-             $item->title = strval($revision->revision) . ") " . $revision->date_saved;
-             $list[] = $item;
-         }
-         $m->list = $list;
-         return $this->render('blog','revisions');
+        $view = $this->getView();
+        $m = $view->m;
+        $blog = Blog::findFirstById($bid);
+        $m->blog = $blog;
+        $all = $blog->getRelated('BlogRevision');
+        $list = [];
+        foreach ($all as $revision) {
+            $item = new WConfig();
+            $item->id = $revision->revision;
+            $item->title = strval($revision->revision) . ") " . $revision->date_saved;
+            $list[] = $item;
+        }
+        $m->list = $list;
+        return $this->render('blog', 'revisions');
     }
-    public function revgetAction($bid,$rid)
+
+    public function revgetAction($bid, $rid)
     {
-         $view = $this->getView();
-         $this->noLayouts();
-         $m = $view->m;
-         $m->blog = Blog::findFirstById($bid);
-         $m->revision = $this->getRevision($bid,$rid);
-         $m->asHTML = $this->request->getQuery('html') ?? 0;
-         return $this->render('blog','revget');
+        $view = $this->getView();
+        $this->noLayouts();
+        $m = $view->m;
+        $m->blog = Blog::findFirstById($bid);
+        $m->revision = $this->getRevision($bid, $rid);//RevisionOp
+        $m->asHTML = $this->request->getQuery('html') ?? 0;
+        return $this->render('blog', 'revget');
     }
+
     public function newAction()
     {
         $view = $this->getView();
@@ -319,7 +321,7 @@ class BlogAdmController extends Controller
         $blog->enabled = 0;
         $blog->comments = 1;
         $blog->revision = 1;
-        
+
         $this->setBlogTitle($post, $blog);
         try {
             $blog->create();
@@ -350,28 +352,13 @@ class BlogAdmController extends Controller
 
         $model->isApprover = true; // isApprover()
 
-        /* if (!$this->canEdit) {
-          $this->response->redirect("blog/comment/" . $id);
-          return;
-          } */
-        //$fileset = $this->getBlogFiles($id);
-        //$view->upfiles = $fileset;
+        $stylelist = BlogView::getStyleList();
 
-        $db = $this->db;
-        $qry = new DbQuery($db);
-        $styles = $qry->arraySet('select style_class, style_name from blog_style');
-        $stylelist = [];
-        foreach ($styles as $row) {
-            $stylelist[$row['style_class']] = $row['style_name'];
-        }
         $id = $blog->id;
-        
-        
-        
         $all_revisions = $blog->getRelated('BlogRevision');
-       
-        
-        foreach($all_revisions as $rec) {
+
+
+        foreach ($all_revisions as $rec) {
             if ($blog->revision === $rec->revision) {
                 $model->revision = $rec;
             }
@@ -382,14 +369,13 @@ class BlogAdmController extends Controller
             'Save' => 'Save',
             'Revision' => 'Save as new revision',
         ];
-        
+
         $model->title = '#' . $id;
         $model->stylelist = $stylelist;
-        $model->catset = $this->getCategorySet($id);
-        $model->events = $this->getEvents($id);
-        $model->metatags = $this->getMetaTags($id);
-        $model->content = 
-        $model->url = $this->url;
+        $model->catset = BlogView::getCategorySet($id);
+        $model->events = BlogView::getEvents($id);
+        $model->metatags = BlogView::getMetaTags($id);
+        $model->content = $model->url = $this->url;
 
         return $this->render('blog', 'edit');
     }
@@ -428,12 +414,12 @@ class BlogAdmController extends Controller
                 }
             }
 
-            $m->events = $this->getEvents($blog_id);
-        } 
+            $m->events = BlogView::getEvents($blog_id);
+        }
         $m->url = $this->url;
 
         $this->noLayouts();
-        return $this->render('partials','blog/event_dates' );
+        return $this->render('partials', 'blog/event_dates');
     }
 
     public function addeventAction()
@@ -458,7 +444,7 @@ class BlogAdmController extends Controller
                 $view = $this->getView();
                 $m = $view->m;
                 $m->url = $this->url;
-                $m->events = $this->getEvents($bid);
+                $m->events = BlogView::getEvents($bid);
                 $this->noLayouts();
                 return $this->render('partials', 'blog/event_dates');
             }
@@ -474,7 +460,7 @@ class BlogAdmController extends Controller
 
         $blog_id = Valid::toInt($post, 'blogid');
         $chkct = Valid::toInt($post, 'chkct');
-        $db = $this->db;
+
         $db->begin();
         $id = 0;
         // get all the existing category ids
@@ -517,28 +503,12 @@ class BlogAdmController extends Controller
         return $this->render('partials', 'blog/category');
     }
 
-
     public function indexAction()
     {
         $view = $this->getView();
         $m = $view->m;
-        $this->pageFromRequest($m);
+        BlogView::pageFromRequest($m);
         return $this->render('admin', 'blog');
     }
-
-    public function verify($f3, $args)
-    {
-        $post = &$f3->ref('POST');
-        $data = $post['article'];
-        try {
-            $images = Blog::imageFiles($data);
-            echo json_encode($images);
-        } catch (Exception $ex) {
-            echo json_encode($ex);
-        }
-    }
-
-
-
 
 }

@@ -8,11 +8,13 @@ use WC\Valid;
 
 use App\Models\Linkery;
 use App\Link\PageInfo;
-use App\Link\LinkeryData;
+
 
 class LinkeryController extends \Phalcon\Mvc\Controller {
 use \WCMixin\ViewPhalcon;
-
+use \App\Link\LinkeryData;
+    protected $url = '/linkery/';
+    
     public function viewAction($path) {
         $params = $_SERVER['argv'];
         $vname = 'linkery/view.phtml';
@@ -23,7 +25,7 @@ use \WCMixin\ViewPhalcon;
         
         $show = Valid::toStr($params,'show','grid');
         $m->params = "?show=" . $show;
-        $m->url ='/' . LinkeryData::URL . 'view/' . $path;
+        $m->url = $this->url . 'view/' . $path;
         
         switch($show) {
             case 'grid' : $vname = 'linkery/grid';
@@ -43,7 +45,7 @@ use \WCMixin\ViewPhalcon;
         }
         
         if (!empty($gal)) {
-            $m->links = LinkeryData::getAllLinks($gal->id);
+            $m->links = $this->getAllLinks($gal->id);
             $m->linkery = $gal;
             $m->title = $gal->name;
         }
@@ -71,7 +73,7 @@ use \WCMixin\ViewPhalcon;
 
     public function indexAction() {
         $view = $this->getView();
-        LinkeryData::linkeryPage($view->m);
+        $this->linkeryPage($view->m);
         return $this->render('linkery','index');
     }
 

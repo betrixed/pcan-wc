@@ -7,17 +7,17 @@ use Phalcon\Db\Column;
 /**
  * @author michael
  */
-class EventOps
+trait EventOps
 {
-    static public function getRego($eid) {
-         $db = new DbQuery();
-         return $db->objectSet(
+    protected function getRego($eid) {
+         $qry = new DbQuery($this->db);
+         return $qry->objectSet(
                  'select * from register where eventid = :eid', 
                  ['eid' => $eid], ['eid' => Column::BIND_PARAM_INT]);
     }
     
-    static function getPending() {
-        $db = Server::db();
+    protected function getPending() {
+        $db = $this->db;
         if ($db->getType() === 'sqlite') {
             $nowfn1 = "datetime( B.fromtime) > datetime('now')";
             $nowfn2 = "datetime( B.totime) > datetime('now')";
@@ -25,7 +25,7 @@ class EventOps
             $nowfn1 = "B.fromtime > NOW()";
             $nowfn2 = "B.totime > NOW()";
         }
-        $qry = <<<EOQ
+        $sql = <<<EOQ
       SELECT A.id, A.title, B.fromtime as  date1, B.totime as date2,
       R.content as article,  A.style, A.title_clean, C.content
       from blog A 
@@ -39,8 +39,8 @@ class EventOps
       (select MC.blog_id, MC.content from blog_meta MC join meta M on MC.meta_id = M.id
       where M.meta_name = 'og:description') C on C.blog_id = A.id
       order by B.fromtime
-      EOQ;
+EOQ;
 
-        return (new DbQuery())->arraySet($qry);
+        return (new DbQuery($db))->arraySet($sql);
     }
 }

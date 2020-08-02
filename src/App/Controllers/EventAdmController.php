@@ -8,12 +8,13 @@ namespace App\Controllers;
  */
 use App\Models\Event;
 use WC\Valid;
-use App\Link\EventOps;
+
 
 class EventAdmController extends \Phalcon\Mvc\Controller {
 use \WC\Mixin\ViewPhalcon;
 use \WC\Mixin\Auth;
-    
+use \App\Link\EventOps;    
+
     protected function getAllowRole() : string {
         return 'Admin';
     }
@@ -24,7 +25,7 @@ use \WC\Mixin\Auth;
         $model->evt = $evt;
         $id = $evt->id;
         if ($id > 0) {
-            $model->rego = EventOps::getRego($id);
+            $model->rego = $this->getRego($id);
         }
        return $this->render('events', 'edit');      
     }

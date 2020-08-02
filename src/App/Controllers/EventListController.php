@@ -8,14 +8,14 @@ namespace App\Controllers;
 use WC\DB\Server;
 use WC\Valid;
 use WC\Assets;
-use App\Link\EventOps;
+
 
 use Phalcon\Mvc\Controller;
 
 class EventListController extends Controller
 {
 use \WC\Mixin\ViewPhalcon;
-
+use \App\Link\EventOps;
     public function indexAction()
     {
         $view = $this->getView();
@@ -25,7 +25,7 @@ use \WC\Mixin\ViewPhalcon;
         
         $m = $view->m;
         $m->title = "Events";
-        $m->events = EventOps::getPending();
+        $m->events = $this->getPending();
         
         return $this->render('index','event');
     }

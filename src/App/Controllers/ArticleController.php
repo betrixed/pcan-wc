@@ -13,7 +13,7 @@ use App\Models\Blog;
 use App\Models\Linkery;
 use WC\Valid;
 use Phalcon\Mvc\Controller;
-use App\Link\BlogView;
+use App\Link\RevisionOp;
 
 class ArticleController  extends Controller {
 use \WC\Mixin\ViewPhalcon;
@@ -39,12 +39,13 @@ use \WC\Mixin\ViewPhalcon;
         }
         $m->title =  $blog->title;
         $m->blog = $blog;
-        $m->revision = BlogView::linkedRevision($blog);
+        $m->revision = RevisionOp::linkedRevision($blog);
 
         $m->analytics = true;
         $meta = [];
         // fill the array up with article meta tags.
-        $m->metadata = BlogView::getMetaTagHtml($blog->id,$meta);
+        $hostUrl = 'http' . '://' . $_SERVER['HTTP_HOST'];
+        $m->metadata = RevisionOp::getMetaTagHtml($this->db, $blog->id,$meta, $hostUrl);
         $m->metaloaf = $meta;
         $m->back = null;
         $req = $_REQUEST;

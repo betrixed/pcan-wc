@@ -11,6 +11,7 @@ use App\Models\UserEvent;
 use App\Link\UserRoles;
 use App\Models\Users;
 use App\Models\ResetCode;
+use App\Link\UserLog;
 use WC\Db\Server;
 use WC\UserSession;
 use WC\Valid;
@@ -51,6 +52,7 @@ class LoginController extends Controller {
     function checkoutAction() {
         $ud = $this->user_session;
         $view = $this->getView();
+        $ud->read();
         if (!$ud->isEmpty()) {
             $ud->wipe();
             return $this->render('login','logout');
@@ -61,7 +63,7 @@ class LoginController extends Controller {
 
     private function setForm($m) {
         $m->formid =  'user-login';
-        $this->captchaView($m);
+        $this->captchaView();
         $this->xcheckView($m);
     }
     // POST from login form
@@ -86,7 +88,7 @@ class LoginController extends Controller {
         $logger = new \Log('login.log');
         $logger->write('Fail Forgot - ' . $msg);
         $this->flash($msg);
-        $this->forgotView();
+        return $this->forgotView();
     }
 
     function errorChangePwd($msg) {
@@ -183,22 +185,20 @@ class LoginController extends Controller {
     }
 
     function forgotView() {
-        $view = $this->getView();
-        $m = $view->model;
+        $m = $this->getViewModel();
         if (!isset($m->email)) {
             $m->email = '';
         }
+        $this->xcheckView($m);
         $this->captchaView($m);
-        $view->content = 'home/forgotPassword';
-        $view->assets(['bootstrap']);
-        echo $view->render();
+        return $this->render('login', 'forgot');
     }
 
-    function forgot() {
-        $this->forgotView();
+    function forgotAction() {
+        return $this->forgotView();
     }
 
-    function forgotPost() {
+    function forgotPostAction() {
         $post = $_POST;
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
@@ -207,24 +207,23 @@ class LoginController extends Controller {
         }
 
         $email = Valid::toEmail($post, 'email');
-        $view = $this->getView();
-        $view->assets(['bootstrap']);
-         
-        $m = $view->model;
+        $m = $this->getViewModel();
         $m->email = $post['email'];
         if (empty($email)) {
             $this->errorForgot('Need valid email');
             return;
         }
 
-        $user = new User();
-        $found = $user->load(["email = ?", $email]);
+        $user = Users::findFirstByEmail($m->email);
+        
 
-        if ($found === false) {
+        if (empty($user)) {
             $this->errorForgot('No match was found for email');
             return;
         }
-        $code = UserEvent::newUserConfirm($found, UserEvent::PW_RESET, true);
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $evt_data = $_SERVER['HTTP_USER_AGENT'];
+        $code = UserLog::newUserConfirm($user, UserEvent::PW_RESET, $ip, $evt_data);
         if ($code === false) {
             $this->errorForgot('Reset code generation failure');
             return;
@@ -255,12 +254,10 @@ class LoginController extends Controller {
         $isValid = $mailer->send($msg);
 
         if ($isValid['success'] === false) {
-            $this->errorForgot($isValid['errors']);
+            return $this->errorForgot($isValid['errors']);
         } else {
-            $view->content = 'home/resetSent';
             $m->email = $email;
-           
-            echo $view->render();
+            return $this->render('login', 'reset_sent');
         }
     }
 
@@ -307,7 +304,10 @@ class LoginController extends Controller {
             } else {
                 $roles = UserRoles::getRoleList($this->db, $user->id);
                 $user_session->setUser($user, $roles);
+                
                 $user_session->addFlash("Logged in as " . $user_session->getUserName());
+                
+                UserLog::login($user->id,  $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
                 $this->noLayouts();
                 return $this->render('login','details');
             }
@@ -369,7 +369,9 @@ class LoginController extends Controller {
         $crypt = \Bcrypt::instance();
 
         $user['password'] = $crypt->hash($pwd1);
-        $code = UserEvent::newUserConfirm($user, UserEvent::EMAIL_CK, false);
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $evt_data = $_SERVER['HTTP_USER_AGENT'];
+        $code = UserEvent::newUserConfirm($user, UserEvent::EMAIL_CK, $ip, $evt_data);
         if (empty($code)) {
             $this->errorSignup('New User failed');
             return;
@@ -404,15 +406,12 @@ class LoginController extends Controller {
         if (!$this->app->https()) {
             return;
         }
-        $view = $this->view;
-        $view->title = "Register";
+        $m = $this->getViewModel();
+        $m->title = "Register";
 
-        $this->captchaView();
-        $this->xcheckView();
-        $view->content = 'home/signup';
-        $view->assets('bootstrap');
-
-        echo $view->render();
+        $this->captchaView($m);
+        $this->xcheckView($m);
+        return $this->render('login', 'signup');
     }
 
     function signup() {

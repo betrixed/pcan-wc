@@ -280,6 +280,9 @@ trait ChimpData {
                         $rec->$field = json_encode($data);
                     }
                 }
+            case 'status': {
+                $rec->$field = $value;
+            }
             default:
                 if (empty($current) && !empty($value)) {
                     $rec->$field = $value;
@@ -383,6 +386,7 @@ trait ChimpData {
                         $newMember = false;
                     }
                 }
+                $needMemberUpdate = $newMember;
                 $test = $member_rec->create_date;
                 if ($newMember || ($member_rec->last_update < $last_update) || is_null($test)) {
                     static::mergeValue($member_rec, 'fname', $fname);
@@ -411,10 +415,8 @@ trait ChimpData {
                     static::mergeValue($member_rec, 'lastUpdate', $last_update);
                     static::mergeValue($member_rec, 'createDate', $create_date);
                     static::mergeValue($member_rec, 'phpjson', $email_address);
-                    if ($newMember)
-                        $member_rec->save();
-                    else
-                        $member_rec->update();
+                    $needMemberUpdate = true;
+
                 }
 
                 if (empty($email_rec)) {
@@ -432,6 +434,18 @@ trait ChimpData {
                     $entry_rec->chimpid = $mcid;
                     $entry_rec->status = $status;
                     $entry_rec->save();
+                }
+                else if ($status !== $entry_rec->status) {
+                    
+                }
+                if ($newMember) {
+                    $member_rec->create();
+                }
+                else if ($needMemberUpdate) {
+                    $data = json_decode($member_rec->phpjson);
+                    $data[] = 'flag';
+                    $member_rec->phpjson = json_encode($data);
+                    $member_rec->update();
                 }
             }
             $db->commit();
