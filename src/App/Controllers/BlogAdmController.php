@@ -16,8 +16,8 @@ use WC\Db\DbQuery;
 use WC\WConfig;
 use App\Link\{
     PageInfo,
-    BlogView,
-    LinksOps
+    BlogView
+    
 };
 
 class BlogAdmController extends Controller
@@ -27,7 +27,8 @@ class BlogAdmController extends Controller
     use \WC\Mixin\Auth;
     use \WC\Mixin\HtmlPurify;
     use \App\Link\RevisionOp;
-
+    use \App\Link\LinksOps;
+    
     public function getAllowRole()
     {
         return 'Admin';
@@ -110,14 +111,14 @@ class BlogAdmController extends Controller
             $newUrl = strip_tags(Valid::toStr($post, 'title_clean'));
 
             if ($newUrl !== $oldUrl) {
-                $blog->title_clean = $this->unique_url($blogid, $newUrl);
+                $blog->title_clean = BlogView::unique_url($blogid, $newUrl);
                 $autoUrl = False;
             }
         }
 
         if ($titleChanged && $autoUrl) {
             $newUrl = Valid::url_slug($blog->title);
-            $blog->title_clean = $this->unique_url($blogid, $newUrl);
+            $blog->title_clean = BlogView::unique_url($blogid, $newUrl);
         }
     }
 

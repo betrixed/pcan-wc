@@ -15,10 +15,6 @@ use App\Models\Links;
 
 trait LinksOps  {
 
-    static function links_byTitle($title) {
-        $result = new Links();
-        return $result->load(['title = ?', $title]);
-    }
 
     // some harder to extract metadata, for size of form fields
     static public function links_display() {
@@ -206,7 +202,7 @@ EOD;
         return $order_field;
     }
 
-    function links_setBlogURL($blogid, $slug) {
+    static function links_setBlogURL($blogid, $slug) {
         try {
             $link = Links::findFirst(['refid = :rid', ':rid' => $blogid]);
         } catch (\PDOException $e) {
