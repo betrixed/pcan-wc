@@ -99,7 +99,7 @@ trait Captcha {
     }
     public function secure_connect() {
         $url = $this->https_url();
-        if (App::instance()->hasValidSSL) {
+        if ($this->app->hasValidSSL) {
             $response = new Response();
             $response->redirect($url,true, 301);
             return false;
@@ -114,7 +114,7 @@ trait Captcha {
     
     public function https_url() {
         $server = $_SERVER;
-        $ssl_host = App::instance()->get('ssl_host',null);
+        $ssl_host = $this->app->get('ssl_host',null);
         $host = $server['HTTP_HOST'];
             // This is because a ssl certificate required a www.NAME
         if (!empty($ssl_host)) {
