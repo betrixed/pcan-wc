@@ -449,6 +449,47 @@ EOD;
         }
         return $out;
     }
+    
+    static public function css_style(array $style) : string
+    {
+        $out = "";
+        foreach($style as $name => $val) :
+            $out .= $name . ": " . $val . ";";
+        endforeach;
+        return $out;
+    }
+    /** properties, path, filename, width css string
+     * 
+     * @param properties figure (style), file, caption, 
+     * @return string
+     */
+    public function figure(array $pset) : string
+    {
+        $out = "";
+        $image_file = $pset['file'] ?? null;
+        if (!empty($image_file)) {
+            $out .= "<figure ";
+            $style = ['float' => 'left', 'width' => '47%', 'margin'=>'10px'];
+            $more_style = $pset['figure'] ?? null;
+            
+            if (is_array($more_style)) {
+                $style = array_merge($style, $more_style);
+            }
+            $style_attr = self::css_style($style);
+            $out .= " style=\"$style_attr\">" . PHP_EOL;
+            $out .= "<img src=\"$image_file\"" 
+                    . " style=\"width:100%; margin:0;\">" . PHP_EOL;
+            $caption = $pset['caption'];
+            if (!empty($caption)) {
+                $out .= "<figcaption style=\"border-style:solid; padding:4px; font-size:0.9em;\">" 
+                        . $caption . "</figcaption>" . PHP_EOL;
+            }
+            $out .= "</figure>" . PHP_EOL;
+            
+        }
+        return $out;
+
+    }
 
     public function select(array $pset): string
     {

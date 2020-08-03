@@ -92,12 +92,17 @@ EOD;
      */
     function links_byType($linkType) : array {
         $sql = <<<EOD
-select id, url, title, sitename, summary, urltype, date_created 
-  from links
-  where urltype= :utype
-  and enabled = 1
-  order by date_created desc
- limit  20
+select links.id, links.url, links.title,
+    links.sitename, links.summary, links.urltype, links.date_created,
+    image.name as im_file, gallery.path as im_path, 
+        image.description as im_caption
+    from links
+    left join image on image.id = links.imageid
+    left join gallery on gallery.id = image.galleryid
+    where urltype= :utype
+    and links.enabled = 1
+    order by links.date_created desc
+    limit 20
 EOD;
         $qry = new DbQuery($this->db);
         $rows = $qry->arraySet($sql, [':utype' => $linkType]);

@@ -2,6 +2,7 @@
     $links = $m->links;
     $assets->add(['bootstrap', 'grid']);
     $assets->minify('home_grid');
+    $gem = $this->htmlgem;
 ?>
 
 <style>
@@ -87,7 +88,12 @@ div.title-area {
         <?php endif; ?>
         </div>
         </div>
-        <div class="link-summary"><?= $row['summary'] ?></div>
+        <div class="link-summary">
+          <?php if($row['im_file']): 
+             $path = "/" . $row['im_path'] . "/" . $row['im_file'];
+             echo($gem->figure(['file' => $path, 'caption' => $row['im_caption']])); 
+          endif ?>
+          <?= $row['summary'] ?></div>
          <?php if ($row['urltype'] === 'Blog'): ?>
             <a href="<?= $url  ?>" target="_blank" title="<?= $title ?>">&nbsp;.. read more</a>
          <?php endif; ?>
