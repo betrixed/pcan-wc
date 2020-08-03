@@ -180,13 +180,13 @@ use \App\Link\LinkeryData;
 
     private function constructView($gal, $op = "edit", $isAjax = false)
     {
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
         $m->linkery = $gal;
         $id = $gal->id;
         $m->links = $this->getAllLinks($id);
 
-        $us = UserSession::instance();
+        $us = $this->user_session;
+        
         $us->setKey('linkery', ['id' => $id, 'name' => $gal->name]);
         $m->post = $this->url;
 

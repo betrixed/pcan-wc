@@ -120,17 +120,6 @@ class UserSession
     protected $data;
     protected $app;
 
-    /*
-      static private $instance;
-
-      static public function instance()
-      {
-      if (!isset(self::$instance)) {
-      self::$instance = new UserSession();
-      }
-      return self::$instance;
-      }
-     */
 
     public function shutdown()
     {

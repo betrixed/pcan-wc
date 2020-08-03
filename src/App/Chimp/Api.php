@@ -28,10 +28,13 @@ class Api {
     {
         return $this->mChimp;
     }
-    public function __construct(array $options) 
+    public function __construct(App $app, array $options) 
     {
+        if (isset($options['autoload'])) {
+            require_once $app->php_dir . $options['autoload'];
+        }
         $this->mChimp = $options;
-        $this->LOCAL_TIMEZONE = new \DateTimeZone(date_default_timezone_get());
+        $this->LOCAL_TIMEZONE = new \DateTimeZone($app->TZ);
     }
 /**
     public function doCurl($opType, $op, $params = [])

@@ -45,6 +45,7 @@ class BlogExport {
 
     // return array, with gallerypaths that reference array of image file names
     static public function imageFiles($article) {
+        global $container;
         //$search = ["<figure", "</figure", "<figcaption" , "</figcaption"];
         //$replace = ["<div", "</div", "<div", "</div"];
         //$html = str_replace($search, $replace, $article);
@@ -53,7 +54,7 @@ class BlogExport {
         $result = [];
         try {
             $parser = new HTML5();
-            $app = App::instance();
+            $app = $container->get('app');
             $dom = $parser->loadHTML($article);
             $images = $dom->getElementsByTagName('img');
 
@@ -100,6 +101,8 @@ class BlogExport {
      * @return boolean
      */
     static function insertPackage($blog, $pack, $op): bool {
+        global $container;
+        
         $version = floatval($pack['version']);
         if ($version < 0.2) {
             return false;
@@ -177,7 +180,7 @@ class BlogExport {
         $images = $pack['images'];
 
         if (!empty($images)) {
-            $app = App::instance();
+            $app = $container->get('app');
             $imageRoot = $app->WEB . DIRECTORY_SEPARATOR;
 
             $domain = isset($pack['image_domain']) ? $pack['image_domain'] : null;
@@ -232,9 +235,10 @@ class BlogExport {
         $file_name = $rec['title_clean'] . "_" . $file_date . ".json";
 
         $pack['packname'] = $file_name;
-        $secrets = App::instance()->get_secrets();
+        $app = $container->get('app');
+        $backups = $app->getSecrets('backups');
 
-        $pack['image_domain'] = $secrets['backups']['image_domain'];
+        $pack['image_domain'] = $backups['image_domain'];
 
         $catset = BlogView::getCategorySet($id);
         $category = [];

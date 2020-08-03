@@ -97,8 +97,8 @@ use \WC\Mixin\Captcha;
             $m->mbr = $member;
             return $this->signupView();
         }
-        $sec = App::instance()->get_secrets();
-        $emailTo = $sec['mail']['to'];
+        $sec = $this->app->getSecrets('mail');
+        $emailTo = $sec['to'];
         
         $textMsg = "New E-List website signup " . $email;
         $mailer = new SwiftMail();

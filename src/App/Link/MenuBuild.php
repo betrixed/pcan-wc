@@ -160,7 +160,7 @@ EOD;
         return $pid;
     }
     function fromMenuConfig($config_file) {
-        $app = App::instance();
+        $app = $this->app;
         $src = Path::endSep($app->SITE_DIR) . $config_file . '.xml';
         $data = WConfig::fromXml($src);
        

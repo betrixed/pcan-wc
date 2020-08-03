@@ -118,7 +118,7 @@ class SchemaController extends Controller
     }
     public function getSchemaDir()
     {
-        return App::instance()->SCHEMA . '/';
+        return $this->app->schema_dir . '/';
     }
     public function scriptAction($version)
     {

@@ -114,8 +114,6 @@ class LoginController extends Controller {
         if (empty($newpwd) || ($newpwd !== $chkpwd)) {
             return $this->errorChangePwd("Password not confirmed");
         }
-        $crypt = \Bcrypt::instance();
-
         $user = User::byEmail($email);
 
         if ($user === false) {
@@ -124,6 +122,7 @@ class LoginController extends Controller {
 
         $db = Server::db();
         $db->begin();
+        $crypt = $this->security;
         try {
             $user['password'] = $crypt->hash($newpwd);
             $user->update();
@@ -366,7 +365,7 @@ class LoginController extends Controller {
         }
 
 
-        $crypt = \Bcrypt::instance();
+        $crypt = $this->security;
 
         $user['password'] = $crypt->hash($pwd1);
         $ip = $_SERVER['REMOTE_ADDR'];

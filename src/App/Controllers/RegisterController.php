@@ -200,7 +200,7 @@ EOD;
         }
         
         if ($worked) {
-            $app = App::instance();
+            $app = $this->app;
             $m->editUrl = '/reglink/' . $rec->linkcode . '/' . $rec->id;
             if (!empty($email)) {
                 $name = $fname . ' ' . $lname;

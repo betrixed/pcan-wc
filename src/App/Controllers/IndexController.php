@@ -182,10 +182,6 @@ EOQ;
         } else {
             $m->title = "All Links";
         }
-        $assets = \WC\Assets::instance();
-        $assets->add(['bootstrap', 'grid']);
-        $assets->minify('home_grid');
-
         return $this->render('index', 'links');
     }
 

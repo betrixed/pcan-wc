@@ -21,15 +21,15 @@ class MenuTree  {
         
     }
     static public function cleanTmp() {
-        $app = App::instance();
-        $tmp = $app->TEMP;
+        global $app;
+        $tmp = $app->temp_dir;
         static::deleteGlob($tmp . "/*.php");
         static::deleteGlob($tmp . "/*.menu");
     }
     static public function getCacheName($menuName)
     {
-        $app = App::instance();
-        $tmp = $app->TEMP;
+        global $app;
+        $tmp = $app->temp_dir;
         if (is_numeric($menuName)) {
             $menuName = "id_" . intval($menuName);
         }
@@ -175,7 +175,8 @@ EOD;
     
     static public function getMenuSet($root)
     {
-        $app = App::instance();
+        global $app;
+        
         if (isset($app->menuTrees))  {
             $menus = $app->menuTrees;
         } else {           

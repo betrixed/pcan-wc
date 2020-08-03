@@ -20,9 +20,7 @@ class SwiftMail
     public function send( array $msg ) : array
     {
         // Settings
-        
-        $cfg = App::instance()->get_secrets();
-        $mailSettings = &$cfg['mail'];
+        $mailSettings = $this->app->getSecrets('mail');
         
         $from = isset($msg['from']) ? $msg['from'] :  $mailSettings['from'];
         $to = isset($msg['to']) ? $msg['to'] :  $mailSettings['to'];

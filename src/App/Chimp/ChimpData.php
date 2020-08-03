@@ -24,7 +24,7 @@ trait ChimpData {
     public function getApi() {
         if ($this->chimp_api === null) {
             $app = $this->app;
-            require_once $app->php_dir . '/chimpv3/vendor/autoload.php';
+            
             $s = $app->getSecrets();
             if( isset($s['chimp'])) {      
                 $this->chimp_api = new Api($s['chimp']);
@@ -133,7 +133,7 @@ trait ChimpData {
         }
     }
 
-    static function addMemberEmail($list, $eid) {
+    function addMemberEmail($list, $eid) {
         $email = MemberEmail::findFirstById($eid);
         if (empty($email)) {
             return;
@@ -141,10 +141,10 @@ trait ChimpData {
         $member = Member::findFirstById($email->memberid);
 
         // ensure this email doesn't exist already in list
-        $result = static::getMemberInfo($list, $email->getEmailAddress());
+        $result = $this->getMemberInfo($list, $email->getEmailAddress());
 
         if ($result === false) {
-            $api = Api::instance()->listApi();
+            $api = $this->chimp_api;
             $fname = $member->fname;
             $lname = $member->lname;
             $phone = $member->phone;
@@ -305,7 +305,7 @@ trait ChimpData {
         $total = 0;
 
         while (true) {
-            //$response = Api::instance()->doCurl('GET', "lists/$listid/members", $params);
+            
             $json = $api->getMembers($listid, $params);
             //$json = json_decode($response->body);
             $ct = count($json->members);

@@ -93,7 +93,7 @@ class InitMenusController extends \Pcan\Controller
 
     function create_menu_table()
     {
-        $db = Server::db();
+        $db = $this->db;
         $adapter = $db->driver();
         
         if ($adapter === 'mysql') {
@@ -101,8 +101,8 @@ class InitMenusController extends \Pcan\Controller
         } else {
             $rdr = new AdaptXml('Mysql', 'Pgsql');
         }
-        $pkg_path = \Base::Instance()->get('pkg');
-        $path =  $pkg_path . 'sites/default/schema/initdb.schema';
+        $pkg_path = $this->app->vendor_dir;
+        $path =  $pkg_path . '/sites/default/schema/initdb.schema';
         $schema = $rdr->parseFile($path);
         
         $tdef = $schema->getTable('menu_item');

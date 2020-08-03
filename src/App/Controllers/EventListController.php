@@ -18,12 +18,7 @@ use \WC\Mixin\ViewPhalcon;
 use \App\Link\EventOps;
     public function indexAction()
     {
-        $view = $this->getView();
-        $assets = Assets::instance();
-        
-        $assets->add('bootstrap');
-        
-        $m = $view->m;
+        $m = $this->getViewModel();
         $m->title = "Events";
         $m->events = $this->getPending();
         

@@ -33,7 +33,6 @@ class EmailFormController extends Controller {
         $this->xcheckView($m);
         $req = $this->request;
         $isAjax = $req->isAjax();
-        //Assets::instance()->add(['bootstrap']);
         
         if ($isAjax) {
             $this->noLayouts();
@@ -133,7 +132,7 @@ class EmailFormController extends Controller {
             $model->link = UserSession::getURL();
             
             $params['m'] = $model;
-            $params['app'] = App::instance();
+            $params['app'] = $this->app;
             $textMsg = static::simpleView('form/mail_text',$params);
             $htmlMsg = static::simpleView('form/mail_html',$params);
 
