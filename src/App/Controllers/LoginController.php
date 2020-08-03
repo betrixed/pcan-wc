@@ -63,7 +63,7 @@ class LoginController extends Controller {
 
     private function setForm($m) {
         $m->formid =  'user-login';
-        $this->captchaView();
+        $this->captchaView($m);
         $this->xcheckView($m);
     }
     // POST from login form
