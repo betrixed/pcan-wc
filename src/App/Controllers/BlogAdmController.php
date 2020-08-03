@@ -168,7 +168,7 @@ class BlogAdmController extends Controller
         $old_tc = $blog->title_clean;
         $update = new WConfig();
         $update->blog = $blog;
-        $update->revision = $this->getLinkedRevision($blog);//RevisionOp
+        $update->revision = self::getLinkedRevision($blog);//RevisionOp
         $this->setBlogFromPost($post, $update);
         $update_link = ($old_tc !== $blog->title_clean);
         try {
@@ -346,8 +346,7 @@ class BlogAdmController extends Controller
      */
     private function editForm()
     {
-        $view = $this->getView();
-        $model = $view->m;
+        $model = $this->getViewModel();
 
         $blog = $model->blog;
 

@@ -202,9 +202,9 @@ EOD;
         return $order_field;
     }
 
-    static function links_setBlogURL($blogid, $slug) {
+    function links_setBlogURL(int $blogid, string $slug) {
         try {
-            $link = Links::findFirst(['refid = :rid', ':rid' => $blogid]);
+            $link = Links::findFirst(['refid = ?0', 'bind' => [$blogid]]);
         } catch (\PDOException $e) {
             $err = $e->errorInfo;
             $this->flash('No link record yet: ' . $err[0] . ' ' . $err[1]);
