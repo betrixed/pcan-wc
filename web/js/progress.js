@@ -23,7 +23,9 @@ $(document).ready(function(){
     complete:function(data){
         var update = $('#image_status');
         update.html(data.responseText);
+        
         update.show();
+        post_imagelist();
         document.refresh;
     },
     resetForm: true

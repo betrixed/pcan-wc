@@ -50,7 +50,7 @@ class EditOp extends ImageOp {
     public function doThing() {
         // description field changed?
         
-        $new_description = Valid::toHtml($this->post, 'desc' . $this->rowid );
+        $new_description = $this->controller->purify($this->post, 'desc' . $this->rowid );
         $update = Valid::toDateTime($this->post, 'date' . $this->rowid);
 
         $image = Image::findFirstById($this->imageid);
@@ -78,14 +78,14 @@ class DeleteOp extends ImageOp {
         $controller = $this->controller;
         $img_id = $this->imageid;
         $gallery_id = $this->galleryid;
-        $galcount = $this->countImgGallery($img_id);
+        $galcount = $controller->countImgGallery($img_id);
         if ($galcount > 1) {
 // remove reference
-            $this->removeRef($img_id, $gallery_id);
+            $controller->removeRef($img_id, $gallery_id);
             $msg = "Removed reference to image: id = " . $img_id;
         } else {
 // remove reference, image and file
-            $this->removeRef($img_id, $gallery_id);
+            $controller->removeRef($img_id, $gallery_id);
             $myimg = Image::findFirstById($img_id);
             $mygal = Gallery::findFirstById($myimg->galleryid);
             $dpath = $controller->getWebDir() . $mygal->path . "/";
@@ -110,7 +110,7 @@ class DeleteOp extends ImageOp {
             }
         }
         if (isset($msg)) {
-            UserSession::flash($msg);
+            $controller->flash($msg);
         }
     }
 
@@ -121,6 +121,7 @@ class GalleryAdmController extends Controller {
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;
     use \App\Link\GalleryView;
+    use \WC\Mixin\HtmlPurify;
     
     private $syncUrl = 'http://parracan.org';
     private $editList = [];

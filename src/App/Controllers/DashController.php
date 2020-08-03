@@ -49,7 +49,7 @@ class DashController extends Controller {
         $m = $this->getViewModel();
         $m->title = "Dash";
         $m->extensions = get_loaded_extensions();
-        $m->need_extensions = ['intl','pdo_mysql'];
+        $m->need_extensions = ['intl','pdo_mysql','gd'];
         foreach($m->need_extensions as $name) {
             if (!in_array($name, $m->extensions)) {
                 $this->flash("Extension " . $name . " not loaded");
