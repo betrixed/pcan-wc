@@ -190,7 +190,7 @@ class GalleryAdmController extends Controller {
     public function setidAction($id) {
         if (!empty($id)) {
             $imageid = $id;
-            $us = UserSession::read();
+            $us = $this->user_session;
             if (!empty($us)) {
                 $us->setKey('imageid', $imageid);
                 echo $imageid;

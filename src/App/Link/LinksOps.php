@@ -105,7 +105,7 @@ select links.id, links.url, links.title,
     limit 20
 EOD;
         $qry = new DbQuery($this->db);
-        $rows = $qry->arraySet($sql, [':utype' => $linkType]);
+        $rows = $qry->arraySet($sql, ['utype' => $linkType]);
         $params['ct'] = count($rows);
         $params['rows'] = $rows;
 

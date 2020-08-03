@@ -116,10 +116,19 @@ if (!empty($link->refid)) {
 
         </div>
                 <?= $gem->hidden(['name' => 'id', 'value' => $m->linkid]) ?>
+        <div class="row">
         <div class="col-4">
                 <?= $gem->select(['label' => 'URL Type', 'name' => 'urltype', 'list' => $urltypes,
                     'value' => $link->urltype])
                 ?>
+        </div>
+                <?php if ($link->urltype === 'Blog'):?>
+            <div class="col-4">
+                  <?= $gem->number(['label' => 'Blog id', 
+                    'name' => 'refid', 'value' => $link->refid]) ?>
+            </div>
+            <?php endif ?>
+        </div>
         </div>
                 <?php if ($m->linkid > 0): ?>
             <div class='row pad10'>
