@@ -13,10 +13,12 @@ use App\Models\Blog;
 use App\Models\Linkery;
 use WC\Valid;
 use Phalcon\Mvc\Controller;
-use App\Link\RevisionOp;
+use App\Link\BlogView;
 
 class ArticleController  extends Controller {
 use \WC\Mixin\ViewPhalcon;
+use \App\Link\RevisionOp;
+
 
     public function titleAction($title) {
         $blog = Blog::findFirstByTitleClean($title);
@@ -39,13 +41,22 @@ use \WC\Mixin\ViewPhalcon;
         }
         $m->title =  $blog->title;
         $m->blog = $blog;
-        $m->revision = RevisionOp::linkedRevision($blog);
-
+        $m->revision = self::getLinkedRevision($blog);
+        if (empty($m->revision)) {
+            $revobj = new \stdClass();
+            $revobj->content = "<p>Error in content index</p>";
+            $m->revision = $revobj;
+        }
         $m->analytics = true;
         $meta = [];
         // fill the array up with article meta tags.
         $hostUrl = 'http' . '://' . $_SERVER['HTTP_HOST'];
-        $m->metadata = RevisionOp::getMetaTagHtml($this->db, $blog->id,$meta, $hostUrl);
+        if (!empty($blog->id)) {
+            $m->metadata = BlogView::getMetaTagHtml($blog->id,$meta, $hostUrl);
+        }
+        else {
+            $m->metadata = [];
+        }
         $m->metaloaf = $meta;
         $m->back = null;
         $req = $_REQUEST;

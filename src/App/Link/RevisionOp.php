@@ -25,7 +25,7 @@ trait RevisionOp
         return 1;
     }
 
-    static function getLinkedRevision($blog): object
+    static function getLinkedRevision($blog): ?object
     {
         return self::getBlogRevision($blog->id, $blog->revision);
     }
