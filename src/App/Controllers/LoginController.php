@@ -304,7 +304,7 @@ class LoginController extends Controller {
                 $roles = UserRoles::getRoleList($this->db, $user->id);
                 $user_session->setUser($user, $roles);
                 
-                $user_session->addFlash("Logged in as " . $user_session->getUserName());
+                $this->flash("Logged in as " . $user_session->getUserName());
                 
                 UserLog::login($user->id,  $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
                 $this->noLayouts();
