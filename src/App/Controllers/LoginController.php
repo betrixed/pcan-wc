@@ -292,36 +292,37 @@ class LoginController extends Controller {
         if (!$user_session->isEmpty()) {
             $user_session->wipe();
         }
-        return $this->errorLogin('User Wiped');
         
-        $user = null;
-         if (!empty($m->email)) {
+        if (!empty($m->email)) {
             $user = Users::findFirstByEmail($m->email);
-        } else {
+        } else if (!empty($m->alias)){
             $user = Users::findFirstByName($m->alias);
         }
-        if (!empty($user)) {
-            $secure = $this->security;
-            $stored = $user->password;
-            $m->password = Valid::toStr($post, "password");
-            $good = $secure->checkHash($m->password, $stored);
-            if (!$good) {
-                return $this->errorLogin('Authentication Failure');
-
-            } else {
-                $roles = UserRoles::getRoleList($this->db, $user->id);
-                $user_session->setUser($user, $roles);
-                
-                $this->flash("Logged in as " . $user_session->getUserName());
-                
-                UserLog::login($user->id,  $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
-                $this->noLayouts();
-                return $this->render('login','details');
-            }
-        } else {
-            
+        else {
+            $user = null;
+        }
+        if (empty($user)) {
             return $this->errorLogin("Not found");
         }
+        return $this->errorLogin("Found");
+        $secure = $this->security;
+        $stored = $user->password;
+        $m->password = Valid::toStr($post, "password");
+        $good = $secure->checkHash($m->password, $stored);
+        if (!$good) {
+            return $this->errorLogin('Authentication Failure');
+
+        } else {
+            $roles = UserRoles::getRoleList($this->db, $user->id);
+            $user_session->setUser($user, $roles);
+
+            $this->flash("Logged in as " . $user_session->getUserName());
+
+            UserLog::login($user->id,  $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
+            $this->noLayouts();
+            return $this->render('login','details');
+        }
+
     }
 
     function errorSignup($msg) {

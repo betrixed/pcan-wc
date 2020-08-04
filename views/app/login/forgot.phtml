@@ -20,6 +20,7 @@ $assets->add('bootstrap');
         <?= $gem->invisiCaptcha(['site' => $google['site'], 'formid' => $formid, 'ajax' => 'formid_submit()']) ?>
             </div>
         <?php endif ?>
+        <?= $gem->submit(['name' => 'submit', 'value' => 'Send']) ?>
     </form>
 </div>
 
