@@ -76,6 +76,13 @@ class LoginController extends Controller {
         $m = $view->m;
         $m->message = $msg;
        
+        if (!$m->has('email')) {
+            $m->email = '';
+        }
+        if (!$m->has('alias')) {
+            $m->alias = '';
+        }
+        $m->password = '';
         $this->setForm($m);
         $req = $this->request;
         if ($req->isAjax()) {
@@ -265,14 +272,16 @@ class LoginController extends Controller {
      */
     function checkAction() {
         $post = $_POST;
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
+        $m->email = Valid::toEmail($post, "email");
+        $m->alias = Valid::toStr($post, "alias");
+        
+
         $user_session = $this->user_session;
         $user_session->read(); 
         
         if (!$this->xcheckResult($post)) {
             return $this->errorLogin('Cross script protection failure');
-
         }
 
         $verify = $this->captchaResult($post);
@@ -283,10 +292,8 @@ class LoginController extends Controller {
         if (!$user_session->isEmpty()) {
             $user_session->wipe();
         }
-         
-        $m->email = Valid::toEmail($post, "email");
-        $m->alias = Valid::toStr($post, "alias");
-        $m->password = Valid::toStr($post, "password");
+
+        
         $user = null;
          if (!empty($m->email)) {
             $user = Users::findFirstByEmail($m->email);
@@ -296,6 +303,7 @@ class LoginController extends Controller {
         if (!empty($user)) {
             $secure = $this->security;
             $stored = $user->password;
+            $m->password = Valid::toStr($post, "password");
             $good = $secure->checkHash($m->password, $stored);
             if (!$good) {
                 return $this->errorLogin('Authentication Failure');
