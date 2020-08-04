@@ -292,7 +292,7 @@ class LoginController extends Controller {
         if (!$user_session->isEmpty()) {
             $user_session->wipe();
         }
-
+        return $this->errorLogin('User Wiped');
         
         $user = null;
          if (!empty($m->email)) {
