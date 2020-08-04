@@ -27,7 +27,7 @@ trait ChimpData {
             
             $s = $app->getSecrets();
             if( isset($s['chimp'])) {      
-                $this->chimp_api = new Api($s['chimp']);
+                $this->chimp_api = new Api($app, $s['chimp']);
             }
             else {
                 throw new \Exception("Mail Chimp settings not found");
@@ -386,7 +386,7 @@ trait ChimpData {
                         $newMember = false;
                     }
                 }
-                $needMemberUpdate = $newMember;
+                $needMemberUpdate = false;
                 $test = $member_rec->create_date;
                 if ($newMember || ($member_rec->last_update < $last_update) || is_null($test)) {
                     static::mergeValue($member_rec, 'fname', $fname);
@@ -415,8 +415,12 @@ trait ChimpData {
                     static::mergeValue($member_rec, 'lastUpdate', $last_update);
                     static::mergeValue($member_rec, 'createDate', $create_date);
                     static::mergeValue($member_rec, 'phpjson', $email_address);
-                    $needMemberUpdate = true;
-
+                    if ($newMember) {
+                            $member_rec->create(); // need record id now
+                    }
+                    else {
+                        $needMemberUpdate = true;
+                    }
                 }
 
                 if (empty($email_rec)) {
@@ -433,15 +437,15 @@ trait ChimpData {
                     $entry_rec->emailid = $email_rec->id;
                     $entry_rec->chimpid = $mcid;
                     $entry_rec->status = $status;
-                    $entry_rec->save();
+                    $entry_rec->create();
                 }
                 else if ($status !== $entry_rec->status) {
-                    
+                    $entry_rec->status = $status;
+                    $entry_rec->update();
+                    $needMemberUpdate = true;
                 }
-                if ($newMember) {
-                    $member_rec->create();
-                }
-                else if ($needMemberUpdate) {
+
+                if ($needMemberUpdate) {
                     $data = json_decode($member_rec->phpjson);
                     $data[] = 'flag';
                     $member_rec->phpjson = json_encode($data);

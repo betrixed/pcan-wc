@@ -34,7 +34,7 @@ use \App\Chimp\ChimpData;
         $view = $this->getView();
         $m = $view->m;
         
-        $db = new DbQuery($this->db);
+        $qry =  $this->dbq;
         
         $req = $_REQUEST;
         $req_query = $_SERVER['QUERY_STRING'];
@@ -52,7 +52,6 @@ select M.*, ME.email_address, ME.status as email_status,
   count(*) over() as full_count
   from member M 
   left outer join member_email ME on ME.memberid = M.id
-  where M.status not in ('cleaned', 'unsubscribed', 'deceased')
 EOD;
         $params = [];
         $sql .= " order by " . $order_field;
@@ -62,7 +61,7 @@ EOD;
             $params[':ct'] = $pgsize;
             $params[':start'] = ($page - 1) * $pgsize;
         }
-        $results = $db->arraySet($sql, $params);
+        $results = $qry->arraySet($sql, $params);
         $total = !empty($results) ? $results[0]['full_count'] : 0;
         if ($page === 0) {
             $pgsize = $total;
