@@ -17,6 +17,8 @@ use App\Models\{
     Users
 };
 
+use Phalcon\Db\Column;
+
 class UserLog
 {
 
@@ -72,7 +74,7 @@ EOD;
         $yesterday->sub(new \DateInterval("P2D"));
         $ystr = $yesterday->format(Valid::DATE_TIME_FMT);
         $db = $container->get('db');
-        $result = $db->execute("delete from reset_code where created_at < ?", $ystr);
+        $result = $db->execute("delete from reset_code where created_at < :cdate", ['cdate' => $ystr], ['cdate' => Column::BIND_PARAM_STR] );
         return $result;
     }
     
@@ -87,7 +89,7 @@ EOD;
     {
         global $container;
         
-        $this->deleteOldCodes();
+        self::deleteOldCodes();
 
         // Make a user event, and a resetcode
         $event = new UserEvent();

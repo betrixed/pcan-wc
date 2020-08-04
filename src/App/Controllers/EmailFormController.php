@@ -146,15 +146,11 @@ class EmailFormController extends Controller {
 
             if ($mok['success']) {
                 $this->flash('email sent');
-                $view = $this->getView();
-                $this->noLayouts();
-                
-                $m = $view->m;
-                
+                $m = $this->getViewModel();
                 $m->rec = $rec;
-                $content = $this->render('form', 'sent');
-                UserSession::nullify();
-                return $content;
+                $this->noLayouts();
+                $this->user_session->wipe();
+                return $this->render('form', 'sent');;
             }
         } catch (\PDOException $e) {
             $err = $e->errorInfo;

@@ -3,13 +3,13 @@ $gem = $this->htmlgem;
 $google = $m->google;
 $xcheck = $m->xcheck;
 $formid = 'getPWReset';
-$assets->add('bootstrap');
+$assets->add(['bootstrap','more-validate']);
 ?>
 <div  class="container  outerwrap pad10" style="max-width:50em" >
     <div class="row pad10">
         <h4>Send password reset token</h4>
     </div>
-    <form id="<?= $formid ?>" method='post' action='/login/forgotPost' >
+    <form id="<?= $formid ?>" method='post' action='/login/forgotpost' >
         <?= $gem->email(['label' => 'Email', 'name' => 'email', 
             'class' => 'form-control', 'value' => $m->email, 'size' => 60, "required"]) ?>
             <?php if (isset($xcheck)): ?>
@@ -20,7 +20,9 @@ $assets->add('bootstrap');
         <?= $gem->invisiCaptcha(['site' => $google['site'], 'formid' => $formid, 'ajax' => 'formid_submit()']) ?>
             </div>
         <?php endif ?>
-        <?= $gem->submit(['name' => 'submit', 'value' => 'Send']) ?>
+<div class="row">
+        <?= $gem->submit(['name' => 'submit', 'value' => 'Send', 'class'=>'btn btn-outline-info']) ?>
+</div>
     </form>
 </div>
 
@@ -29,11 +31,11 @@ $assets->add('bootstrap');
 $blob = <<<EOJS
 <script>
 function formid_submit() {
+
     var fm = $("#$formid");
     var purl = fm.attr('action');
     var request_method =fm.attr("method");
     var form_data = fm.serialize();
-
     $.ajax({
             type: request_method,
             url:  purl,

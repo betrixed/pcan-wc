@@ -20,21 +20,23 @@ use Phalcon\Mvc\Controller;
 use WC\Assets;
 use WC\WConfig;
 
-class LoginController extends Controller {
+class LoginController extends Controller
+{
 
     use \WC\Mixin\Captcha;
     use \WC\Mixin\ViewPhalcon;
 
     private $username;
     private $model;
-    
-    function indexAction() {
+
+    function indexAction()
+    {
         if ($this->need_ssl()) {
             return $this->secure_connect();
         }
         $view = $this->getView();
         if ($this->user_session->isLoggedIn('User')) {
-            return $this->render('login','details');
+            return $this->render('login', 'details');
         }
         $m = $view->m;
         $m->title = 'Login';
@@ -42,40 +44,46 @@ class LoginController extends Controller {
         $m->email = '';
         $m->alias = '';
         $this->setForm($m);
-        return $this->render('login','index');
-        
+        return $this->render('login', 'index');
     }
-   function endAction() {
-       $this->user_session->nullify();
-       $this->response->redirect('/',true);
-   }
-    function checkoutAction() {
+
+    function endAction()
+    {
+        $this->user_session->nullify();
+        $this->response->redirect('/', true);
+    }
+
+    function checkoutAction()
+    {
         $ud = $this->user_session;
         $view = $this->getView();
         $ud->read();
         if (!$ud->isEmpty()) {
             $ud->wipe();
-            return $this->render('login','logout');
+            return $this->render('login', 'logout');
         } else {
-            return $this->render('login','error');
+            return $this->render('login', 'error');
         }
     }
 
-    private function setForm($m) {
-        $m->formid =  'user-login';
+    private function setForm($m)
+    {
+        $m->formid = 'user-login';
         $this->captchaView($m);
         $this->xcheckView($m);
     }
+
     // POST from login form
 
-    function errorLogin($msg) {
+    function errorLogin($msg)
+    {
         /** $logger = new \Log('login.log');
-              $logger->write('Fail login - ' . $msg);
+          $logger->write('Fail login - ' . $msg);
          */
         $view = $this->getView();
         $m = $view->m;
         $m->message = $msg;
-       
+
         if (!$m->has('email')) {
             $m->email = '';
         }
@@ -87,32 +95,33 @@ class LoginController extends Controller {
         $req = $this->request;
         if ($req->isAjax()) {
             $this->noLayouts();
-            return $this->render('partials','login/fields');
+            return $this->render('partials', 'login/fields');
         }
     }
 
-    function errorForgot($msg) {
+    function errorForgot($msg)
+    {
         $logger = new \Log('login.log');
         $logger->write('Fail Forgot - ' . $msg);
         $this->flash($msg);
         return $this->forgotView();
     }
 
-    function errorChangePwd($msg) {
+    function errorChangePwd($msg)
+    {
         $logger = new \Log('login.log');
         $logger->write('Password change - ' . $msg);
         $this->flash($msg);
         $this->changePwdView();
     }
 
-    function changePwdView() {
-        $view = $this->view;
-        $view->content = 'home/changePWD';
-        $view->assets(['bootstrap']);
-        echo $this->view->render();
+    function changePwdView()
+    {
+        return $this->render('login','changePWD');
     }
 
-    function changePwdPost() {
+    function changePwdPost()
+    {
         $post = $_POST;
         $newpwd = Valid::toStr($post, 'new_pwd', null);
         $chkpwd = Valid::toStr($post, 'confirm_pwd', null);
@@ -144,7 +153,8 @@ class LoginController extends Controller {
         echo $view->render();
     }
 
-    function changePwd() {
+    function changePwd()
+    {
         if (!$this->app->https()) {
             return;
         }
@@ -154,7 +164,8 @@ class LoginController extends Controller {
         $this->changePwdView();
     }
 
-    function defaultError() {
+    function defaultError()
+    {
         $view = $this->view;
         $view->content = 'home/error';
         $view->layout = 'minimal';
@@ -162,7 +173,8 @@ class LoginController extends Controller {
         echo $view->render();
     }
 
-    function resetPwd($code) {
+    function resetPwdAction($code)
+    {
         $req = $_REQUEST;
 
         ResetCode::deleteOldCodes();
@@ -190,7 +202,8 @@ class LoginController extends Controller {
         }
     }
 
-    function forgotView() {
+    function forgotView()
+    {
         $m = $this->getViewModel();
         if (!isset($m->email)) {
             $m->email = '';
@@ -200,11 +213,13 @@ class LoginController extends Controller {
         return $this->render('login', 'forgot');
     }
 
-    function forgotAction() {
+    function forgotAction()
+    {
         return $this->forgotView();
     }
 
-    function forgotPostAction() {
+    public function forgotPostAction()
+    {
         $post = $_POST;
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
@@ -221,7 +236,7 @@ class LoginController extends Controller {
         }
 
         $user = Users::findFirstByEmail($m->email);
-        
+
 
         if (empty($user)) {
             $this->errorForgot('No match was found for email');
@@ -229,23 +244,24 @@ class LoginController extends Controller {
         }
         $ip = $_SERVER['REMOTE_ADDR'];
         $evt_data = $_SERVER['HTTP_USER_AGENT'];
-        $code = UserLog::newUserConfirm($user, UserEvent::PW_RESET, $ip, $evt_data);
+        $code = UserLog::newUserConfirm($user, UserLog::PW_RESET, $ip, $evt_data);
         if ($code === false) {
             $this->errorForgot('Reset code generation failure');
             return;
         }
-        $name = $found['name'];
-
-        $m->domain = $f3->get('domain');
-        $m->confirmUrl = '/reset-password/' . $code . '/' . $found['email'];
+        $name = $user->name;
+        $app = $this->app;
+        $m->domain = $app->domain;
+        $m->confirmUrl = '/reset-password/' . $code . '/' . $user->email;
         $m->sendDate = Valid::now();
-        $m->site =  $f3->get('organization');
+        $m->site = $app->organization;
         $m->link = $m->domain . $m->confirmUrl;
-        
-        $textMsg = static::renderView($m, 'email/reset_text');
-        $htmlMsg = static::renderView($m, 'email/reset');
 
-        $mailer = new SwiftMail($f3);
+        $params = ['m' => $m, 'app' => $app];
+        $textMsg = static::simpleView( 'email/reset_text',$params);
+        $htmlMsg = static::simpleView( 'email/reset',$params);
+
+        $mailer = new SwiftMail($app);
 
         $msg = [
             "subject" => 'Password Reset from ' . $m->site,
@@ -270,16 +286,17 @@ class LoginController extends Controller {
     /**
      * Confirm login post
      */
-    function checkAction() {
+    function checkAction()
+    {
         $post = $_POST;
         $m = $this->getViewModel();
         $m->email = Valid::toEmail($post, "email");
         $m->alias = Valid::toStr($post, "alias");
-        
+
 
         $user_session = $this->user_session;
-        $user_session->read(); 
-        
+        $user_session->read();
+
         if (!$this->xcheckResult($post)) {
             return $this->errorLogin('Cross script protection failure');
         }
@@ -292,14 +309,17 @@ class LoginController extends Controller {
         if (!$user_session->isEmpty()) {
             $user_session->wipe();
         }
-        
-        if (!empty($m->email)) {
-            $user = Users::findFirstByEmail($m->email);
-        } else if (!empty($m->alias)){
-            $user = Users::findFirstByName($m->alias);
-        }
-        else {
-            $user = null;
+
+        try {
+            if (!empty($m->email)) {
+                $user = Users::findFirstByEmail($m->email);
+            } else if (!empty($m->alias)) {
+                $user = Users::findFirstByName($m->alias);
+            } else {
+                $user = null;
+            }
+        } catch (\Exception $ex) {
+            return $this->errorLogin($ex->getMessage());
         }
         if (empty($user)) {
             return $this->errorLogin("Not found");
@@ -311,21 +331,20 @@ class LoginController extends Controller {
         $good = $secure->checkHash($m->password, $stored);
         if (!$good) {
             return $this->errorLogin('Authentication Failure');
-
         } else {
             $roles = UserRoles::getRoleList($this->db, $user->id);
             $user_session->setUser($user, $roles);
 
             $this->flash("Logged in as " . $user_session->getUserName());
 
-            UserLog::login($user->id,  $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
+            UserLog::login($user->id, $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
             $this->noLayouts();
-            return $this->render('login','details');
+            return $this->render('login', 'details');
         }
-
     }
 
-    function errorSignup($msg) {
+    function errorSignup($msg)
+    {
         $logger = new \Log('login.log');
         $logger->write('Fail Signup - ' . $msg);
         $f3 = $this->f3;
@@ -333,7 +352,8 @@ class LoginController extends Controller {
         $this->signupView();
     }
 
-    function signupPost() {
+    function signupPost()
+    {
         $post = $_POST;
         $verify = $this->captchaResult($post);
         if (!$verify['success']) {
@@ -410,7 +430,8 @@ class LoginController extends Controller {
         }
     }
 
-    function signupView() {
+    function signupView()
+    {
         if (!$this->app->https()) {
             return;
         }
@@ -422,7 +443,8 @@ class LoginController extends Controller {
         return $this->render('login', 'signup');
     }
 
-    function signup() {
+    function signup()
+    {
         $view = $this->view;
         $view->rec = new User();
         $view->message = '';

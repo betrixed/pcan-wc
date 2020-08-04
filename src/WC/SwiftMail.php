@@ -11,7 +11,12 @@ use WC\App;
  */
 class SwiftMail 
 {
+    protected $app;
     
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+    }
     /**
      * @param array $msg
      * 
