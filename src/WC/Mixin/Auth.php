@@ -55,14 +55,15 @@ trait Auth {
                     $host = $ssl_host . $host;
                 }
             }
-            static::reroute('https://' . $host . $server['REQUEST_URI']);
+            $this->reroute('https://' . $host . $server['REQUEST_URI']);
             return false;
         }
         return true;
     }
 
     public function notAuthorized() {
-        $this->user_session->flash('No access to ' . $this->handledUri);
+        $app = $this->app;
+        $this->user_session->flash('No access to ' . $app->arguments);
         $this->reroute('/error/block');
     }
     

@@ -11,7 +11,7 @@ class RedirectController extends \Phalcon\Mvc\Controller
 {
     public function beforeExecuteRoute($dispatcher) {
         $app = $this->app;
-        $url = $app->handledUri;
+        $url = $app->arguments;
         $redirects = $app->redirects;
         if (!empty($redirects)) {
             if (isset($redirects[$url])) {

@@ -16,7 +16,7 @@ use \WC\Mixin\ViewPhalcon;
     public function blockAction() {
          $m = $this->getViewModel();
         
-         $m->handledUri = $this->app->handledUri;
+         $m->handledUri = $this->app->arguments;
          if ($this->request->isAjax()) {
              $this->noLayouts();
         }
@@ -24,7 +24,7 @@ use \WC\Mixin\ViewPhalcon;
     }
     public function route404Action() {
          $m = $this->getViewModel();
-        $m->handledUri = $this->app->handledUri;
+        $m->handledUri = $this->app->arguments;
         if ($this->request->isAjax()) {
              $this->noLayouts();
         }
