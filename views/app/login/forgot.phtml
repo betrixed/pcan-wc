@@ -10,6 +10,7 @@ $assets->add(['bootstrap','more-validate']);
         <h4>Send password reset token</h4>
     </div>
     <form id="<?= $formid ?>" method='post' action='/login/forgotpost' >
+        <div id="login-fields">
         <?= $gem->email(['label' => 'Email', 'name' => 'email', 
             'class' => 'form-control', 'value' => $m->email, 'size' => 60, "required"]) ?>
             <?php if (isset($xcheck)): ?>
@@ -23,6 +24,7 @@ $assets->add(['bootstrap','more-validate']);
 <div class="row">
         <?= $gem->submit(['name' => 'submit', 'value' => 'Send', 'class'=>'btn btn-outline-info']) ?>
 </div>
+        </div>
     </form>
 </div>
 
@@ -36,6 +38,7 @@ function formid_submit() {
     var purl = fm.attr('action');
     var request_method =fm.attr("method");
     var form_data = fm.serialize();
+
     $.ajax({
             type: request_method,
             url:  purl,

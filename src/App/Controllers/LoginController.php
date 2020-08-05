@@ -101,8 +101,8 @@ class LoginController extends Controller
 
     function errorForgot($msg)
     {
-        $logger = new \Log('login.log');
-        $logger->write('Fail Forgot - ' . $msg);
+        $logger = $this->logger;
+        $logger->error('Fail Forgot - ' . $msg);
         $this->flash($msg);
         return $this->forgotView();
     }
@@ -120,7 +120,7 @@ class LoginController extends Controller
         return $this->render('login','changePWD');
     }
 
-    function changePwdPost()
+    function changePwdPostAction()
     {
         $post = $_POST;
         $newpwd = Valid::toStr($post, 'new_pwd', null);
@@ -130,27 +130,24 @@ class LoginController extends Controller
         if (empty($newpwd) || ($newpwd !== $chkpwd)) {
             return $this->errorChangePwd("Password not confirmed");
         }
-        $user = User::byEmail($email);
+        $user = Users::findFirstByEmail($email);
 
-        if ($user === false) {
+        if (empty($user)) {
             return $this->errorChangePwd("User not found for $email");
         }
 
-        $db = Server::db();
+        $db = $this->db;
         $db->begin();
         $crypt = $this->security;
         try {
-            $user['password'] = $crypt->hash($newpwd);
+            $user->password = $crypt->hash($newpwd);
             $user->update();
-            UserEvent::logPwdChange($user['id']);
+            UserLog::logPwdChange($user->id);
             $db->commit();
         } catch (\PDOException $perr) {
             return $this->errorChangePwd($perr->getMessage());
         }
-        $view = $this->view;
-        $view->content = 'home/pwd_changed';
-        $view->assets(['bootstrap']);
-        echo $view->render();
+        return $this->render('login', 'pwd_changed');
     }
 
     function changePwd()
@@ -172,33 +169,31 @@ class LoginController extends Controller
         $view->assets(['bootstrap']);
         echo $view->render();
     }
-
-    function resetPwdAction($code)
+    /** handle a returned reset password URL */
+    function resetPwdAction($code,$email)
     {
+        if ($this->need_ssl()) {
+            return $this->secure_connect();
+        }
         $req = $_REQUEST;
 
-        ResetCode::deleteOldCodes();
-        $valid = ResetCode::byCode($code);
+        UserLog::deleteOldCodes();
+        $valid = ResetCode::findFirstByCode($code);
 
-        if ($valid !== false) {
-            $email = trim($args['email']);
-
-            $userid = $valid['user_id'];
-            $user = User::byId($userid);
-
-
-            if ($user === false || $user['email'] !== $email) {
+        if (!empty($valid)) {
+            $userid = $valid->user_id;
+            $user = Users::findFirstById($userid);
+            if (empty($user) || ($user->email !== $email)) {
                 return $this->defaultError();
             }
-            $view = $this->getView();
-            $m = $view->model;
+            $m = $this->getViewModel();
             $m->email = $email;
             $m->header = "Change password for " . $email;
             $m->url = "/login/";
-            $this->changePwdView();
+            return $this->changePwdView();
         } else {
             $this->flash('Code is invalid or expired');
-            $this->user_session->reroute('\login\changepwd');
+            $this->reroute('\login\changepwd');
         }
     }
 
@@ -279,6 +274,7 @@ class LoginController extends Controller
             return $this->errorForgot($isValid['errors']);
         } else {
             $m->email = $email;
+            $this->noLayouts();
             return $this->render('login', 'reset_sent');
         }
     }
@@ -324,7 +320,7 @@ class LoginController extends Controller
         if (empty($user)) {
             return $this->errorLogin("Not found");
         }
-        return $this->errorLogin("Found");
+
         $secure = $this->security;
         $stored = $user->password;
         $m->password = Valid::toStr($post, "password");

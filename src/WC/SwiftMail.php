@@ -26,6 +26,7 @@ class SwiftMail
     {
         // Settings
         $mailSettings = $this->app->getSecrets('mail');
+        $smtp = $this->app->getSecrets('smtp');
         
         $from = isset($msg['from']) ? $msg['from'] :  $mailSettings['from'];
         $to = isset($msg['to']) ? $msg['to'] :  $mailSettings['to'];
@@ -51,7 +52,6 @@ class SwiftMail
             }
 
             $mailer->isSMTP();
-            $smtp = &$cfg['smtp'];
 
             $mailer->Host = $smtp['server'];
             $mailer->SMTPAuth = true;

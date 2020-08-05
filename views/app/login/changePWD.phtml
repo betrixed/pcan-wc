@@ -1,0 +1,33 @@
+<?php
+$gem = $this->htmlgem;
+?>
+<style>
+    .col-form-label {
+        min-width:150px;
+        text-align: right;
+    }
+    
+    input {
+        margin-left : 15px;
+    }
+</style>
+<form method="post" autocomplete="off" action="<?= $m->url . 'changepwdpost' ?>">
+
+    <div class="container outerwrap pad10">
+        <h3><?= $m->header ?></h3>
+        <?= $gem->hidden(['name' => 'email', 'value' => $m->email]) ?>
+        <div class="row pad10">
+            <?= $gem->password(['label' => 'New password', 'name' => 'new_pwd',
+                'value' => '', 'size' =>24 ]) ?>
+        </div>
+            <div class="row pad10">
+                <?= $gem->password(['label' => 'Confirm password', 'name' => 'confirm_pwd',
+                'value' => '', 'size' =>24 ]) ?>
+            
+        </div>
+        <div class="row pad10">
+            <?= $gem->submit(['name' => 'submit', 'value' => 'Change' ]) ?>
+        </div>
+    </div>
+
+</form>

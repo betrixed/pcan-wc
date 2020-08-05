@@ -54,9 +54,16 @@ EOD;
         $event->user_id = $id;
         $event->create();        
     }
-    static public function logPwdChange($id, $ip, $agent)
+    static public function logPwdChange(int $id, ?string $ip = null, ?string $agent = null)
     {
         $event = new UserEvent();
+        if (empty($ip)) {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        if (empty($agent)) {
+            $agent = $_SERVER['HTTP_USER_AGENT'];
+        }
         $event->status_ip = $ip;
         $event->data = $agent;
 
