@@ -312,7 +312,7 @@ class LoginController extends Controller
         if (!$user_session->isEmpty()) {
             $user_session->wipe();
         }
-
+        $logger->info("Login Attempt: Valid Form");
         try {
             if (!empty($m->email)) {
                 $user = Users::findFirstByEmail($m->email);
@@ -327,9 +327,9 @@ class LoginController extends Controller
         if (is_null($user) || empty($user)) {
             return $this->errorLogin("Not found");
         }
-       
-        $name = $user->name;
         
+        $name = $user->name;
+        $logger->info("Login Attempt: Valid User " . $name);
         $secure = $this->security;
         $stored = $user->password;
         $m->password = Valid::toStr($post, "password");
