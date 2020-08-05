@@ -13,12 +13,14 @@ use WC\FileCache;
 
 class DashController extends Controller {
     use \WC\Mixin\ViewPhalcon;
-    use \WC\Mixin\Auth;
+    //use \WC\Mixin\Auth;
     
     public function getAllowRole() {
-        return 'Admin';
+        return 'Guest';
     }
     public function cmdAction($fn) {
+        $test = Users::findFirstByName('Michael Rynn');
+        $this->logger->info("Test user " . $test->name);
         if ($fn === "asset_cache") {
             $this->assets->clearCache();
            return "Asset cache cleared";
