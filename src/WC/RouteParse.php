@@ -21,20 +21,21 @@ use WC\App;
  *
  * @author michael
  */
-
-
-class RouteParse {
+class RouteParse
+{
 
     const NO_AJAX = 1;
     const ONLY_AJAX = 2;
     const ALLOW_AJAX = 3;
 
-    static function requestIsJax() {
+    static function requestIsJax()
+    {
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
     }
 
     // make an array of pre-built Route objects for serialize, for fast Router setup.
-    static function makeRouteObjects(array $input): object {
+    static function makeRouteObjects(App $app, array $input): object
+    {
 
         $route_list = [];
         $reg1 = 'GET|POST|PUT|DELETE';
@@ -180,16 +181,22 @@ class RouteParse {
                 }
                 // Make a serializable class
                 $rix++;
-                $route = new  Route($pattern, $args, $verb);
-                $route->setName($last_seg . '-' . $rix);
-                $rs = new \stdClass();
-                $rs->route = $route;
-                $rs->ajaxFlag = $ajaxFlag;
+                if ($app->isWeb) {
+                    $route = new Route($pattern, $args, $verb);
+                    $route->setName($last_seg . '-' . $rix);
+                    $rs = new \stdClass();
+                    $rs->route = $route;
+                    $rs->ajaxFlag = $ajaxFlag;
+                }
+                else {
+                    $rs = new \stdClass();
+                    $rs->pattern = $pattern;
+                    $rs->paths = $args;
+                }
                 $route_list[] = $rs;
             }
-            
         }
-        $result = new  \stdClass();
+        $result = new \stdClass();
         $result->rset = $route_list;
         $result->notFound = $rset['not_found'];
         $result->defaultNS = $rset['namespace'];
@@ -197,9 +204,15 @@ class RouteParse {
         return $result;
     }
 
-    static function makeRouter(object $app, object $route_set): Router {
-        $router = new Router(false);
-        $router->removeExtraSlashes(true);
+    static function makeRouter(object $app, object $route_set): object
+    {
+        if ($app->isWeb) {
+            $router = new Router(false);
+            $router->removeExtraSlashes(true);
+        } else {
+            $router = new \Phalcon\Cli\Router(false);
+        }
+
         //$gen = $router->getIdGenerator();
 
         $rset = $route_set->rset;
@@ -209,35 +222,50 @@ class RouteParse {
             $router->notFound($notFound);
         }
         $namespace = $route_set->defaultNS;
-        if (!empty($namespace)) {
-            $router->setDefaultNamespace($namespace);
-        }
-        $reqIsAjax = self::requestIsJax();
-        foreach ($rset as $pos => $store) {
-            $route = $store->route;
-            $ajaxFlag = $store->ajaxFlag;
-            $route->beforeMatch(
-                    function ($uri, $route) use ($app, $ajaxFlag, $reqIsAjax): bool {
+        if ($app->isWeb) {
+            if (!empty($namespace)) {
+                $router->setDefaultNamespace($namespace);
+            }
+            $reqIsAjax = self::requestIsJax();
+            foreach ($rset as $pos => $store) {
+                $route = $store->route;
+                $ajaxFlag = $store->ajaxFlag;
+                $route->beforeMatch(
+                        function ($uri, $route) use ($app, $ajaxFlag, $reqIsAjax): bool {
                     switch ($ajaxFlag) {
-                    case static::ALLOW_AJAX:
-                        $result = true;
-                        break;
-                    case static::ONLY_AJAX:
-                        $result = $reqIsAjax;
-                        break;
-                    case static::NO_AJAX:
-                    default:
-                        $result = !$reqIsAjax;
-                }
-                if ($result) {
-                    $app->route = $route;
-                    return true;
-                }
-                return false;
-            });
-            $router->attach($route);
+                        case static::ALLOW_AJAX:
+                            $result = true;
+                            break;
+                        case static::ONLY_AJAX:
+                            $result = $reqIsAjax;
+                            break;
+                        case static::NO_AJAX:
+                        default:
+                            $result = !$reqIsAjax;
+                    }
+                    if ($result) {
+                        $app->route = $route;
+                        return true;
+                    }
+                    return false;
+                });
+                $router->attach($route);
+            }
         }
+        else {
+            
+            foreach ($rset as $pos => $store) {
+                $paths = $store->paths;
+                $controller = "\\App\\Tasks\\" . ucfirst($paths['controller']) . "Task";
+                
+                $task = ['task' => $controller, 'action' => $paths['action'] . "Action"];
+                //$handler = ucfirst($paths['controller']) . "Task" . "::" . $paths['action'];
+                $router->add($store->pattern, $task);
+            }
+        }
+
 
         return $router;
     }
+
 }

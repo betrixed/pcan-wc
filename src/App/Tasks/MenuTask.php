@@ -19,7 +19,7 @@ class MenuTask extends \Phalcon\Cli\Task
     public function mainAction()
     {
         global $app;
-        $site = $app->SITE_DIR;
+        $site = $app->pcan_dir . "/sites/default";
         $plates = $app->plates;
         $ui = $plates->UI;
 

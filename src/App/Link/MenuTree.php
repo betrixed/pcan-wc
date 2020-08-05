@@ -77,6 +77,7 @@ class MenuTree  {
     }
     static public function getMenuId($menuName)
     {
+        global $container;
         
         if (is_numeric($menuName)) {
             $root_field = 'id';
@@ -107,7 +108,8 @@ WITH RECURSIVE submenus(id, parent, serial, caption, level) AS (
 SELECT sm.level, mi.* from submenus sm join menu_item mi on mi.id = sm.id
 EOD;
 
-        $db = Server::db();       
+        $db = $container->get('db');
+        
         $set = $db->query($menu_sql, $params, $bind);
 
         if (empty($set)) {

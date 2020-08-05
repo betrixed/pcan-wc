@@ -299,7 +299,7 @@ class LoginController extends Controller
         $logger->info("Login Attempt: " . $s);
         $user_session = $this->user_session;
         $user_session->read();
-
+        
         if (!$this->xcheckResult($post)) {
             return $this->errorLogin('Cross script protection failure');
         }

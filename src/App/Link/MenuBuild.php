@@ -36,8 +36,12 @@ class MenuBuild
     
     public function __construct(array $options)
     {
+        global $app, $container;
         $this->output_dir = $options['output_dir'];
         $this->schema_file = $options['schema'];
+        $this->app = $app;
+        $this->db = $container->get('db');
+        $this->gem = $container->get('htmlgem');
         
     }
     static function create_record($midata)
@@ -46,7 +50,7 @@ class MenuBuild
         foreach ($midata as $fname => $fvalue) {
             $mi->$fname = $fvalue;
         }
-        $mi->save();
+        $mi->create();
         return $mi->id;
     }
     static function insert_menus(&$data, $pid)
@@ -94,7 +98,7 @@ class MenuBuild
     function create_cat_menu($cat, $generate, $pid, $limit = 0)
     {
         // get all articles with category news, order by recency
-        $db = Server::db();
+        $db = $this->db;
 
         $catrec = BlogCategory::findFirst([
                  'conditions' => 'name_clean = :str:', 
@@ -161,7 +165,7 @@ EOD;
     }
     function fromMenuConfig($config_file) {
         $app = $this->app;
-        $src = Path::endSep($app->SITE_DIR) . $config_file . '.xml';
+        $src = Path::endSep($app->site_dir) . $config_file . '.xml';
         $data = WConfig::fromXml($src);
        
         $list = &$data['list'];
@@ -210,16 +214,17 @@ EOD;
                 'use WC\UserSession ?>' . PHP_EOL;
         
         $this->navbar_plates = $code;
+        $gem = $this->gem;
         
         foreach($this->drop_down_params as $params) {
             $logid = isset($params['role']) ? $params['role'] : null;
             if (!empty($logid)) {
-                $code = "<?php if(UserSession::isLoggedIn('$logid')): ?>" . PHP_EOL;
+                $code = "<?php if(\$sessUser->isLoggedIn('$logid')): ?>" . PHP_EOL;
                 $this->navbar_plates .= $code;
                 unset($params['role']);
                 $params['class'] = 'dropdown-menu-right';
             }
-            $this->navbar_plates .= HtmlGem::dropDown($params) . PHP_EOL;
+            $this->navbar_plates .= $gem->dropDown($params) . PHP_EOL;
             if (!empty($logid)) {
                 $code = "<?php endif ?>" . PHP_EOL;
                 $this->navbar_plates .= $code;
@@ -237,7 +242,9 @@ EOD;
     }
     function create_menu_table()
     {
-        $db = Server::db();
+        global $container;
+        
+        $db = $container->get('db');
         
         $adapter = $db->getDialectType();
 
@@ -264,7 +271,7 @@ EOD;
             $tdef->generate($script, $stage);
         }
         echo $script;
-        $script->run(Server::db());
+        $script->run($db);
         
         static::create_record(
                 ['id' => -1, 'caption' => 'ANCHOR']);
