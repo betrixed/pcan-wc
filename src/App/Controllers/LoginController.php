@@ -317,10 +317,12 @@ class LoginController extends Controller
         } catch (\Exception $ex) {
             return $this->errorLogin($ex->getMessage());
         }
-        if (empty($user)) {
+        if (is_null($user) || empty($user)) {
             return $this->errorLogin("Not found");
         }
-
+        $logger = $this->logger;
+        $name = $user->name;
+        $logger->info('Login Attempt for ' . $name);
         $secure = $this->security;
         $stored = $user->password;
         $m->password = Valid::toStr($post, "password");
