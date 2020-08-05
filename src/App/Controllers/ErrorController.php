@@ -14,13 +14,20 @@ class ErrorController extends Controller
 use \WC\Mixin\ViewPhalcon;
 
     public function blockAction() {
-         $view = $this->getView();
-         $view->m->handledUri = $this->app->handledUri;
+         $m = $this->getViewModel();
+        
+         $m->handledUri = $this->app->handledUri;
+         if ($this->request->isAjax()) {
+             $this->noLayouts();
+        }
         return $this->render('error','block');
     }
     public function route404Action() {
-        $view = $this->getView();
-        $view->m->handledUri = $this->app->handledUri;
+         $m = $this->getViewModel();
+        $m->handledUri = $this->app->handledUri;
+        if ($this->request->isAjax()) {
+             $this->noLayouts();
+        }
         return $this->render('error','route404');
     }
 }

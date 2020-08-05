@@ -80,9 +80,8 @@ class LoginController extends Controller
         /** $logger = new \Log('login.log');
           $logger->write('Fail login - ' . $msg);
          */
-        $view = $this->getView();
+        $m = $this->getViewModel();
         $m = $view->m;
-        $m->message = $msg;
 
         if (!$m->has('email')) {
             $m->email = '';
@@ -90,6 +89,7 @@ class LoginController extends Controller
         if (!$m->has('alias')) {
             $m->alias = '';
         }
+        $this->logger->info("Login fail: " . $msg);
         $m->password = '';
         $this->setForm($m);
         $req = $this->request;
@@ -288,8 +288,15 @@ class LoginController extends Controller
         $m = $this->getViewModel();
         $m->email = Valid::toEmail($post, "email");
         $m->alias = Valid::toStr($post, "alias");
-
-
+        $logger = $this->logger;
+        $s = "";
+        if (!empty($m->email)) {
+            $s .= "Email: " . $m->email;
+        }
+        if (!empty($m->alias)) {
+            $s .= "Alias: " . $m->alias;
+        }
+        $logger->info("Login Attempt: " . $s);
         $user_session = $this->user_session;
         $user_session->read();
 
@@ -320,9 +327,9 @@ class LoginController extends Controller
         if (is_null($user) || empty($user)) {
             return $this->errorLogin("Not found");
         }
-        $logger = $this->logger;
+       
         $name = $user->name;
-        $logger->info('Login Attempt for ' . $name);
+        
         $secure = $this->security;
         $stored = $user->password;
         $m->password = Valid::toStr($post, "password");
