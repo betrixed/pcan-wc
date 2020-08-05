@@ -10,6 +10,7 @@ use WC\UserSession;
 use WC\Dos;
 use Phalcon\Mvc\Controller;
 use WC\FileCache;
+use App\Models\Users;
 
 class DashController extends Controller {
     use \WC\Mixin\ViewPhalcon;
