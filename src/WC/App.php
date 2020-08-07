@@ -11,17 +11,26 @@ use Phalcon\Response;
 class App extends WConfig
 {
     
-    protected $secrets;
+    private $keeps;
     
     static public function myPath(): string {
         return __DIR__;
     }
     
+    /**
+     * Erase existing properties
+     */
+    public function loadSecrets(string $file) {
+        $this->keeps = WConfig::serialCache($file);
+    }
+    /** 
+     * Return type mixed
+     */
     public function getSecrets($section = null) {
-        if (!isset($this->secrets)) {
-            $this->secrets = WConfig::serialCache($this->site_dir . "/.secrets.xml");
+        if (!isset($this->keeps)) {
+            throw new \Exception("Confidential properties not loaded");
         }
-        $obj = $this->secrets;
+        $obj = $this->keeps;
         if (!empty($section)) {
             if (!isset($obj[$section])) {
                 throw new \Exception("App section $section is missing");
