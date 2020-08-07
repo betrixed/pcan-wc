@@ -64,6 +64,19 @@ trait LinksOps  {
         $db->execute('delete from links where id = ?', [$id]);
     }
 
+    static  private function links_join() : string {
+$sql = <<<EOD
+select A.id, A.url, A.title,
+ A.sitename, A.summary, A.urltype, A.date_created,
+ I.name as im_file, G.path as im_path, 
+    I.description as im_caption
+ from links A
+ left join image I on I.id = A.imageid
+ left join gallery G on G.id = I.galleryid
+ where A.enabled = 1 and
+EOD;
+    return $sql;
+    }
     /**
      * 
        Recent list of remote links below front page article
@@ -71,13 +84,13 @@ trait LinksOps  {
      */
     public function homeLinks( ) : array {
         // 
-        $sql = <<<EOD
-select id, url, title, sitename, summary, urltype, date_created 
-  from links
-  where (urltype='Remote' or urltype='Front' or urltype='Blog') 
-  and enabled = 1
-  order by date_created desc
- limit  20
+        $sql = self::links_join();
+        $sql .= <<<EOD
+  (A.urltype='Remote' 
+  or A.urltype='Front' 
+  or A.urltype='Blog') 
+  order by A.date_created desc
+  limit  20
 EOD;
         $qry = new DbQuery($this->db);
         $params['rows'] = $qry->arraySet($sql);
@@ -91,18 +104,11 @@ EOD;
      * @return array ; record set;
      */
     function links_byType($linkType) : array {
-        $sql = <<<EOD
-select links.id, links.url, links.title,
-    links.sitename, links.summary, links.urltype, links.date_created,
-    image.name as im_file, gallery.path as im_path, 
-        image.description as im_caption
-    from links
-    left join image on image.id = links.imageid
-    left join gallery on gallery.id = image.galleryid
-    where urltype= :utype
-    and links.enabled = 1
-    order by links.date_created desc
-    limit 20
+        $sql = self::links_join();
+        $sql .= <<<EOD
+  A.urltype= :utype
+  order by A.date_created desc
+  limit 20
 EOD;
         $qry = new DbQuery($this->db);
         $rows = $qry->arraySet($sql, ['utype' => $linkType]);

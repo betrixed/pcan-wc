@@ -1,7 +1,15 @@
 <?php 
     $images = $m->images;
+      $row_id = 0;
      //height: <?=$m->maxHeight + 50 
 ?>
+
+
+
+<?php if ((!$app->isMobile)): ?>
+<?php if (!empty($images)): 
+
+  ?>  
 
 <style>
 .carousel-inner,.carousel,.item,.fill {
@@ -44,11 +52,6 @@ div.carousel-link{
     background-color: black;
 }
 </style>
-
-<?php if (!empty($images)): 
-
-  $row_id = 0;
-  ?>   
     <div id="gallery-c" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
              <?php foreach($images as $fup): ?>
@@ -57,7 +60,7 @@ div.carousel-link{
                 <?php else: ?>
     <li data-target="#gallery-c" data-slide-to="<?=$row_id?>"></li>
                         <?php endif ?>
-            <?php $row_id++; endforeach;   $row_id = 0;  ?>
+    <?php $row_id++; endforeach;   $row_id = 0;  ?>
     <div class="carousel-link"><a href="/gallery/view/ffb-2020-Apr-Jun">Gallery Archive</a></div>
       </ol>
 
@@ -69,11 +72,12 @@ div.carousel-link{
       $idate = strtotime($fup['date_upload']);
       $filename = pathinfo( $fup['name'] , PATHINFO_FILENAME);
       $itemClass = ($row_id === 1) ? "carousel-item active" : "carousel-item";
+      $imgClass = "d-block w-100";
         $img_path = "/" . $fup['path'] . "/thumbs/" .  $filename. ".png";
         $doc_url = "'/" . $fup['path'] . "/" .   $fup['name']  . "'";
     ?>
      <div class="<?=$itemClass ?>">
-         <img class="d-flex align-items-center" src="<?=$img_path ?>"  title="<?=$info ?>" onclick="goto_url(<?=$doc_url?>);"alt="<?='slide ' . $row_id ?>" >
+         <img class="<?= $imgClass ?>" src="<?=$img_path ?>"  title="<?=$info ?>" onclick="goto_url(<?=$doc_url?>);"alt="<?='slide ' . $row_id ?>" >
     </div>
     <?php endforeach ?>
 <a class="carousel-control-prev" href="#gallery-c" role="button" data-slide="prev">
@@ -86,6 +90,7 @@ div.carousel-link{
   </a>
         </div>
     </div>
+<?php>
 <div style="font-family:serif;font-size:16pt;">
 <div class="row">
     <div class="col text-center">
@@ -102,5 +107,37 @@ div.carousel-link{
         window.location.href = newloc;
     }
 </script>
+<?php endif //  images ?>
 
-<?php endif ?>
+<?php else: 
+    $rowid = 0;
+?>
+<p>Latest Fool Bulletins in <a href="/gallery/view/ffb-2020-Apr-Jun">Gallery Archive</a></p>
+
+<?php foreach($images as $fup): 
+
+      $info = $fup['description'];
+      $row_id = $row_id + 1;
+      $chkid = "chk" . $row_id;
+      $idate = strtotime($fup['date_upload']);
+      $filename = pathinfo( $fup['name'] , PATHINFO_FILENAME);
+
+        $img_path = "/" . $fup['path'] . "/thumbs/" .  $filename. ".png";
+        $doc_url = "'/" . $fup['path'] . "/" .   $fup['name']  . "'";
+    ?>
+     <div class="row">
+     <div class="col">
+         <p><a href="$doc_url"><?=$info ?></a></p>
+    </div>
+</div>
+   <?php endforeach; ?>
+<div style="font-family:serif;font-size:16pt;">
+<div class="row">
+    <div class="col text-center">
+        <p style="line-height: normal;">
+            Published at <a href="https://knitting-nannas.com/bulletins.php">Knitting Nanas</a> & <a href="https://fossilfool.com.au/">Fossil Fool Site</a><br>
+ <a href="https://knitting-nannas.org/subscribe.php">Email Subscription - Knitting Nannas Site</a></p>
+    </div>
+</div>
+</div>
+<?php endif; // not mobile ?>

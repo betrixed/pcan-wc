@@ -81,7 +81,6 @@ class LoginController extends Controller
           $logger->write('Fail login - ' . $msg);
          */
         $m = $this->getViewModel();
-        $m = $view->m;
 
         if (!$m->has('email')) {
             $m->email = '';

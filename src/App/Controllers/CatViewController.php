@@ -17,7 +17,7 @@ use Phalcon\Mvc\View;
 
 class CatViewController extends Controller {
 use \WC\Mixin\ViewPhalcon;
-    
+use \App\Link\RevisionOp;
    /** Do not get a new view here, use the existing one
     * Menu id passed
     * @param type $mit
@@ -72,7 +72,7 @@ use \WC\Mixin\ViewPhalcon;
         $v = $this->getView();
         $m = $v->m;
         $m->blog = $blog;
-        $m->revision = BlogView::linkedRevision($blog);
+        $m->revision = $this->getLinkedRevision($blog);
         return $this->render('cat', 'fetch');
     }
 
@@ -81,7 +81,7 @@ use \WC\Mixin\ViewPhalcon;
         $view = $this->getView();
         $m = $view->m;
         $m->blog = $blog;
-        $m->revision = BlogView::linkedRevision($blog);
+        $m->revision = $this->getLinkedRevision($blog);
         
         return $view->render('cat','fetch');
     }

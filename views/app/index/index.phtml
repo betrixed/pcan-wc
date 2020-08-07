@@ -38,34 +38,27 @@ $hasEvents = !empty($m->events);
         </div>
 <?php endif; ?>
     <div class="row">
-        <div class="col-lg-5">
-             <div class="sidebox">
-                 <?php $this->partial("index/ffb") ?>
-                </div>
-<?php foreach ($m->sides as $box): ?>
-               <!-- link <?= $box['id'] ?>-->
-                <div class="sidebox">
-                    <span class='link-title'><?= $box['title'] ?></span>
-                    <span class='link-summary'><?= $box['summary'] ?></span>
-                </div>
-<?php endforeach; ?>
-        </div>
-        <div class='col-lg-7 body-wrap pad10'>
+        <div class='col-12 col-xs-12 col-sm-12 col-md-8 col-lg-7 body-wrap pad10'>
             <?php
             foreach ($m->main as $link):
                 $url = $link['url'];
                 $ulen = strlen($url);
                 $urlhint = ($ulen > 55) ? substr($url, 0, 25) . '...' . substr($url, $ulen - 27)
                             : $url;
+                $dated = new \DateTime($link['date_created']);
                 
                 ?>
                 <!-- link <?= $link['id'] ?>-->
                 <div class='mitem' id='lnk<?= $link['id'] ?>'>
+                    <div class="row">
+                        <div class='col-6 link-sitename' ><?= $dated->format('jS M Y') ?></div>
+                        <div class='col-6 link-sitename text-right'><?= $link['sitename'] ?></div>
+                    </div>
+                    
                     <div class="title-area">
                         <span class="link-title">
                             <a  href='<?= $url ?>' target='_blank'><?= $link['title'] ?></a>
-                        </span>
-                        <span class='link-sitename float-right' ><?= $link['sitename'] ?></span>
+                        </span>                     
                     </div>
                     <div class="clear"></div>
                     <div class="link-summary">
@@ -85,6 +78,19 @@ $hasEvents = !empty($m->events);
                 </div>
                 <div class="clear"></div>
                 <hr>
+<?php endforeach; ?>
+        </div>
+        
+        <div class="col-12 col-xs-12 col-sm-12 col-md-4 col-lg-5">
+             <div class="sidebox">
+                 <?php $this->partial("index/ffb") ?>
+                </div>
+<?php foreach ($m->sides as $box): ?>
+               <!-- link <?= $box['id'] ?>-->
+                <div class="sidebox">
+                    <span class='link-title'><?= $box['title'] ?></span>
+                    <span class='link-summary'><?= $box['summary'] ?></span>
+                </div>
 <?php endforeach; ?>
         </div>
     </div>
