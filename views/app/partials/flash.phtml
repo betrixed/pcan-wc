@@ -7,5 +7,6 @@ if (!empty($flash)):
         <?= $msg['text'] ?>
         </div>
     <?php endforeach;
+    $view->setVars(['flash' => []]);
 endif;
 ?>

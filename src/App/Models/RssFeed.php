@@ -42,6 +42,12 @@ class RssFeed extends \Phalcon\Mvc\Model
     protected $provider;
 
     /**
+     *
+     * @var string
+     */
+    protected $use_https;
+
+    /**
      * Method to set the value of field id
      *
      * @param integer $id
@@ -120,6 +126,19 @@ class RssFeed extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field use_https
+     *
+     * @param string $use_https
+     * @return $this
+     */
+    public function setUseHttps($use_https)
+    {
+        $this->use_https = $use_https;
+
+        return $this;
+    }
+
+    /**
      * Returns the value of field id
      *
      * @return integer
@@ -180,11 +199,21 @@ class RssFeed extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field use_https
+     *
+     * @return string
+     */
+    public function getUseHttps()
+    {
+        return $this->use_https;
+    }
+
+    /**
      * Initialize method for model.
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        $this->setSchema("newsdb");
         $this->setSource("rss_feed");
         $this->hasMany('id', 'App\Models\RssLink', 'feed_id', ['alias' => 'RssLink']);
     }
@@ -225,7 +254,8 @@ class RssFeed extends \Phalcon\Mvc\Model
             'last_read' => 'last_read',
             'content' => 'content',
             'nick_name' => 'nick_name',
-            'provider' => 'provider'
+            'provider' => 'provider',
+            'use_https' => 'use_https'
         ];
     }
 

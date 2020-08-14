@@ -40,8 +40,11 @@ $furl = "/news/rss_feed/process/";
 <div class="container-fluid">
     <div class="body-wrap">
 <div class="row">
-    <div class="col">
+    <div class="col-6">
     <?= $gem->linkTo(['href' => $furl . $feed->id, 'text' => 'Feed list']); ?>
+    </div>
+        <div class="col-6">
+            <pd><?= 'Flags: ' . $rss_link->flags ?></p>
     </div>
 </div>
 
@@ -65,7 +68,7 @@ $furl = "/news/rss_feed/process/";
     <hr>
      <div class="row">
         <div class="col">
-            <?= $rss_link->extract ?>
+            <?= $m->content ?>
         </div>
     </div>
     </div>
@@ -76,7 +79,7 @@ $furl = "/news/rss_feed/process/";
     <hr>
      <div class="row">
         <div class="col">
-            <?= $gem->multiline(['name' => 'text', 'value' => $rss_link->extract]) ?>
+            <?= $gem->multiline(['name' => 'text', 'value' => $m->content]) ?>
         </div>
     </div>
     </div>

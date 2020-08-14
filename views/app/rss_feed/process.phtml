@@ -56,7 +56,7 @@ $linkreset = "/news/rss_link/reset/";
             ?>
             <div class="row">
                 <div class="col-5"><?= $rss_link->description ?></div>
-                <div class="col-2"><?= $rss_link->title ?></div>
+                <div class="col-2"><?= $rss_link->title ?? '-'; ?></div>
                 <div class="col-1"><?= $rss_link->creator ?></div>
                  <div class="col-1 text-center"><?= $rss_link->section ?></div>
                 <div class="col-1"><?= $date ?></div>

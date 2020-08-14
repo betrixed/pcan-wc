@@ -170,10 +170,10 @@ EOS;
         $user = Users::findFirstById($id);
         if (!empty($user)) {
             foreach ($post as $key => $change) {
-                if (Valid::startsWith($key, 'dgp')) {
+                if (str_starts_with($key, 'dgp')) {
                     $gid = intval(substr($key, 3));
                     UserAuth::delGroup($user->id, $gid);
-                } else if (Valid::startsWith($key, 'agp')) {
+                } else if (str_starts_with($key, 'agp')) {
                     $gid = intval(substr($key, 3));
                     $this->addUserGroup($user->id, $gid);
                 }

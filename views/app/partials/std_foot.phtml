@@ -6,15 +6,17 @@
 <footer class="page-footer">
     <div class="row" >
         <div class="col-3">
+            <div id="footer_id">
             <?php
             $sid = $this->user_session->getUserName();
             if ($sid !== 'NULL') {
-                echo("<a href=\"/end_session\">End Session: " . $sid . "</a>");
+                echo("&nbsp;<a style=\"color:white;font-weight:bold;font-size;1.1em;\" href=\"/end_session\">PHP Session as: " . strtoupper($sid) . "</a>");
             }
             else {
                 echo("No session");
             }
             ?>
+            </div>
         </div>
         <div class="col-3"> 
             &copy;&nbsp;<?= $app->organization ?>
@@ -24,4 +26,10 @@
         </div>
     </div>
 </footer>
+<script>
+    function update_footer_id() {
+        var text = "&nbsp;<a style=\"color:white;font-weight:bold;font-size;1.1em;\" href=\"/end_session\">PHP Session as: " + window.php_id + "</a>";
+        $("#footer_id").html(text);
+    }
+</script>
 <?= $assets->JsFooter(); ?>

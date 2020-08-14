@@ -80,6 +80,7 @@ class LoginController extends Controller
         /** $logger = new \Log('login.log');
           $logger->write('Fail login - ' . $msg);
          */
+        $this->flash($msg);
         $m = $this->getViewModel();
 
         if (!$m->has('email')) {
@@ -90,11 +91,13 @@ class LoginController extends Controller
         }
         $this->logger->info("Login fail: " . $msg);
         $m->password = '';
+        
         $this->setForm($m);
+        
         $req = $this->request;
         if ($req->isAjax()) {
             $this->noLayouts();
-            return $this->render('partials', 'login/fields');
+            return $this->encode_json($this->render('partials', 'login/fields'));
         }
     }
 
@@ -308,9 +311,6 @@ class LoginController extends Controller
             return $this->errorLogin('Google error ' . $verify['errorcode']);
         }
 
-        if (!$user_session->isEmpty()) {
-            $user_session->wipe();
-        }
         $logger->info("Login Attempt: Valid Form");
         try {
             if (!empty($m->email)) {
@@ -324,7 +324,7 @@ class LoginController extends Controller
             return $this->errorLogin($ex->getMessage());
         }
         if (is_null($user) || empty($user)) {
-            return $this->errorLogin("Not found");
+            return $this->errorLogin("Authentication Failure");
         }
         
         $name = $user->name;
@@ -343,10 +343,16 @@ class LoginController extends Controller
 
             UserLog::login($user->id, $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
             $this->noLayouts();
-            return $this->render('login', 'details');
+            return $this->encode_json($this->render('login', 'details'));
         }
     }
 
+    function encode_json($html) : string {
+        $username = strtoupper($this->user_session->getUserName());
+        $data = ['html' => $html, 'php_id' => $username];
+        $json = json_encode($data);
+        return $json;   
+    }
     function errorSignup($msg)
     {
         $logger = new \Log('login.log');

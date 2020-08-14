@@ -37,9 +37,9 @@ class RssLink extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var string
+     * @var integer
      */
-    protected $extract;
+    protected $flags;
 
     /**
      *
@@ -61,9 +61,9 @@ class RssLink extends \Phalcon\Mvc\Model
 
     /**
      *
-     * @var integer
+     * @var string
      */
-    protected $flags;
+    protected $extract;
 
     /**
      *
@@ -143,14 +143,14 @@ class RssLink extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field extract
+     * Method to set the value of field flags
      *
-     * @param string $extract
+     * @param integer $flags
      * @return $this
      */
-    public function setExtract($extract)
+    public function setFlags($flags)
     {
-        $this->extract = $extract;
+        $this->flags = $flags;
 
         return $this;
     }
@@ -195,14 +195,14 @@ class RssLink extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field flags
+     * Method to set the value of field extract
      *
-     * @param integer $flags
+     * @param string $extract
      * @return $this
      */
-    public function setFlags($flags)
+    public function setExtract($extract)
     {
-        $this->flags = $flags;
+        $this->extract = $extract;
 
         return $this;
     }
@@ -284,13 +284,13 @@ class RssLink extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field extract
+     * Returns the value of field flags
      *
-     * @return string
+     * @return integer
      */
-    public function getExtract()
+    public function getFlags()
     {
-        return $this->extract;
+        return $this->flags;
     }
 
     /**
@@ -324,13 +324,13 @@ class RssLink extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field flags
+     * Returns the value of field extract
      *
-     * @return integer
+     * @return string
      */
-    public function getFlags()
+    public function getExtract()
     {
-        return $this->flags;
+        return $this->extract;
     }
 
     /**
@@ -358,7 +358,7 @@ class RssLink extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        $this->setSchema("newsdb");
         $this->setSource("rss_link");
         $this->belongsTo('feed_id', 'App\Models\RssFeed', 'id', ['alias' => 'RssFeed']);
     }
@@ -399,11 +399,11 @@ class RssLink extends \Phalcon\Mvc\Model
             'guid' => 'guid',
             'pub_date' => 'pub_date',
             'description' => 'description',
-            'extract' => 'extract',
+            'flags' => 'flags',
             'title' => 'title',
             'link' => 'link',
             'creator' => 'creator',
-            'flags' => 'flags',
+            'extract' => 'extract',
             'section' => 'section',
             'category' => 'category'
         ];

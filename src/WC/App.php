@@ -6,8 +6,6 @@ namespace WC;
  * @author michael
  */
 
-use Phalcon\Response;
-
 class App extends WConfig
 {
     

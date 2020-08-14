@@ -7,7 +7,9 @@ use MatthiasMullie\Minify;
 /**
  * Organise typical webpage .css, .js assets
  */
-class Assets {
+class Assets
+{
+
     private $warn_missing;
     private $render_lock;
     private $mark;
@@ -21,18 +23,21 @@ class Assets {
     private $config;
     private $minify;
     private $minify_name;
+    private $src_paths;
 
     // Minify cache
     const MAX_AGE = 60 * 60 * 24;
     const SCRIPT_TAG = '<script>' . PHP_EOL;
     const SCRIPT_END = '</script>' . PHP_EOL;
 
-    public function minify($name) {
+    public function minify($name)
+    {
         $this->minify_name = $name;
         $this->minify = true;
     }
 
-    public function addAssets(array $cfg) {
+    public function addAssets(array $cfg)
+    {
         if (is_array($this->config)) {
             $this->config = array_merge($this->config, $cfg);
         } else { // is_object
@@ -42,7 +47,8 @@ class Assets {
         }
     }
 
-    public function __construct(object $app) {
+    public function __construct(object $app)
+    {
         $this->warn_missing = true;
         $this->render_lock = false;
         $this->app = $app;
@@ -54,9 +60,16 @@ class Assets {
         $this->order = [];
         $this->mark = [];
         $this->add('default');
+        $srcpaths[] = $app->web_dir . "/" . $app->theme;
+        $srcpaths[] = $app->site_dir . "/web";
+        $srcpaths[] = $app->vendor_dir . "/web";
+        
+
+        $this->src_paths = $srcpaths;
     }
 
-    private function markAdd($item) {
+    private function markAdd($item)
+    {
         if (!isset($this->mark[$item])) {
             // confirm existance key, and check for requires
             $cfg = $this->config;
@@ -74,7 +87,8 @@ class Assets {
         }
     }
 
-    public function add($list) {
+    public function add($list)
+    {
         if ($this->render_lock) {
             throw new \Exception('Assets are locked with view rendering');
         }
@@ -87,7 +101,8 @@ class Assets {
         }
     }
 
-    public function Link() {
+    public function Link()
+    {
         $this->render_lock = true;
         $outs = '';
         if (!empty($this->order)) {
@@ -105,7 +120,8 @@ class Assets {
      * @param type $name
      * @return string
      */
-    protected function LinkPut($name) {
+    protected function LinkPut($name)
+    {
         $this->render_lock = true;
         $cfg = $this->config;
         $outs = "";
@@ -125,37 +141,47 @@ class Assets {
         return $outs;
     }
 
-    public function inline_css($name): string {
+    public function inline_css($name): string
+    {
         $cfg = $this->config;
         $outs = "";
         if (isset($cfg->$name)) {
             $assets = &$cfg->$name;
             if (isset($assets['css'])) {
                 foreach ($assets['css'] as $hpath) {
-                    $path = $this->web . $this->unhive($hpath);
-                    $outs .= PHP_EOL . '<style>' . PHP_EOL;
-                    $outs .= file_get_contents($path);
-                    $outs .= PHP_EOL . '</style>' . PHP_EOL;
+                    $css_path = $this->unhive($hpath);                    
+                    $path = $this->findSourceFile($css_path);
+                    if (!empty($path)) {
+                        $outs .= PHP_EOL . '<style>' . PHP_EOL;
+                        $outs .= file_get_contents($path);
+                        $outs .= PHP_EOL . '</style>' . PHP_EOL;
+                    } else {
+                        throw new Exception("inline asset missing: " . $css_path);
+                    }
                 }
             }
         }
         return $outs;
     }
 
-    static public function link_css($path) {
+    static public function link_css($path)
+    {
         return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . $path . "\">" . PHP_EOL;
     }
 
     /** asset minify cache as relative path to web root */
-    public function getAssetCache() {
+    public function getAssetCache()
+    {
         return '/' . $this->app->theme . '/cache';
     }
 
-    public function clearCache() {
+    public function clearCache()
+    {
         \WC\Dos::rm_all(@\glob($this->web . $this->getAssetCache() . '/*'));
     }
 
-    public function CssMinify() {
+    public function CssMinify()
+    {
         $this->render_lock = true;
         $result = $this->getAssetCache() . '/' . $this->minify_name . "_min.css";
         $target = $this->web . $result;
@@ -188,7 +214,8 @@ class Assets {
         }
     }
 
-    public function CssHeader() {
+    public function CssHeader()
+    {
         $this->render_lock = true;
         if ($this->minify) {
             return $this->CssMinify();
@@ -204,7 +231,8 @@ class Assets {
         }
     }
 
-    protected function verify($path) {
+    protected function verify($path)
+    {
         if (substr($path, 0, 1) === '/') {
             $webpath = $this->web . $path;
             if (!file_exists($this->web . $path)) {
@@ -213,7 +241,8 @@ class Assets {
         }
     }
 
-    protected function CssPut($name) {
+    protected function CssPut($name)
+    {
         $this->render_lock = true;
         $cfg = $this->config;
         $outs = "";
@@ -238,7 +267,8 @@ class Assets {
     /**
      * Replace @var1  substitutions in paths
      */
-    protected function unhive($hpath) {
+    protected function unhive($hpath)
+    {
         $app = $this->app;
         $path = preg_replace_callback('|@([a-zA-Z][\w\d]*)|',
                 function($matches) use ($app) {
@@ -249,11 +279,24 @@ class Assets {
         return $path;
     }
 
-    static function script_js($path) {
+    static function script_js($path)
+    {
         return "<script charset=\"UTF-8\" type=\"text/javascript\" src=\"" . $path . "\"></script>" . PHP_EOL;
     }
 
-    protected function JsPut($name) {
+    public function findSourceFile($fpath): string
+    {
+        foreach ($this->src_paths as $src) {
+            $test = $src . $fpath;
+            if (file_exists($test)) {
+                return $test;
+            }
+        }
+        return '';
+    }
+
+    protected function JsPut($name)
+    {
         $this->render_lock = true;
         $cfg = $this->config;
         $outs = "";
@@ -271,14 +314,14 @@ class Assets {
             }
             if (isset($assets['js-inline'])) {
                 foreach ($assets['js-inline'] as $srctype => $list) {
-                    switch ($srctype) {
-                        CASE 'vendor':
-                            foreach ($list as $jspath) {
-                                $path = $this->app->web_files . $jspath;
-                                $script = file_get_contents($path);
-                                $this->addJS(static::SCRIPT_TAG . $script . static::SCRIPT_END);
-                            }
-                            break;
+                    foreach ($list as $jspath) {
+                        $path = $this->findSourceFile($jspath);
+                        if (!empty($path)) {
+                            $script = file_get_contents($path);
+                            $this->addJS(static::SCRIPT_TAG . $script . static::SCRIPT_END);
+                        } else {
+                            throw new Exception("inline asset missing: " . $jspath);
+                        }
                     }
                 }
             }
@@ -289,7 +332,8 @@ class Assets {
         return $outs;
     }
 
-    public function JsMinify() {
+    public function JsMinify()
+    {
         $this->render_lock = true;
         $result = $this->getAssetCache() . DIRECTORY_SEPARATOR . $this->minify_name . "_min.js";
         $target = $this->web . $result;
@@ -323,7 +367,8 @@ class Assets {
         }
     }
 
-    public function JsFooter() {
+    public function JsFooter()
+    {
         $this->render_lock = true;
         if ($this->minify) {
             return $this->JsMinify();
@@ -343,7 +388,8 @@ class Assets {
      * InlineJS is dynamic, blobs of html script by generated view templates, after everything
      * else, in order of template execution
      */
-    protected function InlineJS() {
+    protected function InlineJS()
+    {
         $this->render_lock = true;
         if (empty($this->blobs))
             return '';
@@ -357,7 +403,8 @@ class Assets {
     /**
      * Add Inline Blob
      */
-    public function addJS($blob) {
+    public function addJS($blob)
+    {
         $this->blobs[] = $blob;
     }
 

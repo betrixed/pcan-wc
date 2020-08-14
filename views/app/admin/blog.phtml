@@ -11,7 +11,7 @@ $isEditor = $m->isEditor;
 
 $catItems = $m->catItems;
 $url = "/admin/blog/";
-
+$btn_class = "btn btn-outline-info";
 if ($catId > 0) {
     $ubase = $url . "?catId=" . $catId . "&orderby=";
 } else {
@@ -39,28 +39,33 @@ $page = $m->page;
     }
 </style>
 
-<div class="body-wrap">
-    <a href="/admin/dash" class="btn btn-outline-default title">Dash</a> 
+<div class="container-fluid body-wrap">
+    <div class="row">
+    
+    <div class="col-4">
+        
 <?php if ($page->last > 1): ?>
-        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link, 'text' => "First"]) ?>
-        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page=' . $page->before, 'text' => "Previous"]) ?>
-        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'text' => "Next"]) ?>
-        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page=' . $page->last, 'text' => "Last"]) ?>
+        <?= $gem->linkTo(['href' => "/admin/dash", 'text' => "Dash", 'class' => $btn_class]) ?> &#x25C7;
+         <?= $gem->linkTo(['href' => $link, 'btn-glyph' => "fast-backward", 'class' => $btn_class]) ?> 
+         <?= $gem->linkTo(['href' => $link . '&page=' . $page->before, 'btn-glyph'=>'arrow-left', 'class' => $btn_class]) ?> 
+          <?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'btn-glyph'=>'arrow-right', 'class' => $btn_class]) ?> 
+          <?= $gem->linkTo(['href' => $link . '&page=' . $page->last, 'btn-glyph' => "fast-forward", 'class' => $btn_class]) ?> 
 <?php endif ?>
-    &nbsp;|&nbsp;  <?= $page->current . "/" . $page->last ?>
-    &nbsp;|&nbsp;  
-    <?= $gem->linkTo(['href' => $url . 'new', 'text' => "New Article", 'class' => "title"]) ?>
+    &#x25C7; <?= $page->current . "/" . $page->last ?>
+    </div>
 
-    <?php if (!empty($catItems)): ?>
-        <div class="container">
+    <div class="col-4">
             <form method='get'>
                 <?= $gem->select(['label' => 'Category', 'class' => 'selectpicker', 'list' => $catItems, 'name'=>'catId', 'value' => $catId]) ?>
                 <?= $gem->hidden(['name'=>'args' , 'value' => $m->args]) ?> 
                 <?= $gem->submit( [ 'value' => "Fetch" ]) ?>
             </form>
         </div>
-<?php endif ?>
-</div>
+        <div class="col-4">
+            
+            <?= $gem->linkTo(['href' => $url . 'new', 'text' => "New Article", 'class' => $btn_class]) ?>
+        </div>
+    </div>
 <div class="container outerwrap">
     <form method="post" action="<?= $url . 'postflag' ?>" >
 

@@ -335,7 +335,7 @@ class UserSession
     public function guestSession(): UserSession
     {
         $this->setGuest();
-        $this->addFlash('Browser session ID cookie made active for data entry ');
+        //$this->addFlash('Browser session ID cookie made active for data entry ');
         $this->write();
         return $this;
     }

@@ -14,7 +14,8 @@ use App\Models\RssLink;
 use App\Link\RssView;
 use Phalcon\Db\Column;
 
-class RssFeedController extends \Phalcon\Mvc\Controller {
+class RssFeedController extends \Phalcon\Mvc\Controller
+{
 
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Auth;
@@ -29,7 +30,8 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         'Computers'
     ];
 
-    public function render_action($action): string {
+    public function render_action($action): string
+    {
         $view = $this->getView();
         $m = $view->m;
         $m->url = $this->url;
@@ -37,14 +39,16 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         return $this->render('rss_feed', $action);
     }
 
-    public function getAllowRole(): string {
-        return 'User';
+    public function getAllowRole(): string
+    {
+        return 'Admin';
     }
 
     /**
      * Index action
      */
-    public function indexAction() {
+    public function indexAction()
+    {
 //
         return $this->render_action('index');
     }
@@ -52,11 +56,12 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
     /**
      * Searches for rss_feed
      */
-    function searchAction() {
+    function searchAction()
+    {
         $m = $this->getViewModel();
         $m->items = [];
 
-        $qry = new DbQuery();
+        $qry = $this->dbq;
         $sql = "select * from rss_feed";
         $get = $_GET;
 
@@ -89,7 +94,8 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
      * URL https://www.smh.com.au/rss/environment.xml
      * 
      */
-    public function newAction() {
+    public function newAction()
+    {
         $m = $this->getViewModel();
         $m->rec = new RssFeed();
         return $this->render_action('new');
@@ -100,7 +106,8 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
      *
      * @param string $id
      */
-    public function editAction($id) {
+    public function editAction($id)
+    {
         if (!$this->request->isPost()) {
             $rss_feed = RssFeed::findFirstByid($id);
             if (!$rss_feed) {
@@ -120,18 +127,18 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         }
     }
 
-    public function dbError($msgs) {
+    public function dbError($msgs)
+    {
         foreach ($msgs as $message) {
             $this->flash($message->getMessage());
         }
     }
 
-   
-
     /**
      * Creates a new rss_feed
      */
-    public function createAction() {
+    public function createAction()
+    {
         if (!$this->request->isPost()) {
             $this->dispatcher->forward([
                 'controller' => "rss_feed",
@@ -145,7 +152,11 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         $rss_feed = new RssFeed();
         $rss_feed->url = Valid::toStr($post, 'url');
         $rss_feed->last_read = Valid::now();
-        $rss_feed->content = RssView::pullContent($rss_feed->url);
+        $content = RssView::pullContent($rss_feed->url);
+        if (str_starts_with($content[1], "text")) {
+            $rss_feed->content = $content[0];
+        }
+
         $rss_feed->nick_name = Valid::toStr($post, "nick_name");
         $rss_feed->provider = Valid::toStr($post, "provider");
 
@@ -159,14 +170,15 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         }
 
         $this->flash->success("rss_feed was created successfully");
-        UserSession::reroute($this->url . "edit/" . $rss_feed->id);
+        $this->reroute($this->url . "edit/" . $rss_feed->id);
     }
 
     /**
      * Saves a rss_feed edited
      *
      */
-    public function saveAction() {
+    public function saveAction()
+    {
 
         if (!$this->request->isPost()) {
             $this->dispatcher->forward([
@@ -192,10 +204,14 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         }
         $post = $_POST;
         $rss_feed->url = Valid::toStr($post, 'url');
+
         $rss_feed->nick_name = Valid::toStr($post, "nick_name");
         $rss_feed->provider = Valid::toStr($post, "provider");
         if (empty($rss_feed->content)) {
-            $rss_feed->content =RssView::pullContent($rss_feed->url);
+            $content = RssView::pullContent($rss_feed->url);
+            if (str_contains($content[1], "xml")) {
+                $rss_feed->content = $content[0];
+            }
         }
         if (!$rss_feed->update()) {
             $this->dbError($rss_feed->getMessages());
@@ -205,10 +221,11 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
 
         $this->flash("rss_feed was updated successfully");
 
-        UserSession::reroute($this->url . "edit/" . $rss_feed->id);
+        $this->reroute($this->url . "edit/" . $rss_feed->id);
     }
 
-    public function processFairfax($id, $chan): array {
+    public function processFairfax($id, $chan): array
+    {
         $itemlist = $chan->getElementsByTagName('item');
         $items = [];
         foreach ($itemlist as $item) {
@@ -232,7 +249,7 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
                 $link = new RssLink();
                 $link->guid = $guid;
                 $link->feed_id = $id;
-                
+
 
                 $node = $item->firstChild;
                 while (!empty($node)) {
@@ -242,13 +259,16 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
                             break;
                         case 'link':
                             $link->link = $node->nodeValue;
-                            $link->extract = $this->updateContent($link->link);
+                            $content = RssView::pullContent($link->link);
+                            if (str_starts_with($content[1], "text")) {
+                                $link->extract = $content[0];
+                            }
                             break;
                         case 'dc:creator':
                             $link->creator = $node->nodeValue;
                             break;
                         case 'description':
-                            
+
                             $link->description = strip_tags($node->nodeValue);
                             break;
                         case 'section':
@@ -275,7 +295,141 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         return $items;
     }
 
-    public function processABC($id, $chan): array {
+    // Get all the tags and attributes
+    public function extractHtml($node)
+    {
+        return $node->textContent;
+    }
+
+    public function processSkepticalScience($feed, $chan): array
+    {
+        $id = $feed->id;
+        $itemlist = $chan->getElementsByTagName('item');
+        $items = [];
+        foreach ($itemlist as $item) {
+            //  description (a lot of HTML)
+            //  link
+            // guid same as link id
+            // pubDate
+            $node = $item->firstChild;
+            $values = [];
+            while (!empty($node)) {
+                if ($node->nodeType === XML_ELEMENT_NODE) {
+                    switch ($node->nodeName) {
+                        case 'pubDate':
+                            $values['pubDate'] = new \DateTime($node->nodeValue);
+                            break;
+                        case 'description':
+                        case 'guid':
+                        case 'title':
+                        case 'link':
+                        DEFAULT:
+                            $values[$node->nodeName] = $node->nodeValue;
+                            break;
+                    }
+                }
+                $node = $node->nextSibling;
+            }
+            
+            if (count($values) === 5) {
+                $guid = $values['guid'];
+                $link = RssLink::findFirst(
+                            ['conditions' => "feed_id = :id: and guid = :gid:",
+                                'bind' => ['id' => $id, 'gid' => $guid],
+                                'bindTypes' => ['id' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_STR]
+                ]);
+                
+                if (empty($link)) {
+                    $link = new RssLink();
+                    $link->feed_id = $id;
+                    $link->description = $values['description'];
+                    $link->title = $values['title'];
+                    $link->link = $values['link'];
+                    $link->guid = $guid;
+                    $link->pub_date = $values['pubDate']->format('Y-m-d H:i:s');
+                    $link->create();
+                }
+                $items[] = $link;
+            }
+        }
+        return $items;
+    }
+
+    public function processGuardian($feed, $chan): array
+    {
+        $id = $feed->id;
+        $itemlist = $chan->getElementsByTagName('item');
+        $items = [];
+        foreach ($itemlist as $item) {
+            $node = $item->firstChild;
+            while (!empty($node)) {
+                switch ($node->nodeName) {
+                    case 'guid':
+                        $guid = strval($node->nodeValue);
+                        break;
+                }
+                $node = $node->nextSibling;
+            }
+
+            $link = RssLink::findFirst(
+                            ['conditions' => "feed_id = :id: and guid = :gid:",
+                                'bind' => ['id' => $id, 'gid' => $guid],
+                                'bindTypes' => ['id' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_STR]
+            ]);
+
+            if (empty($link)) {
+                $link = new RssLink();
+                $link->guid = $guid;
+                $link->feed_id = $id;
+
+
+                $node = $item->firstChild;
+                while (!empty($node)) {
+                    switch ($node->nodeName) {
+                        case 'title':
+                            $link->title = $node->nodeValue;
+                            break;
+                        case 'link':
+                            $link->link = $node->nodeValue;
+                            $content = RssView::pullContent($link->link);
+                            if (str_starts_with($content[1], "text")) {
+                                $link->extract = $content[0];
+                            }
+                            break;
+                        case 'dc:creator':
+                            $link->creator = $node->nodeValue;
+                            break;
+                        case 'description':
+
+                            $link->description = strip_tags($node->nodeValue);
+                            break;
+                        case 'section':
+                            $link->section = $node->nodeValue;
+                            break;
+                        case 'pubDate':
+                            $datekey = new \DateTime($node->nodeValue);
+                            break;
+                    }
+                    $node = $node->nextSibling;
+                }
+                if (empty($link->creator)) {
+                    $link->creator = "Anon.";
+                }
+                $link->pub_date = $datekey->format('Y-m-d H:i:s');
+                if (!$link->create()) {
+                    $this->dbError($link->getMessages());
+                    break;
+                }
+            }
+            $items[] = $link;
+        }
+
+        return $items;
+    }
+
+    public function processABC($feed, $chan): array
+    {
+        $id = $feed->id;
         //https://www.abc.net.au/news/
         $itemlist = $chan->getElementsByTagName('item');
         $items = [];
@@ -285,11 +439,11 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
                 switch ($node->nodeName) {
                     case 'guid':
                         $guid = (string) $node->nodeValue; // whole URL is too big
-                        $s_guid = explode('/',$guid);
+                        $s_guid = explode('/', $guid);
                         // go for the numeric parts only. last 3 bits are date/slug/number
                         $sct = count($s_guid);
-                        if ($sct > 2 ) {
-                            $guid = $s_guid[$sct-3] . '/' . $s_guid[$sct-1];
+                        if ($sct > 2) {
+                            $guid = $s_guid[$sct - 3] . '/' . $s_guid[$sct - 1];
                         }
                         break;
                 }
@@ -306,7 +460,7 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
                 $link = new RssLink();
                 $link->guid = $guid;
                 $link->feed_id = $id;
-                
+
 
                 $node = $item->firstChild;
                 $cat_list = [];
@@ -320,7 +474,10 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
                             break;
                         case 'link':
                             $link->link = $node->nodeValue;
-                            $link->extract = RssView::pullContent($link->link);
+                            $content = RssView::pullContent($link->link);
+                            if (str_starts_with($content[1], "text")) {
+                                $link->extract = $content[0];
+                            }
                             break;
                         case 'dc:creator':
                             $link->creator = $node->nodeValue;
@@ -341,7 +498,7 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
                     $link->creator = "Anon.";
                 }
                 $link->category = json_encode($cat_list);
-                
+
                 $link->pub_date = $datekey->format('Y-m-d H:i:s');
                 if (!$link->create()) {
                     $this->dbError($link->getMessages());
@@ -353,12 +510,14 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
 
         return $items;
     }
+
     /**
      * News articles have last part of URL as unique string
      * @param type $url
      * @return string
      */
-    public function extractSlug($url): string {
+    public function extractSlug($url): string
+    {
         $ix = strpos($url, '?');
         if ($ix > 0) {
             $url = substr($url, 0, $ix);
@@ -370,7 +529,9 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         return $url;
     }
 
-    public function processNewsLimited($id, $chan): array {
+    public function processNewsLimited($feed, $chan): array
+    {
+        $id = $feed->id;
         $pub = $chan->getElementsByTagName('pubDate');
         if (!empty($pub)) {
             $datekey = new \DateTime($pub[0]->nodeValue);
@@ -396,8 +557,7 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
             if (!empty($link)) {
                 if (in_array($link->section, $this->newsLimitedExcludes)) {
                     $link->delete();
-                }
-                else {
+                } else {
                     $items[] = $link;
                 }
                 continue;
@@ -436,7 +596,10 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
 
             if (!in_array($link->section, $this->newsLimitedExcludes)) {
                 $items[] = $link;
-                $link->extract = RssView::pullContent($link->link);
+                $content = RssView::pullContent($link->link);
+                if (str_starts_with($content[1], "text")) {
+                    $link->extract = $content[0];
+                }
                 if (!$link->create()) {
                     $this->dbError($link->getMessages());
                     break;
@@ -458,7 +621,8 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
       </item>
      */
 
-    public function processAction($id) {
+    public function processAction($id)
+    {
 // read items, and check for new ones.
         $rss_feed = RssFeed::findFirstByid($id);
         if (empty($rss_feed)) {
@@ -474,20 +638,14 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
         $rss->loadXML($rss_feed->content);
         $items = [];
         $chanlist = $rss->getElementsByTagName('channel');
+        $provider = $rss_feed->provider;
+
+        $fnp = "process" . $provider;
+
         foreach ($chanlist as $chan) {
-            $copyright = $chan->getElementsByTagName('copyright');
-            if (!empty($copyright)) {
-                $copystr = $copyright[0]->nodeValue;
-                if (str_contains($copystr, 'Fairfax Media')) {
-                    $items = $this->processFairfax($id, $chan);
-                } elseif (str_contains($copystr, 'News Limited')) {
-                    $items = $this->processNewsLimited($id, $chan);
-                }
-                elseif (str_contains($copystr, 'Australian Broadcasting Corporation')) {
-                     $items =$this->processABC($id, $chan);
-                }
-            }
+            $items = $this->$fnp($rss_feed, $chan);
         }
+
 
         $m = $this->getViewModel();
         $m->items = $items;
@@ -500,7 +658,8 @@ class RssFeedController extends \Phalcon\Mvc\Controller {
      *
      * @param string $id
      */
-    public function deleteAction($id) {
+    public function deleteAction($id)
+    {
         $rss_feed = RssFeed::findFirstByid($id);
         if (!$rss_feed) {
             $this->flash->error("rss_feed was not found");

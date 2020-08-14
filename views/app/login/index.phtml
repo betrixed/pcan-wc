@@ -4,7 +4,7 @@ $assets->add('more-validate');
 $formid = $m->formid;
 
 ?>
-
+<?= $this->partial('flash') ?>
 <div class='container outerwrap pad10'>
  
 <form id="<?=$formid?>" method='post' action='/login/check'>
@@ -30,7 +30,10 @@ function formid_submit() {
             url:  purl,
             data: form_data
         }).done(function(response) {
-             $("#login-fields").html(response);
+             var obj = JSON.parse(response);
+             $("#login-fields").html(obj.html);
+             window.php_id = obj.php_id;
+             update_footer_id();
         }) ;
         
     $("#submit").hide();

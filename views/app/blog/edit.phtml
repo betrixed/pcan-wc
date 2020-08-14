@@ -53,6 +53,10 @@ $date_saved = new DateTime($revision->date_saved);
     <div class="col-2">
         <?= $gem->linkTo(['href' => $module . "gallery", 'text' => "Galleries",  'target' => '_blank',  'class' => $btn_class]) ?>
     </div>
+    <div class="col-2">
+        <?= $gem->linkTo(['href' => "/article/" . $blog->title_clean, 'text' => "View",  'target' => '_blank',  'class' => $btn_class]) ?>
+    </div>
+
 </div>
 
 <form action="<?=$url.'post'?>"

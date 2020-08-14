@@ -66,12 +66,8 @@ class Valid {
      * @param string $p
      * @return bool
      */
-    static function startsWith(string $s, string $p) : bool
-    {
-        $n = strlen($p);
-        return ($n <= strlen($s) && ($n > 0) && substr($s, 0, $n) === $n);
-    }
-    
+
+
     static public function url_slug($str)
     {
         #convert case to lower

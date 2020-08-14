@@ -310,8 +310,8 @@ EOD;
                     $content = str_replace("'", "&apos;", $row['content']);
                     // replace ' with &apos; 
 
-                    if ($row['prefix_site'] && !Valid::startsWith($content, "http")) {
-                        if (!Valid::startsWith($content, '/')) {
+                    if ($row['prefix_site'] && !str_starts_with($content, "http")) {
+                        if (!str_starts_with($content, '/')) {
                             $content = '/' . $content;
                         }
                         $content = $hostUrl . $content;

@@ -22,7 +22,7 @@ class RssLinkController extends \Phalcon\Mvc\Controller
 
     public function getAllowRole() : string
     {
-        return 'User';
+        return 'Admin';
     }
     public function scanTree($node) {
         while (!empty($node)) {
@@ -60,38 +60,64 @@ class RssLinkController extends \Phalcon\Mvc\Controller
         $m = $this->getViewModel();
         $m->link = $link;
         $m->feed = $link->getRelated('RssFeed');
+        $url = $link->link;
+        if (intval($m->feed->use_https)===1) {
+            if (str_starts_with($url, 'http:')) {
+                $url = 'https:' . substr($url, 5);
+                $link->link = $url;
+            }
+        }
         if ((intval($link->flags) & 1) === 0) {
             if (intval($link->flags) === 0) {
                 $link->extract = "";
-                $content = RssView::pullContent($link->link);
+                $down = RssView::pullContent($url);
+                if (str_starts_with($down[1],"text")) {
+                    $content = $down[0];
+                }
+
             }
             else {
                 $content = $link->extract;
             }
-             $rss = new RssView();
+            
+            $m->content = $content;
+            $rss = new RssView();
             $json = $rss->scanHeaderJSON($content);
             if (!empty($json)) {
                 $obj = json_decode($json);
                 if (!empty($obj)) {
-                    $link->creator = $obj->author->name;
-                    if (empty($link->creator)) {
-                        $link->creator = "Anon";
+                    if (is_array($obj)) {
+                        $data = $obj[0];
+                        $author = $data->author;
+                        $persons = [];
+                        foreach($author as $person) {
+                           $persons[] = $person->name;
+                        }
+                        if (!empty($persons)) {
+                            $link->creator = implode(", ", $persons);
+                        }
+                        if (isset($data->datePublished)) {
+                            $datekey = new \DateTime($data->datePublished);
+                            $link->pubDate = $datekey->format('Y-m-d H:i:s');
+                        }
                     }
-                    $datekey = new \DateTime($obj->datePublished);
-                    $link->pubDate = $datekey->format('Y-m-d H:i:s');
+                    else if (isset($obj->author)) {
+                        $link->creator = $obj->author->name;
+                        if (empty($link->creator)) {
+                            $link->creator = "Anon";
+                        }               
+                        if (isset($obj->datePublished)) {
+                        $datekey = new \DateTime($obj->datePublished);
+                        $link->pubDate = $datekey->format('Y-m-d H:i:s');
+                        }
+                    }
                 }
                 
             }
             $provider = $m->feed->provider;
-            if (str_contains($provider, 'News Limited')) {
-                     $link->extract =  $rss->scanNewsLimited($content);
-            }
-            else if (str_contains($provider,'Fairfax Media')) {
-                $link->extract = $rss->scanFairfax($content);
-            }
-            else if  (str_contains($provider,'ABC')) {
-                $link->extract = $rss->scanABC($content);
-            }
+            $fnp = "scan" . $provider;
+            $link->extract = $rss->$fnp($content);
+
             if (empty($link->extract)) {
                 $link->extract = $content;
                 $link->flags = 2;
@@ -102,7 +128,12 @@ class RssLinkController extends \Phalcon\Mvc\Controller
             if (!$link->update()) {
                 $this->dbError($link->getMessages());
             }
+            $m->content = $link->extract;
         }
+        else {
+            $m->content = $link->extract;
+        }
+        $m->title = "Extract";
         return $this->render('rss_link', 'view');
     }
 

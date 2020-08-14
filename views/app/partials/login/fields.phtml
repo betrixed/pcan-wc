@@ -15,11 +15,7 @@ $formid = $m->formid;
     .col-5 { }
 </style>
 <div class="container">
-    <?php if (isset($m->message)): ?>
-        <div class="alert alert-primary" role ="alert">
-            <p class="message"><?= $m->message ?></p>
-        </div>
-    <?php endif ?>
+    <?php $this->partial('flash') ?>
     <?php if (isset($xcheck)): ?>
         <?= $gem->xcheck(['name' => $xcheck['key'], 'value' => $xcheck['value']]) ?>
     <?php endif ?>

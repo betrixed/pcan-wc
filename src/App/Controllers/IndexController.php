@@ -106,9 +106,7 @@ EOQ;
     }
     public function indexAction()
     {
-        $assets = $this->assets;
-        $assets->add('bootstrap');
-        $assets->minify("pcan_home");
+
 
         $view = $this->getView();
 

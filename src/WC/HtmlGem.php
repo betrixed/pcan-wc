@@ -363,8 +363,10 @@ EOD;
         if (isset($pset['text'])):
             $text = $pset['text'];
             unset($pset['text']);
-        else:
-            $text = $href;
+        elseif(isset($pset['btn-glyph'])):
+            $glyph = $pset['btn-glyph'];
+            unset($pset['btn-glyph']);
+            $text = "<span class=\"fa fa-$glyph\"></span>";
         endif;
         $out = '<a href="' . $href . '"';
         foreach ($pset as $arg => $val):

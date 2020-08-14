@@ -1,7 +1,6 @@
 <?php
 
 namespace WC\Db;
-use \WC\Db\IQuery;
 
 use WC\Db\Server;
 use Phalcon\Db;

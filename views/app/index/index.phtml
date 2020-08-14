@@ -1,6 +1,8 @@
 <!-- <?= __FILE__ ?> -->
 <?php
 $hasEvents = !empty($m->events);
+$assets->add(['bootstrap','styles']);
+$assets->minify("pcan_home");
 ?>
 
 <style>
