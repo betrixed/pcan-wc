@@ -48,7 +48,7 @@ $assets->minify("pcan_home");
                 $urlhint = ($ulen > 55) ? substr($url, 0, 25) . '...' . substr($url, $ulen - 27)
                             : $url;
                 $dated = new \DateTime($link['date_created']);
-                
+                $urltype = $link['urltype'];
                 ?>
                 <!-- link <?= $link['id'] ?>-->
                 <div class='mitem' id='lnk<?= $link['id'] ?>'>
@@ -73,10 +73,11 @@ $assets->minify("pcan_home");
                             </figure>
                     <?php endif ?>
                     <?= $link['summary'] ?>
-                    </div>
-    <?php if ($link['urltype'] == 'Blog'): ?>
-                        <a href = '<?= $url ?>' target='_blank' title="<?= $urlhint ?>">&nbsp;.. more</a>
+                            <?php if ($urltype === 'Blog' || $urltype === 'Front'): ?>
+                        <a href = '<?= $url ?>' target='_blank' title="<?= $urlhint ?>">&nbsp;.. to page</a>
                 <?php endif; ?>
+                    </div>
+
                 </div>
                 <div class="clear"></div>
                 <hr>
