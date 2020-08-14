@@ -62,7 +62,7 @@ class Assets
         $this->add('default');
         $srcpaths[] = $app->web_dir . "/" . $app->theme;
         $srcpaths[] = $app->site_dir . "/web";
-        $srcpaths[] = $app->vendor_dir . "/web";
+        $srcpaths[] = $app->pcan_dir . "/web";
         
 
         $this->src_paths = $srcpaths;
