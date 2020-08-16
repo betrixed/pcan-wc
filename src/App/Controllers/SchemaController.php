@@ -1,14 +1,8 @@
 <?php
 namespace App\Controllers;
 
-use WC\Db\Server;
-use WC\Db\Script;
-use WC\Dos;
-use WC\XmlPhp;
-use WC\App;
-use WC\Assets;
-use WC\Valid;
-use WC\AdaptXml;
+use WC\Db\{Server, Script};
+use WC\{Dos, XmlPhp, App, Assets, Valid, AdaptXml};
 use Phalcon\Mvc\Controller;
 
 class SchemaController extends Controller
@@ -17,14 +11,25 @@ class SchemaController extends Controller
     use \WC\Mixin\ViewPhalcon;
 
     public $sitedir;
-
+    public $schema_dir;
+    
     public function getAllowRole() {
         return 'Admin';
     }
+    
+    public function getSchemaDir()
+    {
+        if (!isset($this->schema_dir)) {
+            $app = $this->app;
+            $this->schema_dir = $app->replace_in($app->module_cfg['schema_path']);
+        }
+        return $this->schema_dir . '/';
+    }
+    
     public function getSchemaList()
     {
         $files = [];
-        $path = $this->app->SCHEMA . '/*.schema';
+        $path = $this->getSchemaDir() . '/*.schema';
         foreach (glob($path) as $filename) {
             $files[] = pathinfo($filename, PATHINFO_FILENAME);
         }
@@ -42,14 +47,12 @@ class SchemaController extends Controller
         }
         $adapters = ['Mysql' => 'Mysql', 'Pgsql' => 'Pgsql', 'Sqlite' => 'Sqlite'];
 
-        $view = $this->getView();
-        
-        $m = $view->m;
+        $m = $this->getViewModel();
         $m->post_prefix = '/admin/schema';
 
         $params = ['list' => $list, 'keyed' => $keyed, 'adapters' => $adapters];
         
-        echo $this->render('schema', 'input',$params);   
+        return $this->render('schema', 'input',$params);   
     }
 
     public function metaAction()
@@ -68,7 +71,11 @@ class SchemaController extends Controller
         if ($adapter === 'Mysql') {
             $cfg += ['port' => 3306, 'charset' => 'utf8', 'host' => 'localhost'];
         }
-        $db = Server::connection($cfg);
+        $servers = $this->server;
+        $servers->addConfig('schema', $cfg);
+        
+        $db = $servers->db('schema');
+        
         $dbschema = 'WC\\' . $adapter . '\SchemaDef';
         $schema = new $dbschema();
         $schema->setName($dbname);
@@ -116,10 +123,7 @@ class SchemaController extends Controller
 
         echo $view->render();
     }
-    public function getSchemaDir()
-    {
-        return $this->app->schema_dir . '/';
-    }
+
     public function scriptAction($version)
     {
         //$view = $this->getView();
@@ -144,7 +148,7 @@ class SchemaController extends Controller
 
 
         $params = ['script' => $script];
-        echo $this->render('schema', 'schema',$params);  
+        return $this->render('schema', 'schema',$params);  
 
     }
 

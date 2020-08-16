@@ -241,6 +241,9 @@ class Assets
         }
     }
 
+    protected function unhive($hpath) {
+        return $this->app->replace_in($hpath);
+    }
     protected function CssPut($name)
     {
         $this->render_lock = true;
@@ -262,21 +265,6 @@ class Assets
         //    $outs = "<!-- No CSS assets found: {" . $name . "} -->" . PHP_EOL;
         //}
         return $outs;
-    }
-
-    /**
-     * Replace @var1  substitutions in paths
-     */
-    protected function unhive($hpath)
-    {
-        $app = $this->app;
-        $path = preg_replace_callback('|@([a-zA-Z][\w\d]*)|',
-                function($matches) use ($app) {
-            return $app[$matches[1]];
-        }
-                , $hpath, 1
-        );
-        return $path;
     }
 
     static function script_js($path)

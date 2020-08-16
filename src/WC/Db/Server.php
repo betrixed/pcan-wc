@@ -29,7 +29,11 @@ class Server
         $this->defaultName = $defaultName;
         $this->dbparams = $dbparams;
     }
-    function connection($cfg): AdapterInterface
+    
+    function addConfig(string $name, array $params) {
+        $this->dbparams[$name] = $params;
+    }
+    function connection(array $cfg): AdapterInterface
     {
         $factory = new PdoFactory();
         $adapter = $cfg['adapter'];
@@ -42,7 +46,7 @@ class Server
      * @param type $name
      * @return type
      */
-    function dbconfig($cfg): AdapterInterface
+    function dbconfig(array $cfg): AdapterInterface
     {
         return  $this->connection($cfg);
     }

@@ -2,14 +2,12 @@
 
 namespace WC\Mysql;
 
-use WC\NameDef;
-use WC\XmlPhp;
-
-use WC\Db\Script;
+use WC\{NameDef, XmlPhp};
+use WC\Db\{DbQuery, Script};
 use Phalcon\Db;
 use Phalcon\Db\Adapter\Pdo\Mysql;
-use WC\Mysql\DbQuery;
-use WC\Db\IQuery;
+
+
 
 class SchemaDef extends \WC\Db\AbstractDef {
 
@@ -152,9 +150,9 @@ class SchemaDef extends \WC\Db\AbstractDef {
             }
         }
     }
-    public function newQuery($db) : IQuery
+    public function newQuery($db) : DbQuery
     {
-        return new DbQuery($this, $db);
+        return new DbQuery($db);
     }
     /**
      * Name needs to be set before calling.
@@ -170,7 +168,7 @@ class SchemaDef extends \WC\Db\AbstractDef {
    FROM information_schema.tables 
        WHERE table_schema = :dbname
 ESQL;
-        $table_names = $qry->queryAll($tsql, [':dbname' => $qry->getSchemaName()]);
+        $table_names = $qry->arraySet($tsql, [':dbname' => $qry->getSchemaName()]);
         
         foreach ( $table_names as $rec) {
 
@@ -224,7 +222,8 @@ order by col.table_schema,
          col.table_name,
          col.ordinal_position
 ESQL;
-        $data = $qry->queryAll($rsql, ['dbname' => $schemaName]);
+        $schemaName = $qry->getSchemaName();
+        $data = $qry->arraySet($rsql, ['dbname' => $schemaName]);
         $relations = [];
         $constraint = '';
         $rdef = null;

@@ -7,9 +7,8 @@
 namespace WC\Mysql;
 
 use WC\NameDef;
-use WC\Db\Script;
-use WC\Db\BatchInsert;
-
+use WC\Db\{Script, DbQuery,BatchInsert};
+use Phalcon\Db\Enum;
 /**
  * Intermediate class for SQL table definition. 
  * Save and Load from TOML file format.
@@ -167,7 +166,7 @@ EOS;
 
         $src = $sdef->getSchemaName() . '.' . $this->name;
 
-        $data = $sdef->queryAll('SHOW FULL COLUMNS from ' . $src . ' ');
+        $data = $sdef->arraySet('SHOW FULL COLUMNS from ' . $src . ' ');
 
         $this->columns = [];
         foreach ($data as $row) {
@@ -175,7 +174,7 @@ EOS;
             $cdef->setSchema($row);
             $this->columns[$cdef->name] = $cdef;
         }
-        $data = $sdef->queryAll('SHOW INDEXES from ' . $src . ' ');
+        $data = $sdef->arraySet('SHOW INDEXES from ' . $src . ' ');
         $this->indexes = [];
 
 
@@ -285,6 +284,8 @@ EOS;
         $result = 0;
         $columns = $this->columns;
         $fileHandler = null;
+        $rset->setFetchMode(Enum::FETCH_ASSOC);
+        
         while ($row = $rset->fetch()) {
             $data = [];
             if ($result === 0) {
@@ -311,8 +312,7 @@ EOS;
         return $result;
     }
 
-    public
-            function importDataFromCSV($db, string $fileName)
+    public function importDataFromCSV($db, string $fileName)
     {
         if (!file_exists($fileName)) {
             return; // nothing to do

@@ -64,5 +64,23 @@ class App extends WConfig
         return sprintf('Setup %.2f Handle %.2f Render %.2f Total %.2f ms, Memory %.2f MB',
                         $setup_time, $handler_time, $render_time, $total, $memory);
     }
-
+/**
+     * Replace @var1  substitutions for values,  if they exist
+     */
+    public function replace_in($hpath)
+    {
+        $app = $this;
+        $path = preg_replace_callback('|@([a-zA-Z][\w\d]*)|',
+                function($matches) use ($app) {
+                    $key = $matches[1];
+                    if ($app->has($key)) {
+                        return $app->$key;
+                    }
+                    else {
+                        return '@' . $key;
+                    }
+                } , $hpath, 1
+        );
+        return $path;
+    }
 }

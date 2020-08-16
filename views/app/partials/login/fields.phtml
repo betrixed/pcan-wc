@@ -11,10 +11,18 @@ $formid = $m->formid;
     .idgroup {width:100%;}
     .label{ font-weight:bold; width: 100%;}
     .pwinput { width: 20em;}
-    .idrow {border-style:solid; background-color:blanchedalmond; border-width:1px; border-color: darkgrey; padding-top:15px; margin-bottom:30px;}
+    .idrow {background-color:blanchedalmond; 
+            padding-top:15px; padding-bottom:30px;margin-bottom:30px;
+    }
+    .idwrap {
+        border-style:solid; 
+        border-width:1px; border-color: darkgrey; 
+        padding: 15px;
+        background-color:blanchedalmond; 
+    }
     .col-5 { }
 </style>
-<div class="container">
+<div class="container idwrap">
     <?php $this->partial('flash') ?>
     <?php if (isset($xcheck)): ?>
         <?= $gem->xcheck(['name' => $xcheck['key'], 'value' => $xcheck['value']]) ?>
