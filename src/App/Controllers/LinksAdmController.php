@@ -5,18 +5,10 @@ namespace App\Controllers;
 /**
  * @author Michael Rynn
  */
-use WC\Db\Server;
-use App\Link\PageInfo;
-use App\Models\Links;
-use App\Models\Image;
-
-use App\Models\Blog;
-
-use App\Link\BlogView;
-use WC\Valid;
-use WC\Text;
-use WC\Db\DbQuery;
-use WC\UserSession;
+use WC\Db\{Server, DbQuery};
+use App\Link\{PageInfo,BlogView};
+use App\Models\{Links, Image, Blog};
+use WC\{WConfig, Valid, Text, UserSession};
 use Phalcon\Mvc\Controller;
 
 class LinksAdmController extends Controller {
@@ -26,6 +18,7 @@ class LinksAdmController extends Controller {
     use \App\Link\LinksView;
     use \App\Link\LinkGallery;
     use \App\Link\ImageView;
+    use \App\Link\RevisionOp;
     use \WC\Mixin\HtmlPurify;
     
     private $syncUrl = 'http://parracan.org';
@@ -37,8 +30,7 @@ class LinksAdmController extends Controller {
     }
 
     public function indexAction() {
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
         $request = $_GET;
         $m->numberPage = Valid::toInt($request, "page", 1);
         $m->orderby = Valid::toStr($request, 'orderby', null);
@@ -66,8 +58,7 @@ class LinksAdmController extends Controller {
         return new PageInfo($numberPage, $pageRows, $results, $maxrows);
     }
 
-    private function viewNewLink($view) {
-        $m = $view->m;
+    private function viewNewLink(WConfig $m) {
         $m->linkid = 0;
         return $this->viewCommon();
     }
@@ -85,8 +76,7 @@ class LinksAdmController extends Controller {
      * @return type
      */
     private function newLink(int $bid = 0) {
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
         $link = new Links();
         $m->link = $link;
         $link->sitename = 'Here';
@@ -101,7 +91,7 @@ class LinksAdmController extends Controller {
             // get the actual blog, extract title, url and intro text
             $blog = Blog::findFirstById($bid);
             if (!empty($blog)) {
-                $revision = BlogView::linkedRevision($blog);
+                $revision = $this->getLinkedRevision($blog);
                 $link->url = "/article/" . $blog->title_clean;
                 $link->title = $blog->title;
                 $link->summary = Text::IntroText($revision->content, 300);
@@ -110,27 +100,27 @@ class LinksAdmController extends Controller {
             $link->urltype = 'Front';
         }
 
-        $view->collections = [];
-        return $this->viewNewLink($view);
+        $m->collections = [];
+        return $this->viewNewLink($m);
     }
 
     /* Get link edit form */
 
     private function viewCommon() {
-        $view = $this->getView();
+        $m = $this->getViewModel();
         //$view->assets(['bootstrap','DateTime','SummerNote','links-edit']);
 
-        $m = $view->m;
         $m->post = '/admin/link/post';
         $m->url = $this->url;
         $m->display = self::display();
         $m->urltypes = self::getUrlTypes();
+        $id = $m->link->id ?? 'new';
+        $m->title = 'Link#' . $id;
         return $this->render('links', 'edit');
     }
 
     private function editLink($rec, $id) {
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
         $m->link = $rec;
         $m->linkid = $id;
         $m->collections = $this->byLink($id);
@@ -207,8 +197,7 @@ class LinksAdmController extends Controller {
         $this->assignFromPost($post, $link);
 
         try {
-            $view = $this->getView();
-            $m = $view->m;
+            $m = $this->getViewModel();
             $m->link = $link;
             if (!empty($link->id)) {
                 $link->update();
