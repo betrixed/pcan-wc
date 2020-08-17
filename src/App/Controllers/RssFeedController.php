@@ -634,6 +634,16 @@ class RssFeedController extends \Phalcon\Mvc\Controller
             ]);
             return;
         }
+        $last_read = new \DateTime($rss_feed->last_read);
+        $now = new \DateTime();
+        $diff = $now->diff($last_read);
+        $getnew =  ($diff->y > 0 || $diff->m > 0 || $diff->d > 0 || $diff->h > 23);
+        if ($getnew) {
+            $content = RssView::pullContent($rss_feed->url);
+            if (str_contains($content[1], "xml")) {
+                $rss_feed->content = $content[0];
+            }
+        }
         $rss = new \DOMDocument();
         $rss->loadXML($rss_feed->content);
         $items = [];
