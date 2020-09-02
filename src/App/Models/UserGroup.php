@@ -97,7 +97,7 @@ class UserGroup extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("user_group");
         $this->hasMany('id', 'App\Models\Permissions', 'groupId', ['alias' => 'Permissions']);
         $this->hasMany('id', 'App\Models\UserAuth', 'groupId', ['alias' => 'UserAuth']);

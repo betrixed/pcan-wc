@@ -23,8 +23,8 @@ class EmailFormController extends Controller {
     protected $url = '/contact/email/';
 
     private function makeForm($isSub = false) {
-        $view = $this->view;
-        $m = $view->m;
+        
+        $m = $this->getViewModel();
         $m->title = "Email";
         $m->formid = "msgform";
         $m->url = $this->url;
@@ -36,12 +36,13 @@ class EmailFormController extends Controller {
         
         if ($isAjax) {
             $this->noLayouts();
-            return $view->render('form', 'email_form');
+            $m->sub = 1;
+            return $this->render('form', 'email');
         } else  {
             if ($isSub) {
                 $m->sub = 1;
                 $this->noLayouts();
-                return $view->render('form', 'email');
+                return $this->render('form', 'email');
             } else {
                 $m->sub = 0;
                 return $this->render('form', 'email');

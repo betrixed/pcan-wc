@@ -296,7 +296,7 @@ class Register extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("register");
     }
 

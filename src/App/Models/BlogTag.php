@@ -126,7 +126,7 @@ class BlogTag extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("blog_tag");
         $this->belongsTo('blog_id', 'App\Models\Blog', 'id', ['alias' => 'Blog']);
     }

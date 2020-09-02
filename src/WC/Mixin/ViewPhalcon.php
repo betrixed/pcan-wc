@@ -25,6 +25,9 @@ trait ViewPhalcon {
         $this->user_session->shutdown();
     }
     
+    public function setViewModel( $m ) {
+        $this->view->m = $m;
+    }
     public function getViewModel() : WConfig
     {
         return $this->view->m;

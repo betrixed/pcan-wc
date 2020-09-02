@@ -155,7 +155,7 @@ class UserAuth extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("user_auth");
         $this->belongsTo('groupId', 'App\Models\UserGroup', 'id', ['alias' => 'UserGroup']);
         $this->belongsTo('userId', 'App\Models\Users', 'id', ['alias' => 'Users']);

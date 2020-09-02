@@ -267,7 +267,7 @@ class Users extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("users");
         $this->hasMany('id', 'App\Models\Blog', 'author_id', ['alias' => 'Blog']);
         $this->hasMany('id', 'App\Models\BlogComment', 'user_id', ['alias' => 'BlogComment']);

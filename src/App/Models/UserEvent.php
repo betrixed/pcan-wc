@@ -155,7 +155,7 @@ class UserEvent extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("user_event");
         $this->belongsTo('user_id', 'App\Models\Users', 'id', ['alias' => 'Users']);
     }

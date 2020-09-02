@@ -165,7 +165,6 @@ EOS;
         $this->options = $options;
 
         $src = $sdef->getSchemaName() . '.' . $this->name;
-
         $data = $sdef->arraySet('SHOW FULL COLUMNS from ' . $src . ' ');
 
         $this->columns = [];

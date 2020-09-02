@@ -271,7 +271,7 @@ class Gallery extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("gallery");
         $this->hasMany('id', 'App\Models\Image', 'galleryid', ['alias' => 'Image']);
         $this->hasMany('id', 'App\Models\ImgGallery', 'galleryid', ['alias' => 'ImgGallery']);

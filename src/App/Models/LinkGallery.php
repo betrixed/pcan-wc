@@ -155,7 +155,7 @@ class LinkGallery extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("link_gallery");
     }
 

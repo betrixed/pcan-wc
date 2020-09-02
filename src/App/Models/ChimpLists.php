@@ -300,7 +300,7 @@ class ChimpLists extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("chimp_lists");
         $this->hasMany('id', 'App\Models\ChimpEntry', 'listid', ['alias' => 'ChimpEntry']);
     }

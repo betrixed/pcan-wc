@@ -213,7 +213,7 @@ class FileUpload extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("file_upload");
         $this->belongsTo('blog_id', 'App\Models\Blog', 'id', ['alias' => 'Blog']);
     }

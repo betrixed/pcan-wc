@@ -24,8 +24,7 @@ use \App\Link\RevisionOp;
     */
 
     private function menuView($mit) {
-        $view = $this->view; // current controller view
-        $m = $view->m;
+        $m = $this->getViewModel(); // current controller view
         $menu = empty($mit) ? null : MenuTree::getIdParent($mit);
         if (!empty($menu)) {
             $items = $menu->submenu;

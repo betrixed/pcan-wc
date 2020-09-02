@@ -184,7 +184,7 @@ class ResetPasswords extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("reset_passwords");
     }
 

@@ -126,7 +126,7 @@ class BlogRevision extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("pcan");
+        
         $this->setSource("blog_revision");
         $this->belongsTo('blog_id', 'App\Models\Blog', 'id', ['alias' => 'Blog']);
     }

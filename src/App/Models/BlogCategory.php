@@ -155,7 +155,7 @@ class BlogCategory extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // $this->setSchema("pcan");
+        // 
         $this->setSource("blog_category");
         $this->hasMany('id', 'App\Models\BlogToCategory', 'category_id', ['alias' => 'BlogToCategory']);
     }

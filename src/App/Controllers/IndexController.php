@@ -107,15 +107,12 @@ EOQ;
     public function indexAction()
     {
 
-
-        $view = $this->getView();
-
         $cache = $this->file_cache;
         $cache_key = 'IndexIndex';
         $m = $cache->get($cache_key, null);
        
         if (is_null($m)) {
-            $m = $view->m;
+            $m = $this->getViewModel();
             $m->sides = $this->sides();
             $m->main = $this->main();
             $m->events = $this->events();
@@ -132,7 +129,7 @@ EOQ;
             }
             $cache->set($cache_key, $m);
         } else {
-         $view->m = $m;
+          $this->setViewModel( $m );
         }
 
 
