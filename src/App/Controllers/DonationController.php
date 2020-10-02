@@ -44,7 +44,7 @@ class DonationController extends \Phalcon\Mvc\Controller
 SELECT  D.* , M.fname, M.lname from donation D 
     join member M on M.id = D.memberid
 EOS;
-        $db = new DbQuery();
+        $db = $this->dbq;
         if (!empty($purpose)) {
             $db->bindCondition("D.purpose = ?", $purpose);
         }

@@ -34,14 +34,15 @@ $url = "/admin/donation/";
         </thead>
         
         <tbody>
-        <?php foreach ($m->page as $d):
+        <?php $money = $gem->moneyFormat(); 
+            foreach ($m->page as $d):
             $name = $d['fname'] . ' ' . $d['lname'];
             ?>
             <tr>
                 <td><?= $gem->linkTo(['href' =>$url . "edit/" . $d['id'], 'text' => $name ]) ?></td>
             <td><?=  $d['created_at'] ?></td>
             <td><?=  $d['member_date'] ?></td>
-            <td><?=  $gem->price( $d['amount'] ) ?></td>
+            <td><?=  $money->format( $d['amount'] ) ?></td>
 
             </tr>
         <?php endforeach; ?>
