@@ -42,6 +42,12 @@ class Donation extends \Phalcon\Mvc\Model
     protected $member_date;
 
     /**
+     *
+     * @var string
+     */
+    protected $detail;
+
+    /**
      * Method to set the value of field id
      *
      * @param integer $id
@@ -120,6 +126,19 @@ class Donation extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Method to set the value of field detail
+     *
+     * @param string $detail
+     * @return $this
+     */
+    public function setDetail($detail)
+    {
+        $this->detail = $detail;
+
+        return $this;
+    }
+
+    /**
      * Returns the value of field id
      *
      * @return integer
@@ -180,13 +199,22 @@ class Donation extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field detail
+     *
+     * @return string
+     */
+    public function getDetail()
+    {
+        return $this->detail;
+    }
+
+    /**
      * Initialize method for model.
      */
     public function initialize()
     {
-        // 
         $this->setSource("donation");
-        $this->belongsTo('memberid', 'App\Models\Member', 'id', ['alias' => 'Member']);
+        $this->belongsTo('memberid', '\Member', 'id', ['alias' => 'Member']);
     }
 
     /**
@@ -225,7 +253,8 @@ class Donation extends \Phalcon\Mvc\Model
             'amount' => 'amount',
             'purpose' => 'purpose',
             'created_at' => 'created_at',
-            'member_date' => 'member_date'
+            'member_date' => 'member_date',
+            'detail' => 'detail'
         ];
     }
 

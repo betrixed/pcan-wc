@@ -3,12 +3,22 @@ $gem = $this->htmlgem;
 $assets->add(['bootstrap', 'DateTime']);
 $url = "/admin/donation/";
 $donate = $m->donation;
+$member = $m->member;
+$name = $member->fname . ' ' .$member->lname;
 ?>
 <style>
     label.label {
+        padding-right:10px;
         min-width:120px;
         text-align:right;
         font-weight:bold;
+        vertical-align: top;
+    }
+    .row {
+        padding-bottom:10px;
+    }
+    textarea {
+        resize: both;
     }
 </style>
 <div class="container">
@@ -18,6 +28,10 @@ $donate = $m->donation;
 
 <div class="page-header">
     <h1>Edit donation</h1>
+    <div>
+        <p>Member: 
+        <?= $gem->linkTo(['href'=> '/admin/member/edit/' . $member->id, 'text'=>$name ]) ?></p>
+    </div>
 </div>
 
 <?php echo $this->getContent(); ?>
@@ -26,22 +40,26 @@ $donate = $m->donation;
 
 <div class="row">
     <div class="col-sm-5">
-        <?= $gem->plainText(['in-label' => 'Amount', 'name' => "amount", "type" => "number", 'inlabel' => 'Amount', 'value' => $donate->amount]) ?>
+        <?= $gem->plainText(['label' => 'Amount', 'name' => "amount", "type" => "number", 'inlabel' => 'Amount', 'value' => $donate->amount]) ?>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-5">
-        <?= $gem->select(['in-label' => 'Purpose', 'name' => "purpose",   "class" => "selectpicker", 'list' => $m->purpose, 'value' => $donate->purpose]) ?>
+        <?= $gem->select(['label' => 'Purpose', 'name' => "purpose",   "class" => "selectpicker", 'list' => $m->purpose, 'value' => $donate->purpose]) ?>
     </div>
 </div>
-
+<div class="row">
+    <div class="col">
+        <?= $gem->multiline(['label' => 'Details', 'name' => "detail", 'value' => $donate->detail])?>
+    </div>
+</div>
 <div class="row">
     <div class="col-sm-5">
-        <?= $gem->datetime(['in-label' => 'Entered', 'name' => "created_at", "size" => 20, 'value' => $donate->created_at]) ?>
+        <?= $gem->datetime(['label' => 'Entered', 'name' => "created_at", "size" => 20, 'value' => $donate->created_at]) ?>
     </div>
         <div class="col-sm-5">
-       <?= $gem->datetime(['in-label' => 'Date for', 'name' => "member_date", "size" => 20,'value' => $donate->member_date ]) ?>
+       <?= $gem->datetime(['label' => 'Date for', 'name' => "member_date", "size" => 20,'value' => $donate->member_date ]) ?>
     </div>
 </div>
 

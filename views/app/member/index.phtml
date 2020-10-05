@@ -1,0 +1,65 @@
+<?php
+/**
+ * @var \Phalcon\Mvc\View\Engine\Php $this
+ */
+$assets->add(['bootstrap']);
+$gem = $this->htmlgem;
+?>
+
+<style>
+    .outerwrap {
+        padding-bottom: 20px;
+    }
+    .row {
+        margin-bottom: 10px;
+    }
+    
+    .label {
+        min-width: 100px;
+        text-align: right;
+    }
+</style>
+<div class="container outerwrap">
+<div class="page-header">
+    <h1>Search members</h1>
+    
+</div>
+
+<?php echo $this->getContent() ?>
+
+<?php echo $this->flash->output() ?>
+
+<form action="/admin/member/list" class="form-horizontal" method="get">
+    <div class="row">
+        <div class="col-4">
+            <?= $gem->plainText(['label' => 'First Name', 'name'=>'fname']) ?>
+        </div>
+        <div class="col-4">
+            <?= $gem->plainText(['label' => 'Last Name', 'name'=>'lname']) ?>
+        </div>
+    </div>
+
+
+<div class="row">
+    <div class="col-4">
+        <?= $gem->plainText(['label' => 'City', 'name'=>'city']) ?>
+    </div>
+    <div class="col-4">
+        <?= $gem->number(['label' => 'Post Code', 'name'=>'postcode']) ?>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-4">
+        <?=  $gem->plainText(['label' => 'Status', 'name'=>'status']) ?>
+    </div>
+</div>
+
+
+    <div class="row">
+        <div class="col text-center">
+            <?=  $gem->submit(['name'=>'Search', 'value'=>'Search']) ?>
+        </div>
+    </div>
+</form>
+</div>

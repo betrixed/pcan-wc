@@ -14,6 +14,9 @@ $btnclass = 'btn btn-outline-info';
         padding-left:15px;
         padding-right:10px;
     }
+    .inner {
+        padding:5px;
+    }
 </style>
 
 <div class='container outerwrap pad10'>
@@ -186,27 +189,43 @@ $btnclass = 'btn btn-outline-info';
     <form id="donateForm" method="post" action="<?= $url . 'donate' ?>" >
         <?= $gem->hidden(['name' => 'duid', 'value' => $rec->id]) ?>
         <div class="row">
-            <div class="col-3">
+            <div class="col-6">
+                <div class="row inner">
+                <div class="col-6">
                 <?=
                 $gem->money(['label' => 'Amount', 'name' => 'amount', 'value' => 10.00,
                     'min' => 0.00, 'max' => 10000.00, 'step' => 'any', 'size' => 6])
                 ?>
-            </div>
-            <div class="col-3">
+                </div>
+                <div class="col-6">
                 <?=
                 $gem->select(['list' => ['donate' => 'Donation', 'member' => 'Membership'],
                     'name' => 'purpose', 'label' => 'For'])
                 ?>
+                </div>
+                </div>
+                 <div class="row inner">
+                                 <div class="col-10">
+                                <?= $gem->datetime(['name' => 'member-date', 'label' => 'Date']) ?>
+                            </div>
+                 </div>
+                <div class="row inner">
+                                 <div class="col-10" style="padding-left:100px;padding-top:10px;">
+                    <?= $gem->submit(['value' => 'Add Record', 'class' => 'btn btn-info'
+                        ]) ?>
+                            </div>
+                </div>   
             </div>
-            <div class="col-1">
-<?= $gem->submit(['value' => 'Add Record', 'class' => 'btn btn-info']) ?>
+            <div class="col-6 align-text-top">
+                                                <?=
+                $gem->multiline([
+                    'name' => 'detail', 'label' => 'Detail', 'class' => 'align-text-top'])
+                ?>
             </div>
+            
+
         </div>
-        <div class="row">
-            <div class="col-5">
-<?= $gem->datetime(['name' => 'member-date', 'label' => 'Date']) ?>
-            </div>
-        </div>
+
     </form>
 
 </div>

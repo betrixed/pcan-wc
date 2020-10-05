@@ -11,6 +11,7 @@ class DbQuery  {
     public AdapterInterface $db;
     
     private $order;
+    private $limit;
     private $where;
     private $params;
     private $binds;
@@ -67,6 +68,13 @@ class DbQuery  {
         return $this->where;
     }
     
+    public function getParams() : ?array {
+        return $this->params;
+    }
+    public function getBinds() : ?array {
+        return $this->binds;
+    }
+    
     public function queryAA(string $sql) : array
     {
          return $this->arraySet($this->buildSql($sql),$this->params, $this->binds);
@@ -77,28 +85,58 @@ class DbQuery  {
     }
     public function buildSql(string $sql) : string
     {
+        return $sql . $this->paramSQL();
+    }
+    
+    public function paramSQL() : string
+    {
+        $sql = "";
         if (!empty($this->where)) {
             $sql .= ' WHERE ' . $this->where;
         }
         if (!empty($this->order)) {
             $sql .= ' ORDER BY ' . $this->order;
         }
-       return $sql;
+        if (!empty($this->limit)) {
+            $sql .= $this->limit;
+        }
+        return $sql;        
     }
-    /** Add a simple condition, must have a '?'  for replacement  */
-    public function bindCondition(string $condition,  $value) {
+    private function newParamName(): string {
         if (empty($this->params)) {
             $pname = "p1";
         }
         else {
             $pname = 'p' . (count($this->params) + 1);
-        }
+        } 
+        return $pname;
+    }
+    /** Add a simple condition, must have a '?'  for replacement  */
+    public function bindCondition(string $condition,  $value) {
+
         if (!empty($this->where)) {
             $this->where .= ' and ';
         }
+        $pname = $this->newParamName();
         $this->where .= str_replace('?', ':' . $pname, $condition);
         $this->params[$pname] = $value;
         $bind_type = is_integer($value) ? Column::BIND_PARAM_INT : Column::BIND_PARAM_STR;
         $this->binds[$pname] = $bind_type;
+    }
+    
+    public function bindLimit(int $rows, int $offset) 
+    {
+        if ($rows > 0) {
+            $pname = $this->newParamName();
+            $this->limit = ' LIMIT :' . $pname;
+            $this->params[$pname] = $rows;
+            $this->binds[$pname] = Column::BIND_PARAM_INT;
+            if ($offset > 0) {
+                $p2 = $this->newParamName();
+                $this->limit .= ' OFFSET :' . $pname;
+                $this->params[$p2] = $offset;
+                $this->binds[$p2] = Column::BIND_PARAM_INT;
+            }
+        }
     }
 }

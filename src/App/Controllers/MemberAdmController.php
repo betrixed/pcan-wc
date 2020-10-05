@@ -16,7 +16,7 @@ use App\Link\PageInfo;
 use WC\Valid;
 
 use Phalcon\Mvc\Controller;
-
+use Phalcon\Db\Column;
 
 
 class MemberAdmController extends Controller {
@@ -30,9 +30,13 @@ use \App\Chimp\ChimpData;
     {
         return 'Admin';
     }
+    
+    public function searchAction() {
+        $m = $this->getViewModel();
+        return $this->render('member','index');
+    }
     public function indexAction() {
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
         
         $qry =  $this->dbq;
         
@@ -40,10 +44,15 @@ use \App\Chimp\ChimpData;
         $req_query = $_SERVER['QUERY_STRING'];
         
         $pageAll = Valid::toStr($req, 'page', 'all');
+        $pgsize = Valid::toInt($req, 'pgsize', 0);
+        
         if (is_numeric($pageAll)) {
             $page = Valid::toint($req, 'page', 1);
         } else {
             $page = 0;
+        }
+        if ($pgsize > 0 && $page == 0) {
+            $page = 1;
         }
         $orderby = Valid::toStr($req, 'orderby', null);
         $order_field = self::getOrderBy($m, $orderby);
@@ -53,15 +62,39 @@ select M.*, ME.email_address, ME.status as email_status,
   from member M 
   left outer join member_email ME on ME.memberid = M.id
 EOD;
-        $params = [];
-        $sql .= " order by " . $order_field;
-        if ($page > 0) {
-            $sql .= " limit :ct offset  :start";
-            $pgsize = 16;
-            $params[':ct'] = $pgsize;
-            $params[':start'] = ($page - 1) * $pgsize;
+
+        
+        $fname = Valid::toStr($req, 'fname');
+        if (!empty($fname)) {
+            $qry->bindCondition('M.fname = ?', $fname);
         }
-        $results = $qry->arraySet($sql, $params);
+        $lname = Valid::toStr($req, 'lname');
+        if (!empty($lname)) {
+            $qry->bindCondition('M.lname = ?', $lname);
+        }
+        $city = Valid::toStr($req, 'city');
+        if (!empty($city)) {
+            $qry->bindCondition('M.city = ?', $city);
+        }        
+        $postcode = Valid::toStr($req, 'postcode');
+        if (!empty($postcode)) {
+            $qry->bindCondition('M.postcode = ?', $postcode);
+        } 
+        $status = Valid::toStr($req, 'status');
+        if (!empty($status)) {
+            $qry->bindCondition('M.status = ?', $status);
+        }         
+        $qry->order($order_field);
+        
+        
+        if ($page > 0) {
+            if ($pgsize === 0) {
+                $pgsize = 16;
+            }
+            $qry->bindLimit($pgsize, ($page - 1) * $pgsize);
+        }
+        $results = $qry->queryAA($sql);
+        
         $total = !empty($results) ? $results[0]['full_count'] : 0;
         if ($page === 0) {
             $pgsize = $total;
@@ -310,7 +343,7 @@ EOS;
         $amount = Valid::toMoney($post, 'amount', 0.0);
         $member_date = Valid::toDate($post, 'member-date');
         $purpose = Valid::toStr($post, 'purpose');
-        
+        $detail = Valid::toStr($post, 'detail');
         if ($amount > 0.0) {
             try {
                 $give = new Donation();
@@ -319,6 +352,7 @@ EOS;
                 $give->purpose = $purpose;
                 $give->created_at = Valid::now();
                 $give->memberid = $mid;
+                $give->detail = $detail;
                 $give->save();
                   
             } catch (\Exception $e) {

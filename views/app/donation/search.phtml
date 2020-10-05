@@ -30,6 +30,7 @@ $url = "/admin/donation/";
             <th>Entered</th>
             <th>Date for</th>
             <th>Amount</th>
+            <th>Detail</th>
             </tr>
         </thead>
         
@@ -43,7 +44,7 @@ $url = "/admin/donation/";
             <td><?=  $d['created_at'] ?></td>
             <td><?=  $d['member_date'] ?></td>
             <td><?=  $money->format( $d['amount'] ) ?></td>
-
+            <td><?=  $d['detail'] ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>

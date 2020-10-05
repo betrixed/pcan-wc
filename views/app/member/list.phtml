@@ -9,7 +9,7 @@ $page = $m->page;
 $data = $page->items;
 $pgsize = "?pgsize=" . $m->pgsize;
 $ubase =  $m->url . $pgsize . "&orderby=";
-$link = $ubase . $m->orderby;  
+$link = $ubase . $m->orderby;
 
 $assets->add('bootstrap');
 $btnClass = "btn btn-outline-info left-sep";
@@ -23,15 +23,27 @@ $btnClass = "btn btn-outline-info left-sep";
 <div class='outerwrap pad10'>
     <div class="container-fluid">
         <?php if ($page->last > 1 ): ?>
-        &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link, 'text'=> "First"]) ?>
+        <?= $gem->linkTo(['href' => $link . '&page=1', 'text'=> "First"]) ?>
         &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page='. $page->before, 'text' => "Previous"]) ?>
         &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'text' => "Next"]) ?>
         &nbsp; | &nbsp;<?= $gem->linkTo(['href' => $link . '&page=' . $page->last, 'text' => "Last"]) ?>
+        &nbsp; | &nbsp;  <?= $page->current . "/" . $page->last ?> &nbsp;  
     <?php endif ?>
-    &nbsp;|&nbsp;  <?= $page->current . "/" . $page->last ?>
-    &nbsp;|&nbsp;  
+        <span>page size: </span>
+        <?php
+            foreach([10,20,50] as $newsize) {
+               if ($m->pgsize !== $newsize) {
+                echo(' ' . $gem->linkTo(['href' => $link . '&pgsize=' . $newsize, 'text'=>(string) $newsize]));
+               } 
+               else {
+                 echo(' ' . $newsize);  
+               }
+            }
+        ?>
+ 
     <?= $gem->linkTo(['href' => '/admin/member/new', 'class' => $btnClass, 'text' => 'New Record']) ?>
     <?= $gem->linkTo(['href' => '/admin/member/status?' . $m->req_query , 'class' => $btnClass, 'text' => 'Review All Status']) ?>
+    <?= $gem->linkTo(['href' => '/admin/member/search' , 'class' => $btnClass, 'text' => 'Search']) ?>
         
         <div class="row">
             <div class="col-1">
@@ -65,7 +77,7 @@ $btnClass = "btn btn-outline-info left-sep";
                 background-color: azure;
             }            
         </style>
-        <?php $rno = 0 ?>
+        <?php $rno = ($page->current-1) * $m->pgsize ?>
         
         <div class="row-striped">
             <?php foreach($data as $row):

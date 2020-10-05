@@ -5,6 +5,7 @@ namespace App\Controllers;
 use Phalcon\Mvc\Model\Criteria;
 use Phalcon\Paginator\Adapter\Model;
 use App\Models\Donation;
+use App\Models\Member;
 use WC\Valid;
 use WC\Db\DbQuery;
 use Phalcon\Db\Column;
@@ -67,8 +68,7 @@ EOS;
 
             return;
         }
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
         $m->page = $results;
         $criteria = $db->getCriteria();
         $m->criteria = $criteria;
@@ -92,7 +92,10 @@ EOS;
     public function editAction($id)
     {
        
+        
         if (!$this->request->isPost()) {
+            $m = $this->getViewModel();
+            
              $donation = Donation::findFirstById($id);
             if (!$donation) {
                 $this->flash->error("donation was not found");
@@ -104,9 +107,11 @@ EOS;
 
                 return;
             }
+            // get member
+            //$member = $donation->getRelated("App\\Models\\Member");
             
-            $view = $this->getView();
-            $m = $view->m;
+            $m->member = Member::findFirstById($donation->memberid);
+            
             $m->donation = $donation;
             $m->purpose =$this-> getPurposeList();
             return $this->render('donation','edit');
@@ -135,7 +140,7 @@ EOS;
         $donation->setpurpose($this->request->getPost("purpose", "int"));
         $donation->setcreatedAt($this->request->getPost("created_at", "int"));
         $donation->setmemberDate($this->request->getPost("member_date", "int"));
-        
+        $donation->setDetail($this->request->getPost("detail", "string"));
 
         if (!$donation->save()) {
             foreach ($donation->getMessages() as $message) {
@@ -192,6 +197,7 @@ EOS;
         $donation->purpose = Valid::toStr($post, 'purpose');
         $donation->created_at = Valid::toDateTime($post,'created_at');
         $donation->member_date = Valid::toDate($post, 'member_date');
+        $donation->detail = Valid::toStr($post, 'detail');
 
         if (!$donation->update()) {
 

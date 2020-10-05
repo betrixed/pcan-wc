@@ -4,6 +4,7 @@ $donations = $m->donations;
 $btnclass = 'btn btn-outline-info';
 $fmt = HtmlGem::moneyFormat('en-AU');
 ?>
+<?php if (!empty($donations)): ?>
 <div class='container' >
     <div id='dnwrap' class='row'>
         <div class='col-2 text-center'>
@@ -12,8 +13,11 @@ $fmt = HtmlGem::moneyFormat('en-AU');
         <div class='col-2 text-center'>
             Purpose
         </div>
-        <div class='col-2 text-right'>
+        <div class='col-2 text-center'>
             Amount
+        </div>
+        <div class='col-2 text-center'>
+            Detail
         </div>
     </div>
     
@@ -29,6 +33,10 @@ $fmt = HtmlGem::moneyFormat('en-AU');
             <div class="col-2 text-right">
                 <span class="align-right"><?= $fmt->format($dn['amount']) ?></span>
             </div>
+            <div class="col-2">
+                <span><?= $dn['detail'] ?></span>
+            </div>
         </div>
     <?php endforeach ?>
 </div>
+<?php endif ?>
