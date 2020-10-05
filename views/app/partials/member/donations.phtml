@@ -2,6 +2,7 @@
 Use WC\HtmlGem;
 $donations = $m->donations;
 $btnclass = 'btn btn-outline-info';
+$gem = $this->htmlgem;
 $fmt = HtmlGem::moneyFormat('en-AU');
 ?>
 <?php if (!empty($donations)): ?>
@@ -28,7 +29,7 @@ $fmt = HtmlGem::moneyFormat('en-AU');
             </div>
 
             <div class="col-2 text-center">
-                <span><?= $dn['purpose'] ?></span>
+                <span><?= $gem->linkTo(['href'=>'/admin/donation/edit/' . $dn['id'], 'text'=> $dn['purpose']]) ?></span>
             </div>
             <div class="col-2 text-right">
                 <span class="align-right"><?= $fmt->format($dn['amount']) ?></span>

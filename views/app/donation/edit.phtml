@@ -4,6 +4,7 @@ $assets->add(['bootstrap', 'DateTime']);
 $url = "/admin/donation/";
 $donate = $m->donation;
 $member = $m->member;
+$m->title = "Credits";
 $name = $member->fname . ' ' .$member->lname;
 ?>
 <style>
@@ -27,7 +28,7 @@ $name = $member->fname . ' ' .$member->lname;
 </div>
 
 <div class="page-header">
-    <h1>Edit donation</h1>
+    <h1>Money Contributions</h1>
     <div>
         <p>Member: 
         <?= $gem->linkTo(['href'=> '/admin/member/edit/' . $member->id, 'text'=>$name ]) ?></p>
