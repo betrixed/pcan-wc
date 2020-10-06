@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\Blog;
@@ -14,35 +15,39 @@ use WC\SwiftMail;
 use \Phalcon\Db\Column;
 use App\Html2Text\Html2Text;
 
-class RegisterController extends \Phalcon\Mvc\Controller {
-use \WC\Mixin\ViewPhalcon;
-use \WC\Mixin\Captcha;
-    // Display Event blog with new register info
-    
+class RegisterController extends \Phalcon\Mvc\Controller
+{
 
-    private function  getEventBlog($eid)
+    use \WC\Mixin\ViewPhalcon;
+    use \WC\Mixin\Captcha;
+
+    // Display Event blog with new register info
+
+
+    private function getEventBlog($eid)
     {
         $db = $this->dbq;
-                
-$sql=<<<EOD
+
+        $sql = <<<EOD
 select e.fromTime, e.toTime, e.enabled, e.id as eventid, e.reg_detail,
- b.* from event e 
+ b.* , r.content as article from event e 
  join blog b on b.id = e.blogid
+ join blog_revision r on r.blog_id = b.id and r.revision = b.revision
  where e.id = :eid
 EOD;
-        $result = $db->arraySet($sql, 
-                ['eid' => $eid], 
+        $result = $db->arraySet($sql,
+                ['eid' => $eid],
                 ['eid' => Column::BIND_PARAM_INT]);
         if (!empty($result)) {
             return $result[0];
-        }
-        else 
+        } else
             return null;
     }
-    
-    private function  getSlugId($slug) {
+
+    private function getSlugId($slug)
+    {
         $db = $this->dbq;
-        $sql=<<<EOD
+        $sql = <<<EOD
 select e.fromTime, e.toTime, e.enabled, e.id as eventid, 
  b.*, r.content as article, r.date_saved as date_updated
  from event e 
@@ -54,72 +59,73 @@ join blog_revision r on r.blog_id = b.id and r.revision = b.revision
      order by e.fromTime
      LIMIT 1 OFFSET 0
 EOD;
-        $result = $db->arraySet($sql, 
-                ['slug' => $slug], 
+        $result = $db->arraySet($sql,
+                ['slug' => $slug],
                 ['slug' => Column::BIND_PARAM_STR]);
         if (!empty($result)) {
             return $result[0];
-        }
-        else 
+        } else
             return null;
     }
 
-    function newRegAction($eventId) {
-        
+    function newRegAction($eventId)
+    {
+
         if ($this->need_ssl()) {
             return $this->secure_connect();
         }
 
-        
+
         $view = $this->getView();
         $m = $view->m;
-        
-       /* $view->content = 'events/register.phtml';
-        $view->assets(['bootstrap', 'register-js']);
-        */
-        
+
+        /* $view->content = 'events/register.phtml';
+          $view->assets(['bootstrap', 'register-js']);
+         */
+
         $this->captchaView($m);
         $this->xcheckView($m);
-       
+
         if (is_numeric($eventId)) {
-             $result = $this->getEventBlog($eventId);
-        }
-        else {
+            $result = $this->getEventBlog($eventId);
+        } else {
             $result = $this->getSlugId($eventId);
         }
         $m->eblog = $result;
 
         $m->register = new Register();
         $m->register->people = 0;
-        return $this->render('events','register');
+        return $this->render('events', 'register');
     }
-    
-    private function error($msg) {
+
+    private function error($msg)
+    {
         $this->flash($msg);
     }
-    
-    function editAction($code,$regid) {
+
+    function editAction($code, $regid)
+    {
         if ($this->need_ssl()) {
             return $this->secure_connect();
         }
 
         $view = $this->getView();
-         $view->content = 'events/register.phtml';
-        
-        
+        $view->content = 'events/register.phtml';
+
+
         $m = $view->m;
-        
+
         $this->captchaView($m);
         $this->xcheckView($m);
-        
+
         $m->eblog = null;
         if (!empty($regid)) {
             $rec = Register::findFirstById($regid);
             // Get the record 
-           if (empty($rec)) {
-               $rec = new Register();
-               $this->flash("Register link not found");
-           }
+            if (empty($rec)) {
+                $rec = new Register();
+                $this->flash("Register link not found");
+            }
             $eventId = $rec->eventid;
             if ($code !== $rec->linkcode) {
                 $m->register = new Register();
@@ -130,94 +136,99 @@ EOD;
             }
         }
         $m->editUrl = '/reglink/' . $rec->linkcode . '/' . $rec->id;
-        return $this->render('events','register');
+        return $this->render('events', 'register');
     }
-    function regPostAction() {
+    public function urlPrefix(): string {
+           return $_SERVER['REQUEST_SCHEME']
+                   . '://' . $_SERVER['HTTP_HOST'];
+   }
+
+    function regPostAction()
+    {
         $view = $this->getView();
         $m = $view->m;
         $post = $_POST;
-        
-        $eventid = Valid::toInt($post,'eventid');
+
+        $eventid = Valid::toInt($post, 'eventid');
         $regid = Valid::toInt($post, 'id');
-        
-        $delete = Valid::toStr($post,'delete');
+
+        $delete = Valid::toStr($post, 'delete');
         $worked = true;
-        
+
         if (!empty($regid)) {
             // Get the record 
             $rec = Register::findFirstById($regid);
             if (!empty($rec) && !empty($delete)) {
-        // this record will be deleted
+                // this record will be deleted
                 $rec->delete();
                 $rec = new Register();
                 $rec->eventid = $eventid;
                 $this->flash('Previous registration deleted');
                 $worked = false;
             }
-        }
-        else {
+        } else {
             $rec = new Register();
             $rec->eventid = $eventid;
             $rec->created_at = Valid::now();
         }
-        
+
         if ($worked) {
-            $lname = Valid::toStr($post,'lname');
-            $fname = Valid::toStr($post,'fname');
-            $email = Valid::toEmail($post,'email');
+            $lname = Valid::toStr($post, 'lname');
+            $fname = Valid::toStr($post, 'fname');
+            $email = Valid::toEmail($post, 'email');
             $people = Valid::toInt($post, 'people');
             $phone = Valid::toPhone($post, 'phone');
             if (empty($fname) || empty($lname) || empty($email)) {
                 $this->error('Name and Email required');
-            }
-            $rec->fname = $fname;
-            $rec->lname = $lname;
-            
-            if ($email !== $rec->email) {
-                $rec->email = $email;
-                $rec->linkcode = md5(strtolower($rec->email) . $rec->eventid . strtolower( $rec->fname) . strtolower( $rec->lname));
-            }          
-            $rec->phone = $phone;
-            $rec->people = $people;
-
-            try {
-                if (empty($regid))
-                {
-                    $op = 'created';
-                    $rec->create();
-                }               
-                else {
-                    $op = 'updated';
-                    $rec->update();   
-                }                
-            } catch (\Exception $ex) {
-                $this->error('Failed to save register for event');
                 $worked = false;
-            }
-            if ($worked) {
-                $this->flash('Your registration was ' . $op);
+            } else {
+                $rec->fname = $fname;
+                $rec->lname = $lname;
+
+                if ($email !== $rec->email) {
+                    $rec->email = $email;
+                    $rec->linkcode = md5(strtolower($rec->email) . $rec->eventid . strtolower($rec->fname) . strtolower($rec->lname));
+                }
+                $rec->phone = $phone;
+                $rec->people = $people;
+
+                try {
+                    if (empty($regid)) {
+                        $op = 'created';
+                        $rec->create();
+                    } else {
+                        $op = 'updated';
+                        $rec->update();
+                    }
+                } catch (\Exception $ex) {
+                    $this->error('Failed to save register for event');
+                    $worked = false;
+                }
+                if ($worked) {
+                    $this->flash('Your registration was ' . $op);
+                }
             }
         }
-        
+
         if ($worked) {
             $app = $this->app;
             $m->editUrl = '/reglink/' . $rec->linkcode . '/' . $rec->id;
             if (!empty($email)) {
                 $name = $fname . ' ' . $lname;
-                
-                $model = new WConfig(); 
-                $model->link = UserSession::urlPrefix() . $m->editUrl;
+
+                $model = new WConfig();
+                $model->link = $this->urlPrefix() . $m->editUrl;
                 $model->userName = $name;
                 $model->domain = $app->organization;
                 $model->detail = $rec->reg_detail ?? null;
-                
+
                 $params['m'] = $model;
                 $params['app'] = $app;
-                
-                $htmlMsg = static::simpleView( 'events/signup_html', $params);
+
+                $htmlMsg = static::simpleView('events/signup_html', $params);
                 $textMsg = (new Html2Text($htmlMsg))->getText();
-                
-                $mailer = new  SwiftMail();
+
+                $mailer = new SwiftMail($this->app);
                 $msg = [
                     "subject" => 'Event registration for ' . $view->publicUrl,
                     "text" => $textMsg,
@@ -225,7 +236,7 @@ EOD;
                     "to" => [
                         "email" => $email,
                         "name" => $name
-                        ]
+                    ]
                 ];
                 $isValid = $mailer->send($msg);
                 if ($isValid['success']) {
@@ -240,10 +251,10 @@ EOD;
         $m->register = $rec;
         if ($this->request->isAjax()) {
             $this->noLayouts();
-            return $this->render('partials','events/regform');
-        }
-        else {
-            return $this->render('events','register');
+            return $this->render('partials', 'events/regform');
+        } else {
+            return $this->render('events', 'register');
         }
     }
+
 }
