@@ -176,14 +176,16 @@ if (!empty($link->refid)) {
 <?php endif ?>
         </div>
     </form>
-    <?php if (!empty($image)): ?>
+    <?php if (!empty($image)):
+        $label = "Image Caption for " . $image->id . ': ' . $image->im_file;
+        ?>
         <form id="imageform" name="imageform" method="post" action="<?= $m->im_post ?>">
             <?= $gem->hidden(['name' => 'lk_imageid', 'value'=> $image->id] ) ?>
             <?= $gem->hidden(['name' => 'lk_id', 'value'=> $link->id]) ?>
             <div class="row">
                 <div class="col-8">
-                <label for="im_caption">Image Caption for <?= $image->id . ': ' . $image->im_file ?></label>
-                <textarea name="im_caption" rows='2' style="width:100%;"><?= $image->caption ?></textarea>
+                <?= $gem->multiline(['label'=>$label,  'name'=>"im_caption", 'style'=>'width:100%;',
+                    'rows'=>2, 'value'=>$image->im_caption]) ?>
                 </div>
                 <div class="col-4">
                     <img src="<?= $image->im_path . $image->thumb ?>">
