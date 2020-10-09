@@ -23,7 +23,11 @@ $assets->add('bootstrap');
     <hr>
     <?php foreach( $episodes as $ep): ?>
         <div class="row" style="margin-bottom:5px;">
-            <div class="col-12"><p><a href="/gallery/view/<?= $ep->name ?>"><?= $ep->description ?></a></p></div>
+           
+            <div class="col-6"><p><a href="/gallery/view/<?= $ep->name ?>"><?= $ep->description ?></a></p></div>
+            <?php if ($this->user_session->auth('Admin')): ?>
+            <div class="col-6"><p><a href="/admin/gallery/edit/<?= $ep->name ?>"><?= $ep->name ?></a></p></div>
+            <?php endif ?>
         </div>
 <?php endforeach; ?>
 <?php endif; ?>

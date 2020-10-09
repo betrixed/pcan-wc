@@ -6,6 +6,7 @@ use WC\Db\DbQuery;
 use WC\Db\Server;
 use App\Link\PageInfo;
 use WC\App;
+use App\Models\Gallery;
 use Phalcon\Db\Column;
 /**
  * Gallery operations
@@ -72,5 +73,22 @@ EOD;
         $maxrows = !empty($results) ? $results[0]['full_count'] : 0;
 
         return new PageInfo($numberPage, $pageRows, $results, $maxrows);
+    }
+    
+    function getGalleryName($name) {
+        // see if path exists, is registered, if not, make it
+        $gal =  Gallery::findFirstByName($name);
+        if (!$gal ) {
+            $this->flash("gallery not registered : " . $name);
+            return null;
+        } else {
+            $imageExt = $gal->path;
+            $imgdir = $this->app->web_dir . '/' . $imageExt;
+            if (!file_exists($imgdir)) {
+                $this->flash("cannot find folder : " . $imageExt);
+                return null;
+            }
+            return $gal;
+        }
     }
 }

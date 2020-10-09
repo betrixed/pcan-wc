@@ -8,6 +8,7 @@ namespace App\Controllers;
 use App\Models\Image;
 use App\Models\ImgGallery;
 use App\Models\Gallery;
+use App\Models\Series;
 use WC\UserSession;
 use WC\WConfig;
 use WC\Valid;
@@ -171,7 +172,7 @@ class GalleryAdmController extends Controller {
                             $this->$fn($f3, $action[1]);
                         } else {
                             $this->flash('Name required');
-                            $this->invalid($f3, $args);
+                            $this->invalid();
                         }
                         return;
                     case 'new':
@@ -180,7 +181,7 @@ class GalleryAdmController extends Controller {
                 }
             }
         }
-        $this->invalid($f3, $args);
+        $this->invalid();
     }
 
     /*     * * set the imageid
@@ -203,7 +204,7 @@ class GalleryAdmController extends Controller {
     /** Handle actions for POST [ajax] from routes.php for '/admin/gallery/*'    */
     public function h_ajax($f3, $args) {
         if (!$f3->get('AJAX')) {
-            return $this->invalid($f3, $args);
+            return $this->invalid();
         }
         $url = $args['*'];
         $parts = explode('?', $url);
@@ -222,7 +223,7 @@ class GalleryAdmController extends Controller {
                 }
             }
         }
-        $this->invalid($f3, $args);
+        $this->invalid();
     }
 
     public function indexAction() {
@@ -571,7 +572,7 @@ class GalleryAdmController extends Controller {
             return $this->reroute($this->url . 'images/' . $name);
         } else {
             $this->flash("Gallery not found: " . $name);
-            return $this->invalid([]);
+            return $this->invalid();
         }
     }
 
@@ -579,10 +580,17 @@ class GalleryAdmController extends Controller {
      * Edit just the gallery record
      */
     public function editAction($name) {
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
         $gal = $this->getGalleryFiles($m, $name);
         if ($gal) {
+            $prevlink = $gal->leva_path;
+            $nextlink = $gal->prava_path;
+            $m->prevlink = empty($prevlink) ? null : $this->getGalleryName($prevlink);
+            $m->nextlink = empty($nextlink) ? null : $this->getGalleryName($nextlink);
+            if (!empty($gal->seriesid)) {
+                $series = Series::findFirstById($gal->seriesid);
+                $m->indexlink = '/series/' . $series->tinytag;
+            }
             $m->series = $this->getSeriesSelect();
             //$view->assets(['bootstrap', 'grid', 'jquery-form', 'gallery-progress', 'imagelist']);
             return $this->render('gallery_adm', 'editgal');
@@ -592,6 +600,10 @@ class GalleryAdmController extends Controller {
         }
     }
 
+    public function invalid() {
+        $this->reroute('/error/block');
+        return null;
+    }
     /** Edit the gallery image list */
     public function imagesAction($name) {
         $view = $this->view;

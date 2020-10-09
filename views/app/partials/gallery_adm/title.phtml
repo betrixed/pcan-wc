@@ -1,9 +1,14 @@
 <?php
 // Title Insert
 $gallery = $m->gallery;
+$prefix = '/admin/gallery/edit/';
+$prevlink = $m->prevlink;
+$nextlink = $m->nextlink;
+$index = $m->indexlink;
 ?>
-<div class="row outerwrap">
-    <div class="col-10">
+<div class="container-fluid outerwrap">
+<div class="row">
+    <div class="col">
     <span style='font-size:1.2em;'> 
         <a href="/dash">Dash</a> &nbsp; &gt;&gt; &nbsp; 
         <a href="/admin/gallery/">Galleries Index</a> &nbsp; &gt;&gt; &nbsp;
@@ -12,4 +17,25 @@ $gallery = $m->gallery;
         
     </span>
     </div>
+</div>
+<div class="row">
+    <?php if(!is_null($prevlink)): ?>
+                    <div class="col-md-auto">
+                        <div class="btn btn-light">
+                            <a href="<?=$prefix . $prevlink->name?>">
+                                <span class="nextprev"><img src="/font/glyphicons_free/glyphicons/png/glyphicons-225-chevron-left.png">&nbsp;<?=$prevlink->name?></span></a>
+                        </div>
+                    </div>
+                <?php endif ?>
+
+                <div class="col text-center">
+                    <span class="nextprev"><a href="<?=$index?>">Index</a></span>
+                </div>
+                <?php if(!is_null($nextlink)): ?>
+                
+                    <div class="col-md-auto">
+                        <a class="btn btn-light" href="<?=$prefix . $nextlink->name?>"><span class="nextprev"><?=$nextlink->name ?>&nbsp;<img src="/font/glyphicons_free/glyphicons/png/glyphicons-224-chevron-right.png"></a>
+                    </div>
+                 <?php endif ?>
  </div>
+</div>
