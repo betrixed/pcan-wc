@@ -35,22 +35,7 @@ class GalleryListController extends Controller {
      * @param type $id
      * id is a path, subdirectory of /image/gallery/
      */
-    private function getGalleryName($name) {
-        // see if path exists, is registered, if not, make it
-        $gal =  Gallery::findFirstByName($name);
-        if (!$gal ) {
-            $this->flash("gallery not registered : " . $name);
-            return null;
-        } else {
-            $imageExt = $gal->path;
-            $imgdir = $this->app->web_dir . '/' . $imageExt;
-            if (!file_exists($imgdir)) {
-                $this->flash("cannot find folder : " . $imageExt);
-                return null;
-            }
-            return $gal;
-        }
-    }
+
     
     
 

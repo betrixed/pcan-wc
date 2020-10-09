@@ -26,9 +26,9 @@ use \App\Link\MemberData;
 use \App\Chimp\ChimpData;
     public $url = "/admin/member/";
 
-    public function getAllowRole() : string
+    public function getAllowRole() : array
     {
-        return 'Admin';
+        return ['Admin','Finance'];
     }
     
     public function searchAction() {

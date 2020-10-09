@@ -16,8 +16,8 @@ class DashController extends Controller {
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Auth;
     
-    public function getAllowRole() {
-        return 'Editor';
+    public function getAllowRole() : array {
+        return ['Editor','Finance'];
     }
     public function cmdAction($fn) {
         $test = Users::findFirstByName('Michael Rynn');
