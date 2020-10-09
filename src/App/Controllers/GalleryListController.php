@@ -43,7 +43,7 @@ class GalleryListController extends Controller {
             return null;
         } else {
             $imageExt = $gal->path;
-            $imgdir = $this->app->WEB . '/' . $imageExt;
+            $imgdir = $this->app->web_dir . '/' . $imageExt;
             if (!file_exists($imgdir)) {
                 $this->flash("cannot find folder : " . $imageExt);
                 return null;

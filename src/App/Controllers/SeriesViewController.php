@@ -20,7 +20,7 @@ use \WC\Mixin\ViewPhalcon;
         $m = $view->m;
         $m->series = $series;
         
-        $m->episodes = (new DbQuery())->objectSet(
+        $m->episodes = ($this->dbq)->objectSet(
                 'select * from gallery where seriesid = :sid order by last_upload desc',
                 ['sid' => $series->id],
                 ['sid' => Column::BIND_PARAM_INT]);

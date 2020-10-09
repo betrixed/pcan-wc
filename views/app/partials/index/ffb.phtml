@@ -8,7 +8,9 @@
 
 <?php if ((!$app->isMobile)): ?>
 <?php if (!empty($images)): 
-
+    $fup = $images[0];
+    $first_path = explode('/', $fup['path']);
+    $archive_link = '/gallery/view/' . array_pop($first_path);
   ?>  
 
 <style>
@@ -55,13 +57,13 @@ div.carousel-link{
     <div id="gallery-c" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
              <?php foreach($images as $fup): ?>
-                <?php if ($row_id === 0): ?>
+                <?php if ($row_id === 0):?>
     <li data-target="#gallery-c" data-slide-to="<?=$row_id?>" class="active"></li>
                 <?php else: ?>
     <li data-target="#gallery-c" data-slide-to="<?=$row_id?>"></li>
                         <?php endif ?>
     <?php $row_id++; endforeach;   $row_id = 0;  ?>
-    <div class="carousel-link"><a href="/gallery/view/ffb-2020-Apr-Jun">Gallery Archive</a></div>
+    <div class="carousel-link"><a href="<?=$archive_link?>">Gallery Archive</a></div>
       </ol>
 
         <div class="carousel-inner">
