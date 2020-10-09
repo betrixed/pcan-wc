@@ -2,9 +2,9 @@
 // Title Insert
 $gallery = $m->gallery;
 $prefix = '/admin/gallery/edit/';
-$prevlink = $m->prevlink;
-$nextlink = $m->nextlink;
-$index = $m->indexlink;
+$prevlink = $m->prevlink ?? null;
+$nextlink = $m->nextlink  ?? null;
+$index = $m->indexlink  ?? null;
 ?>
 <div class="container-fluid outerwrap">
 <div class="row">
