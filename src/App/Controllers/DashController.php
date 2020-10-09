@@ -17,7 +17,7 @@ class DashController extends Controller {
     use \WC\Mixin\Auth;
     
     public function getAllowRole() : array {
-        return ['Editor','Finance'];
+        return ['Admin','Editor','Finance'];
     }
     public function cmdAction($fn) {
         $test = Users::findFirstByName('Michael Rynn');

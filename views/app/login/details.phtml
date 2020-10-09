@@ -30,10 +30,10 @@ $us = $this->user_session;
             <br><span class="detail"> <?= implode(',',$us->getUserRoles()) ?></span>
         </div>
     </div>
-    <?php if ($us->auth(['Admin','Editor'])): ?>
+    <?php if ($us->auth(['Admin','Editor','Finance'])): ?>
     <div class="row gap">
         <div class="col text-center">
-            <a href="/admin/dash" class="btn btn-large btn-outline btn-info">Dash</a>
+            <a href="/admin/dash" class="btn btn-large btn-outline btn-info">Dashboard</a>
         </div>
     </div>
     <?php endif ?>
