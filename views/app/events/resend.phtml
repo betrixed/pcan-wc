@@ -48,20 +48,18 @@ $m->title="Register";
         <?php if ($hasEvent && !empty($reg->linkcode)): ?>
     <div class="row">
         <div class="outerwrap notice">
-            <p>Important Online Details - posted here in case of late changes</p>
-            <?= $eblog['reg_detail']; ?>
+            <p>A registration form already exists for the email <?= $reg->email ?></p>
+            <p>
         </div>
     </div>
     <?php endif ?>
     <?php if ($hasEvent): ?>
-            <form id="regevt" method="post" action="/register/regpost">
+            <form id="regevt" method="post" action="/register/resend">
             <div id="regform">
-                <?= $this->partial('events/regform') ?>
+                <?= $this->partial('events/resend') ?>
             </div>
         </form>
-
-    <div class="eblog">
-        
+    <div class="eblog">   
         <div class="<?= $eblog['style'] ?>">
             <?= $eblog['article'] ?>
         </div>

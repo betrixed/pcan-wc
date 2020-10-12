@@ -1,0 +1,43 @@
+<?php
+$gem = $this->htmlgem;
+$eblog = $m->eblog;
+$hasEvent = !empty($eblog);
+$reg = $m->register;
+?>
+<?php 
+    
+    if (!empty($flash)):
+        $this->partial('flash');
+    endif;
+        ?>
+<?= $gem->hidden(['name' => 'id', 'value' => $reg->id]) ?>
+<?= $gem->hidden(['name' => 'eventid', 'value' => $eblog['eventid']]) ?>
+<?php if (!empty($reg->linkcode)): ?>
+    <div class="row">
+    <div class="col">
+        <?= $gem->hidden([ 'name' => 'linkcode', 
+                                'value' => $reg->linkcode ]) ?>  
+</div>
+</div>
+<?php endif; ?>
+
+<div class="row">
+    <div class="col-12">
+        <p>This email was already used to register.
+            <br> Resend view/edit link to email address?</p>
+         <?= $gem->text_value(['label' => 'Email', 'name' => 'email', 
+                                'value' => $reg->email, 'size' => 40]) ?>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-2">
+    </div>
+      <?php if (!empty ($reg->id)): ?>
+            <div class="col-4">
+                <?= $gem->submit(['name' => 'resend', 'value' => 'Resend']) ?>
+               
+            </div>
+        <?php endif; ?>
+    </div>
+</div>

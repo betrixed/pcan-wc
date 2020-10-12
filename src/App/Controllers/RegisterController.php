@@ -15,8 +15,7 @@ use WC\SwiftMail;
 use \Phalcon\Db\Column;
 use App\Html2Text\Html2Text;
 
-class RegisterController extends \Phalcon\Mvc\Controller
-{
+class RegisterController extends \Phalcon\Mvc\Controller {
 
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Captcha;
@@ -24,8 +23,7 @@ class RegisterController extends \Phalcon\Mvc\Controller
     // Display Event blog with new register info
 
 
-    private function getEventBlog($eid)
-    {
+    private function getEventBlog($eid) {
         $db = $this->dbq;
 
         $sql = <<<EOD
@@ -44,8 +42,7 @@ EOD;
             return null;
     }
 
-    private function getSlugId($slug)
-    {
+    private function getSlugId($slug) {
         $db = $this->dbq;
         $sql = <<<EOD
 select e.fromTime, e.toTime, e.enabled, e.id as eventid, 
@@ -68,16 +65,14 @@ EOD;
             return null;
     }
 
-    function newRegAction($eventId)
-    {
+    function newRegAction($eventId) {
 
         if ($this->need_ssl()) {
             return $this->secure_connect();
         }
 
 
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
 
         /* $view->content = 'events/register.phtml';
           $view->assets(['bootstrap', 'register-js']);
@@ -98,13 +93,11 @@ EOD;
         return $this->render('events', 'register');
     }
 
-    private function error($msg)
-    {
+    private function error($msg) {
         $this->flash($msg);
     }
 
-    function editAction($code, $regid)
-    {
+    function editAction($code, $regid) {
         if ($this->need_ssl()) {
             return $this->secure_connect();
         }
@@ -138,13 +131,65 @@ EOD;
         $m->editUrl = '/reglink/' . $rec->linkcode . '/' . $rec->id;
         return $this->render('events', 'register');
     }
-    public function urlPrefix(): string {
-           return $_SERVER['REQUEST_SCHEME']
-                   . '://' . $_SERVER['HTTP_HOST'];
-   }
 
-    function regPostAction()
-    {
+    public function urlPrefix(): string {
+        return $_SERVER['REQUEST_SCHEME']
+                . '://' . $_SERVER['HTTP_HOST'];
+    }
+
+    // return full edit link url
+    private function sendLinkEmail($rec): string {
+        $app = $this->app;
+        $m = $this->getViewModel();
+        $editUrl = $this->urlPrefix() . '/reglink/' . $rec->linkcode . '/' . $rec->id;
+        if (!empty($rec->email)) {
+            $name = $rec->fname . ' ' . $rec->lname;
+            // model for email template
+            $model = new WConfig();
+            $model->link = $editUrl;
+            $model->userName = $name;
+            $model->domain = $app->organization;
+            $model->detail = $rec->reg_detail ?? null;
+
+            $params['m'] = $model;
+            $params['app'] = $app;
+
+            $htmlMsg = static::simpleView('events/signup_html', $params);
+            $textMsg = (new Html2Text($htmlMsg))->getText();
+
+            $mailer = new SwiftMail($this->app);
+            $msg = [
+                "subject" => 'Event registration for ' . $m->eblog['title'],
+                "text" => $textMsg,
+                "html" => $htmlMsg,
+                "to" => [
+                    "email" => $rec->email,
+                    "name" => $name
+                ]
+            ];
+            $isValid = $mailer->send($msg);
+            if ($isValid['success']) {
+                $this->flash('Email sent');
+            } else {
+                $this->error($isValid['errors']);
+            }
+        }
+        return $editUrl;
+    }
+
+    function renderResend($rec) {
+        $m = $this->getViewModel();
+        $m->register = $rec;
+        
+        if ($this->request->isAjax()) {
+            $this->noLayouts();
+            return $this->render('partials', 'events/resend');
+        } else {
+            return $this->render('events', 'resend');
+        }
+    }
+
+    function regPostAction() {
         $view = $this->getView();
         $m = $view->m;
         $post = $_POST;
@@ -152,9 +197,17 @@ EOD;
         $eventid = Valid::toInt($post, 'eventid');
         $regid = Valid::toInt($post, 'id');
 
+        
         $delete = Valid::toStr($post, 'delete');
+        $resend = Valid::toStr($post, 'resend');
         $worked = true;
-
+        $m->eblog = $this->getEventBlog($eventid);
+        
+        if (!empty($resend)) {
+            $rec = Register::findFirstById($regid);
+            $m->editUrl = $this->sendLinkEmail($rec);
+            return $this->renderResend($rec);
+        }
         if (!empty($regid)) {
             // Get the record 
             $rec = Register::findFirstById($regid);
@@ -195,6 +248,10 @@ EOD;
                 try {
                     if (empty($regid)) {
                         $op = 'created';
+                        $rec = Register::findFirst("eventid = $eventid and email = '$email'");
+                        if (!empty($rec)) {
+                            return $this->renderResend($rec);
+                        }
                         $rec->create();
                     } else {
                         $op = 'updated';
@@ -211,43 +268,10 @@ EOD;
         }
 
         if ($worked) {
-            $app = $this->app;
-            $m->editUrl = '/reglink/' . $rec->linkcode . '/' . $rec->id;
-            if (!empty($email)) {
-                $name = $fname . ' ' . $lname;
-
-                $model = new WConfig();
-                $model->link = $this->urlPrefix() . $m->editUrl;
-                $model->userName = $name;
-                $model->domain = $app->organization;
-                $model->detail = $rec->reg_detail ?? null;
-
-                $params['m'] = $model;
-                $params['app'] = $app;
-
-                $htmlMsg = static::simpleView('events/signup_html', $params);
-                $textMsg = (new Html2Text($htmlMsg))->getText();
-
-                $mailer = new SwiftMail($this->app);
-                $msg = [
-                    "subject" => 'Event registration for ' . $view->publicUrl,
-                    "text" => $textMsg,
-                    "html" => $htmlMsg,
-                    "to" => [
-                        "email" => $email,
-                        "name" => $name
-                    ]
-                ];
-                $isValid = $mailer->send($msg);
-                if ($isValid['success']) {
-                    $this->flash('Link sent to your email');
-                } else {
-                    $this->errorSignup($isValid['errors']);
-                    return;
-                }
-            }
+            $m->editUrl = $this->sendLinkEmail($rec);
+        } else {
+            $m->editUrl = "";
         }
-        $m->eblog = $this->getEventBlog($eventid);
         $m->register = $rec;
         if ($this->request->isAjax()) {
             $this->noLayouts();
