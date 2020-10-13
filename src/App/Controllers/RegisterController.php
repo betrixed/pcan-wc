@@ -248,9 +248,9 @@ EOD;
                 try {
                     if (empty($regid)) {
                         $op = 'created';
-                        $rec = Register::findFirst("eventid = $eventid and email = '$email'");
-                        if (!empty($rec)) {
-                            return $this->renderResend($rec);
+                        $other = Register::findFirst("eventid = $eventid and email = '$email'");
+                        if (!empty($other)) {
+                            return $this->renderResend($other);
                         }
                         $rec->create();
                     } else {
