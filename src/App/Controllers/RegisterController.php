@@ -67,7 +67,7 @@ EOD;
 
     function getTotal(int $eventid) : int {
         $qry = $this->dbq;
-        $sql = "select count(people+1) as tote from register where eventid = :evt";
+        $sql = "select sum(people+1) as tote from register where eventid = :evt";
         $qry->bindParam('evt', $eventid);
         $result = $qry->queryAA($sql);
         if (!empty($result)) {
