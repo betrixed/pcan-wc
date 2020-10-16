@@ -1,72 +1,169 @@
 <?php
 $gem = $this->htmlgem;
+$event = $m->event;
 $eblog = $m->eblog;
-$hasEvent = !empty($eblog);
+$hasEvent = !empty($event);
 $reg = $m->register;
+$formid = $m->formid;
+$xcheck = $m->xcheck ?? null;
+$google = $m->google ?? null;
 ?>
-<?php 
-    
-    if (!empty($flash)):
-        $this->partial('flash');
-    endif;
-        ?>
+<?php
+if (!empty($flash)):
+    $this->partial('flash');
+endif;
+?>
+            <div class="row">
+                <?php if (!empty($m->totalCount)): ?>
+                <div class="col">
+                    <?= "Total registrations: " . $m->totalCount; ?>
+                </div>
+                <?php endif?>
+            </div>
+<hr/>
 <?= $gem->hidden(['name' => 'id', 'value' => $reg->id]) ?>
-<?= $gem->hidden(['name' => 'eventid', 'value' => $eblog['eventid']]) ?>
+<?= $gem->hidden(['name' => 'eventid', 'value' => $event->id]) ?>
 <?php if (!empty($reg->linkcode)): ?>
     <div class="row">
-    <div class="col">
-        <p> Your RSVP edit link  is <a href="<?= $m->editUrl  ?>"><?= $m->editUrl  ?></a></p>
-        <?= $gem->hidden([ 'name' => 'linkcode', 
-                                'value' => $reg->linkcode ]) ?>  
-</div>
-</div>
+        <div class="col">
+            <p> Your RSVP edit link  is <a href="<?= $m->editUrl ?>"><?= $m->editUrl ?></a></p>
+            <?= $gem->hidden(['name' => 'linkcode',
+                'value' => $reg->linkcode])
+            ?>  
+        </div>
+    </div>
 <?php endif; ?>
+
 <div class="row">
     <div class="col-12">
-        <?= $gem->plainText(['label' => 'First name', 'name' => 'fname', 
-                                'value' => $reg->fname, 'size' => 40]) ?>    </div>
+        <?= $gem->plainText(['label' => 'First name', 'name' => 'fname',
+            'value' => $reg->fname, 'size' => 40])
+        ?>    </div>
 </div>
 <div class="row">
     <div class="col-12">
-        <?= $gem->plainText(['label' => 'Last name', 'name' => 'lname', 
-                                'value' => $reg->lname, 'size' => 40]) ?>
+        <?= $gem->plainText(['label' => 'Last name', 'name' => 'lname',
+            'value' => $reg->lname, 'size' => 40])
+        ?>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-         <?= $gem->email(['label' => 'Email', 'name' => 'email', 
-                                'value' => $reg->email, 'size' => 40]) ?>
-        <span>Email required</span>
+<?= $gem->email(['label' => 'Email', 'name' => 'email',
+    'value' => $reg->email, 'size' => 40])
+?>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-                 <?= $gem->phone(['label' => 'Phone', 'name' => 'phone', 
-                                'value' => $reg->phone ]) ?>
-        <span>Phone no. optional</span>
+<?= $gem->phone(['label' => 'Phone', 'name' => 'phone',
+    'value' => $reg->phone])
+?>
+        <span>Optional</span>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+<?= $gem->number(['label' => '#', 'name' => 'people',
+    'value' => $reg->people, 'style' => "width:3.0em;"])
+        ?>
+        <span><b> in addition to this registrant</b></span>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
-                         <?= $gem->number(['label' => '# Extra People', 'name' => 'people', 
-                                'value' => $reg->people, 'size' => 4 ]) ?>
+<?= $gem->checkBox(['label' => "Also add subscribe to occasional ParraCAN E-Newsletter", 'name' => 'notkeep',
+    'checked' => $reg->notkeep])
+?>
     </div>
 </div>
+
 <div class="row">
     <div class="col-2">
     </div>
-      <?php if (empty ($reg->id)): ?>
-            <div class="col-4">
-                <?= $gem->submit(['name' => 'submit', 'value' => 'Register']) ?>
-               
-            </div>
-         <?php else: ?>
-                <div class="col-2">
-                     <?= $gem->submit(['name' => 'submit', 'value' => 'Update']) ?>
-                </div>
-                <div class="col-2">
-                     <?= $gem->submit(['name' => 'delete', 'value' => 'Delete']) ?>
-                </div>
-        <?php endif; ?>
-    </div>
+    <?php if (empty($reg->id)): ?>
+        <div class="col-4">
+            <?= $gem->submit(['id' => 'submit', 'name' => 'submit', 'value' => 'Register']) ?>
+            <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
+        </div>
+        <?php else: ?>
+        <div class="col-2">
+        <?= $gem->submit(['id' => 'submit', 'name' => 'submit', 'value' => 'Update']) ?>
+            <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
+        </div>
+        <div class="col-2">
+    <?= $gem->submit(['id' => 'delete', 'name' => 'delete', 'value' => 'Delete']) ?>
+        </div>
+<?php endif; ?>
 </div>
+
+        <?php if (!empty($xcheck)): ?>
+            <?= $gem->xcheck(['name' => $xcheck['key'], 'value' => $xcheck['value']]) ?>
+<?php endif ?>
+<?php if (!empty($google) && $google['enabled']): ?>
+    <div class="row">
+        <div class="d-flex  justify-content-center"">
+    <?= $gem->invisiCaptcha(['site' => $google['site'], 'formid' => $formid, 'ajax' => 'formid_submit()']) ?>
+        </div>
+    </div>
+<?php endif ?>
+
+
+<?php
+if (is_null($google) || !$google['enabled']) {
+    $blob = <<<EOJS
+<script>        
+ var grecaptcha = {
+         getResponse : function() { return true; }
+         };
+ </script>
+EOJS;
+    $assets->addJS($blob);
+}
+?>
+<?php
+$blob = <<<EOJS
+<script>         
+function prep_valid() {
+  // Initialize form validation on the registration form.
+  // It has the name attribute "registration"
+
+  $("#$formid").validate({
+    // Specify validation rules
+    rules: {
+      // The key name on the left side is the name attribute
+      // of an input field. Validation rules are defined
+      // on the right side
+      fname: "required",
+      lname: "required",
+      email: {
+        required: true,
+        // Specify that email should be validated
+        // by the built-in "email" rule
+        email: true
+      }
+    },
+    // Specify validation error messages
+    messages: {
+      fname: "Need a name",
+      lname: "Need a name",
+      email: "Need valid email address"
+    },
+    // Make sure the form is submitted to the destination defined
+    // in the "action" attribute of the form when valid
+    submitHandler: function(form) {
+        if (grecaptcha.getResponse()) {
+            formid_submit();
+        }else{
+            grecaptcha.reset();
+            grecaptcha.execute();
+        } 
+    }
+  });
+}
+</script>
+EOJS;
+$assets->addJS($blob);
+?>

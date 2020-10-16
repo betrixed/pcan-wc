@@ -9,9 +9,8 @@ use WC\Db\{Server, DbQuery};
 use App\Link\{PageInfo,BlogView};
 use App\Models\{Links, Image, Blog};
 use WC\{WConfig, Valid, Text, UserSession};
-use Phalcon\Mvc\Controller;
 
-class LinksAdmController extends Controller {
+class LinksAdmController extends BaseController {
 
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;

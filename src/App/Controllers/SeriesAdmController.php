@@ -3,14 +3,13 @@
 namespace App\Controllers;
 
 use WC\Db\DbQuery;
-use Phalcon\Mvc\Controller;
 use App\Models\Series;
 /**
  * Controller for series Table
  *
  * @author Michael Rynn
  */
-class SeriesAdmController extends Controller {
+class SeriesAdmController extends BaseController {
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;
 

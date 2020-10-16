@@ -14,7 +14,7 @@ use WC\Valid;
 use WC\UserSession;
 use App\Models\Blog;
 
-class ExportController extends \Phalcon\Mvc\Controller {
+class ExportController extends BaseController {
 
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Auth;

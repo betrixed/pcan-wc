@@ -10,7 +10,7 @@ use WC\Valid;
 use WC\Db\DbQuery;
 use Phalcon\Db\Column;
 
-class DonationController extends \Phalcon\Mvc\Controller
+class DonationController extends BaseController
 {
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Auth;
@@ -47,13 +47,13 @@ SELECT  D.* , M.fname, M.lname from donation D
 EOS;
         $db = $this->dbq;
         if (!empty($purpose)) {
-            $db->bindCondition("D.purpose = ?", $purpose);
+            $db->whereCondition("D.purpose = ?", $purpose);
         }
         if (!empty($fromDate)) {
-            $db->bindCondition("D.member_date >= ?",  $fromDate);
+            $db->whereCondition("D.member_date >= ?",  $fromDate);
         }
         if (!empty($toDate)) {
-             $db->bindCondition("D.member_date < ?",  $toDate);
+             $db->whereCondition("D.member_date < ?",  $toDate);
         }
         $db->order("member_date asc");
         $results = $db->queryAA($sql);

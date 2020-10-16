@@ -10,7 +10,7 @@ use App\Models\LinkLinkery;
 use WC\UserSession;
 use WC\Valid;
 
-class LinkeryAdmController extends \Phalcon\Mvc\Controller
+class LinkeryAdmController extends BaseController
 {
 use \WC\Mixin\Auth;
 use \WC\Mixin\ViewPhalcon;

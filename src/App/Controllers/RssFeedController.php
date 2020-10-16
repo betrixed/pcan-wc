@@ -14,7 +14,7 @@ use App\Models\RssLink;
 use App\Link\RssView;
 use Phalcon\Db\Column;
 
-class RssFeedController extends \Phalcon\Mvc\Controller
+class RssFeedController extends BaseController
 {
 
     use \WC\Mixin\ViewPhalcon;
@@ -81,7 +81,7 @@ class RssFeedController extends \Phalcon\Mvc\Controller
                         $criteria = $key . " like ?";
                         break;
                 }
-                $qry->bindCondition($criteria, $test);
+                $qry->whereCondition($criteria, $test);
             }
         }
         $qry->order("last_read");

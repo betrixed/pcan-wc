@@ -15,11 +15,10 @@ use WC\UserSession;
 use App\Link\PageInfo;
 use WC\Valid;
 
-use Phalcon\Mvc\Controller;
 use Phalcon\Db\Column;
 
 
-class MemberAdmController extends Controller {
+class MemberAdmController extends BaseController {
 use \WC\Mixin\Auth;
 use \WC\Mixin\ViewPhalcon;
 use \App\Link\MemberData;
@@ -66,23 +65,23 @@ EOD;
         
         $fname = Valid::toStr($req, 'fname');
         if (!empty($fname)) {
-            $qry->bindCondition('M.fname = ?', $fname);
+            $qry->whereCondition('M.fname = ?', $fname);
         }
         $lname = Valid::toStr($req, 'lname');
         if (!empty($lname)) {
-            $qry->bindCondition('M.lname = ?', $lname);
+            $qry->whereCondition('M.lname = ?', $lname);
         }
         $city = Valid::toStr($req, 'city');
         if (!empty($city)) {
-            $qry->bindCondition('M.city = ?', $city);
+            $qry->whereCondition('M.city = ?', $city);
         }        
         $postcode = Valid::toStr($req, 'postcode');
         if (!empty($postcode)) {
-            $qry->bindCondition('M.postcode = ?', $postcode);
+            $qry->whereCondition('M.postcode = ?', $postcode);
         } 
         $status = Valid::toStr($req, 'status');
         if (!empty($status)) {
-            $qry->bindCondition('M.status = ?', $status);
+            $qry->whereCondition('M.status = ?', $status);
         }         
         $qry->order($order_field);
         

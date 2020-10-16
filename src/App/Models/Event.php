@@ -31,6 +31,12 @@ class Event extends \Phalcon\Mvc\Model
 
     /**
      *
+     * @var integer
+     */
+    protected $revisionid;
+
+    /**
+     *
      * @var string
      */
     protected $enabled;
@@ -95,6 +101,19 @@ class Event extends \Phalcon\Mvc\Model
     public function setBlogid($blogid)
     {
         $this->blogid = $blogid;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field revisionid
+     *
+     * @param integer $revisionid
+     * @return $this
+     */
+    public function setRevisionid($revisionid)
+    {
+        $this->revisionid = $revisionid;
 
         return $this;
     }
@@ -179,6 +198,16 @@ class Event extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field revisionid
+     *
+     * @return integer
+     */
+    public function getRevisionid()
+    {
+        return $this->revisionid;
+    }
+
+    /**
      * Returns the value of field enabled
      *
      * @return string
@@ -213,7 +242,6 @@ class Event extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // 
         $this->setSource("event");
         $this->belongsTo('blogid', 'App\Models\Blog', 'id', ['alias' => 'Blog']);
     }
@@ -253,9 +281,10 @@ class Event extends \Phalcon\Mvc\Model
             'fromtime' => 'fromtime',
             'totime' => 'totime',
             'blogid' => 'blogid',
+            'revisionid' => 'revisionid',
             'enabled' => 'enabled',
             'slug' => 'slug',
-            'reg_detail' => 'reg_detail',
+            'reg_detail' => 'reg_detail'
         ];
     }
 

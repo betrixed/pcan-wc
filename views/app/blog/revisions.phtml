@@ -4,6 +4,7 @@ $assets->add( [ 'bootstrap','grid', 'cat-menu', 'styles'] );
 $assets->minify('cat-menu');
 $blog = $m->blog;
 $list = $m->list;
+$btn_class = 'btn btn-outline';
 ?>
 <style>
     .color-fill {
@@ -39,26 +40,27 @@ $list = $m->list;
 <div class="container" >
     <p>Revisions for <span class="title"><?=$blog->title?></span></p>
 </div>
-<div class='container-fluid artcat-bg'>
+<div class='container-fluid'>
     <?php if (!empty($m->list)): ?>
-    <div class="row">
-    <div id="list" class="col-2 catlist ubuntu">
+
+    <div id="list">
         <?php $fid = 0;
                 foreach($m->list as $menu): 
-                $itemUrl = "/admin/blog/rget/" . $blog->id . "/" . $menu->id;
-               for($ix = 0; $ix < 2; $ix++) {
-                     $fid += 1;
+                    $itemUrl = "/admin/blog/rget/" . $blog->id . "/" . $menu->id;
+                 
             ?>
                <div class="row">
-            <div class="catlink">
-                    <?php if ($ix === 0): ?>
-                    <a class="btn" id="f<?=$fid?>" href="<?= $itemUrl ?>" onclick="fetch(this);return false;"><?= $menu->title ?></a>
-                    <?php else: ?>
-                    <a class="btn" id="f<?=$fid?>" href="<?= $itemUrl . '?html=1' ?>" onclick="fetch(this);return false;"> - <?=$menu->id . ")"?> as HTML</a>
-                    <?php endif ?>
-            </div>
+                <div class="col-3">
+                    <a class="<?=$btn_class?>" id="f<?=$fid+1?>" href="<?= $itemUrl ?>" onclick="fetch(this);return false;"><?=$menu->id . ")"?> View </a>
                 </div>
-               <?php } endforeach ?>
+                <div class="col-3">
+                    <a class="<?=$btn_class?>" id="f<?=$fid+2?>" href="<?= $itemUrl . '?html=1' ?>" onclick="fetch(this);return false;"> as HTML</a>
+                </div>
+                <div class="col-3">
+                    <a class="<?=$btn_class?>" id="f<?=$fid+3?>" href="<?= '/admin/blog/edit/' . $blog->id . '?revid=' . $menu->id ?>"> Edit Revision #<?= $menu->id ?> </a>
+                </div>
+                </div>
+               <?php $fid+=3;  endforeach ?>
     </div>
     <div class="col-10">
     <div id="article"></div>

@@ -213,7 +213,6 @@ class RssFeed extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        $this->setSchema("newsdb");
         $this->setSource("rss_feed");
         $this->hasMany('id', 'App\Models\RssLink', 'feed_id', ['alias' => 'RssLink']);
     }

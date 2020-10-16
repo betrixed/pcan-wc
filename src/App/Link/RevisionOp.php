@@ -24,12 +24,22 @@ trait RevisionOp
         }
         return 1;
     }
-
+    /**
+     * Get current revision record of blog
+     * @param type $blog
+     * @return object|null
+     */
     static function getLinkedRevision($blog): ?object
     {
         return self::getBlogRevision($blog->id, $blog->revision);
     }
 
+    /**
+     * Gets the revision record only
+     * @param type $bid
+     * @param type $rid
+     * @return object|null 
+     */
     static public function getBlogRevision($bid, $rid): ?object
     {
         $rev = BlogRevision::findFirst([
@@ -39,4 +49,26 @@ trait RevisionOp
         return $rev;
     }
 
+    /** return amalgam object of Blog and BlogRevision
+     * 
+     * @param type $bid
+     * @param type $rid
+     * @return object|null
+     */
+    public function getBlogAndRevision(int $bid, ?int $rid): ?object
+    {
+        $qry = $this->dbq;
+        $sql = "select b.*, r.date_saved, r.content as article"
+                . " from blog b join blog_revision r on r.blog_id = b.id";
+        if (!empty($rid)) {
+            $qry->whereCondition("r.revision=?", (int) $rid);
+        }
+        else {
+            $sql .= ' and r.revision = b.revision';
+        }
+        $qry->whereCondition("b.id=?", (int) $bid);
+        
+        $result = $qry->queryOA($sql);
+        return $result[0] ?? null;
+    }
 }

@@ -14,36 +14,20 @@ $date_saved = new DateTime($revision->date_saved);
 ?>
 
 <style>
-    .form-check label {
-        padding-left:10px;
-        padding-right:40px;
-        font-weight:bold;
+    .row {
+        padding-bottom:10px;
     }
-    
-    .form-check-input {
-        margin-left:0px;
-    }
-    .col-form-label {
-        min-width:100px;
-        padding-right:10px;
-        padding-left:10px;
-        font-weight:bold;
-        text-align:right;
-    }
-
-    .date label {
+    .label {
         min-width:150px;
         font-weight:bold;
         text-align:right;
-        padding-right:10px;
-        padding-left:10px;
     }
-
-    .date input {
-        max-width:300px;
+    
+    .checkbox {
+       font-weight:bold; 
     }
 </style>
-<div class='row center' style="padding-top:15px; padding-bottom:0; ">
+<div class='row center' style="padding-top:15px; padding-bottom:15px; ">
     <div class="col-2">
         <span><?= $gem->linkTo(['text'=>"Articles", 'href'=> $module . 'blog',  'class' => $btn_class]) ?></span>
     </div>
@@ -64,47 +48,51 @@ $date_saved = new DateTime($revision->date_saved);
       method='post'
       onsubmit='smotePost()'>
     <?= $gem->hidden(["name" => 'id', "value" => $blog->id]) ?>
-
+    <?= $gem->hidden(["name" => 'airmode', 'id'=>'airmode', "value" => $m->airmode]) ?>
     <div class="container-fluid">
         <div class='row'>
-            <div class='col-7 outerwrap'>
-                <div class='form-group'>
-                    
-                    <label class='col-form-label' for="title">Title</label>
-                    <?= $gem->plainText(['name'=>'title', 'size'=>40, 'value'=> $blog->title]) ?><br>
-                   
-                </div>
-                <div class='form-group'>
-                    <label class='col-form-label' for="lock_url">Unlock URL</label>
-                    <?= $gem->checkbox(['name'=>'lock_url', 'size'=>5, 'class'=> "form-check-input"]) ?>
-                   
-                    <label class='col-form-label' for="title_clean">Unique URL</label>
-                     <?= $gem->plainText(['name'=>'title_clean', 'size'=>40, 'value'=> $blog->title_clean]) ?>
-                </div>
-            </div>
-            <div class='col-5 outerwrap'>
+            
+            <div class='col-7'>
 
-                <div class='form-group'>
-                     <label class=' col-form-label' for="revision">Revision #</label>
-                    <?= $gem->text_value(['name'=>'revision', 'size'=>4, 'value'=> $revision->revision]) ?>
-                   <?= $gem->select(['name'=>'rev_list','list'=>$m->rev_list, 'class'=>'selectpicker']) ?>
-                    <?= '<br>Updated ' .  $date_saved->format('d-M-Y') . ' &nbsp;'  ?> 
+                    <?= $gem->plainText(['label'=>'Title' ,'name'=>'title', 'size'=>40, 
+                        'value'=> $blog->title]) ?><br>
+  
+            </div>
+            <div class='col-5'>
+
+                    <?= $gem->number(['label'=>'Revision #' , 'name'=>'revision', 'size'=>4, 'value'=> $revision->revision, 
+                        'style'=>'width:3.0em;', 'readonly' => true]) ?>
+                    <?php if ($blog->revision != $revision->revision) {
+                        echo( 'Current #' . $blog->revision);
+                    }
+                    ?>
+                    
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                  <?= $gem->plainText(['label'=>'Unique URL' ,'name'=>'title_clean', 'size'=>40, 
+                      'value'=> $blog->title_clean]) ?>
+                    &nbsp;<span class="checkbox">Unlock URL </span>&nbsp;<?= $gem->checkbox(['name'=>'lock_url', 'size'=>5]) ?>
+            </div>    
+            <div class="col-5">
+                
+                    <?= $gem->select(['label'=>'Style wrapper', 'name'=>'style', 'list'=>$stylelist, 'value'=> $blog->style, 'empty' => 'false', 'onChange' =>'wrapStyle()' ]) ?>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+    <?= $gem->submit(['name'=>'save', 'size'=>40, 'value'=> "Perform Action", 
+        'class'=>"btn btn-info btn-lg" ]) ?>
+    <?= $gem->select(['name'=>'rev_list','list'=>$m->rev_list, 'class'=>'selectpicker']) ?>
+                <?= 'Updated ' .  $date_saved->format('d-M-Y') . ' &nbsp;'  ?> 
+            </div>
+            <div class="col-4">
+    
                     <a target="_blank" href="/admin/blog/revisions/<?=$blog->id ?>" >View all revisions</a><br>
-                     
-                    <?= $gem->submit(['name'=>'save', 'size'=>40, 'value'=> "Perform Action", 'class'=>"btn btn-info btn-lg" ]) ?>
-                </div>
-                <div class='form-group'>
-                    <label for="class_select">Select style wrapper</label>
-                    <?= $gem->select(['name'=>'style', 'list'=>$stylelist, 'value'=> $blog->style, 'empty' => 'false', 'onChange' =>'wrapStyle()' ]) ?>
-                    
-                </div>
-
-                <div class='form-group'>
-                    <label for="summernote">Article Text</label>
-                    <button id="airbtn" type="button" class='col-form-button' title="This also does a save-submit"
-                            onclick="codeSwitch()"><?=$air_text?></button>
-                </div>
             </div>
+   
         </div>
     </div>
 

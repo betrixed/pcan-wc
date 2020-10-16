@@ -10,7 +10,7 @@ use App\Models\Event;
 use WC\Valid;
 
 
-class EventAdmController extends \Phalcon\Mvc\Controller {
+class EventAdmController extends BaseController {
 use \WC\Mixin\ViewPhalcon;
 use \WC\Mixin\Auth;
 use \App\Link\EventOps;    
@@ -39,6 +39,7 @@ use \App\Link\EventOps;
             $event->slug = Valid::toStr($post, 'slug');
             $event->enabled = Valid::toBool($post, 'enabled');
             $event->reg_detail =  $post['reg_detail'];
+            $event->revisionid = Valid::toInt($post, 'revisionid');
             if ($event->update()) {
                 $this->flash('Event updated');
             }

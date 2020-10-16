@@ -10,7 +10,7 @@ use App\Models\RssLink;
 use Masterminds\HTML5;
 use App\Link\RssView;
 
-class RssLinkController extends \Phalcon\Mvc\Controller 
+class RssLinkController extends BaseController 
 {
 
     use \WC\Mixin\ViewPhalcon;

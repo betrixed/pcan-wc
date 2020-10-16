@@ -8,11 +8,10 @@ namespace App\Controllers;
 use WC\UserSession;
 
 use WC\Dos;
-use Phalcon\Mvc\Controller;
 use WC\FileCache;
 use App\Models\Users;
 
-class DashController extends Controller {
+class DashController extends BaseController {
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Auth;
     

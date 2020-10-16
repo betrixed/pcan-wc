@@ -24,6 +24,24 @@ class Register extends \Phalcon\Mvc\Model
      *
      * @var string
      */
+    protected $created_at;
+
+    /**
+     *
+     * @var string
+     */
+    protected $notkeep;
+
+    /**
+     *
+     * @var string
+     */
+    protected $people;
+
+    /**
+     *
+     * @var string
+     */
     protected $fname;
 
     /**
@@ -43,18 +61,6 @@ class Register extends \Phalcon\Mvc\Model
      * @var string
      */
     protected $phone;
-
-    /**
-     *
-     * @var string
-     */
-    protected $people;
-
-    /**
-     *
-     * @var string
-     */
-    protected $created_at;
 
     /**
      *
@@ -84,6 +90,45 @@ class Register extends \Phalcon\Mvc\Model
     public function setEventid($eventid)
     {
         $this->eventid = $eventid;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field created_at
+     *
+     * @param string $created_at
+     * @return $this
+     */
+    public function setCreatedAt($created_at)
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field notkeep
+     *
+     * @param string $notkeep
+     * @return $this
+     */
+    public function setNotkeep($notkeep)
+    {
+        $this->notkeep = $notkeep;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field people
+     *
+     * @param string $people
+     * @return $this
+     */
+    public function setPeople($people)
+    {
+        $this->people = $people;
 
         return $this;
     }
@@ -141,32 +186,6 @@ class Register extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Method to set the value of field people
-     *
-     * @param string $people
-     * @return $this
-     */
-    public function setPeople($people)
-    {
-        $this->people = $people;
-
-        return $this;
-    }
-
-    /**
-     * Method to set the value of field created_at
-     *
-     * @param string $created_at
-     * @return $this
-     */
-    public function setCreatedAt($created_at)
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    /**
      * Method to set the value of field linkcode
      *
      * @param string $linkcode
@@ -197,6 +216,36 @@ class Register extends \Phalcon\Mvc\Model
     public function getEventid()
     {
         return $this->eventid;
+    }
+
+    /**
+     * Returns the value of field created_at
+     *
+     * @return string
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+    /**
+     * Returns the value of field notkeep
+     *
+     * @return string
+     */
+    public function getNotkeep()
+    {
+        return $this->notkeep;
+    }
+
+    /**
+     * Returns the value of field people
+     *
+     * @return string
+     */
+    public function getPeople()
+    {
+        return $this->people;
     }
 
     /**
@@ -240,26 +289,6 @@ class Register extends \Phalcon\Mvc\Model
     }
 
     /**
-     * Returns the value of field people
-     *
-     * @return string
-     */
-    public function getPeople()
-    {
-        return $this->people;
-    }
-
-    /**
-     * Returns the value of field created_at
-     *
-     * @return string
-     */
-    public function getCreatedAt()
-    {
-        return $this->created_at;
-    }
-
-    /**
      * Returns the value of field linkcode
      *
      * @return string
@@ -296,7 +325,6 @@ class Register extends \Phalcon\Mvc\Model
      */
     public function initialize()
     {
-        // 
         $this->setSource("register");
     }
 
@@ -333,12 +361,13 @@ class Register extends \Phalcon\Mvc\Model
         return [
             'id' => 'id',
             'eventid' => 'eventid',
+            'created_at' => 'created_at',
+            'notkeep' => 'notkeep',
+            'people' => 'people',
             'fname' => 'fname',
             'lname' => 'lname',
             'email' => 'email',
             'phone' => 'phone',
-            'people' => 'people',
-            'created_at' => 'created_at',
             'linkcode' => 'linkcode'
         ];
     }

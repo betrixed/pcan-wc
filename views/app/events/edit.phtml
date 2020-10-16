@@ -26,19 +26,31 @@ $m->title = "Register";
     <form id="edtevt" method="post" action="/admin/eventpost" onsubmit="smotePost()">
         <?= $gem->hidden( ['name'=>'id', 'value'=> $evt->id ]) ?> 
         <div class="row vspace">
-            <div class="col-4" >
+            <div class="col-3" >
                 <?= $gem->datetime(['label' => "From", 'name' => "fromtime", 'size' => 20, 'value' => $evt->fromtime]) ?>
              </div>
-             <div class="col-4">
+             <div class="col-3">
                 <?= $gem->datetime(['label' => "To", 'name' => "totime", 'size' => 20, 'value' => $evt->totime]) ?>
            </div>
+            <div class="col-1">
+                <?= $gem->checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt->enabled]) ?>
+            </div>
         </div>
         <div class="row vspace">
-             <div class="col-4">
+             <div class="col-3">
                 <?= $gem->plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt->slug]) ?>
             </div>
-            <div class="col-4">
-                <?= $gem->checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt->enabled]) ?>
+            
+            <div class="col-3">
+                <?= $gem->number(['label' => 'Blog #', 'name' => 'blogid', 'value' => $evt->blogid, 
+                    'readonly' => true, 'size'=>6, 'maxlength' => 6]) ?>
+            </div>
+            <div class="col-3">
+                <?= $gem->number(['label' => 'Revision #', 'name' => 'revisionid', 'value' => $evt->revisionid, 
+                     'style'=>'maxwidth:3.0em', 'size'=>4, 'maxlength' => 4]) ?>
+            </div>
+            <div class="col-3">
+                <p>Null revision# for latest</p>
             </div>
         </div>
         <div class="row vspace">

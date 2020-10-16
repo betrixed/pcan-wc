@@ -159,6 +159,10 @@ class Valid {
         }
         return 1;
     }
+    
+    static public function urlQuery(array $vals) {
+        
+    }
     static public function toMoney($req, $ix, $default=false) {
         if (!isset($req[$ix])) {
             return $default;

@@ -5,7 +5,7 @@ use WC\Db\{Server, Script};
 use WC\{Dos, XmlPhp, App, Assets, Valid, AdaptXml};
 use Phalcon\Mvc\Controller;
 
-class SchemaController extends Controller
+class SchemaController extends BaseController
 {
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;

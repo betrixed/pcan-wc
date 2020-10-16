@@ -60,7 +60,7 @@ function gen_object(string &$outs, $prop, $obj) {
     $outs .= "</ul>" . PHP_EOL;
 }
 
-class ChimpListsController extends \Phalcon\Mvc\Controller {
+class ChimpListsController extends BaseController {
 use \WC\Mixin\Auth;
 use \WC\Mixin\ViewPhalcon;
 use \App\Chimp\ChimpData;

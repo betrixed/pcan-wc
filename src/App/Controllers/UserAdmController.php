@@ -19,10 +19,10 @@ use WC\{
     UserSession,
     Valid
 };
-use Phalcon\Mvc\Controller;
+
 use Phalcon\Db\Column;
 
-class UserAdmController extends Controller
+class UserAdmController extends BaseController
 {
 
     use \WC\Mixin\ViewPhalcon;

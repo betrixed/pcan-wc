@@ -15,41 +15,41 @@ use WC\SwiftMail;
 use \Phalcon\Db\Column;
 use App\Html2Text\Html2Text;
 
-class RegisterController extends \Phalcon\Mvc\Controller {
+class RegisterController extends BaseController {
 
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Captcha;
+    use \App\Link\RevisionOp;
+    
+    const formid = "regevt";
 
-    // Display Event blog with new register info
-
-
-    private function getEventBlog($eid) {
-        $db = $this->dbq;
-
+    /** Get the related blog and revision data
+     */
+    private function getEventBlog($eid, $rid) {
+        $qry = $this->dbq;  
+       
+        
         $sql = <<<EOD
 select e.fromTime, e.toTime, e.enabled, e.id as eventid, e.reg_detail,
- b.* , r.content as article from event e 
- join blog b on b.id = e.blogid
- join blog_revision r on r.blog_id = b.id and r.revision = b.revision
- where e.id = :eid
-EOD;
-        $result = $db->arraySet($sql,
-                ['eid' => $eid],
-                ['eid' => Column::BIND_PARAM_INT]);
+  b.* , r.content as article from event e 
+  join blog b on b.id = e.blogid
+  join blog_revision r on r.blog_id = b.id and r.revision = e.revisionid'
+EOD;     
+         
+        $qry->whereCondition('e.id = ?', (int) $eid);
+        $result = $qry->queryAO($sql);
         if (!empty($result)) {
             return $result[0];
         } else
             return null;
     }
 
-    private function getSlugId($slug) {
+    // Return first current event associated with $slug
+    private function getSlugId(string $slug) {
         $db = $this->dbq;
         $sql = <<<EOD
-select e.fromTime, e.toTime, e.enabled, e.id as eventid, 
- b.*, r.content as article, r.date_saved as date_updated
- from event e 
- join blog b on b.id = e.blogid
-join blog_revision r on r.blog_id = b.id and r.revision = b.revision
+select e.*
+ from event e
  where e.slug = :slug
  and NOW() < e.fromTime
  and e.enabled=1 
@@ -65,6 +65,18 @@ EOD;
             return null;
     }
 
+    function getTotal(int $eventid) : int {
+        $qry = $this->dbq;
+        $sql = "select count(people+1) as tote from register where eventid = :evt";
+        $qry->bindParam('evt', $eventid);
+        $result = $qry->queryAA($sql);
+        if (!empty($result)) {
+            return $result[0]['tote'];
+        }
+        else {
+            return 0;
+        }
+    }
     function newRegAction($eventId) {
 
         if ($this->need_ssl()) {
@@ -72,24 +84,32 @@ EOD;
         }
 
 
-        $m = $this->getViewModel();
+        $m = $this->formModel();
+        $event = null;
+        if (! is_numeric($eventId)) {
+            $event_set  = Event::find([ 
+                'conditions' => 'slug = :slug: and NOW() < fromtime and enabled = 1',
+                'bind' => [ 'slug' => $eventId],
+                'order' => 'fromtime',
+                'limit' => 1
+                ]);
+            $event = $event_set->getFirst();
 
-        /* $view->content = 'events/register.phtml';
-          $view->assets(['bootstrap', 'register-js']);
-         */
-
-        $this->captchaView($m);
-        $this->xcheckView($m);
-
-        if (is_numeric($eventId)) {
-            $result = $this->getEventBlog($eventId);
         } else {
-            $result = $this->getSlugId($eventId);
+            $event = Event::findFirstById($eventId);
         }
-        $m->eblog = $result;
-
+        
+        if (empty($event)) {
+            return $this->noAccess();
+        }
+        
+        $m->event = $event;
+        
+        $m->eblog = $this->getBlogAndRevision($event->blogid, $event->revisionid);
+        
         $m->register = new Register();
         $m->register->people = 0;
+        $m->totalCount = $this->getTotal($event->id);
         return $this->render('events', 'register');
     }
 
@@ -97,21 +117,21 @@ EOD;
         $this->flash($msg);
     }
 
+    private function formModel() : object {
+        $m = $this->getViewModel();
+        $this->captchaView($m);
+        $this->xcheckView($m);
+        $m->formid = self::formid;
+        $m->eblog = null;
+        return $m;
+    }
     function editAction($code, $regid) {
         if ($this->need_ssl()) {
             return $this->secure_connect();
         }
 
-        $view = $this->getView();
-        $view->content = 'events/register.phtml';
+        $m = $this->formModel();
 
-
-        $m = $view->m;
-
-        $this->captchaView($m);
-        $this->xcheckView($m);
-
-        $m->eblog = null;
         if (!empty($regid)) {
             $rec = Register::findFirstById($regid);
             // Get the record 
@@ -124,11 +144,19 @@ EOD;
                 $m->register = new Register();
                 $m->register->people = 0;
             } else {
-                $m->eblog = $this->getEventBlog($eventId);
+               
                 $m->register = $rec;
             }
+            $event = Event::findFirstById($eventId);
+            if (empty($event)) {
+                return $this->noAccess();
+            }
+            $m->event = $event;
+            $m->eblog = $this->getBlogAndRevision($event->blogid, $event->revisionid);
+            
         }
-        $m->editUrl = '/reglink/' . $rec->linkcode . '/' . $rec->id;
+        $m->editUrl =  $this->urlPrefix() . '/reglink/' . $rec->linkcode . '/' . $rec->id;
+        $m->totalCount = $this->getTotal($event->id);
         return $this->render('events', 'register');
     }
 
@@ -159,7 +187,7 @@ EOD;
 
             $mailer = new SwiftMail($this->app);
             $msg = [
-                "subject" => 'Event registration for ' . $m->eblog['title'],
+                "subject" => 'Event registration for ' . $m->eblog->title,
                 "text" => $textMsg,
                 "html" => $htmlMsg,
                 "to" => [
@@ -180,7 +208,7 @@ EOD;
     function renderResend($rec) {
         $m = $this->getViewModel();
         $m->register = $rec;
-        
+
         if ($this->request->isAjax()) {
             $this->noLayouts();
             return $this->render('partials', 'events/resend');
@@ -190,19 +218,20 @@ EOD;
     }
 
     function regPostAction() {
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
+        $m->formid = self::formid;
         $post = $_POST;
 
         $eventid = Valid::toInt($post, 'eventid');
         $regid = Valid::toInt($post, 'id');
-
         
+
         $delete = Valid::toStr($post, 'delete');
         $resend = Valid::toStr($post, 'resend');
         $worked = true;
-        $m->eblog = $this->getEventBlog($eventid);
-        
+        $event = Event::findFirstById($eventid);
+        $m->eblog = $this->getBlogAndRevision($event->blog_id, $event->revisionid);
+        $m->event = $event;
         if (!empty($resend)) {
             $rec = Register::findFirstById($regid);
             $m->editUrl = $this->sendLinkEmail($rec);
@@ -231,6 +260,8 @@ EOD;
             $email = Valid::toEmail($post, 'email');
             $people = Valid::toInt($post, 'people');
             $phone = Valid::toPhone($post, 'phone');
+            $notkeep = Valid::toBool($post, 'notkeep');
+            
             if (empty($fname) || empty($lname) || empty($email)) {
                 $this->error('Name and Email required');
                 $worked = false;
@@ -244,7 +275,8 @@ EOD;
                 }
                 $rec->phone = $phone;
                 $rec->people = $people;
-
+                $rec->notkeep = $notkeep;
+                
                 try {
                     if (empty($regid)) {
                         $op = 'created';
@@ -273,6 +305,7 @@ EOD;
             $m->editUrl = "";
         }
         $m->register = $rec;
+        $m->totalCount = $this->getTotal($event->id);
         if ($this->request->isAjax()) {
             $this->noLayouts();
             return $this->render('partials', 'events/regform');

@@ -1,9 +1,13 @@
 <?php
+$event = $m->event ?? null;
+$hasEvent = !empty($event);
 $eblog = $m->eblog ?? null;
-$hasEvent = !empty($eblog);
 $reg = $m->register ?? null;
-$assets->add(['bootstrap', 'register-js']);
+$assets->add(['bootstrap', 'validate']);
 $m->title="Register";
+$formid = $m->formid;
+$xcheck = $m->xcheck;
+$google = $m->google;
 ?>
 
 <style>
@@ -23,6 +27,10 @@ $m->title="Register";
     .title-1 {
         font-size:1.3em;
     }
+    .checkbox {
+         font-weight:bold;
+         margin-left:10em;
+    }
     .title-2 {
         font-size:1.6em;
         font-weight:bolder;
@@ -31,6 +39,9 @@ $m->title="Register";
         padding:10px;
         border-style: groove;
         border-color:lightgreen;
+    }
+    .error {
+        color:red;
     }
     
 </style>
@@ -41,20 +52,24 @@ $m->title="Register";
         <div class="col text-center">
             <p class="title-1">Registration Page for Event:</p>
             <?php if($hasEvent): ?>
-            <p class="title-2"> <?= $eblog['title'] ?></p>
+            <p class="title-2"> <?= $eblog->title ?></p>
             <?php endif ?>
         </div>
+
     </div>
+
+
+</div>
         <?php if ($hasEvent && !empty($reg->linkcode)): ?>
     <div class="row">
         <div class="outerwrap notice">
             <p>Important Online Details - posted here in case of late changes</p>
-            <?= $eblog['reg_detail']; ?>
+            <?= $event->reg_detail; ?>
         </div>
     </div>
     <?php endif ?>
     <?php if ($hasEvent): ?>
-            <form id="regevt" method="post" action="/register/regpost">
+            <form id="<?=$formid?>" method="post" action="/register/regpost">
             <div id="regform">
                 <?= $this->partial('events/regform') ?>
             </div>
@@ -62,11 +77,49 @@ $m->title="Register";
 
     <div class="eblog">
         
-        <div class="<?= $eblog['style'] ?>">
-            <?= $eblog['article'] ?>
+        <div class="<?= $eblog->style ?>">
+            <?= $eblog->article ?>
         </div>
     </div>
 <?php else: ?>
         <p>Event Page not found</p>
 <?php endif; ?>
 </div>
+
+
+<?php
+$blob = <<<EOJS
+<script>
+function formid_submit() {
+    var fm = $("#$formid");
+    var purl = fm.attr('action');
+    var request_method =fm.attr("method");
+    var form_data = fm.serialize();
+
+    $.ajax({
+            type: request_method,
+            url:  purl,
+            data: form_data
+        }).done(function(response) {
+             $("#regform").html(response);
+        }) ;
+        
+    $("#submit").hide();
+    $("#loading").show();
+}    
+</script>
+EOJS;
+$assets->addJS($blob);
+?>
+
+<?php
+$blob = <<<EOJS
+<script>
+function doprep() {
+    prep_valid();  
+};
+window.onload = doprep; 
+</script>
+EOJS;
+$assets->addJS($blob);
+?>

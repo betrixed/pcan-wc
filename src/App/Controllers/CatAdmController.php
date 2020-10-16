@@ -10,9 +10,9 @@ use WC\Db\Server;
 use WC\Db\DbQuery;
 use WC\UserSession;
 use WC\Valid;
-use Phalcon\Mvc\Controller;
+
 use Phalcon\Db\Column;
-class CatAdmController extends Controller
+class CatAdmController extends BaseController
 {
 use \WC\Mixin\ViewPhalcon;
 use \WC\Mixin\Auth;

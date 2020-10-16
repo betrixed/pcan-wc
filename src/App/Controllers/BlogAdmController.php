@@ -11,7 +11,6 @@ use WC\DB\Server;
 
 use App\Models\{Blog, Links,Event,BlogRevision};
 
-use Phalcon\Mvc\Controller;
 use WC\Db\DbQuery;
 use WC\WConfig;
 use App\Link\{
@@ -20,7 +19,7 @@ use App\Link\{
     
 };
 
-class BlogAdmController extends Controller
+class BlogAdmController extends BaseController
 {
 
     use \WC\Mixin\ViewPhalcon;
@@ -77,8 +76,8 @@ class BlogAdmController extends Controller
     public function editAction($id)
     {
         $blog = Blog::findFirstById($id);
-        $view = $this->getView();
-        $m = $view->m;
+        $m = $this->getViewModel();
+        $m->revid = $this->request->getQuery('revid','int', 0);
         $m->airmode = $this->request->getQuery('airmode', 'int', 0);
         $m->blog = $blog;
         return $this->editForm();
@@ -122,10 +121,10 @@ class BlogAdmController extends Controller
         }
     }
 
-    private function setBlogFromPost($post, $m)
+    private function setBlogFromPost($post, $m) : string
     {
         $blog = $m->blog;
-        $revision = $m->revision;
+        $revision = $m->revision; // the record
 
         $this->setBlogTitle($post, $blog);
 
@@ -141,6 +140,8 @@ class BlogAdmController extends Controller
         $blog->featured = Valid::toBool($post, 'featured');
         $blog->enabled = Valid::toBool($post, 'enabled');
         $blog->comments = Valid::toBool($post, 'comments');
+        
+        return $action;
     }
 
     private function errorPDO($e, $blogid)
@@ -159,6 +160,8 @@ class BlogAdmController extends Controller
 
         $blog = Blog::findFirstById($check_id);
 
+        $airmode = Valid::toInt($post,'airmode');
+        
         if (empty($blog)) {
             $this->flash("blog does not exist " . $check_id);
             return $this->reroute('/admin/blog/index');
@@ -168,12 +171,19 @@ class BlogAdmController extends Controller
         $old_tc = $blog->title_clean;
         $update = new WConfig();
         $update->blog = $blog;
-        $update->revision = self::getLinkedRevision($blog);//RevisionOp
-        $this->setBlogFromPost($post, $update);
+        
+        $revid = Valid::toInt($post,'revision');
+        
+        $update->revision = self::getBlogRevision($blog->id, $revid);
+        //self::getLinkedRevision($blog);//RevisionOp
+        
+        
+        
+        $action = $this->setBlogFromPost($post, $update);
         $update_link = ($old_tc !== $blog->title_clean);
         try {
             $revision = $update->revision;
-            if ($revision->revision !== $blog->revision) {
+            if ($action === 'Revision') {
                 //  have new primary key
                 $new_revision = new BlogRevision();
                 $new_revision->setRevision($blog->getRevision());
@@ -226,7 +236,23 @@ class BlogAdmController extends Controller
         if ($inTrans) {
             $db->commit();
         }
-        return $this->reroute($this->url . 'edit/' . $blog->id);
+        // refresh url
+        //
+        $reparam = [];
+        
+        $editUrl = $this->url . 'edit/' . $blog->id;
+        
+        if ((int)$blog->revision !== $revid) {
+            $reparam['revid'] = $revid;
+        }
+        if (!empty($airmode)) {
+            $reparam['airmode'] = 1;
+        }
+        
+        if (!empty($reparam)) {
+            $editUrl .= '?' . http_build_query($reparam);
+        }
+        return $this->reroute($editUrl);
         //$this->editForm();
     }
 
@@ -254,7 +280,7 @@ class BlogAdmController extends Controller
         $this->noLayouts();
         $m = $view->m;
         $m->blog = Blog::findFirstById($bid);
-        $m->revision = $this->getRevision($bid, $rid);//RevisionOp
+        $m->revision = self::getBlogRevision($bid, $rid);//RevisionOp
         $m->asHTML = $this->request->getQuery('html') ?? 0;
         return $this->render('blog', 'revget');
     }
@@ -346,36 +372,35 @@ class BlogAdmController extends Controller
      */
     private function editForm()
     {
-        $model = $this->getViewModel();
+        $m = $this->getViewModel();
 
-        $blog = $model->blog;
+        $blog = $m->blog;
 
-        $model->isApprover = true; // isApprover()
+        $m->isApprover = true; // isApprover()
 
         $stylelist = BlogView::getStyleList();
 
         $id = $blog->id;
-        $all_revisions = $blog->getRelated('BlogRevision');
-
-
-        foreach ($all_revisions as $rec) {
-            if ($blog->revision === $rec->revision) {
-                $model->revision = $rec;
-            }
+        
+        
+        if ($m->revid === 0) {
+            $m->revid = intval($blog->revision);
         }
-        $model->all_revisions = $all_revisions;
+
+        $m->revision = BlogRevision::findFirst('blog_id='.$id.' and revision='.$m->revid);
+        
         // submit choices
-        $model->rev_list = [
+        $m->rev_list = [
             'Save' => 'Save',
             'Revision' => 'Save as new revision',
         ];
 
-        $model->title = '#' . $id;
-        $model->stylelist = $stylelist;
-        $model->catset = BlogView::getCategorySet($id);
-        $model->events = BlogView::getEvents($id);
-        $model->metatags = BlogView::getMetaTags($id);
-        $model->content = $model->url = $this->url;
+        $m->title = '#' . $id;
+        $m->stylelist = $stylelist;
+        $m->catset = BlogView::getCategorySet($id);
+        $m->events = BlogView::getEvents($id);
+        $m->metatags = BlogView::getMetaTags($id);
+        $m->content = $m->url = $this->url;
 
         return $this->render('blog', 'edit');
     }

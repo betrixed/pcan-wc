@@ -116,4 +116,10 @@ trait ViewPhalcon {
             ]);
     }
 
+    public function noAccess() {
+        $app = $this->app;
+        $this->user_session->flash('No access to ' . $app->arguments);
+        $this->reroute('/error/block');
+        return null;
+    }
 }

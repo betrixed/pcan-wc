@@ -65,15 +65,9 @@ function codeSwitch()
 {
     var airMode = getUrlParameter('airmode');
     var isAirMode = (airMode == '1');
-    var loc = window.location;
-    var newloc = loc.protocol + '//' + loc.host + loc.pathname;
-    if (!isAirMode)
-    {
-        newloc = newloc + '?airmode=1';
-    }
-    // force submit
+    airMode = isAirMode ? '0' : '1';
+    $("#airmode").val(airMode);
     $('#postForm').trigger('submit');
-    window.location = newloc;
 }
 
 function wrapStyle()

@@ -1,7 +1,7 @@
 <?php
 $gem = $this->htmlgem;
-$eblog = $m->eblog;
-$hasEvent = !empty($eblog);
+$event = $m->event;
+$hasEvent = !empty($event);
 $reg = $m->register;
 ?>
 <?php 
@@ -11,7 +11,7 @@ $reg = $m->register;
     endif;
         ?>
 <?= $gem->hidden(['name' => 'id', 'value' => $reg->id]) ?>
-<?= $gem->hidden(['name' => 'eventid', 'value' => $eblog['eventid']]) ?>
+<?= $gem->hidden(['name' => 'eventid', 'value' => $event->id]) ?>
 <?php if (!empty($reg->linkcode)): ?>
     <div class="row">
     <div class="col">

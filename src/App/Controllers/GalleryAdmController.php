@@ -15,7 +15,6 @@ use WC\Valid;
 use WC\Db\Server;
 use WC\Db\DbQuery;
 use WC\Mixin\ViewPhalcon;
-use Phalcon\Mvc\Controller;
 use Phalcon\Db\Column;
 
 use WC\App;
@@ -117,7 +116,7 @@ class DeleteOp extends ImageOp {
 
 }
 
-class GalleryAdmController extends Controller {
+class GalleryAdmController extends BaseController {
 
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;

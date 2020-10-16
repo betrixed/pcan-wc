@@ -272,12 +272,24 @@ EOD;
             unset($pset['div']);
         }
 
-        $input = static::getTag($pset, ['type' => $type]);
+        if (isset($pset['label'])) {
+            $label = $pset['label'];
+            unset($pset['label']);
+        } else {
+            $label = "";
+        }
         if (isset($pset['in-label'])) {
-            $out .= '<label class="label" > ' . $pset['in-label'] . ' '
+            $inlabel = $pset['in-label'];
+            unset($pset['in-label']);
+        } else {
+            $inlabel = "";
+        }
+        $input = static::getTag($pset, ['type' => $type]);
+        if (!empty($inlabel)) {
+            $out .= '<label class="label" > ' . $inlabel . ' '
                     . $input . ' </label>';
-        } else if (isset($pset['label'])) {
-            $out .= '<label for="' . $id . '" class="label" > ' . $pset['label'] . ' </label>';
+        } else if (!empty($label)) {
+            $out .= '<label for="' . $id . '" class="label" > ' . $label . ' </label>';
             $out .= PHP_EOL . $input;
         }
         else {
