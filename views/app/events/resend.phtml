@@ -1,6 +1,8 @@
 <?php
+$event = $m->event ?? null;
 $eblog = $m->eblog ?? null;
-$hasEvent = !empty($eblog);
+
+$hasEvent = !empty($event) && !empty($eblog);
 $reg = $m->register ?? null;
 $assets->add(['bootstrap', 'register-js']);
 $m->title="Register";
@@ -41,7 +43,7 @@ $m->title="Register";
         <div class="col text-center">
             <p class="title-1">Registration Page for Event:</p>
             <?php if($hasEvent): ?>
-            <p class="title-2"> <?= $eblog['title'] ?></p>
+            <p class="title-2"> <?= $eblog->title ?></p>
             <?php endif ?>
         </div>
     </div>
@@ -60,8 +62,8 @@ $m->title="Register";
             </div>
         </form>
     <div class="eblog">   
-        <div class="<?= $eblog['style'] ?>">
-            <?= $eblog['article'] ?>
+        <div class="<?= $eblog->style?>">
+            <?= $eblog->article?>
         </div>
     </div>
 <?php else: ?>

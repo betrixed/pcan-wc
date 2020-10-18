@@ -1,6 +1,7 @@
 <?php
 $gem = $this->htmlgem;
-$event = $m->event;
+$event = $m->event ?? null;
+$eblog = $m->eblog ?? null;
 $hasEvent = !empty($event);
 $reg = $m->register;
 ?>
