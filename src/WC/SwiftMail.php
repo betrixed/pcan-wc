@@ -69,7 +69,7 @@ class SwiftMail
             $mailer->Username = $smtp['username'];
             $mailer->Password = $smtp['password'];
             $mailer->Port = $smtp['port'];
-            $mailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
+            //$mailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
             $ok = $mailer->send();
             $result['success'] = $ok;
             if (!$ok) {
