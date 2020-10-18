@@ -117,10 +117,12 @@ EOD;
         $this->flash($msg);
     }
 
-    private function formModel() : object {
+    private function formModel(bool $first = true) : object {
         $m = $this->getViewModel();
-        $this->captchaView($m);
-        $this->xcheckView($m);
+        if ($first) {
+            $this->captchaView($m);
+            $this->xcheckView($m);
+        }
         $m->formid = self::formid;
         $m->eblog = null;
         return $m;
@@ -130,7 +132,7 @@ EOD;
             return $this->secure_connect();
         }
 
-        $m = $this->formModel();
+        $m = $this->formModel(false);
 
         if (!empty($regid)) {
             $rec = Register::findFirstById($regid);
@@ -221,15 +223,27 @@ EOD;
         $m = $this->getViewModel();
         $m->formid = self::formid;
         $post = $_POST;
-
-        $eventid = Valid::toInt($post, 'eventid');
+        $worked = true;
         $regid = Valid::toInt($post, 'id');
+         
+        $eventid = Valid::toInt($post, 'eventid');
+        $event = Event::findFirstById($eventid);
         
+        $google = $this->captchaSettings();
+        
+        if (empty($regid) && $google['enabled']) {
+            if (!$this->xcheckResult($post)) {
+                return $this->noAccess();
+            }
 
+            if (!$this->captchaResult($post)) {
+                return $this->noAccess();
+            }
+        }
         $delete = Valid::toStr($post, 'delete');
         $resend = Valid::toStr($post, 'resend');
-        $worked = true;
-        $event = Event::findFirstById($eventid);
+
+        
         $m->eblog = $this->getBlogAndRevision($event->blog_id, $event->revisionid);
         $m->event = $event;
         if (!empty($resend)) {
