@@ -4,6 +4,8 @@ namespace WC;
     
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
 use WC\App;
 /**
  * Pcan\Mail\Mail
@@ -55,11 +57,19 @@ class SwiftMail
 
             $mailer->Host = $smtp['server'];
             $mailer->SMTPAuth = true;
+            $mailer->SMTPOptions = [
+                  'ssl' => [
+    'verify_peer' => false,
+    'verify_peer_name' => false,
+    'allow_self_signed' => true
+  ]
+            ];
+            
             $mailer->SMTPSecure = $smtp['security'];
             $mailer->Username = $smtp['username'];
             $mailer->Password = $smtp['password'];
             $mailer->Port = $smtp['port'];
-
+            $mailer->SMTPDebug = SMTP::DEBUG_CONNECTION;
             $ok = $mailer->send();
             $result['success'] = $ok;
             if (!$ok) {
