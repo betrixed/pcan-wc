@@ -1,15 +1,16 @@
 
 <h3 style="font-size: 14px;font-family:Verdana,Helvetica,Arial,sans-serif;">Event Registration Link</h3>
-            <p style="color:#000;font-size: 16px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;font-weight:normal;">
+<p style="color:#000;font-size: 16px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;font-weight:normal;">
 Hi <?= $m->userName ?>,<br>
-This email has been sent by a registration event form on<?= $m->domain ?><br>
-
+This email has been sent by a registration event form on<?= " " . $m->domain ?><br>
+            </p>
 <?php if (isset($m->detail)): ?>
 Additional details: <br>
 <?= $m->detail ?>
  <br>
 <?php endif ?>
- The following link enables you to view all the event details, including any online zoom links.<br>
+ <p style="color:#000;font-size: 16px;line-height:24px;font-family:Verdana,Helvetica,Arial,sans-serif;font-weight:normal;">
+ The following link enables you to check for any changes in event details and links online.<br>
 It also permits you to change or delete your registration : <br>
 <a href="<?= $m->link ?>"><?= $m->link ?></a>
             </p>

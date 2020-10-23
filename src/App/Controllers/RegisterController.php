@@ -13,7 +13,7 @@ use WC\UserSession;
 use WC\SwiftMail;
 //! Front-end processorg
 use \Phalcon\Db\Column;
-use App\Html2Text\Html2Text;
+use Soundasleep\Html2Text;
 
 class RegisterController extends BaseController {
 
@@ -167,25 +167,32 @@ EOD;
                 . '://' . $_SERVER['HTTP_HOST'];
     }
 
-    // return full edit link url
-    private function sendLinkEmail($rec): string {
-        $app = $this->app;
-        $m = $this->getViewModel();
+    // set $m->editUrl -  full edit link url
+    private function sendLinkEmail($m)  {
+        $rec = $m->register;
         $editUrl = $this->urlPrefix() . '/reglink/' . $rec->linkcode . '/' . $rec->id;
         if (!empty($rec->email)) {
+            $event = $m->event;
             $name = $rec->fname . ' ' . $rec->lname;
             // model for email template
             $model = new WConfig();
             $model->link = $editUrl;
             $model->userName = $name;
+            $app = $this->app;
             $model->domain = $app->organization;
-            $model->detail = $rec->reg_detail ?? null;
-
+             if (!empty($event->reg_detail)) {
+                 $model->detail = $event->reg_detail;
+                // $m->text_detail = Html2Text::convert($event->reg_detail);
+             }
+             else {
+                   $model->detail = null;
+                 // $m->text_detail = null;   
+             }
             $params['m'] = $model;
             $params['app'] = $app;
 
             $htmlMsg = static::simpleView('events/signup_html', $params);
-            $textMsg = (new Html2Text($htmlMsg))->getText();
+            $textMsg = Html2Text::convert( $htmlMsg );
 
             $mailer = new SwiftMail($this->app);
             $msg = [
@@ -204,7 +211,7 @@ EOD;
                 $this->error($isValid['errors']);
             }
         }
-        return $editUrl;
+        $m->editUrl = $editUrl;
     }
 
     function renderResend($rec) {
@@ -248,7 +255,8 @@ EOD;
         $m->event = $event;
         if (!empty($resend)) {
             $rec = Register::findFirstById($regid);
-            $m->editUrl = $this->sendLinkEmail($rec);
+            $m->register = $rec;
+            $this->sendLinkEmail($m);
             return $this->renderResend($rec);
         }
         if (!empty($regid)) {
@@ -314,11 +322,12 @@ EOD;
         }
 
         if ($worked) {
-            $m->editUrl = $this->sendLinkEmail($rec);
+            $m->register = $rec;
+            $this->sendLinkEmail($m);
         } else {
+            $m->register = null;
             $m->editUrl = "";
         }
-        $m->register = $rec;
         $m->totalCount = $this->getTotal($event->id);
         if ($this->request->isAjax()) {
             $this->noLayouts();

@@ -4,7 +4,13 @@ Your event registration link.
 
 This email has been sent by a registration event form on site  <?= $m->domain ?>.
 
- The following link enables you to view all the event details, including any online zoom links.
+<?php if (isset($m->text_detail)): ?>
+Additional details:
+<?= $m->text_detail ?>
+
+<?php endif ?>
+ 
+ The following link enables you to view all the event details and links online.
 It also permits you to change or delete your registration : 
 <?= $m->link ?>
 
