@@ -31,7 +31,9 @@ if ( $chkct > 0): ?>
          <td><?= $bevt['totime'] ?></td>
          <td><?= $bevt['slug'] ?></td>
         <td><?= $bevt['enabled'] ? "Yes" : "No" ?></td>
-        <td><a href="/admin/event/<?= $bevt['id'] ?>" target="_blank">Edit</a></td>
+        <td><a href="/admin/event/<?= $bevt['id'] ?>" target="_blank">Edit</a><br>
+            <a href="/admin/eventreg/<?= $bevt['id'] ?>" target="_blank">Registered</a>
+        </td>
          </tr>
     <?php endforeach ?>
     <tr><td><select name='event_op'>

@@ -1,0 +1,111 @@
+<?php
+//$view = $this->data['view'];
+$gem = $this->htmlgem;
+$evt = $m->evt;
+$rego = $m->rego;
+$assets->add(['bootstrap','DateTime','SummerNote']);
+$m->title = "Register";
+$actions = $m->actions;
+?>
+
+
+<style>
+    .label {
+        text-align:right;
+        padding-right:10px;
+        font-weight: bold;
+        vertical-align:top;
+    }
+    .vspace {
+        margin-bottom : 0.5em;
+    }
+    .datetimepicker-input {
+        max-width:11em;
+    }
+    
+    .inset {
+        padding:20px;
+        font-size:0.8em;
+    }
+</style>
+<div class="container-fluid body-wrap">
+    <h3><?= $m->blog_title ?></h3>
+    <hr>
+    <form id="reglist" method="post" action="/admin/reglistpost">
+        <?= $gem->hidden( ['name'=>'id', 'value'=> $evt->id ]) ?> 
+        <div class="row vspace">
+            <div class="col-3" >
+                <?= $gem->datetime(['label' => "From", 'readonly' => true,
+                    'name' => "fromtime", 'size' => 20, 'value' => $evt->fromtime]) ?>
+             </div>
+             <div class="col-3">
+                <?= $gem->datetime(['label' => "To", 'readonly' => true,
+                    'name' => "totime", 'size' => 20, 'value' => $evt->totime]) ?>
+           </div>
+            <div class="col-2">
+                <?= $gem->checkbox(['text' => 'Enabled', 'readonly' => true,
+                    'name' => 'enabled', 'checked' => $evt->enabled]) ?>
+            </div>
+        </div>
+        <div class="row vspace">
+             <div class="col-3">
+                <?= $gem->plainText(['label' => "Slug", 'readonly' => true,
+                    'name' => "slug", 'size' => 20, 'value' => $evt->slug,
+                         'style'=>'maxwidth:12em', 'size'=>10, 'maxlength' => 10]) ?>
+            </div>
+            
+            <div class="col-3">
+                <?= $gem->number(['label' => 'Blog #', 'readonly' => true,
+                    'name' => 'blogid', 'value' => $evt->blogid, 
+                    'readonly' => true, 'size'=>6, 'maxlength' => 6]) ?>
+            </div>
+            <div class="col-3">
+                <?= $gem->linkTo([
+                    'href' => "/admin/blog/edit/" . $evt->blogid . "?revid=" . $evt->revisionid,
+                    'text' => 'Revision #' . $evt->revisionid, 
+                    'target' => '_blank',
+                     'style'=>'maxwidth:3.0em', 'size'=>4, 'maxlength' => 4]) ?>
+                <?=  $gem->number([ 'name' => 'revisionid', 'value' => $evt->revisionid, 
+                    'readonly' => true,
+                     'style'=>'maxwidth:3.0em', 'size'=>4, 'maxlength' => 4]) ?>
+            </div>
+            <div class="col-3">
+                <p>Null revision# for latest</p>
+            </div>
+        </div>
+
+
+        </div>
+        <div class="row vspace">
+
+        </div>
+    
+    <hr>
+        <?php if (!empty($rego)): ?>
+              <div class="row body-wrap pad10">
+                  <div class="col-3 text-center">
+                  <span class="title">Registrations</span>
+                  </div>
+                <div class="col-9">
+                    
+                    <?= $gem->select(['list' => $actions, 'name' => 'actions', 'label' => 'Action']) ?>
+                    <?= $gem->submit(['name' => 'submit', 'value' => 'Update' ]); ?>
+                  </div>
+              </div>
+  <hr>
+  
+                <?php foreach($rego as $rg): ?>  
+                    <div class="row">
+                        <div class="col-3"><?= $rg->fname ?>&nbsp;<?= $rg->lname ?></div>
+                        <div class="col-3"><?= $rg->email ?></div>
+                        <div class="col-1"><?= $rg->phone ?></div>
+                        <div class="col-1"><?= $rg->people ?></div>
+                        <div class="col-2"><?= $rg->created_at ?></div>
+                        <div class="col-1"><?php if (!empty($rg->mail)){ echo("mail"); } else {echo("X"); } ?></div>
+                        <div class="col-1"><?= $gem->checkbox(['name'=>'chk' . $rg->id, 'checked' =>false]); ?></div>
+                    </div>
+                    <hr>
+                <?php endforeach ?>
+              <?php endif ?>
+                    </form>
+
