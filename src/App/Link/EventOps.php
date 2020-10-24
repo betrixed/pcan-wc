@@ -15,7 +15,14 @@ trait EventOps
                  'select * from register where eventid = :eid', 
                  ['eid' => $eid], ['eid' => Column::BIND_PARAM_INT]);
     }
-    
+    protected function getRegoMail($eid) {
+         $qry = new DbQuery($this->db);
+         return $qry->objectSet(
+                 'select R.*, RM.mail from register R '
+                     . ' left outer join reg_mail RM on RM.reg_id = R.id'
+                 . ' where R.eventid = :eid', 
+                 ['eid' => $eid], ['eid' => Column::BIND_PARAM_INT]);
+    }
     protected function getPending() {
         $db = $this->db;
         if ($db->getType() === 'sqlite') {

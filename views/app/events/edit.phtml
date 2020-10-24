@@ -46,7 +46,12 @@ $m->title = "Register";
                     'readonly' => true, 'size'=>6, 'maxlength' => 6]) ?>
             </div>
             <div class="col-3">
-                <?= $gem->number(['label' => 'Revision #', 'name' => 'revisionid', 'value' => $evt->revisionid, 
+                <?= $gem->linkTo([
+                    'href' => "/admin/blog/edit/" . $evt->blogid . "?revid=" . $evt->revisionid,
+                    'text' => 'Revision #' . $evt->revisionid, 
+                    'target' => '_blank',
+                     'style'=>'maxwidth:3.0em', 'size'=>4, 'maxlength' => 4]) ?>
+                <?=  $gem->number([ 'name' => 'revisionid', 'value' => $evt->revisionid, 
                      'style'=>'maxwidth:3.0em', 'size'=>4, 'maxlength' => 4]) ?>
             </div>
             <div class="col-3">
@@ -70,7 +75,7 @@ $m->title = "Register";
                 <?= $gem->submit(['name' => 'submit', 'value' => 'Update' ]); ?>
             </div>
         </div>
-    </form>
+    
     <hr>
         <?php if (!empty($rego)): ?>
               <div class="row body-wrap pad10">
@@ -86,10 +91,13 @@ $m->title = "Register";
                         <div class="col-2"><?= $rg->phone ?></div>
                         <div class="col-1"><?= $rg->people ?></div>
                         <div class="col-2"><?= $rg->created_at ?></div>
+                        <div class="col-1"><?= $gem->checkbox(['name'=>'chk' . $rg->id, 
+                            'text' => 'mail', 'checked' => !empty($rg->mail) ]); ?></div>
                     </div>
                     <hr>
                 <?php endforeach ?>
               <?php endif ?>
+                    </form>
 </div>
 <?php
 $js = <<<EOJS

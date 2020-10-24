@@ -16,7 +16,7 @@ use App\Models\Users;
  */
 class TestTask
 {
-    public function unitAction($name) {
+    public function mainAction($name) {
         echo "Unit Test "  . PHP_EOL;
         $user = Users::findFirstByName($name);
         if (!empty($user)) {

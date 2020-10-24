@@ -8,7 +8,7 @@ namespace App\Controllers;
  */
 use App\Models\Event;
 use WC\Valid;
-
+use Soundasleep\Html2Text;
 
 class EventAdmController extends BaseController {
 use \WC\Mixin\ViewPhalcon;
@@ -25,7 +25,7 @@ use \App\Link\EventOps;
         $model->evt = $evt;
         $id = $evt->id;
         if ($id > 0) {
-            $model->rego = $this->getRego($id);
+            $model->rego = $this->getRegoMail($id);
         }
        return $this->render('events', 'edit');      
     }
@@ -42,6 +42,16 @@ use \App\Link\EventOps;
             $event->revisionid = Valid::toInt($post, 'revisionid');
             if ($event->update()) {
                 $this->flash('Event updated');
+            }
+            $db = $this->db;
+            foreach($post as $key => $value) {
+                if (substr($key,0,3) === 'chk') {
+                    $regid = (int) substr($key,3);
+                    // ensure mail  job record exists
+                    $sql = "insert into reg_mail(reg_id, mail) values ($regid,1)"
+                        . " on duplicate key update mail=1";
+                    $db->execute($sql);
+                }
             }
             return $this->display($event);
         }
