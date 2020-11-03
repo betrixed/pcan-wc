@@ -21,7 +21,7 @@ trait ViewPhalcon {
 
     
     function afterExecuteRoute() {
-        // session becomes read only
+        // flush session writes, becomes read only
         $this->user_session->shutdown();
     }
     
@@ -106,6 +106,9 @@ trait ViewPhalcon {
         }
         return $view->render($path,$params);
     }
+    /** disable all but main phalcon view layout
+     * 
+     */
     public function noLayouts() {
         $view = $this->view;
         $view->disableLevel(
