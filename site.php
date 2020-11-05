@@ -28,16 +28,19 @@ use Phalcon\Cli\{
 };
 use Phalcon\Di\FactoryDefault\Cli as CliDI;
 Use Phalcon\Di\FactoryDefault;
-Use Phalcon\Mvc\{View, Application};
-
-use Phalcon\{Logger, Url};
-
+Use Phalcon\Mvc\{
+    View,
+    Application
+};
+use Phalcon\{
+    Logger,
+    Url
+};
 use Phalcon\Logger\Adapter\Stream as LogStream;
 use Phalcon\Logger\AdapterFactory;
 use Phalcon\Logger\LoggerFactory;
 use Phalcon\Session\Adapter\Stream;
 use Phalcon\Session\Manager;
-
 use Phalcon\Mvc\View\Engine\Php as PhpEngine;
 use App\Chimp\Api as ChimpApi;
 
@@ -58,7 +61,6 @@ function load_begin(): object
             [
                 'App' => $pcan_dir . "/src/App/",
                 'WC' => $pcan_dir . "/src/WC/",
-                
                 "MatthiasMullie\\Minify" => $mullie . "/minify/src/",
                 "MatthiasMullie\\PathConverter" => $mullie . "/path-converter/src/",
                 "PHPMailer\PHPMailer" => $vendor_dir . "/phpmailer/phpmailer/src/",
@@ -75,91 +77,62 @@ function load_begin(): object
     $app->php_dir = $PHP_DIR;
     $app->web_dir = $WEB_DIR;
     $app->target = $TARGET; // like TEST, SITE , DEV
-    
+
     if (empty($SITE_FOLDER)) {
         $SITE_FOLDER = "setup";
     }
     $app->site_folder = $SITE_FOLDER;
-    
+
     $sites_path = $PHP_DIR . "/sites";
     if (!file_exists($sites_path) || !is_dir($sites_path)) {
         throw \Exception("Directories Configuation Error: missing " . $sites_path);
     }
 
-    $site_dir =  $sites_path . "/" . $SITE_FOLDER;
-    
+    $site_dir = $sites_path . "/" . $SITE_FOLDER;
+
     if (!file_exists($site_dir) || !is_dir($site_dir)) {
         $sites_path = $pcan_dir . "/sites";
-        $site_dir =  $sites_path . "/" . $SITE_FOLDER;
+        $site_dir = $sites_path . "/" . $SITE_FOLDER;
     }
     if (!file_exists($site_dir) || !is_dir($site_dir)) {
         throw new \Exception("Directories Configuation Error: missing " . $site_dir);
     }
     $app->site_dir = $site_dir;
-    
+
     $config_file = $site_dir . '/config.php';
     if (file_exists($config_file)) {
         $data = WConfig::serialCache($config_file);
         $app->addArray($data);
-    }
-    else {
+    } else {
         throw new \Exception("Expect site configuration file " . $config_file);
     }
-    
+
     if ($app->has("TZ")) {
-        date_default_timezone_set($app->TZ);  
+        date_default_timezone_set($app->TZ);
     }
-    
+
     $isModule = false;
     $routes_suffix = 'routes.php';
-    if ($app->isWeb ) {
+    if ($app->isWeb) {
         $uri = $_SERVER["REQUEST_URI"];
         // important property
         $app->arguments = $uri;
-        
-        if ($app->has("modules")) {
-        // pre-identify known module names from first argument
-        if (strlen($uri) > 1) {
-            $got = explode("/", substr($uri,1));
-            //$got = preg_match("@/(\w+)/.*@",$uri, $match);
-            //if ($got === 1 && (count($match) > 1)) {
-
-            if (count($got) > 0) {
-                foreach($app->modules as $modname => $modconfig) {
-                    if ($got[0] === $modname) {
-                        $app->module_name = $modname;
-                        $app->module_cfg = $modconfig;
-                        $app->routes = $modname . '_' . $routes_suffix;
-                        $isModule = true;
-                    }
+        if ($app->has("sub_routes")) {
+            // pre-identify known module names from first argument
+            if (strlen($uri) > 1) {
+                $got = explode("/", substr($uri, 1));
+                if (count($got) > 0) {
+                    $isModule = setup_module($app, $got[0]);
                 }
             }
         }
-        }
-        else {
-            $module_cfg = [
-                                "database" => "database",
-                                'schema_path' => '@site_dir/schema'
-                            ];
-            
-            $app->modules = ['schema' => $module_cfg ];
-            $app->module_cfg = $module_cfg;
-            $app->module_name = 'schema';
-            $app->routes = 'schema_' . $routes_suffix;
-            $isModule = true;
-        }
-        
-    }
-    else {
+    } else {
         $app->arguments = get_cli_arguments();
     }
     if (!$isModule) {
-            $app->isModule = false;
-            $app->module_name = 'schema';
-            $app->module_cfg = $app->modules['schema'];
-            $app->routes = $routes_suffix;
+        setup_module($app, 'default');
     }
-       
+
 
     if (!isset($app->theme)) {
         $app->theme = 'default';
@@ -167,7 +140,7 @@ function load_begin(): object
     $theme_dir = $app->web_dir . "/" . $app->theme;
     if (!file_exists($theme_dir)) {
 
-        Dos::copyAll($pcan_dir . "/web/default",  $theme_dir);
+        Dos::copyAll($pcan_dir . "/web/default", $theme_dir);
     }
 
     // mobile detect is one class file
@@ -176,6 +149,18 @@ function load_begin(): object
     $app->device_detect = $device_detect;
     $app->isMobile = $device_detect->isMobile();
     return $app;
+}
+
+function setup_module(object $app, string $name): bool
+{
+    $cfg = $app->sub_routes[$name] ?? null;
+    if (!is_null($cfg)) {
+        $app->module_name = $name;
+        $app->module_cfg = $cfg;
+        $app->routes = $cfg['routes'] ?? 'routes';
+        return true;
+    }
+    return false;
 }
 
 function setup_world(object $app): object
@@ -233,6 +218,7 @@ function get_cli_arguments(): array
 {
     global $argv;
     $arguments = [];
+    $params = [];
 
     foreach ($argv as $k => $arg) {
         if ($k === 1) {
@@ -240,9 +226,10 @@ function get_cli_arguments(): array
         } elseif ($k === 2) {
             $arguments['action'] = $arg;
         } elseif ($k >= 3) {
-            $arguments['params'][] = $arg;
+            $params[] = $arg;
         }
     }
+    $arguments[] = $params;
     return $arguments;
 
     //return implode("/",array_slice($argv,1));
@@ -256,10 +243,7 @@ function setup_services($container, $app): object
     $app->services = $container;
     $app->user_session = new UserSession($app);
     $container->setShared('user_session', $app->user_session);
-
-    
-    if ($app->isWeb) {
-        switch ($app->target) {
+    switch ($app->target) {
         case "DEV":
             $app->loadSecrets($app->site_dir . "/.dev_secrets.xml");
             break;
@@ -270,8 +254,10 @@ function setup_services($container, $app): object
             $app->user_session->setAdmin();
             $app->loadSecrets($app->site_dir . "/.setup_secrets.xml");
             break;
-            
     }
+
+    if ($app->isWeb) {
+
         $container->set('file_cache', function() use ($app) {
             $cache = new FileCache($app->model_cache);
             return $cache;
@@ -377,10 +363,8 @@ function setup_services($container, $app): object
           because implicitView is false
          */
         $application->useImplicitView(false);
-       
     } else {
         $application = new Console($container);
-
     }
 
     $app->route_time = microtime(true);
@@ -402,10 +386,9 @@ function setup_router($app): object
     if ($web) {
         $uri = $app->arguments;
 
-       
+
         $options['isWeb'] = true;
         $options['routes'] = $rdir . '/' . $app->routes;
-        
     } else {
         $options['isWeb'] = false;
         $options['routes'] = $rdir . '/cli_routes.php';
