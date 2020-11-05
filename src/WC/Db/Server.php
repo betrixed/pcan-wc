@@ -51,7 +51,7 @@ class Server
         return  $this->connection($cfg);
     }
 
-    function setDefault(SQL $db)
+    function setDefault(AdapterInterface $db)
     {
        $this->srv[$this->defaultName] = $db;
     }

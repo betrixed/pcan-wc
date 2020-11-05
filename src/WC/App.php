@@ -26,12 +26,13 @@ class App extends WConfig
      */
     public function getSecrets($section = null) {
         if (!isset($this->keeps)) {
-            throw new \Exception("Confidential properties not loaded");
+            //throw new \Exception("Confidential properties not loaded");
+            return null;
         }
         $obj = $this->keeps;
         if (!empty($section)) {
             if (!isset($obj[$section])) {
-                throw new \Exception("App section $section is missing");
+                throw new \Exception("Section $section is missing");
             }
             return $obj[$section];
         }

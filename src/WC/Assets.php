@@ -60,11 +60,11 @@ class Assets
         $this->order = [];
         $this->mark = [];
         $this->add('default');
-        $srcpaths[] = $app->web_dir . "/" . $app->theme;
+        if (isset($app->theme)) {
+            $srcpaths[] = $app->web_dir . "/" . $app->theme;
+        }
         $srcpaths[] = $app->site_dir . "/web";
         $srcpaths[] = $app->pcan_dir . "/web";
-        
-
         $this->src_paths = $srcpaths;
     }
 

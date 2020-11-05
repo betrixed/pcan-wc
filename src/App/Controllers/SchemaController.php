@@ -1,12 +1,13 @@
 <?php
 namespace App\Controllers;
 
-use WC\Db\{Server, Script};
+use WC\Db\{Server, Script, DbQuery};
 use WC\{Dos, XmlPhp, App, Assets, Valid, AdaptXml};
 use Phalcon\Mvc\Controller;
 
 class SchemaController extends BaseController
 {
+    const schema_prefix = '/admin/schema';
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;
 
@@ -48,7 +49,7 @@ class SchemaController extends BaseController
         $adapters = ['Mysql' => 'Mysql', 'Pgsql' => 'Pgsql', 'Sqlite' => 'Sqlite'];
 
         $m = $this->getViewModel();
-        $m->post_prefix = '/admin/schema';
+        $m->post_prefix = self::schema_prefix;
 
         $params = ['list' => $list, 'keyed' => $keyed, 'adapters' => $adapters];
         
@@ -101,7 +102,7 @@ class SchemaController extends BaseController
                 $tdef->exportDataToCSV($schema->newQuery($db), $folderName . '/' . $tdef->name . '.csv');
             }
         }
-        $this->response->redirect('/schema/script/' . $version);
+        $this->response->redirect(self::schema_prefix . '/script/' . $version);
     }
 
     public function compare($f3, $params)
@@ -204,7 +205,7 @@ class SchemaController extends BaseController
         return $rdr;
     }
 
-    public function make_db($f3, $p)
+    public function make_db(array $p)
     {
 
 
@@ -224,10 +225,11 @@ class SchemaController extends BaseController
         $cfg = $rdr->parseFile($path);
         $db = null;
         try {
+            $server = $this->server;
+            
+            $db = $server->connection($sdb);
+            $server->setDefault($db);
 
-            $db = Server::connection($sdb);
-
-            Server::setDefault($db);
             $script = new Script();
 
             $cfg->generate($script, ['tables' => 'create']);
@@ -241,7 +243,9 @@ class SchemaController extends BaseController
             // load data after the tables and relationions setup
             $cfg->loadData($db, $datadir . $schema . '_dir');
             
-            $rows = $db->exec('select count(*) as gs from user_group');
+            $query = new DbQuery($db);
+            
+            $rows = $query->arraySet('select count(*) as gs from user_group');
             if (empty($rows) || $rows[0]['gs'] === 0) {
                 $msg = 'Data load fail';
             } else {
@@ -249,15 +253,13 @@ class SchemaController extends BaseController
             }
         } catch (\Exception $e) {
             $msg = $e->getMessage() . PHP_EOL . $e->getTraceAsString();
-            if (!empty($db)) {
-                $msg .= PHP_EOL . $db->log();
-            }
             $this->flash($msg);
             throw $e;
         }
 
 
-
+        $m = $this->getViewModel();
+        $m->script = $script;
         return $sdb;
     }
 
@@ -267,22 +269,23 @@ class SchemaController extends BaseController
      * @param type $f3
      * @param type $params
      */
-    public function initdb($f3, $params)
+    public function initdbAction()
     {
-        $view = $this->getView();
-        $view->content = 'schema';
+        //$m = $this->getViewModel();
 
-        $p = &$f3->ref('POST');
+        
+        $p = $_POST;
 
 
         $dbname = Valid::toStr($p, 'dbname');
 
         if (!empty($dbname)) {
-            $sdb = $this->make_db($f3, $p);
+            $sdb = $this->make_db($p);
         } else {
             $sdb = null;
         }
-
+        $m = $this->getViewModel();
+        return $this->render('schema', 'schema', ['script' => $m->script]); 
         
     }
 /*
