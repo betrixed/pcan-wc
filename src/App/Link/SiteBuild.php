@@ -19,6 +19,17 @@ class SiteBuild
     function __construct(Injectable $services) {
         $this->container = $services;
     }
+    
+    public function getSchemaList()
+    {
+        $files = [];
+        $path = $this->getSchemaDir() . '/*.schema';
+        foreach (glob($path) as $filename) {
+            $files[] = pathinfo($filename, PATHINFO_FILENAME);
+        }
+        return $files;
+    }
+    
     public function getSchemaDir() 
     {
         if (!isset($this->schema_dir)) {
@@ -68,7 +79,7 @@ class SiteBuild
         $this->container->user_session->flash($msg, $extra, $status);
     }
     
-    public function buildDatabase(array $named_args) : ?Script {
+    public function unpackArgs(array $args) : array {
         $p = [];
         foreach($named_args as $str) {
             $duo = explode('=',$str);
@@ -76,7 +87,81 @@ class SiteBuild
                 $p[$duo[0]] = $duo[1];
             }
         }
-        return schemaBuild($p);
+        return $p;
+    }
+    
+    
+    public function makeAdminUser(string $pwd, string $user, string $email)
+    {
+       UserAuth::makeNewUser($user, $email, $pwd, ['Admin', 'User', 'Editor', 'Guest']);
+       $this->flash('User created');
+    }
+    public function filesBuild(array $p) {
+        $admin_user = Valid::toStr($p, 'admin_user');
+        $admin_pwd = Valid::toStr($p, 'admin_pwd');
+        $admin_email = Valid::toEmail($p, 'admin_email');
+        $site_dir = Valid::toStr($p, 'site_dir');
+        $app = $this->container->app;
+        
+        if (!empty($site_dir)) {
+            $php = $app->php_dir;
+            $sitepath = $php . '/sites/' . $site_dir;
+            // make site folder if it doesn't already exist
+            Dos::makedir($sitepath);
+
+            $src = $app->pcan_dir;
+            $web = $app->web_dir;
+
+            $setup = $pkg . 'sites/setup/template/';
+
+            // Copy template index.php to webroot
+
+            $content = file_get_contents($setup . 'index.php');
+            $content = str_replace('$$_SITE_$$', $site_dir, $content);
+            file_put_contents($web . 'index.php', $content);
+
+            // Copy template config.php to root of $sitepath
+            $content = file_get_contents($setup . 'config.php');
+            $content = str_replace('$$_SITE_$$', $site_dir, $content);
+            $content = str_replace('$$_DOMAIN_$$', $f3->get('domain'), $content);
+            file_put_contents($sitepath . 'config.php', $content);
+
+            // assets.xml
+            copy($setup . 'assets.xml', $sitepath . 'assets.xml');
+            // routes.php
+            copy($setup . 'routes.php', $sitepath . 'routes.php');
+            // Copy Home.php to src in sitepath
+            // duplicate all the existing framework views, for alterations
+            Dos::copyall($pkg . 'views', $php . 'views');
+            Dos::makedir($sitepath . 'src');
+            copy($setup . 'Home.php', $sitepath . 'src/Home.php');
+
+            Dos::makedir($sitepath . 'views');
+            copy($setup . 'index.phtml', $sitepath . 'views/index.phtml');
+            // Copy common locations, build a images and theme assets in webroot, using $site_dir
+            Dos::copyall($pkg . 'web/js', $web . 'js');
+            Dos::copyall($pkg . 'web/css', $web . 'css');
+            Dos::copyall($pkg . 'web/image', $web . $site_dir);
+
+
+            // create a .secrets.xml
+            if (!empty($sdb)) {
+                file_put_contents($sitepath . '.secrets.xml', XmlPhp::toXmlDoc(["database" => $sdb]));
+            }
+        }
+
+        // make a new user (email is essential)
+
+        $view->add(['script' => $msg]);
+    }
+    public function buildFiles(array $named_args) {
+        $p = $this->unpackArgs($named_args);
+        return $this->filesBuild($p);
+    }
+    public function buildDatabase(array $named_args) : ?Script {
+        $p = $this->unpackArgs($named_args);
+
+        return $this->schemaBuild($p);
     }
     
     /** 

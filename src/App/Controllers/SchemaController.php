@@ -18,20 +18,12 @@ class SchemaController extends BaseController
     public function getAllowRole() {
         return 'Admin';
     }
-    
-    public function getSchemaList()
-    {
-        $files = [];
-        $path = $this->getSchemaDir() . '/*.schema';
-        foreach (glob($path) as $filename) {
-            $files[] = pathinfo($filename, PATHINFO_FILENAME);
-        }
-        return $files;
-    }
 
     public function indexAction()
     {
-        $list = $this->getSchemaList();
+        $builder = new SiteBuild($this);
+        
+        $list = $builder->getSchemaList();
 
         // use each value as key
         $keyed = [];
@@ -139,8 +131,6 @@ class SchemaController extends BaseController
         $build = new SiteBuild($this);
         $script = $build->schemaBuild($p);
         
-        $this->create_site($p);
-        
         return $this->render('schema', 'schema', ['script' => $m->script]); 
         
     }
@@ -155,10 +145,15 @@ class SchemaController extends BaseController
         
     }
     
-    function create_site($p)
+    /**
+     * parameters: admin_user, admin_pwd, admin_email 
+     *    site_folder name
+     * @param type $p 
+     */
+    function createSiteAction()
     {
         $admin_user = Valid::toStr($p, 'admin_user');
-
+        
         if (!empty($admin_user)) {
             $admin_pwd = Valid::toStr($p, 'admin_pwd');
             $admin_email = Valid::toEmail($p, 'admin_email');

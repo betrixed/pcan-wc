@@ -13,5 +13,10 @@ class SetupTask extends \Phalcon\Cli\Task
         $build = new SiteBuild($this);
         $build->buildDatabase($params);
     }
+    
+    public function fileAction(array $params) {
+        $build = new SiteBuild($this);
+        $build->buildFiles($params);
+    }
 }
 
