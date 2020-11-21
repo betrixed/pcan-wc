@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class BlogToCategory extends \Phalcon\Mvc\Model
 {
@@ -91,7 +92,7 @@ class BlogToCategory extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return BlogToCategory|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

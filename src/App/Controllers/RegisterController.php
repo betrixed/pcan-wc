@@ -71,7 +71,7 @@ EOD;
         $qry->bindParam('evt', $eventid);
         $result = $qry->queryAA($sql);
         if (!empty($result)) {
-            return $result[0]['tote'];
+            return (int) $result[0]['tote'];
         }
         else {
             return 0;

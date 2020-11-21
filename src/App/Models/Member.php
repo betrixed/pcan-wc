@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class Member extends \Phalcon\Mvc\Model
 {
@@ -468,7 +469,7 @@ class Member extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return Member|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

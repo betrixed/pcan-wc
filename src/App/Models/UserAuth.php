@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class UserAuth extends \Phalcon\Mvc\Model
 {
@@ -178,7 +179,7 @@ class UserAuth extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return UserAuth|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

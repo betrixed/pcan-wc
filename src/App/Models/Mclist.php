@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class Mclist extends \Phalcon\Mvc\Model
 {
@@ -205,7 +206,7 @@ class Mclist extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return Mclist|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

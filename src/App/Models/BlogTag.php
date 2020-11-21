@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class BlogTag extends \Phalcon\Mvc\Model
 {
@@ -148,7 +149,7 @@ class BlogTag extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return BlogTag|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

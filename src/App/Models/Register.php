@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\Email as EmailValidator;
@@ -345,7 +346,7 @@ class Register extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return Register|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

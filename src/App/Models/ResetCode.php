@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class ResetCode extends \Phalcon\Mvc\Model
 {
@@ -118,7 +119,7 @@ class ResetCode extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return ResetCode|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

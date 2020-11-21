@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class Image extends \Phalcon\Mvc\Model
 {
@@ -381,7 +382,7 @@ class Image extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return Image|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }
