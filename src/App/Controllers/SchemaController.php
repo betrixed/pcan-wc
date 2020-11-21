@@ -1,12 +1,14 @@
 <?php
 namespace App\Controllers;
 
-use WC\Db\{Server, Script};
+use WC\Db\{Server, Script, DbQuery};
 use WC\{Dos, XmlPhp, App, Assets, Valid, AdaptXml};
 use Phalcon\Mvc\Controller;
+use App\Link\SiteBuild;
 
 class SchemaController extends BaseController
 {
+    const schema_prefix = '/admin/schema';
     use \WC\Mixin\Auth;
     use \WC\Mixin\ViewPhalcon;
 
@@ -16,29 +18,12 @@ class SchemaController extends BaseController
     public function getAllowRole() {
         return 'Admin';
     }
-    
-    public function getSchemaDir()
-    {
-        if (!isset($this->schema_dir)) {
-            $app = $this->app;
-            $this->schema_dir = $app->replace_in($app->module_cfg['schema_path']);
-        }
-        return $this->schema_dir . '/';
-    }
-    
-    public function getSchemaList()
-    {
-        $files = [];
-        $path = $this->getSchemaDir() . '/*.schema';
-        foreach (glob($path) as $filename) {
-            $files[] = pathinfo($filename, PATHINFO_FILENAME);
-        }
-        return $files;
-    }
 
     public function indexAction()
     {
-        $list = $this->getSchemaList();
+        $builder = new SiteBuild($this);
+        
+        $list = $builder->getSchemaList();
 
         // use each value as key
         $keyed = [];
@@ -48,7 +33,7 @@ class SchemaController extends BaseController
         $adapters = ['Mysql' => 'Mysql', 'Pgsql' => 'Pgsql', 'Sqlite' => 'Sqlite'];
 
         $m = $this->getViewModel();
-        $m->post_prefix = '/admin/schema';
+        $m->post_prefix = self::schema_prefix;
 
         $params = ['list' => $list, 'keyed' => $keyed, 'adapters' => $adapters];
         
@@ -101,7 +86,7 @@ class SchemaController extends BaseController
                 $tdef->exportDataToCSV($schema->newQuery($db), $folderName . '/' . $tdef->name . '.csv');
             }
         }
-        $this->response->redirect('/schema/script/' . $version);
+        $this->response->redirect(self::schema_prefix . '/script/' . $version);
     }
 
     public function compare($f3, $params)
@@ -126,172 +111,49 @@ class SchemaController extends BaseController
 
     public function scriptAction($version)
     {
-        //$view = $this->getView();
-        
-
-        $path = $this->getSchemaDir() . $version . '.schema';
         $req = $this->request->getQuery();
         
-        if (isset($req['adapt'])) {
-            $adapter = $req['adapt'];
-            $rdr = static::get_adapt_to($adapter);
-            $cfg = $rdr->parseFile($path);
-        } else {
-            $cfg = XmlPhp::fromFile($path);
-        }
-        $script = new Script();
-
-        $cfg->generate($script, ['tables' => 'create', 'auto_inc' => true]);
-
-        $cfg->generate($script, ['alter' => true, 'indexes' => true ]);
-
-
-
-        $params = ['script' => $script];
-        return $this->render('schema', 'schema',$params);  
+        $build = new SiteBuild($this);
+        $params = ['schema' => $version];
+        $params['adapter'] = $req['adapt'] ?? '';
+        
+        $script = $build->scriptBuild($params);
+        
+        return $this->render('schema', 'schema',['script' => $script]);  
 
     }
 
-    private function db_params($p)
+
+    public function make_db(array $p)
     {
-        $dbname = Valid::toStr($p, 'dbname');
-        $dbuser = Valid::toStr($p, 'dbuser');
-        $passwd = Valid::toStr($p, 'passwd');
 
-        $adapter = Valid::toStr($p, 'adapter');
-        $port = Valid::toInt($p, 'port');
-        $hostname = Valid::toStr($p, 'hostname');
-        $unix_socket = Valid::toBool($p, 'unix_socket');
 
-        $sdb = ['dbname' => $dbname, 'adapter' => strtolower($adapter),
-            'username' => $dbuser, 'password' => $passwd];
-
-        if ($adapter === 'Mysql') {
-            if (empty($port)) {
-                $port = 3306;
-            }
-            if (empty($hostname)) {
-                $hostname = 'localhost';
-            }
-            $sdb += ['port' => $port, 'charset' => 'utf8', 'host' => $hostname];
-        } else if ($adapter === 'Pgsql') {
-            if (empty($unix_socket)) {
-                if (empty($port)) {
-                    $port = 5432;
-                }
-                if (empty($hostname)) {
-                    $hostname = 'localhost';
-                }
-                $sdb += ['port' => $port, 'host' => $hostname];
-            }
-        }
-        return $sdb;
+        $build = new SiteBuild($this);
+        $script = $build->schemaBuild($p);
+        
+        return $this->render('schema', 'schema', ['script' => $m->script]); 
+        
     }
-
-    static function get_adapt_to($adapter)
+ public function initdbAction()
     {
-        switch ($adapter) :
-            case 'mysql':
-                $rdr = new AdaptXml(['Sqlite', 'Pgsql'], 'Mysql');
-                break;
-            case 'pgsql':
-                $rdr = new AdaptXml(['Mysql', 'Sqlite'], 'Pgsql');
-                break;
-            case 'sqlite':
-                $rdr = new AdaptXml(['Mysql', 'Pgsql'], 'Sqlite');
-                break;
-        endswitch;
-        return $rdr;
-    }
-
-    public function make_db($f3, $p)
-    {
-
-
-        $datadir = $this->getSchemaDir();
-        $schema = Valid::toStr($p, 'schema');
-        $path = $datadir . $schema . '.schema';
-
-        $sdb = $this->db_params($p);
-
-        $rdr = static::get_adapt_to($sdb['adapter']);
-
-        if ($sdb['adapter'] === 'sqlite' && isset($sdb['dbname'])) {
-            $dbpath = $f3->get('sitepath') . $sdb['dbname'];
-            $sdb['dbname'] = $dbpath;
-        }
-
-        $cfg = $rdr->parseFile($path);
-        $db = null;
-        try {
-
-            $db = Server::connection($sdb);
-
-            Server::setDefault($db);
-            $script = new Script();
-
-            $cfg->generate($script, ['tables' => 'create']);
-
-            $cfg->generate($script, ['alter' => true, 'indexes' => true]);
-
-            $cfg->generate($script, ['alter' => true]);
-
-            $script->run($db);
-            
-            // load data after the tables and relationions setup
-            $cfg->loadData($db, $datadir . $schema . '_dir');
-            
-            $rows = $db->exec('select count(*) as gs from user_group');
-            if (empty($rows) || $rows[0]['gs'] === 0) {
-                $msg = 'Data load fail';
-            } else {
-                $msg = 'Database created';
-            }
-        } catch (\Exception $e) {
-            $msg = $e->getMessage() . PHP_EOL . $e->getTraceAsString();
-            if (!empty($db)) {
-                $msg .= PHP_EOL . $db->log();
-            }
-            $this->flash($msg);
-            throw $e;
-        }
-
-
-
-        return $sdb;
-    }
-
-    /** Apply a schema to a new database, with given connection parameters,
-     *  and setup an admin account.
-     * 
-     * @param type $f3
-     * @param type $params
-     */
-    public function initdb($f3, $params)
-    {
-        $view = $this->getView();
-        $view->content = 'schema';
-
-        $p = &$f3->ref('POST');
-
-
+        $p = $_POST;
         $dbname = Valid::toStr($p, 'dbname');
 
         if (!empty($dbname)) {
-            $sdb = $this->make_db($f3, $p);
-        } else {
-            $sdb = null;
-        }
-
+            return $this->make_db($p);
+        } 
         
     }
-/*
-    function create_site($f3, $args)
+    
+    /**
+     * parameters: admin_user, admin_pwd, admin_email 
+     *    site_folder name
+     * @param type $p 
+     */
+    function createSiteAction()
     {
-        $p = &$f3->ref('POST');
-            
         $admin_user = Valid::toStr($p, 'admin_user');
-
+        
         if (!empty($admin_user)) {
             $admin_pwd = Valid::toStr($p, 'admin_pwd');
             $admin_email = Valid::toEmail($p, 'admin_email');
@@ -355,5 +217,5 @@ class SchemaController extends BaseController
         echo $view->render();        
     }
  
- */
+
 }

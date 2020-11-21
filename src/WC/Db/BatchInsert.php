@@ -13,8 +13,8 @@ class BatchInsert {
     public $driver;
     
     public function begin($db, $tdef) {
-        $this->pdo = $db->pdo();
-        $this->driver = $db->driver();
+        $this->pdo = $db->getInternalHandler ();
+        $this->driver = $db->getType();
         $this->cdefs = $tdef->columns;
         $this->fields = array_keys($this->cdefs);
         if ($this->driver === 'mysql') {

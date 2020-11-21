@@ -137,9 +137,14 @@ class ColumnDef extends NameDef  {
                     $default = '\'' . str_replace('\'','\'\'',$default) . '\'';
                 }
             }
-            else if ($default !== 'NULL' || !$allow_null) 
+            else switch($default) 
             {
-                $default = '\'' . str_replace('\'','\'\'',$default) . '\'';
+                CASE 'NULL':
+                CASE 'CURRENT_TIMESTAMP':
+                    break;
+                default:
+                    $default = '\'' . str_replace('\'','\'\'',$default) . '\'';
+                    break;
             }
         }
         if (!is_null($default)) {

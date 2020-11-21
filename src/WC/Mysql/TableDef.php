@@ -223,7 +223,7 @@ EOS;
             if (!empty($this->options)) {
                 foreach ($this->options as $key => $value) {
                     if ($key === 'auto_increment') {
-                        $allow = is_null($stage['auto_inc']) ? false : $stage['auto_inc'];
+                        $allow =  $stage['auto_inc']  ?? false;
                         if (!$allow)
                             continue;
                     }

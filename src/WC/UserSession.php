@@ -81,6 +81,7 @@ class UserData
         $this->email = '';
         $this->userName = $name;
         $this->roles = $roles;
+        
     }
 
     /** Set from database model 'Users'
@@ -189,6 +190,11 @@ class UserSession
         return ($this->data->id === 0);
     }
 
+    public function setAdmin() {
+        $this->data->setValidUser('admin',['Admin','User','Editor']);
+        $this->wasRead = true;
+    }
+    
     public function setGuest()
     {
         $this->data->setGuest();
