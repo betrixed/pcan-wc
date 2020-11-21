@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class LinkGallery extends \Phalcon\Mvc\Model
 {
@@ -176,7 +177,7 @@ class LinkGallery extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return LinkGallery|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

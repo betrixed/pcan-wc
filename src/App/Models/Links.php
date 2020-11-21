@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class Links extends \Phalcon\Mvc\Model
 {
@@ -321,7 +322,7 @@ class Links extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return Links|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use \Phalcon\Mvc\ModelInterface;
 
 class UserGroup extends \Phalcon\Mvc\Model
 {
@@ -120,7 +121,7 @@ class UserGroup extends \Phalcon\Mvc\Model
      * @param mixed $parameters
      * @return UserGroup|\Phalcon\Mvc\Model\ResultInterface
      */
-    public static function findFirst($parameters = null)
+    public static function findFirst($parameters = null): ?ModelInterface
     {
         return parent::findFirst($parameters);
     }
