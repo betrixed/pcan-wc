@@ -3,7 +3,6 @@
 namespace App\Models;
 use \Phalcon\Mvc\ModelInterface;
 
-
 class Event extends \Phalcon\Mvc\Model
 {
 
@@ -36,6 +35,12 @@ class Event extends \Phalcon\Mvc\Model
      * @var integer
      */
     protected $revisionid;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $reg_limit;
 
     /**
      *
@@ -116,6 +121,19 @@ class Event extends \Phalcon\Mvc\Model
     public function setRevisionid($revisionid)
     {
         $this->revisionid = $revisionid;
+
+        return $this;
+    }
+
+    /**
+     * Method to set the value of field reg_limit
+     *
+     * @param integer $reg_limit
+     * @return $this
+     */
+    public function setRegLimit($reg_limit)
+    {
+        $this->reg_limit = $reg_limit;
 
         return $this;
     }
@@ -210,6 +228,16 @@ class Event extends \Phalcon\Mvc\Model
     }
 
     /**
+     * Returns the value of field reg_limit
+     *
+     * @return integer
+     */
+    public function getRegLimit()
+    {
+        return $this->reg_limit;
+    }
+
+    /**
      * Returns the value of field enabled
      *
      * @return string
@@ -284,6 +312,7 @@ class Event extends \Phalcon\Mvc\Model
             'totime' => 'totime',
             'blogid' => 'blogid',
             'revisionid' => 'revisionid',
+            'reg_limit' => 'reg_limit',
             'enabled' => 'enabled',
             'slug' => 'slug',
             'reg_detail' => 'reg_detail'

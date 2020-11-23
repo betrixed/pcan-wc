@@ -110,7 +110,13 @@ EOD;
         $m->register = new Register();
         $m->register->people = 0;
         $m->totalCount = $this->getTotal($event->id);
-        return $this->render('events', 'register');
+        
+        if (($event->reg_limit > 0) && ($m->totalCount >= $event->reg_limit)) {
+            return $this->render('events', 'full_register');
+        }
+        else {
+            return $this->render('events', 'register');
+        }
     }
 
     private function error($msg) {

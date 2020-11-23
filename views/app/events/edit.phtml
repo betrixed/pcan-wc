@@ -10,53 +10,64 @@ $m->title = "Register";
 
 <style>
     .label {
-        min-width:150px;
+        min-width:240px;
         text-align:right;
         padding-right:10px;
         font-weight: bold;
         vertical-align:top;
     }
     .vspace {
-        margin-bottom : 1.0em;
+        margin-bottom : 0.5em;
     }
     
+    .datetimepicker-input {
+        max-width:12em;
+    }
 </style>
 <div class="container-fluid body-wrap">
     <hr>
     <form id="edtevt" method="post" action="/admin/eventpost" onsubmit="smotePost()">
         <?= $gem->hidden( ['name'=>'id', 'value'=> $evt->id ]) ?> 
         <div class="row vspace">
-            <div class="col-3" >
+            <div class="col-5" >
                 <?= $gem->datetime(['label' => "From", 'name' => "fromtime", 'size' => 20, 'value' => $evt->fromtime]) ?>
              </div>
-             <div class="col-3">
+             <div class="col-5">
                 <?= $gem->datetime(['label' => "To", 'name' => "totime", 'size' => 20, 'value' => $evt->totime]) ?>
            </div>
-            <div class="col-1">
+                       <div class="col-2">
                 <?= $gem->checkbox(['text' => 'Enabled', 'name' => 'enabled', 'checked' => $evt->enabled]) ?>
-            </div>
+            </div> 
         </div>
         <div class="row vspace">
-             <div class="col-3">
+             <div class="col-6">
                 <?= $gem->plainText(['label' => "Slug", 'name' => "slug", 'size' => 20, 'value' => $evt->slug]) ?>
             </div>
-            
-            <div class="col-3">
+                        <div class="col-6">
+                <?= $gem->number(['label' => "Limit registered", 'text' => 'Limit', 'name' => 'reg_limit', 'value'=>$evt->reg_limit,
+                        'style'=>'max-width:4em', 'size'=>3
+                        ]) ?>
+            </div>
+
+        </div>
+
+        <div class="row vspace">
+                        <div class="col-6">
                 <?= $gem->number(['label' => 'Blog #', 'name' => 'blogid', 'value' => $evt->blogid, 
                     'readonly' => true, 'size'=>6, 'maxlength' => 6]) ?>
             </div>
-            <div class="col-3">
+            <div class="col-6">
                 <?= $gem->linkTo([
                     'href' => "/admin/blog/edit/" . $evt->blogid . "?revid=" . $evt->revisionid,
                     'text' => 'Revision #' . $evt->revisionid, 
                     'target' => '_blank',
-                     'style'=>'maxwidth:3.0em', 'size'=>4, 'maxlength' => 4]) ?>
+                     'style'=>'max-width:3em', 'size'=>4, 'maxlength' => 4, 'class'=>'label']) ?>
                 <?=  $gem->number([ 'name' => 'revisionid', 'value' => $evt->revisionid, 
-                     'style'=>'maxwidth:3.0em', 'size'=>4, 'maxlength' => 4]) ?>
+                    'style'=>'max-width:3em', 'size'=>4, 'maxlength' => 4]) ?> 
+                    <span>Null revision# for latest</span>
             </div>
-            <div class="col-3">
-                <p>Null revision# for latest</p>
-            </div>
+
+            
         </div>
         <div class="row vspace">
              <div class="col">

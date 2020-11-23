@@ -67,6 +67,7 @@ class EventAdmController extends BaseController
             $event->enabled = Valid::toBool($post, 'enabled');
             $event->reg_detail = $post['reg_detail'];
             $event->revisionid = Valid::toInt($post, 'revisionid');
+            $event->reg_limit = Valid::toInt($post, 'reg_limit');
             if ($event->update()) {
                 $this->flash('Event updated');
             }
