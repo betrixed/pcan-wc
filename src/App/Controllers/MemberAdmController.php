@@ -242,7 +242,7 @@ EOS;
      * @param type $f3
      * @param type $args
      */
-    public function  post() {
+    public function  addpostAction() {
         $post = $_POST;
         $mid = Valid::toInt($post, 'mid', 0);
         try {
@@ -268,9 +268,9 @@ EOS;
                                 $status = 'no-chimp';
                             }
                             $mem = new MemberEmail();
-                            $mem['email_address'] = $email;
-                            $mem['memberid'] = $mid;
-                            $mem['status'] = $status;
+                            $mem->email_address = $email;
+                            $mem->memberid = $mid;
+                            $mem->status = $status;
                             $mem->save();
                         }
                     }

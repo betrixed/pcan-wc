@@ -1,0 +1,128 @@
+<?php
+$gem = $this->htmlgem;
+$rows = $m->rows;
+$assets->add(['bootstrap', 'select', 'DateTime']);
+$money = $gem->moneyFormat();
+?>
+<style>
+    h6 {
+        font-weight : bold;
+    }
+    .mdelta {
+        width:5.0em;
+        text-align: right;
+        font-size:0.85em;
+        display:inline-block;
+    }
+
+    .label {
+        margin-right:10px;
+        text-align:right;
+        min-width:10em;
+        font-weight:bold;
+    }
+    .mreason {
+        font-size:0.85em;
+    }
+
+    .mtitle {
+        font-size: 1.2em;
+    }
+</style>
+<div class="container-fluid outerwrap">
+    <span class='mtitle'>Period Report from <?= $m->start_period ?> to <?= $m->end_period ?></span>
+
+    <hr>
+    <div class="row">
+        <div class='col-2'>
+            <span>Start balance: </span>
+        </div>
+        <div class='col-1 text-right'>
+            <?= $money->format($m->startBalance) ?>
+        </div>      
+    </div>
+    <div class="row">
+        <div class='col-2'>
+            <span>End balance: </span>
+        </div>
+        <div class='col-1 text-right'>
+            <?= $money->format($m->endBalance) ?>
+        </div>      
+    </div>
+    <div class="row">
+        <div class='col-2'>
+            <span>Net credit: </span>
+        </div>
+        <div class='col-1 text-right'>
+            <?= $money->format($m->endBalance - $m->startBalance) ?>
+        </div>      
+    </div>
+    <hr>
+    <h4>Categories</h4>
+    <h6>Income</h6>
+    <?php foreach ($m->net as $cat => $bal):
+        ?>
+        <?php if ($bal >= 0): ?>
+            <div class="row">
+                <div class="col-2">
+                    <span><?= $m->category[$cat] ?></span>
+                </div>
+                <div class="col-1 text-right">
+                    <span><?= $money->format($bal) ?></span>
+                </div>
+            </div>
+            <?php if ($cat > 1 && $cat < 7): ?>
+                <?php foreach ($m->rows as $t):
+                    if ($t->category == $cat):
+                        ?>
+                        <div class="row">
+                            <div class="col-1">
+                                <span class='mreason'><?= $t->tdate ?></span>
+                            </div>
+                            <div class="col-5">
+                                <p class='mreason'><?= $t->reason ?></p>
+                            </div>
+                            <div class="col-2 ">
+                                <div class='mdelta'><?= $t->delta ?></div>
+                            </div>
+                        </div>
+                    <?php endif;
+                endforeach; ?>
+            <?php endif; ?>
+    <?php endif; ?>
+    <?php endforeach; ?>
+    <hr>
+    <h6>Debits</h6>
+    <?php foreach ($m->net as $cat => $bal):
+        ?>
+    <?php if ($bal < 0): ?>
+            <div class="row">
+                <div class="col-2">
+                    <span><?= $m->category[$cat] ?></span>
+                </div>
+                <div class="col-1 text-right">
+                    <span><?= $money->format($bal) ?></span>
+                </div>
+            </div>
+            <?php if ($cat > 1 && $cat < 7): ?>
+            <?php foreach ($m->rows as $t):
+                if ($t->category == $cat):
+                    ?>
+                        <div class="row">
+                            <div class="col-1">
+                                <span class='mreason'><?= $t->tdate ?></span>
+                            </div>
+                            <div class="col-5">
+                                <p class='mreason'><?= $t->reason ?></p>
+                            </div>
+                            <div class="col-2 ">
+                                <div class='mdelta'><?= $t->delta ?></div>
+                            </div>
+
+                        </div>
+                    <?php endif;
+                endforeach; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+</div>

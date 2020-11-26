@@ -51,6 +51,17 @@ class DbQuery {
         return $result;
     }
 
+    // return result as array of firstcolumn value -> second column value 
+    
+    public function simpleMap(string $keycol, string $valcol, string $table) {
+        $sql = "select $keycol, $valcol from $table";
+        $rows = $this->arraySet($sql);
+        $result = [];
+        foreach($rows as $row) {
+            $result[$row[$keycol]] = $row[$valcol];
+        }
+        return $result;
+    }
     public function objectSet(string $sql, array $params = null, $bindtypes = null): array {
         $result = $this->db->fetchAll($sql, Db\Enum::FETCH_OBJ, $params, $bindtypes);
         $this->reset();

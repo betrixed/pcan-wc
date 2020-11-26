@@ -162,7 +162,7 @@ trait MemberData
             $isNew = false;
         } else {
             // see if record exists by phone
-            $rec = self::findFirst($m->fname, $m->lname, $m->phone);
+            $rec = Member::findFirst($m->fname, $m->lname, $m->phone);
 
             if (empty($rec)) {
                 $rec = new Member();

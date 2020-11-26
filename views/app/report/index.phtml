@@ -1,0 +1,72 @@
+<?php
+$gem = $this->htmlgem;
+$rows = $m->rows;
+$assets->add(['bootstrap','select', 'DateTime']);
+?>
+<style>
+    .mdelta {
+        width:5.0em;
+        text-align: right;
+        font-size:0.85em;
+        display:inline-block;
+    }
+    
+    .label {
+        margin-right:10px;
+        text-align:right;
+        min-width:10em;
+        font-weight:bold;
+    }
+    .mreason {
+         font-size:0.85em;
+    }
+</style>
+<div class="container-fluid outerwrap">
+    <h3>Bank transactions and report view</h3>
+    <form action='/admin/bank/report' method='post'>
+        <div class='row'>
+            <div class='col-6'>
+                <?= $gem->datetime(['name'=>'todate', 'label'=>'Period end date']) ?>
+            </div>
+            <div class='col-4'>
+                <?= $gem->submit(['value'=>'Report', 'class' => 'btn btn-outline btn-warning']) ?>
+            </div>
+        </div>
+
+            
+
+    </form>
+    <hr>
+    <form action='/admin/bank/post' method='post'>
+    <?php foreach ($rows as $t): 
+        $id = $t->id;
+        ?>
+    
+    
+        <div class="row">
+            <div class="col-1">
+                <span><?= $t->tdate ?></span>
+            </div>
+            <div class="col-5">
+                <p class='mreason'><?= $t->reason ?></p>
+            </div>
+            <div class="col-2 ">
+                <div class='mdelta'><?= $t->delta ?></div>
+
+                <div class='mdelta'><?= $t->balance ?></div>
+            </div>
+            <div class="col-4">
+                <?= $gem->select(['name'=> 'scat' . $id, 'list'=>$m->category, 
+                    'value'=>$t->category, 'class'=>'selectpicker']) ?>
+            </div>
+        </div>
+    <?php endforeach; ?>
+        <hr>
+        <div class="row">
+        
+        <div class='col-4'>
+        <?= $gem->submit(['value'=>'Update']) ?>
+        </div>
+        </div>
+    </form>
+</div>
