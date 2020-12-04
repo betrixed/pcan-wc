@@ -1,0 +1,29 @@
+<?php
+$gem = $this->htmlgem;
+$m->title = "Sent";
+$code = $m->code;
+$assets->add(["bootstrap"]);  
+$btnclass = 'btn btn-lg btn-outline-info';
+
+?>
+<style>
+    textarea.form-control {
+        margin-left:10px;
+        margin-right:10px;
+    }
+
+    label{
+        text-align: right;
+        margin-right:10px;
+        min-width: 120px;
+        font-weight: bold;
+        vertical-align: top;
+    }
+</style>
+
+<div class="container-fluid outerwrap">
+    <h3>Email temporary access link back</h3>
+</div>
+<div class="container-fluid outerwrap">
+    <p>Email sent to <?= $m->email ?></p>
+</div>

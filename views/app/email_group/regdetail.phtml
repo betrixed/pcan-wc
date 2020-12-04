@@ -1,0 +1,48 @@
+<?php
+$gem = $this->htmlgem;
+$m->title = "Register Details";
+$code = $m->code;
+$rego = $m->rego;
+
+$assets->add(["bootstrap"]);   
+$btnclass = 'btn btn-lg btn-outline-info';
+ 
+
+?>
+<style>
+    textarea.form-control {
+        margin-left:10px;
+        margin-right:10px;
+    }
+
+    label{
+        text-align: right;
+        margin-right:10px;
+        min-width: 120px;
+        font-weight: bold;
+        vertical-align: top;
+    }
+</style>
+
+<div class="container-fluid outerwrap">
+    <h3>Delete all records with this data?</h3>
+    <hr>
+<div class="container-fluid outerwrap">
+            <form id="reglist" method="post" action="<?= $m->url . 'dellink/' . $rego->linkcode . "/" . $code ?>">
+              <div class="row body-wrap pad10">
+                  <div class="col-5">
+                  <?= $gem->text_value(['label'=>'Name', 'name'=>'fname', 'value' => $rego->fname . ' ' . $rego->lname]) ?><br>
+                  <?= $gem->text_value(['label'=>'Email', 'name'=>'email', 'value' => $rego->email]) ?>
+                  
+                  </div>
+
+              </div>
+                <div class="row">
+                    <div class="col-5 text-center">
+                 <?= $gem->submit(['value'=>'Delete', 'name'=>'delete']) ?>
+                 <?= $gem->submit(['value'=>'Cancel', 'name'=>'cancel']) ?>
+                  </div>
+                </div>
+            </form>
+</div>
+</div>

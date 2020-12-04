@@ -1,0 +1,92 @@
+<?php
+$gem = $this->htmlgem;
+$gp = $m->group;
+$name = $gp->name;
+$btnclass = 'btn btn-lg btn-outline-info';
+$assets->add('bootstrap');
+$editStyle = 'width:60%;'
+?>
+<style>
+    textarea.form-control {
+        margin-left:10px;
+        margin-right:10px;
+    }
+
+    label{
+        text-align: right;
+        margin-right:10px;
+        min-width: 120px;
+        font-weight: bold;
+    }
+</style>
+<?php $this->partial("email_group/title") ?>
+
+<div class="container-fluid outerwrap">
+    <form id="galedit" action="/admin/email_group/postnew" method="post">
+        <?= $gem->hidden(['name' => 'id', 'value' => $gp->id]) ?>
+        <div class="row">
+            <div class="col-10">
+                <label for="description" class="control-label">Description</label>
+                <?= $gem->multiline(['name' => 'description', 'value' => $gp->description, 'cols' => 80]) ?>
+            </div>
+            <div class="col-1">
+                <?= $gem->submit(['class' => 'btn btn-danger', 'value' => 'Update Gallery']) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <?= $gem->datetime(['label' => 'Last send', 'size' => 20,
+                    'name' => 'last_upload', 'value' => $gp->last_send])
+                ?>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container-fluid outerwrap">
+    <div style="border-style:solid;">
+        <form id="newtpl" action="/admin/email_group/newtpl" method="post">
+<?= $gem->hidden(['name' => 'groupid', 'value' => $gp->id]) ?>
+            <h3>New Template</h3>
+            <div class="row">
+                <div class="col-5">
+<?= $gem->plainText(['name' => 'name', 'label' => 'Name']) ?><br>
+                </div>
+                <div class="col-5">
+<?= $gem->plainText(['name' => 'subject', 'label' => 'Subject',
+                'style' => $editStyle ]) ?><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5">
+<?= $gem->plainText(['name' => 'description', 'label' => 'Description']) ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5 text-right">
+                     <?= $gem->submit(['class' => $btnclass, 'value' => 'Add']) ?>
+                </div>
+            </div>
+        </form>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-3">
+            <label>Name</label>
+        </div>
+                <div class="col-3">
+            <label>Description</label>
+        </div>
+    </div>    
+    <?php foreach($m->templates as $tp): ?>
+    <div class="row">
+        <div class="col-3">
+            <?= $gem->linkTo(['href' => $m->url . 'edittpl/' . $tp->id, 'text'=> $tp->name]) ?>
+        </div>
+                <div class="col-3">
+            <?= $tp->description ?>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
+</div
+

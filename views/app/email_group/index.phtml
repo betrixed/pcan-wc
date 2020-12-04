@@ -1,0 +1,47 @@
+<?php
+$gem = $this->htmlgem;
+$ubase = "/admin/email_group?orderby="; 
+$link =  $ubase . $m->orderby;  
+$page = $m->page;
+$url =  "/admin/email_group/edit/";
+$assets->add(['bootstrap','grid']);
+?>
+<div class="container-fluid outerwrap">
+<a href="/dash" class="title">Dash</a> &nbsp; &gt;&gt; &nbsp;
+      <span><b>Email Groups</b></span> &nbsp; &#x2609; &nbsp;
+   <?= $gem->linkTo(['href'=>$link, 'text'=>'First']) ?> &nbsp; | &nbsp;
+    <?= $gem->linkTo(['href'=>$link.'&page='.$page->before,
+   'text'=>'Previous']) ?> &nbsp; | &nbsp;
+ <?= $gem->linkTo(['href'=>$link.'&page='.$page->next,
+   'text'=>'Next']) ?> &nbsp; | &nbsp;
+ <?= $gem->linkTo(['href'=>$link.'&page='.$page->last,
+   'text'=>'Last']) ?> &nbsp; | &nbsp;
+ <?=$page->current . "/" . $page->last ?> &nbsp; &#x2609; &nbsp;
+ <a href="/admin/email_group/new" class="title">New Email-Template Set</a>
+<div class="body-wrap">
+<table class='table table-striped'>
+    <thead>
+        <tr>
+            <th class='leftCell'>Path</th>
+            <th class='leftCell'>Description</th>
+            <th class='leftCell'>Last Send</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php 
+        
+        foreach($page->items as $gp): 
+                $udate = date('d-M-Y H:i',strtotime($gp->last_send));
+                 $description = $gp->description;
+                 $name = $gp->name;
+         ?>
+<tr>
+    <td class='leftCell'><?= $gem->linkTo(['href'=>$url.$name, 'text'=>$name]) ?></td>
+            <td class='leftCell'><?= $description ?></td>
+             <td><?= $udate ?></td>
+        </tr>
+        <?php endforeach ?>
+    </tbody>
+</table>
+ </div>
+</div>

@@ -1,0 +1,67 @@
+<?php
+$gem = $this->htmlgem;
+$gp = $m->group;
+$m->title = "Editor";
+$tp = $m->template;
+$name = $tp->name;
+$assets->add(["bootstrap",  "codemirror",'summer-edit']);
+    
+$btnclass = 'btn btn-lg btn-outline-info';
+$assets->add('bootstrap');
+?>
+<style>
+    textarea.form-control {
+        margin-left:10px;
+        margin-right:10px;
+    }
+
+    label{
+        text-align: right;
+        margin-right:10px;
+        min-width: 120px;
+        font-weight: bold;
+        vertical-align: top;
+    }
+</style>
+
+<div class="container-fluid outerwrap">
+    <p><b>Template</b> <?= $tp->name ?> <b>Path</b>  <?= $gp->path ?></p>
+    <form id="edittpl" action="/admin/email_group/posttpl" method="post" onsubmit="smotePost()">
+        <?= $gem->hidden(['name' => 'id', 'value' => $tp->id]) ?>
+        <div class="row">
+            <div class="col-8">
+                <?= $gem->multiline(['label' => 'Subject',
+                    'name' => 'subject', 'value' => $tp->subject, 'cols' => 80]) ?>
+            </div>
+        </div>
+        <div class="row">
+          
+            <div class="col-4">
+                <?= $gem->multiline(['label' => 'Description', 'name' => 'description', 'value' => $tp->description, 
+                   'style' => 'width:70%;' ]) ?>
+            </div>
+            <div class="col-4">
+                <?= $gem->datetime(['label' => 'Modified', 'size' => 20, 'readonly',
+                    'name' => 'modified_at', 'value' => $tp->modified_at])
+                ?>
+            </div>
+            <div class="col-1">
+                <?= $gem->submit(['class' => 'btn btn-danger', 'value' => 'Update']) ?>
+            </div>
+            <div class="col-1">
+                <?= $gem->submit(['name' => 'preview',  'class' => 'btn btn-warning', 'value' => 'Preview']) ?>
+            </div>
+        </div>
+        <textarea id="article" name="article"><?= $m->content ?></textarea>
+    </form>
+</div>
+
+
+<script>
+function all_setup() {
+    codearea_setup("#article");
+   
+}
+window.onload=all_setup;
+
+</script>

@@ -11,10 +11,12 @@ class App extends WConfig
     
     private $keeps;
     
-    static public function myPath(): string {
+    /** 
+     * static public function myPath(): string {
+
         return __DIR__;
     }
-    
+    */
     /**
      * Erase existing properties
      */

@@ -1,0 +1,41 @@
+<?php
+$gem = $this->htmlgem;
+$m->title = "No Record";
+$code = $m->code;
+$assets->add(["bootstrap"]);  
+$btnclass = 'btn btn-lg btn-outline-info';
+
+?>
+<style>
+    textarea.form-control {
+        margin-left:10px;
+        margin-right:10px;
+    }
+
+    label{
+        text-align: right;
+        margin-right:10px;
+        min-width: 120px;
+        font-weight: bold;
+        vertical-align: top;
+    }
+</style>
+
+<div class="container-fluid outerwrap">
+    <h3>Email temporary access link back</h3>
+</div>
+<div class="container-fluid outerwrap">
+            <form id="reglist" method="post" action="<?= $m->url . 'queue' ?>">
+            <?= $gem->hidden( ['name'=>'code', 'value'=> $code ]) ?> 
+              <div class="row body-wrap pad10">
+                  <div class="col-5 text-center">
+                  <?= $gem->email(['label'=>'Email', 'name'=>'email', 'value' => $m->email]) ?>
+                  </div>
+              </div>
+                <div class="row">
+                    <div class="col-5 text-center">
+                 <?= $gem->submit(['value'=>'Send', 'name'=>'send']) ?>
+                  </div>
+                </div>
+            </form>
+</div>

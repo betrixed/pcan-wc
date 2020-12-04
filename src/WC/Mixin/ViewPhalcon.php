@@ -84,20 +84,26 @@ trait ViewPhalcon {
         return $view->getContent();
     }
     
-    function  simpleView($path, $params) {
+    
+    function  simpleView($path, $params, ?object $plates = null) {
         $view = new Simple();
         // ViewDir must be string!
         // Simple View doesn't know about alternate paths, so try each in turn.
-        $app = $this->app;
-        $plates = $app->plates;
+        
+        if (empty($plates)) {
+            $app = $this->app;
+            $plates = $app->plates;
+        }
         $ext = $plates->ext;
         $found = false;
         $basename = $path . "." . $ext;
-        foreach($plates->UI as $dir) {
+        $UI = $plates->UI;
+        
+        foreach($UI as $dir) {
                 $testfile = $dir . $basename;
                 if (file_exists($testfile)) {
                          $view->setViewsDir($dir);
-                          $found = true;
+                         $found = true;
                          break;
                 }
         }

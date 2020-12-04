@@ -173,13 +173,19 @@ class Valid {
         }
         return filter_var( $sval, FILTER_SANITIZE_STRING);
     }
-    static public function timeNow() {
+    /** Return only time of day as string */
+    
+    static public function timeNow() : string {
         return date(self::TIME_FMT);
     }
-    static public function now() {
+    
+    /** Return date-time as string */
+    static public function now() : string {
         return date(self::DATE_TIME_FMT);
     }
-     static public function today() {
+    
+    /** return calendar date as string */
+     static public function today() : string{
         return date(self::DATE_FMT);
     }   
     static public function toPhone($req, $ix, $default='') {
