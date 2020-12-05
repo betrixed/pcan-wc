@@ -73,7 +73,74 @@ use \App\Link\EmailData;
         return $imglist;
     }
 
-
+    private function continue_post($rec) {
+        $m = $this->getViewModel();
+        $m->url = $this->url;
+        $m->rego = $rec;
+        return $this->render('email_group','edit_reg'); 
+    }
+    public function edregpostAction() {
+        $post = $_POST;  
+        $rid = Valid::toInt($post,'id');
+        
+        $rec = Register::findFirstById($rid);
+        
+        if (empty($rec)) {
+            return $this->noAccess();
+        }
+        
+        // try and get the email_tpl_id from RM mail
+        
+        $action = Valid::toStr($post,'delete');
+        if (!empty($action)) {
+            // delete record
+            try {
+                $worked = $this->delete_regid($rid);
+            }
+            catch(\Exception $ex) {
+                $this->flash($ex->getMessage());
+                $worked = false;
+            }
+            if ($worked) {
+                return $this->reroute($this->url . "index");
+            }
+            return $this->continue_post($rec);
+        }
+        $rec->fname = Valid::toStr($post,'fname');
+        $rec->lname = Valid::toStr($post, 'lname');
+        $rec->phone = Valid::toPhone($post,'phone');
+        $email = Valid::toEmail($post, 'email');
+        
+        $worked = $this->valid_email_domain($email);
+        if (!$worked) {
+            $this->flash('Invalid domain for email ');
+        }
+        else {
+            
+            $rec->email = $email;
+            try {
+                $worked = $rec->update();
+            }
+            catch (\Exception $ex ) {
+                $this->flash($ex->getMessage());
+                $worked = false;
+            }
+        }
+        if ($worked) {
+            $this->flash('Updated');
+            return $this->reroute($this->url . "editreg/$rid" );
+        }
+        else {
+            return $this->continue_post($rec);
+        }
+    }
+    public function editregAction($regid) {
+        $m = $this->getViewModel();
+        $m->rego = Register::findFirstById($regid);
+        $m->url = $this->url;
+        return $this->render('email_group', 'edit_reg');
+    }
+    
     public function postAction()
     {
         $post = $_POST;
@@ -376,13 +443,34 @@ EOD;
         if ($id > 0) {
             $tp = EmailTpl::findFirstById($id);
             $db = $this->db;
+            $action = Valid::toStr($post,'actions');
+            
             foreach ($post as $key => $value) {
                 if (substr($key, 0, 3) === 'chk') {
                     $regid = (int) substr($key, 3);
                     // ensure mail  job record exists
-                    $sql = "insert into reg_mail(reg_id, email_tpl_id, mail) values ($regid,$id,1)"
+                    
+                    switch($action) {
+                        case 'Mail':
+                             $sql = "insert into reg_mail(reg_id, email_tpl_id, mail) values ($regid,$id,1)"
                             . " on duplicate key update mail=1";
-                    $db->execute($sql);
+                            break;
+                        case 'Remove':
+                            $sql = "delete from reg_mail where email_tpl_id = $id and reg_id = $regid";
+                            break;
+                        case 'Delete':
+                            $sql = "delete from reg_mail where reg_id = $regid;" .
+                                "delete from register where id = $regid";
+                            break;
+                        default:
+                            
+                            $sql = '';
+                            break;
+                    }
+                    
+                    $worked = (!empty($sql)) ? $db->execute($sql) : true;
+                    
+
                 }
             }
             

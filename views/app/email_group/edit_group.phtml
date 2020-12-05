@@ -3,6 +3,7 @@ $gem = $this->htmlgem;
 $gp = $m->group;
 $name = $gp->name;
 $btnclass = 'btn btn-lg btn-outline-info';
+$btnsmall = 'btn btn-outline-info';
 $assets->add('bootstrap');
 $editStyle = 'width:60%;'
 ?>
@@ -35,7 +36,8 @@ $editStyle = 'width:60%;'
         </div>
         <div class="row">
             <div class="col-6">
-                <?= $gem->datetime(['label' => 'Last send', 'size' => 20,
+                <?=
+                $gem->datetime(['label' => 'Last send', 'size' => 20,
                     'name' => 'last_upload', 'value' => $gp->last_send])
                 ?>
             </div>
@@ -52,8 +54,9 @@ $editStyle = 'width:60%;'
 <?= $gem->plainText(['name' => 'name', 'label' => 'Name']) ?><br>
                 </div>
                 <div class="col-5">
-<?= $gem->plainText(['name' => 'subject', 'label' => 'Subject',
-                'style' => $editStyle ]) ?><br>
+                    <?= $gem->plainText(['name' => 'subject', 'label' => 'Subject',
+                        'style' => $editStyle])
+                    ?><br>
                 </div>
             </div>
             <div class="row">
@@ -63,7 +66,7 @@ $editStyle = 'width:60%;'
             </div>
             <div class="row">
                 <div class="col-5 text-right">
-                     <?= $gem->submit(['class' => $btnclass, 'value' => 'Add']) ?>
+<?= $gem->submit(['class' => $btnclass, 'value' => 'Add']) ?>
                 </div>
             </div>
         </form>
@@ -73,20 +76,24 @@ $editStyle = 'width:60%;'
         <div class="col-3">
             <label>Name</label>
         </div>
-                <div class="col-3">
+        <div class="col-3">
             <label>Description</label>
         </div>
     </div>    
-    <?php foreach($m->templates as $tp): ?>
-    <div class="row">
-        <div class="col-3">
-            <?= $gem->linkTo(['href' => $m->url . 'edittpl/' . $tp->id, 'text'=> $tp->name]) ?>
+            <?php foreach ($m->templates as $tp): ?>
+        <div class="row">
+            <div class="col-3">
+                <?= $gem->linkTo(['href' => $m->url . 'preview/' . $tp->id, 'text' => $tp->name]) ?>
+            </div>
+            <div class="col-5">
+                <?= $tp->description ?>
+            </div>
+            <div class="col-3">
+                <?= $gem->linkTo(['href' => $m->url . 'edittpl/' . $tp->id, 
+                    'text' => 'Edit', 'class' => $btnsmall]) ?>
+            </div>
         </div>
-                <div class="col-3">
-            <?= $tp->description ?>
-        </div>
-    </div>
-    <?php endforeach; ?>
+<?php endforeach; ?>
 </div>
 </div
 

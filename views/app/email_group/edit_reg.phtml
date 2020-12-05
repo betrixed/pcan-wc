@@ -1,0 +1,107 @@
+<?php
+$gem = $this->htmlgem;
+$reg = $m->rego;
+
+$btnclass = 'btn btn-lg btn-outline-info';
+$assets->add('bootstrap');
+
+?>
+<style>
+    textarea.form-control {
+        margin-left:10px;
+        margin-right:10px;
+    }
+
+    label{
+        text-align: right;
+        margin-right:10px;
+        min-width: 120px;
+        font-weight: bold;
+    }
+</style>
+
+<h3>Edit registration details</h3>
+<div class="container-fluid outerwrap">
+<?php
+if (!empty($flash)):
+    $this->partial('flash');
+endif;
+?>
+
+<hr/>
+<form id="editreg" method="post" action="<?= $m->url . "edregpost" ?>">
+<?= $gem->hidden(['name' => 'id', 'value' => $reg->id]) ?>
+<?php if (!empty($m->editUrl)): ?>
+    <div class="row">
+        <div class="col">
+            <p> Your RSVP edit link  is <a href="<?= $m->editUrl ?>"><?= $m->editUrl ?></a></p>
+            <?= $gem->hidden(['name' => 'linkcode',
+                'value' => $reg->linkcode])
+            ?>  
+        </div>
+    </div>
+<?php endif; ?>
+
+<div class="row">
+    <div class="col-12">
+        <?= $gem->plainText(['label' => 'First name', 'name' => 'fname',
+            'value' => $reg->fname, 'size' => 40])
+        ?>    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <?= $gem->plainText(['label' => 'Last name', 'name' => 'lname',
+            'value' => $reg->lname, 'size' => 40])
+        ?>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+<?= $gem->email(['label' => 'Email', 'name' => 'email',
+    'value' => $reg->email, 'size' => 40])
+?>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+<?= $gem->phone(['label' => 'Phone', 'name' => 'phone',
+    'value' => $reg->phone])
+?>
+        <span>Optional</span>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-2">
+    </div>
+    <?php if (empty($reg->id)): ?>
+        <div class="col-4">
+            <?= $gem->submit(['id' => 'submit', 'name' => 'submit', 'value' => 'Register']) ?>
+            <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
+        </div>
+        <?php else: ?>
+        <div class="col-2">
+        <?= $gem->submit(['id' => 'submit', 'name' => 'submit', 'value' => 'Update']) ?>
+            <label id="loading" style="display:none;">&nbsp; &nbsp; &nbsp; processing now ... </label>
+        </div>
+        <div class="col-2">
+    <?= $gem->submit(['id' => 'delete', 'name' => 'delete', 'value' => 'Delete']) ?>
+        </div>
+<?php endif; ?>
+</div>
+
+<?php if (!empty($xcheck)):
+    echo($gem->xcheck(['name' => $xcheck['key'], 'value' => $xcheck['value']]));
+endif; ?>
+<?php if (!empty($google) && $google['enabled']): ?>
+    <div class="row">
+        <div class="d-flex  justify-content-center"">
+    <?= $gem->invisiCaptcha(['site' => $google['site'], 'formid' => $formid, 'ajax' => 'formid_submit()']) ?>
+        </div>
+    </div>
+<?php endif ?>
+</form>
+</div>
+
+

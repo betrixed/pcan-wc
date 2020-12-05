@@ -11,6 +11,7 @@ $tpid = $tp->id;
 $assets->add(["bootstrap"]);
     
 $btnclass = 'btn btn-lg btn-outline-info';
+$btnsmall = 'btn btn-outline-info';
 $assets->add('bootstrap');
 
 ?>
@@ -26,6 +27,10 @@ $assets->add('bootstrap');
         min-width: 120px;
         font-weight: bold;
         vertical-align: top;
+    }
+    
+    .shrink {
+        font-size:0.8em;
     }
 </style>
 
@@ -56,15 +61,19 @@ $assets->add('bootstrap');
                     $regid = $rg->id;
                     $link = "previewreg/$tpid/$regid";
                     ?>  
-                    <div class="row">
-                        <div class="col-3"><?= 
-                    $gem->linkto(['href' => $m->url . $link,
+                    <div class="row shrink">
+                        
+                        <div class="col-3">
+                        <?= $gem->checkbox(['name'=>'chk' . $rg->id, 'checked'=>false]); ?>&nbsp;
+                        <?= 
+                        $gem->linkto(['href' => $m->url . $link,
                         'text' => $rg->fname . '&nbsp;' . $rg->lname ]) ?></div>
                         <div class="col-3"><?= $rg->email ?></div>
-                        <div class="col-1"><?= $rg->phone ?></div>
                         <div class="col-2"><?= $rg->created_at ?></div>
                         <div class="col-1"><?php if (!empty($rg->mail)){ echo("mail"); } else {echo("X"); } ?></div>
-                        <div class="col-1"><?= $gem->checkbox(['name'=>'chk' . $rg->id, 'checked'=>false]); ?></div>
+                        
+                        <div class="col-1"><?= $gem->linkto(['href' => $m->url . "editreg/$regid",
+                                'text' => "Edit", 'class' => $btnsmall ]) ?></div>
                     </div>
                     <hr>
                 <?php endforeach ?>

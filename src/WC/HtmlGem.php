@@ -124,8 +124,9 @@ class HtmlGem
         }
         if (!empty($text)) {
             unset($pset['text']);
+            $out = '<label class=' . "\"checkbox\">";
         }
-        $out = '<label class=' . "\"checkbox\">";
+        
         if (isset($pset['checked'])) {
             $val = $pset['checked'];
             unset($pset['checked']);
@@ -136,9 +137,10 @@ class HtmlGem
         $out .= static::getTag($pset, ['type' => 'checkbox']);
         if (!empty($text)) {
             $out .= ' ' . $text; // auto space one character
+            $out .= "</label>" . PHP_EOL;
         }
 
-        $out .= "</label>" . PHP_EOL;
+        
         if ($wrapdiv) {
             $out .= '</div>';
         }

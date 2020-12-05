@@ -301,9 +301,13 @@ EOD;
                     $rec->email = $email;
                     $rec->linkcode = md5(strtolower($rec->email) . $rec->eventid . strtolower($rec->fname) . strtolower($rec->lname));
                 }
+                
+                
                 $rec->phone = $phone;
                 $rec->people = $people;
                 $rec->notkeep = $notkeep;
+                
+                $worked = $this->valid_email_domain($email);
                 
                 try {
                     if (empty($regid)) {
