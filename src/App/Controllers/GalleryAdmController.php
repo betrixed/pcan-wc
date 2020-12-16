@@ -265,7 +265,8 @@ class GalleryAdmController extends BaseController {
             }
         }
         closedir($dh);
-        return $imglist;
+        // make newest first
+        return array_reverse($imglist);
     }
 
     /**

@@ -23,7 +23,16 @@ $gem = $this->htmlgem;
             $rowId = 0;
             $select = $m->select;
         ?>
-
+    <div class="row">
+    <div class="col">
+            <?= 
+                $gem->select([ 'in-label' => 'Perform', 'name' => 'image_op',  
+                    'id' => 'image_op',  'list' => $m->select, 'value' =>$m->select_op,
+                        'class'=>'selectpicker']) 
+        ?>
+        <input name='update' type='submit' value='Update Selected' class='btn-info btn-outline' />
+    </div>
+        </div>
         
            <div class="row">
             <div class="col-2">
@@ -81,16 +90,7 @@ $gem = $this->htmlgem;
 </div>
     <hr>
 <?php   endforeach ?>
-    <div class="row">
-    <div class="col">
-            <?= 
-                $gem->select([ 'in-label' => 'Perform', 'name' => 'image_op',  
-                    'id' => 'image_op',  'list' => $m->select, 'value' =>$m->select_op,
-                        'class'=>'selectpicker']) 
-        ?>
-        <input name='update' type='submit' value='Update Selected' class='btn-info btn-outline' />
-    </div>
-        </div>
+
 <?php else: ?>
     <p>No image files in this gallery yet</p>
 <?php endif ?>
