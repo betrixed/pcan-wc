@@ -44,7 +44,7 @@ select i.*, g.path from image i, gallery g, img_gallery a
 where a.galleryid = :id and a.visible <> 0
 and i.id = a.imageid
 and g.id = i.galleryid  
-order by i.date_upload asc
+order by i.date_upload desc
 EOD;
         $results = (new DbQuery($this->db))->arraySet($sql, ['id' => $id]);
         return $results;

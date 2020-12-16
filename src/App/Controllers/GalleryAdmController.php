@@ -606,8 +606,7 @@ class GalleryAdmController extends BaseController {
     }
     /** Edit the gallery image list */
     public function imagesAction($name) {
-        $view = $this->view;
-        $m = $view->m;
+        $m = $this->getViewModel();
         $gal = $this->getGalleryFiles($m, $name);
         if ($gal) {
             $this->constructModel($gal);
