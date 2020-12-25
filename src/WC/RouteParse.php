@@ -176,7 +176,7 @@ class RouteParse
                 // Make a serializable class
                 $rix++;
                 if ($isWeb) {
-                    $route = new Route($pattern, $args, $verb);
+                    $route = new Route($rix, $pattern, $args, $verb);
                     $route->setName($last_seg . '-' . $rix);
                     $rs = new \stdClass();
                     $rs->route = $route;

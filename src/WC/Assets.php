@@ -172,7 +172,12 @@ class Assets
     /** asset minify cache as relative path to web root */
     public function getAssetCache()
     {
-        return '/' . $this->app->theme . '/cache';
+        $cache = '/' . $this->app->theme . '/cache';
+        $path = $this->web . $cache;
+        if (!is_dir($path)) {
+            Dos::makedir($path);
+        }
+        return $cache;
     }
 
     public function clearCache()
