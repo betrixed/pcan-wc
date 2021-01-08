@@ -40,11 +40,15 @@ class RouteCache
         if (empty($info['extension'])) {
             $routes .= '.php';
         }
+        
         if (file_exists($cache_file) && (filemtime($routes) < filemtime($cache_file))) {
             $archive = unserialize(file_get_contents($cache_file));
         } else {
             $archive = null;
         }
+        
+       
+        $archive = null;
 
         if (!$archive) {
             $rdata = require($routes);

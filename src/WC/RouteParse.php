@@ -36,7 +36,8 @@ class RouteParse
         $do1 = '/((?:' . $reg1 . ')(?:,(?:' . $reg1 . '))*)\s+/';
         $path_reg = '[_\\-\\.\\w\\d]*';
         $reg2 = ':?[\\w\\d]' . $path_reg . '|{\\w' . $path_reg . '}|\\s+\\[ajax\\??\\]$';
-
+        $reg2 .= '|\{.*\}|\(.*\)';
+               
         $obj_reg = '[a-z][_a-z0-9]*';
         $reg3 = $obj_reg . '|{' . $obj_reg . '}';
 
