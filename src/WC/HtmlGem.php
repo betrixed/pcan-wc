@@ -2,7 +2,7 @@
 
 namespace WC;
 
-use App\Link\MenuTree;
+use WC\Link\MenuTree;
 
 class Money {
     private $moneyfmt;

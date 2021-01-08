@@ -42,7 +42,7 @@ use Phalcon\Logger\LoggerFactory;
 use Phalcon\Session\Adapter\Stream;
 use Phalcon\Session\Manager;
 use Phalcon\Mvc\View\Engine\Php as PhpEngine;
-use App\Chimp\Api as ChimpApi;
+use WC\Chimp\Api as ChimpApi;
 
 function load_begin(): object
 {
@@ -313,7 +313,7 @@ function setup_services($container, $app): object
     } else {
         //CLI
         $dispatcher = new \Phalcon\Cli\Dispatcher();
-        $dispatcher->setDefaultNamespace("App\\Tasks");
+        $dispatcher->setDefaultNamespace("WC\\Tasks");
         $container->setShared('dispatcher', $dispatcher);
     }
 

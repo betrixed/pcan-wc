@@ -4,7 +4,7 @@
  */
  return [
      "app" => [
-         "namespace" => "App\Tasks",
+         "namespace" => "WC\Tasks",
         "default" => true,
      "routes" => [
         'GET /menuinit' => 'menu->main'

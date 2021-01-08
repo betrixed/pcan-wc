@@ -12,7 +12,6 @@
     "autoload": {
         "psr-4": {
             "Chimp\\": "src/Chimp/",
-            "App\\": "src/App/",
             "WC\\": "src/WC/"
         }
     }

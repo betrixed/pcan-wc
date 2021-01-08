@@ -7,7 +7,7 @@
  */
 return [
     "app" => [
-        "namespace" => "App\Controllers",
+        "namespace" => "WC\Controllers",
         "default" => true,
         "not_found" => ["controller" => 'error', "action" => 'route404'],
         "routes" => [

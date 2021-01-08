@@ -107,7 +107,7 @@ class RouteCache
         } else {
             foreach ($rset as $pos => $store) {
                 $paths = $store->paths;
-                $controller = "\\App\\Tasks\\" . ucfirst($paths['controller']) . "Task";
+                $controller = "\\WC\\Tasks\\" . ucfirst($paths['controller']) . "Task";
 
                 $task = ['task' => $controller, 'action' => $paths['action'] . "Action"];
                 //$handler = ucfirst($paths['controller']) . "Task" . "::" . $paths['action'];
