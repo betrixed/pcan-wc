@@ -15,7 +15,7 @@ use WC\Valid;
 use WC\Db\Server;
 use WC\Db\DbQuery;
 use WC\Mixin\ViewPhalcon;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 use WC\App;
 

@@ -8,7 +8,7 @@ use WC\Models\Series;
 use WC\Models\Gallery;
 use WC\Db\Server;
 use WC\UserSession;
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 use WC\App;
 use WC\Valid;
 use WC\Db\DbQuery;

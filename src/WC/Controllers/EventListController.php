@@ -10,7 +10,7 @@ use WC\Valid;
 use WC\Assets;
 
 
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 
 class EventListController extends Controller
 {

@@ -1,7 +1,7 @@
 <?php
 
 namespace WC\Mixin;
-use Phalcon\Mvc\Dispatcher;
+use Phiz\Mvc\Dispatcher;
 /**
  * Add to controller if login required
  *

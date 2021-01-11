@@ -14,7 +14,7 @@ use WC\Link\Path;
 use WC\App;
 
 
-class MenuTask extends \Phalcon\Cli\Task 
+class MenuTask extends \Phiz\Cli\Task 
 {
     public function mainAction()
     {

@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class MemberEmail extends \Phalcon\Mvc\Model
+class MemberEmail extends \Phiz\Mvc\Model
 {
 
     /**
@@ -137,9 +137,9 @@ class MemberEmail extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return MemberEmail[]|MemberEmail|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return MemberEmail[]|MemberEmail|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -148,7 +148,7 @@ class MemberEmail extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return MemberEmail|\Phalcon\Mvc\Model\ResultInterface
+     * @return MemberEmail|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

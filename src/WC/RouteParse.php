@@ -3,7 +3,7 @@
 namespace WC;
 
 
-use Phalcon\Mvc\Router\Route;
+use Phiz\Mvc\Router\Route;
 
 /**
  * RouteParse.

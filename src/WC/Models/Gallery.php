@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class Gallery extends \Phalcon\Mvc\Model
+class Gallery extends \Phiz\Mvc\Model
 {
 
     /**
@@ -283,9 +283,9 @@ class Gallery extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Gallery[]|Gallery|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return Gallery[]|Gallery|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -294,7 +294,7 @@ class Gallery extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Gallery|\Phalcon\Mvc\Model\ResultInterface
+     * @return Gallery|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

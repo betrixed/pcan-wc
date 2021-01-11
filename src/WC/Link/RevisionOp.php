@@ -5,7 +5,7 @@ namespace WC\Link;
 use WC\Models\Blog;
 use WC\Models\BlogRevision;
 use WC\Valid;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 /**
  *

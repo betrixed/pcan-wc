@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class Series extends \Phalcon\Mvc\Model
+class Series extends \Phiz\Mvc\Model
 {
 
     /**
@@ -136,9 +136,9 @@ class Series extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Series[]|Series|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return Series[]|Series|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -147,7 +147,7 @@ class Series extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Series|\Phalcon\Mvc\Model\ResultInterface
+     * @return Series|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

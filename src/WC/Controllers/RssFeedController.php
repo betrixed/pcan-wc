@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace WC\Controllers;
 
 use WC\Valid;
-use Phalcon\Mvc\Model\Criteria;
-use Phalcon\Paginator\Adapter\Model;
+use Phiz\Mvc\Model\Criteria;
+use Phiz\Paginator\Adapter\Model;
 use WC\Models\RssFeed;
 use WC\Db\DbQuery;
 use WC\UserSession;
 use WC\Models\RssLink;
 use WC\Link\RssView;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 class RssFeedController extends BaseController
 {

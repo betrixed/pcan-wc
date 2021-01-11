@@ -12,7 +12,7 @@ use WC\Db\Server;
 use WC\Models\Blog;
 use WC\Models\Linkery;
 use WC\Valid;
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 use WC\Link\BlogView;
 
 class ArticleController  extends Controller {

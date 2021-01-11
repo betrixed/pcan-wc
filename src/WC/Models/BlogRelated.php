@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class BlogRelated extends \Phalcon\Mvc\Model
+class BlogRelated extends \Phiz\Mvc\Model
 {
 
     /**
@@ -78,9 +78,9 @@ class BlogRelated extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return BlogRelated[]|BlogRelated|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return BlogRelated[]|BlogRelated|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -89,7 +89,7 @@ class BlogRelated extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return BlogRelated|\Phalcon\Mvc\Model\ResultInterface
+     * @return BlogRelated|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

@@ -20,7 +20,7 @@ use WC\Models\Member;
 use WC\Models\MemberEmail;
 use WC\Models\ChimpLists;
 
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 function gen_array(string &$outs, $prop, &$obj) {
     if ($prop === "_links") {

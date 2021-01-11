@@ -11,7 +11,7 @@ use WC\Db\DbQuery;
 use WC\UserSession;
 use WC\Valid;
 
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 class CatAdmController extends BaseController
 {
 use \WC\Mixin\ViewPhalcon;

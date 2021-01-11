@@ -17,7 +17,7 @@ use WC\Models\{
     Users
 };
 
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 class UserLog
 {

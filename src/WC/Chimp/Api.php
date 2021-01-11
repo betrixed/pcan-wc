@@ -5,7 +5,7 @@ See the "licence.txt" file at the root "private" folder of this site
 */
 namespace WC\Chimp;
 
-use \Phalcon\Http\Client\Provider\Curl;
+use \Phiz\Http\Client\Provider\Curl;
 use Mailchimp\MailchimpLists;
 use WC\App;
 

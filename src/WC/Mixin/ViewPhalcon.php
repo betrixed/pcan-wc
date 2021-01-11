@@ -10,8 +10,8 @@ namespace WC\Mixin;
 use WC\UserSession;
 use WC\App;
 use WC\WConfig;
-use Phalcon\Mvc\View\Simple;
-use Phalcon\Mvc\View;
+use Phiz\Mvc\View\Simple;
+use Phiz\Mvc\View;
 /**
  * Same functions, including constructor, as WC\Controller
  *

@@ -3,9 +3,9 @@
 namespace WC\Db;
 
 use WC\App;
-Use Phalcon\Db;
-use Phalcon\Db\Adapter\PdoFactory;
-use Phalcon\Db\Adapter\AdapterInterface;
+Use Phiz\Db;
+use Phiz\Db\Adapter\PdoFactory;
+use Phiz\Db\Adapter\AdapterInterface;
 
 /**
  * @author Michael Rynn

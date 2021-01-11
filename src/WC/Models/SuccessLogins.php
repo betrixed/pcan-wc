@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class SuccessLogins extends \Phalcon\Mvc\Model
+class SuccessLogins extends \Phiz\Mvc\Model
 {
 
     /**
@@ -136,9 +136,9 @@ class SuccessLogins extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return SuccessLogins[]|SuccessLogins|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return SuccessLogins[]|SuccessLogins|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -147,7 +147,7 @@ class SuccessLogins extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return SuccessLogins|\Phalcon\Mvc\Model\ResultInterface
+     * @return SuccessLogins|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

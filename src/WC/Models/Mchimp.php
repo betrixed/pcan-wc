@@ -1,12 +1,12 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\Email as EmailValidator;
+use Phiz\Validation;
+use Phiz\Validation\Validator\Email as EmailValidator;
 
-class Mchimp extends \Phalcon\Mvc\Model
+class Mchimp extends \Phiz\Mvc\Model
 {
 
     /**
@@ -682,9 +682,9 @@ class Mchimp extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Mchimp[]|Mchimp|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return Mchimp[]|Mchimp|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -693,7 +693,7 @@ class Mchimp extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Mchimp|\Phalcon\Mvc\Model\ResultInterface
+     * @return Mchimp|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

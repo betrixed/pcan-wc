@@ -2,7 +2,7 @@
 
 
 namespace WC\Link;
-use Phalcon\Di\Injectable;
+use Phiz\Di\Injectable;
 /** 
  * Common script objects to setup a new site 
  * @author michael

@@ -3,7 +3,7 @@
 namespace WC\Link;
 use WC\Db\Server;
 use WC\Db\DbQuery;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 /**
  * @author michael
  */

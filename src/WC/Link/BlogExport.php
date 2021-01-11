@@ -6,7 +6,7 @@ use WC\Server;
 use WC\DbQuery;
 use WC\App;
 use WC\Models\Blog;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 use Masterminds\HTML5;
 use WC\Link\RevisionOp;
 use WC\Link\BlogView;

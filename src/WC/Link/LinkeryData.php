@@ -11,7 +11,7 @@ namespace WC\Link;
 use WC\Db\DbQuery;
 use WC\Link\PageInfo;
 use WC\Models\Linkery;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 use WC\Valid;
 /**
  * Description of LinkeryData

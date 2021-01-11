@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class ChimpEntry extends \Phalcon\Mvc\Model
+class ChimpEntry extends \Phiz\Mvc\Model
 {
 
     /**
@@ -166,9 +166,9 @@ class ChimpEntry extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return ChimpEntry[]|ChimpEntry|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return ChimpEntry[]|ChimpEntry|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -177,7 +177,7 @@ class ChimpEntry extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return ChimpEntry|\Phalcon\Mvc\Model\ResultInterface
+     * @return ChimpEntry|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

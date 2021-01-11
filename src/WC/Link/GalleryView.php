@@ -7,7 +7,7 @@ use WC\Db\Server;
 use WC\Link\PageInfo;
 use WC\App;
 use WC\Models\Gallery;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 /**
  * Gallery operations
  *

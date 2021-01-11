@@ -1,7 +1,7 @@
 <?php
 
 namespace WC\Controllers;
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 /**
  * Description of BaseController
  *

@@ -2,7 +2,7 @@
 
 namespace WC\Controllers;
 
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 //use WC\Db\Server;
 use WC\Assets;
 use WC\Db\DbQuery;
@@ -11,8 +11,8 @@ use WC\Db\Server;
 use WC\App;
 use WC\FileCache;
 
-//use Phalcon\Cache\Adapter\Stream;
-//use Phalcon\Storage\SerializerFactory;
+//use Phiz\Cache\Adapter\Stream;
+//use Phiz\Storage\SerializerFactory;
 
 class IndexController extends Controller
 {

@@ -4,8 +4,8 @@ namespace WC\Mysql;
 
 use WC\{NameDef, XmlPhp};
 use WC\Db\{DbQuery, Script};
-use Phalcon\Db;
-use Phalcon\Db\Adapter\Pdo\Mysql;
+use Phiz\Db;
+use Phiz\Db\Adapter\Pdo\Mysql;
 
 
 

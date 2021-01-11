@@ -12,7 +12,7 @@ use WC\Models\ChimpEntry;
 use WC\Models\MemberEmail;
 use WC\Models\Member;
 use WC\App;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 /**
  * Description of chimplists
  *

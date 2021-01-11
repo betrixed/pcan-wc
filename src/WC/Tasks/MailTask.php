@@ -12,7 +12,7 @@ use Soundasleep\Html2Text;
  *
  * @author michael
  */
-class MailTask extends \Phalcon\Cli\Task {
+class MailTask extends \Phiz\Cli\Task {
 
     use \WC\Link\RevisionOp;
     use \WC\Mixin\ViewPhalcon;

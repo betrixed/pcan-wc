@@ -1,9 +1,9 @@
 <?php
 namespace WC;
 
-use Phalcon\Cache\Adapter\Stream;
-use Phalcon\Storage\SerializerFactory;
-use Phalcon\Support\HelperFactory;
+use Phiz\Cache\Adapter\Stream;
+use Phiz\Storage\SerializerFactory;
+use Phiz\Support\HelperFactory;
 
 /** 
  * Somehow this failed as a trait to return $adapter directly

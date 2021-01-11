@@ -18,8 +18,8 @@ use WC\Link\Path;
 use WC\App;
 use WC\WConfig;
 
-use Phalcon\Db;
-use Phalcon\Db\Column;
+use Phiz\Db;
+use Phiz\Db\Column;
 use WC\Models\BlogCategory;
 
 class MenuBuild

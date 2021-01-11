@@ -3,7 +3,7 @@ namespace WC\Controllers;
 
 use WC\Db\{Server, Script, DbQuery};
 use WC\{Dos, XmlPhp, App, Assets, Valid, AdaptXml};
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 use WC\Link\SiteBuild;
 
 class SchemaController extends BaseController

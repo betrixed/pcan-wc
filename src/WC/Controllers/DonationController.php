@@ -2,13 +2,13 @@
 declare(strict_types=1);
 namespace WC\Controllers;
 
-use Phalcon\Mvc\Model\Criteria;
-use Phalcon\Paginator\Adapter\Model;
+use Phiz\Mvc\Model\Criteria;
+use Phiz\Paginator\Adapter\Model;
 use WC\Models\Donation;
 use WC\Models\Member;
 use WC\Valid;
 use WC\Db\DbQuery;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 class DonationController extends BaseController
 {

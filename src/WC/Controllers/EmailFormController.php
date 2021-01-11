@@ -9,7 +9,7 @@ use WC\Models\Contact;
 use WC\UserSession;
 use WC\Valid;
 use WC\SwiftMail;
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 use WC\Assets;
 use WC\App;
 

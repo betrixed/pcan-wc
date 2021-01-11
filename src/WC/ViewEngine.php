@@ -6,7 +6,7 @@ namespace WC;
  * 
  * @author Michael Rynn
  */
-class ViewEngine extends \Phalcon\Mvc\View\Engine\Php
+class ViewEngine extends \Phiz\Mvc\View\Engine\Php
 {
     public function layout($vpath, $data) {
         // negation, do nothing

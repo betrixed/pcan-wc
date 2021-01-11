@@ -10,7 +10,7 @@ use WC\Models\Linkery;
 use WC\Link\PageInfo;
 
 
-class LinkeryController extends \Phalcon\Mvc\Controller {
+class LinkeryController extends \Phiz\Mvc\Controller {
 use \WCMixin\ViewPhalcon;
 use \WC\Link\LinkeryData;
     protected $url = '/linkery/';

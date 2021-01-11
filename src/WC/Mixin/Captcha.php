@@ -10,7 +10,7 @@ namespace WC\Mixin;
 use WC\UserSession;
 use WC\App;
 use WC\Valid;
-use Phalcon\Http\Response;
+use Phiz\Http\Response;
 /**
  * Captcha validation of forms for Controller
  *

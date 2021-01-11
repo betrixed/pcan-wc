@@ -8,7 +8,7 @@ namespace WC\Mysql;
 
 use WC\NameDef;
 use WC\Db\{Script, DbQuery,BatchInsert};
-use Phalcon\Db\Enum;
+use Phiz\Db\Enum;
 /**
  * Intermediate class for SQL table definition. 
  * Save and Load from TOML file format.

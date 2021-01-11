@@ -3,9 +3,9 @@
 namespace WC\Db;
 
 use WC\Db\Server;
-use Phalcon\Db;
-use Phalcon\Db\Adapter\AdapterInterface;
-use Phalcon\Db\Column;
+use Phiz\Db;
+use Phiz\Db\Adapter\AdapterInterface;
+use Phiz\Db\Column;
 
 class DbQuery {
 

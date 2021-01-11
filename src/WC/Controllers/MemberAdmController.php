@@ -15,7 +15,7 @@ use WC\UserSession;
 use WC\Link\PageInfo;
 use WC\Valid;
 
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 
 class MemberAdmController extends BaseController {

@@ -12,8 +12,8 @@ use WC\Models\Linkery;
 use WC\Link\MenuTree;
 use WC\Link\BlogView;
 use WC\Valid;
-use Phalcon\Mvc\Controller;
-use Phalcon\Mvc\View;
+use Phiz\Mvc\Controller;
+use Phiz\Mvc\View;
 
 class CatViewController extends Controller {
 use \WC\Mixin\ViewPhalcon;

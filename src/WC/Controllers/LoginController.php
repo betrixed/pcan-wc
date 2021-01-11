@@ -16,7 +16,7 @@ use WC\Db\Server;
 use WC\UserSession;
 use WC\Valid;
 use WC\SwiftMail;
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 use WC\Assets;
 use WC\WConfig;
 
@@ -321,18 +321,19 @@ class LoginController extends Controller
                 $user = null;
             }
         } catch (\Exception $ex) {
-            return $this->errorLogin($ex->getMessage());
+            return $this->errorLogin("Login not found: " . $ex->getMessage());
         }
         if (is_null($user) || empty($user)) {
             return $this->errorLogin("Authentication Failure");
         }
         
         $name = $user->name;
-        $logger->info("Login Attempt: Valid User " . $name);
+        
         $secure = $this->security;
         $stored = $user->password;
         $m->password = Valid::toStr($post, "password");
         $good = $secure->checkHash($m->password, $stored);
+        
         if (!$good) {
             return $this->errorLogin('Authentication Failure');
         } else {
@@ -340,14 +341,17 @@ class LoginController extends Controller
             $user_session->setUser($user, $roles);
 
             $this->flash("Logged in as " . $user_session->getUserName());
-
+            $logger->info("Authorized User " . $name . PHP_EOL . print_r($roles,true));
             UserLog::login($user->id, $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
+            $logger->info("Saved login record for " . $name);
             $this->noLayouts();
+            
             return $this->encode_json($this->render('login', 'details'));
         }
     }
 
     function encode_json($html) : string {
+        
         $username = strtoupper($this->user_session->getUserName());
         $data = ['html' => $html, 'php_id' => $username];
         $json = json_encode($data);

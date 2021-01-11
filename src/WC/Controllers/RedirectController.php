@@ -7,7 +7,7 @@ use WC\App;
  *
  * @author michaelrynn@parracan.org
  */
-class RedirectController extends \Phalcon\Mvc\Controller
+class RedirectController extends \Phiz\Mvc\Controller
 {
     public function beforeExecuteRoute($dispatcher) {
         $app = $this->app;

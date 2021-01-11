@@ -20,7 +20,7 @@ use WC\{
     Valid
 };
 
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 class UserAdmController extends BaseController
 {

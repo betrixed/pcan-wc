@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class FileUpload extends \Phalcon\Mvc\Model
+class FileUpload extends \Phiz\Mvc\Model
 {
 
     /**
@@ -223,9 +223,9 @@ class FileUpload extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return FileUpload[]|FileUpload|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return FileUpload[]|FileUpload|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -234,7 +234,7 @@ class FileUpload extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return FileUpload|\Phalcon\Mvc\Model\ResultInterface
+     * @return FileUpload|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

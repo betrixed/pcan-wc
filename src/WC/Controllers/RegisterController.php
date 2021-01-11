@@ -12,7 +12,7 @@ use WC\Valid;
 use WC\UserSession;
 use WC\SwiftMail;
 //! Front-end processorg
-use \Phalcon\Db\Column;
+use \Phiz\Db\Column;
 use Soundasleep\Html2Text;
 
 class RegisterController extends BaseController {

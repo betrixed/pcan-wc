@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class Donation extends \Phalcon\Mvc\Model
+class Donation extends \Phiz\Mvc\Model
 {
 
     /**
@@ -222,9 +222,9 @@ class Donation extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Donation[]|Donation|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return Donation[]|Donation|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -233,7 +233,7 @@ class Donation extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Donation|\Phalcon\Mvc\Model\ResultInterface
+     * @return Donation|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

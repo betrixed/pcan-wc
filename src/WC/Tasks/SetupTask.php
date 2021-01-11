@@ -6,7 +6,7 @@ use WC\Link\SiteBuild;
  *
  * @author michael
  */
-class SetupTask extends \Phalcon\Cli\Task 
+class SetupTask extends \Phiz\Cli\Task 
 {
     
     public function dbAction(array $params) {

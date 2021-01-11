@@ -1,9 +1,9 @@
 <?php
 
 namespace WC\Models;
-use \Phalcon\Mvc\ModelInterface;
+use \Phiz\Mvc\ModelInterface;
 
-class RssLink extends \Phalcon\Mvc\Model
+class RssLink extends \Phiz\Mvc\Model
 {
 
     /**
@@ -367,9 +367,9 @@ class RssLink extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return RssLink[]|RssLink|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return RssLink[]|RssLink|\Phiz\Mvc\Model\ResultSetInterface
      */
-    public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
+    public static function find($parameters = null): \Phiz\Mvc\Model\ResultsetInterface
     {
         return parent::find($parameters);
     }
@@ -378,7 +378,7 @@ class RssLink extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return RssLink|\Phalcon\Mvc\Model\ResultInterface
+     * @return RssLink|\Phiz\Mvc\Model\ResultInterface
      */
     public static function findFirst($parameters = null): ?ModelInterface
     {

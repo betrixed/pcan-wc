@@ -7,8 +7,8 @@ use WC\App;
 use WC\WConfig;
 
 use WC\Db\Server;
-use Phalcon\Db\Column;
-use Phalcon\Db;
+use Phiz\Db\Column;
+use Phiz\Db;
 /**
  * MenuTree is a tree of \Models\Menu
  */

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WC\Controllers;
 
-use Phalcon\Mvc\Model\Criteria;
-use Phalcon\Paginator\Adapter\Model;
+use Phiz\Mvc\Model\Criteria;
+use Phiz\Paginator\Adapter\Model;
 use WC\Models\RssLink;
 use Masterminds\HTML5;
 use WC\Link\RssView;

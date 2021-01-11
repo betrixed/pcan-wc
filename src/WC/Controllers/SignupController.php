@@ -13,7 +13,7 @@ use WC\Models\Member;
 use WC\Models\MemberEmail;
 use WC\SwiftMail;
 //use WC\Models\ChimpEntry;
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 use WC\Link\LinkData;
 
 class SignupController extends Controller {

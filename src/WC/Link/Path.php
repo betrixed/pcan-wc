@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Read any config file and make a Phalcon\Config object.
+ * Read any config file and make a Phiz\Config object.
  * File path OS conversion and directory termination
  *
  * @author Michael Rynn

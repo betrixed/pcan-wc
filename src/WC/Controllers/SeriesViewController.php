@@ -2,9 +2,9 @@
 namespace WC\Controllers;
 
 use WC\Models\Series;
-use Phalcon\Mvc\Controller;
+use Phiz\Mvc\Controller;
 use WC\Db\DbQuery;
-use Phalcon\Db\Column;
+use Phiz\Db\Column;
 
 class SeriesViewController extends Controller {
 use \WC\Mixin\ViewPhalcon;
