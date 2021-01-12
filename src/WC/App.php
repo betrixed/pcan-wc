@@ -34,7 +34,8 @@ class App extends WConfig
         $obj = $this->keeps;
         if (!empty($section)) {
             if (!isset($obj[$section])) {
-                throw new \Exception("Section $section is missing");
+                return null;
+                //throw new \Exception("Section $section is missing");
             }
             return $obj[$section];
         }
