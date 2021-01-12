@@ -119,7 +119,7 @@ EOQ;
             $m->images = $this->recentFFB();
             $m->maxHeight = $this->getMaxHeight($m->images);
             
-            $m->title = "PCAN Home";
+            $m->title = $this->app->site;
 
             $panels = $this->links_byType('Panel');
             if ($panels['ct'] > 0) {
