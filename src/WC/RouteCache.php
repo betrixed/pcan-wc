@@ -11,6 +11,7 @@ namespace WC;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Router\Route;
 use Phalcon\Cli\Router as CliRouter;
+use Phalcon\Mvc\RouterInterface;
 /**
  * Description of RouteCache
  *
@@ -29,40 +30,40 @@ class RouteCache
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
     }
 
-    static function loadRoutes(array $options): object
+    static function loadRoutes(RouterInterface $router, array $options): object
     {
-
+        global $DEBUG_TRACE;
         $routes = $options['routes'];
         $isWeb = $options['isWeb'];
-
+        $doCache = $options['cache'] ?? true;
         $info = pathinfo($routes);
         $cache_file = $info['dirname'] . "/." . $info['filename'] . '.ser';
         if (empty($info['extension'])) {
             $routes .= '.php';
         }
-        if (file_exists($cache_file) && (filemtime($routes) < filemtime($cache_file))) {
+        if ($doCache && file_exists($cache_file) && (filemtime($routes) < filemtime($cache_file))) {
             $archive = unserialize(file_get_contents($cache_file));
         } else {
             $archive = null;
         }
 
         if (!$archive) {
+            
             $rdata = require($routes);
+             if ( $DEBUG_TRACE) {
+                debugLine("Routes file " . $routes);
+             }
             $archive = RouteParse::makeRouteObjects($rdata, $isWeb);
-            file_put_contents($cache_file, serialize($archive));
+            if ($doCache) {
+                file_put_contents($cache_file, serialize($archive));
+            }
         }
-        return self::makeRouter($archive, $isWeb);
+        return self::makeRouter($router, $archive, $isWeb);
     }
 
-    static function makeRouter(object $route_set, bool $isWeb): object
+    static function makeRouter(RouterInterface $router, object $route_set, bool $isWeb): object
     {
-        if ($isWeb) {
-            $router = new Router(false);
-            $router->removeExtraSlashes(true);
-        } else {
-            $router = new CliRouter(false);
-        }
-
+        global $DEBUG_TRACE;
         //$gen = $router->getIdGenerator();
 
         $rset = $route_set->rset;
@@ -72,6 +73,9 @@ class RouteCache
             $router->notFound($notFound);
         }
         $namespace = $route_set->defaultNS;
+        if ( $DEBUG_TRACE) {
+            debugLine("Default Namespace " . $namespace);
+        }
         if ($isWeb) {
             if (!empty($namespace)) {
                 $router->setDefaultNamespace($namespace);
@@ -96,6 +100,7 @@ class RouteCache
                     if ($result) {
                         return true;
                     }
+                    debugLine("AJAX error flag : $ajaxFlag , $reqIsAjax");
                     return false;
                 });
                 $router->attach($route);
@@ -103,7 +108,7 @@ class RouteCache
         } else {
             foreach ($rset as $pos => $store) {
                 $paths = $store->paths;
-                $controller = "\\App\\Tasks\\" . ucfirst($paths['controller']) . "Task";
+                $controller = "\\WC\\Tasks\\" . ucfirst($paths['controller']) . "Task";
 
                 $task = ['task' => $controller, 'action' => $paths['action'] . "Action"];
                 //$handler = ucfirst($paths['controller']) . "Task" . "::" . $paths['action'];

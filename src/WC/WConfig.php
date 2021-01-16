@@ -22,6 +22,7 @@ class WConfig extends \stdClass implements \ArrayAccess {
     function get($key, $default = null) {
         return isset($this->$key) ? $this->$key : $default;
     }
+
     static function updateValue(&$value, $map) {
         $matches = null;
         if (preg_match('/\${(\w+)}/', $value, $matches)) {

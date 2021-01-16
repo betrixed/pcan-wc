@@ -68,7 +68,7 @@ trait ViewPhalcon {
             $m->theme = $app->theme;
         }
         $us = $app->user_session;
-        
+        // strip the flash data and save session
         if (!empty($us)) {
              $flash = $us->getFlash();
              $us->save();

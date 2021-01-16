@@ -6,12 +6,15 @@ $blog = $m->blog;
 $formid = $m->formid;
 ?>
 
+
+
 <div class='container outerwrap novosti pad10'>
     <?php if (!empty($blog)): ?>
         <div class="<?= $blog['style '] ?>" >
             <?= $blog['article'] ?>
         </div>
     <?php endif ?>
+    <?php $this->partial("flash"); ?>
     <form id="<?=$formid?>" method='post' action="<?= $url . 'post' ?>">
         <div class="alert alert-error" style="display: none">
             <p><strong>Failed!</strong> 

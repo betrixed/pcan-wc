@@ -11,6 +11,7 @@ use WC\UserSession;
 use WC\App;
 use WC\Valid;
 use Phalcon\Http\Response;
+use function debugLine;
 /**
  * Captcha validation of forms for Controller
  *
@@ -84,6 +85,7 @@ trait Captcha {
      */
     public function xcheckResult() : bool{
         $us = $this->user_session;
+        $us->read();
         $xcheck = $us->getKey("xcheck");
         if (!empty($xcheck) && isset($xcheck['key']) && isset($xcheck['value'])) {
             $key = $xcheck['key'];
@@ -107,6 +109,7 @@ trait Captcha {
         else {
             $v = $this->view;
             $v->m->url = $url;
+            debugLine('Redirect ' . $url);
             $v->setTemplateAfter('redirect');
             return $this->render('secure','https');
         }

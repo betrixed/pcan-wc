@@ -76,7 +76,7 @@ class UserData
      */
     public function setValidUser($name, $roles)
     {
-        $this->id = 0;
+        $this->id = -1;
         $this->status = 'OK';
         $this->email = '';
         $this->userName = $name;
@@ -181,6 +181,7 @@ class UserSession
         $data->email = $user->email;
         $data->userName = $user->name;
         $data->roles = $roles;
+        $this->wasRead = true; // pretend was read
 
         $this->delayWrite();
     }
@@ -198,6 +199,7 @@ class UserSession
     public function setGuest()
     {
         $this->data->setGuest();
+        $this->wasRead = true;
     }
 
     /*     * get comma separated list for display */
@@ -342,6 +344,7 @@ class UserSession
     {
         $this->setGuest();
         //$this->addFlash('Browser session ID cookie made active for data entry ');
+        $this->doWrite = true;
         $this->write();
         return $this;
     }
