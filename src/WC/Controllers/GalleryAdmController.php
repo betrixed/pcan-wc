@@ -483,10 +483,18 @@ class GalleryAdmController extends BaseController {
         }
         $gal->seriesid = $series;
         $gal->last_upload = Valid::toDateTime($post, 'last_upload');
-        $gal->leva_path = Valid::toStr($post, 'leva_path', null);
-        $gal->prava_path = Valid::toStr($post, 'prava_path', null);
+        if (!$isnew) {
+            $gal->leva_path = Valid::toStr($post, 'leva_path');
+            $gal->prava_path = Valid::toStr($post, 'prava_path');
+            $gal->view_thumbs = Valid::toBool($post, 'view_thumbs');
+        }
+        else {
+            $gal->leva_path = null;
+            $gal->prava_path = null;
+            $gal->view_thumbs = 0; 
+        }
         $gal->description = Valid::toStr($post, 'description', null);
-        $gal->view_thumbs = Valid::toBool($post, 'view_thumbs');
+        
     }
 
     /**
@@ -525,7 +533,7 @@ class GalleryAdmController extends BaseController {
 // see if path exists, is registered, if not, make it
 
         $gal = Gallery::findFirstByName($name);
-        if ($gal === false) {
+        if (empty($gal)) {
             $this->flash("Gallery not registered : " . $name);
         } else {
             if (!$this->makeGalleryDir($gal->path)) {
@@ -585,8 +593,8 @@ class GalleryAdmController extends BaseController {
         if ($gal) {
             $prevlink = $gal->leva_path;
             $nextlink = $gal->prava_path;
-            $m->prevlink = empty($prevlink) ? null : $this->getGalleryName($prevlink);
-            $m->nextlink = empty($nextlink) ? null : $this->getGalleryName($nextlink);
+            $m->prevlink = empty($prevlink) || $prevlink==='NULL' ? null : $this->getGalleryName($prevlink);
+            $m->nextlink = empty($nextlink) || $nextlink==='NULL' ? null : $this->getGalleryName($nextlink);
             if (!empty($gal->seriesid)) {
                 $series = Series::findFirstById($gal->seriesid);
                 $m->indexlink = '/series/' . $series->tinytag;
@@ -727,11 +735,14 @@ class GalleryAdmController extends BaseController {
     public function uploadAction() {
 //$response->setHeader("Content-Type", "text/plain");
         $post = $_POST;
+        $logger = $this->logger;
+        $logger->info('upload ' . print_r($post,true));
         $reply = [];
 // get the gallery to upload to
         $galleryid = Valid::toInt($post, 'galleryid');
         $gal = Gallery::findFirstById($galleryid);
         $req = $this->request;
+        $logger->info('Ajax = ' . $req->isAjax());
         if (empty($gal)) {
             $reply[] = 'No record gallery ' . $galleryid;
         } else if (!$req->hasFiles()) {
@@ -745,12 +756,14 @@ class GalleryAdmController extends BaseController {
             }
             $files = $req->getUploadedFiles();
             $upcount = count($files);
-
+            $logger->info('#files ' . $upcount);
             foreach ($files as $file) {
                 $fname = $file->getName();
                 $fsize = $file->getSize();
                 $dest_file = $dest_dir . $fname;
+                 $logger->info('Move to ' . $dest_file);
                 $file->moveTo($dest_file);
+               $logger->info('Moved ');
                 $reply[] = $fname . ' ' . $fsize;
                 if (!$toThumbs) {
                     $imgRec = $this->registerImage($gal, $dest_file);

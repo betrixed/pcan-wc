@@ -77,6 +77,9 @@ EOD;
     
     function getGalleryName($name) {
         // see if path exists, is registered, if not, make it
+        if ($name === 'NULL') {
+            return null;
+        }
         $gal =  Gallery::findFirstByName($name);
         if (!$gal ) {
             $this->flash("gallery not registered : " . $name);
