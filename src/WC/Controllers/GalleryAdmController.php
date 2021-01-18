@@ -742,8 +742,6 @@ class GalleryAdmController extends BaseController {
         $galleryid = Valid::toInt($post, 'galleryid');
         $gal = Gallery::findFirstById($galleryid);
         $req = $this->request;
-        $logger->info('Upload to Gallery ' . $galleryid);
-        $logger->info('Ajax = ' . $req->isAjax());
         if (empty($gal)) {
             $reply[] = 'No record gallery ' . $galleryid;
         } else if (!$req->hasFiles()) {
@@ -758,14 +756,12 @@ class GalleryAdmController extends BaseController {
             }
             $files = $req->getUploadedFiles();
             $upcount = count($files);
-            $logger->info('#files ' . $upcount);
             foreach ($files as $file) {
                 $fname = $file->getName();
                 $fsize = $file->getSize();
                 $dest_file = $dest_dir . $fname;
-                 $logger->info('Move to ' . $dest_file);
+                $logger->info('Upload to ' . $dest_file);
                 $file->moveTo($dest_file);
-               $logger->info('Moved ');
                 $reply[] = $fname . ' ' . $fsize;
                 if (!$toThumbs) {
                     $imgRec = $this->registerImage($gal, $dest_file);

@@ -114,7 +114,7 @@ class LoginController extends Controller
 
     function errorChangePwd($msg)
     {
-        $logger = new \Log('login.log');
+        $logger = $this->logger;
         $logger->write('Password change - ' . $msg);
         $this->flash($msg);
         return $this->changePwdView();
@@ -327,8 +327,6 @@ class LoginController extends Controller
         if (!$verify['success']) {
             return $this->errorLogin('Google error ' . $verify['errorcode']);
         }
-
-        $logger->info("Login Attempt: Valid Form");
         try {
             if (!empty($m->email)) {
                 $user = Users::findFirstByEmail($m->email);
@@ -372,7 +370,7 @@ class LoginController extends Controller
     }
     function errorSignup($msg)
     {
-        $logger = new \Log('login.log');
+        $logger = $this->logger;
         $logger->write('Fail Signup - ' . $msg);
         $f3 = $this->f3;
         $f3->set('message', $msg);
