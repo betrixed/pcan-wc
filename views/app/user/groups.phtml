@@ -1,52 +1,54 @@
-{~    
-    @user = @view->user;
-    @groups = @view->groups;
-    @others = @view->others;
-    @url = @view->url;
-~}
+<?php  
+use \WC\HtmlGem as Gem;
+    $user = $m->user;
+    $groups = $m->groups;
+    $others = $m->others;
+    $url = $m->url;
+    $m->title = "G#" . $user->id;
+    $gem = new Gem();
+?>
 
 <div class="container-fluid outerwrap">
-<check if="{{ empty(@user) }}">
-    <true><p>No Data Found</p></true>
-    
-    <false>
-<form method="post" autocomplete="off" action="{{@url . 'gpost'}}">
-    <input type="hidden" name='id' value='{{@user.id}}'>
+<?php if (empty($user)): ?>
+    <p>No Data Found</p>
+<?php else: ?>   
+
+<form method="post" autocomplete="off" action="<?= $url . 'gpost'?>">
+    <input type="hidden" name='id' value='<?= $user->id ?>'>
 <ul class="pager">
     <li class="previous pull-left">
-    <link-to href="{{ @url . 'edit/' . @user.id }}" text="{{ '&larr; User ' .  @user.name}}"></link-to>
+    <?= $gem->linkTo(['href' => $url . 'edit/' . $user->id, 'text' => '&larr; User ' .  $user->name ]) ?>
     </li>
 </ul>
 
-    <h2>Groups for {{@user.name}}</h2>
+    <h2>Groups for <?= $user->name?></h2>
     <p>Default Group of 'Guest'</p>
     <h3>Remove Groups</h3>
-    <check if="{{!empty(@groups)}}">
-        <repeat group="{{@groups}}" value="{{@group}}">
-            <div class="row">
+    <?php if (!empty($groups)): ?>
+    <?php foreach ($groups as $group): ?>
+     <div class="row">
                 <div class="col">
-                <input type='checkbox' name='{{"dgp" . @group.id}}' value="1"> {{@group.name}}
+                    <?= $gem->checkbox(['name' => 'dgp'. $group->groupid, 'text' => $group->name ]) ?>
                 </div>
             </div>
-        </repeat>        
-    </check>
+    <?php endforeach; ?>
+    <?php endif; ?>
+        <hr>
+        <h3>Add Groups</h3>
+    <?php if (!empty($others)): ?>
+    <?php foreach ($others as $group): ?>
+     <div class="row">
+                <div class="col">
+                    <?= $gem->checkbox(['name' => 'agp'. $group->id, 'text' => $group->name] ) ?>
+                </div>
+            </div>
+    <?php endforeach; ?>
+    <?php else: ?>
+        <p>No other groups to add</p>
+    <?php endif; ?>
 
-    <hr>
-    <check if="{{!empty(@others)}}">
-        <true>
-            <h3>Add Groups</h3>
-    <repeat group="{{@others}}" value="{{@group}}">
-        <div class="row">
-            <div class="col">
-            <input type='checkbox' name='{{"agp" . @group.id}}' value="1"> {{@group.name}} 
-             </div>
-        </div>
-    </repeat>
-            </true>
-            <false>
-                 <p>User is in all possible groups</p>
-            </false>
-    </check>
+
+
     <div class="row">
         <div class="col-1">
         </div>
@@ -56,6 +58,5 @@
     </div>
     <hr>
 </form>
-    </false>
-</check>
+<?php endif; ?> 
 </div>

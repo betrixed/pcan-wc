@@ -8,6 +8,7 @@
     $groups = $m->groups;
     $gem = $this->htmlgem;
     $btn_class = "btn btn-outline-info";
+    $m->title = "U#" . $user->id;
 ?>
 
 <style>
@@ -48,15 +49,18 @@
 
             <div class="row">
 
-                <div class="col-6">
+                <div class="col-3">
                     <?= $gem->plainText(['label' => 'Name', 'name' => 'name', 'value' => $user->name]) ?>
 
                     <br><?= $gem->plainText(['label' => 'E-Mail', 'name' => 'email', 'value' => $user->email]) ?>
 
                     <br><?= $gem->plainText(['label' => 'Status', 'name' => 'status', 'value' => $user->status]) ?>
                 </div>
-
-
+                
+                <div class="col-1"></div>
+                <div class="col-1">
+                    <?= $gem->submit(['name' => 'Update', 'value' => 'Update']) ?>
+                </div>
             </div>
             
         </div>
@@ -143,7 +147,7 @@
         </div>
         <div class="tab-pane" id="E">
             <?= $gem->linkTo(['href' => $url . 'groups/' . $user->id, 
-                               'text'=> "Edit Groups" , 'class' => 'btn'     ]) ?>
+                               'text'=> "Edit Groups" , 'class' => $btn_class    ]) ?>
 
                 <table class="table table-bordered table-striped" align="center">
                     <thead>
@@ -177,16 +181,25 @@
 
 </form>
 <hr>
+<div class="row">
+    <div class="col-3">  
 <form id="deleteUser" method="post" action="<?= $url . 'delete'?>">
 <div>
      <?= $gem->hidden(['name' => 'userId', 'value' => $user->id]) ?>
-    <?= $gem->submit(['value' => "Delete User", 'class'=>'btn']) ?>
+    <?= $gem->submit(['value' => "Delete User", 'class'=>$btn_class]) ?>
 </div>
-    <hr>
-</form>
-<form id="sendConfirm" method="post" action="<?= $url . 'sendConfirm'?>">
+    </form>
+    </div>
+    <div class="col-1">
+
+    </div>
+        <div class="col-3">
+<form id="sendConfirm" method="post" action="<?= $url . 'sendconfirm'?>">
 <div>
    <?= $gem->hidden(['name' => 'userId', 'value' => $user->id]) ?>
-    <?= $gem->submit(['value' => "Send Confirm Email", 'class'=>'btn']) ?>
+    <?= $gem->submit(['value' => "Send Confirm Email", 'class'=>$btn_class]) ?>
 </div>
 </form>
+        </div>
+</div>
+<hr>

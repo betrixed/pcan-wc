@@ -1,33 +1,88 @@
 <?php
 $gem = $this->htmlgem;
+$assets->add(['bootstrap', 'validate', 'password']);
 ?>
 <style>
     .col-form-label {
         min-width:150px;
         text-align: right;
     }
-    
+
     input {
         margin-left : 15px;
     }
 </style>
-<form method="post" autocomplete="off" action="<?= $m->url . 'changepwdpost' ?>">
+<form id="pwdform" method="post" autocomplete="off" action="<?= $m->posturl ?>">
 
     <div class="container outerwrap pad10">
         <h3><?= $m->header ?></h3>
-        <?= $gem->hidden(['name' => 'email', 'value' => $m->email]) ?>
+        <?= $gem->hidden(['name' => 'userid', 'value' => $m->id]) ?>
         <div class="row pad10">
-            <?= $gem->password(['label' => 'New password', 'name' => 'new_pwd',
-                'value' => '', 'size' =>24 ]) ?>
-        </div>
-            <div class="row pad10">
-                <?= $gem->password(['label' => 'Confirm password', 'name' => 'confirm_pwd',
-                'value' => '', 'size' =>24 ]) ?>
-            
+            <?= $gem->password(['id' => 'newpwd', 'label' => 'New password', 'name' => 'newpwd',
+                'value' => '', 'size' => 24])
+            ?>
         </div>
         <div class="row pad10">
-            <?= $gem->submit(['name' => 'submit', 'value' => 'Change' ]) ?>
+            <?= $gem->password(['id' => 'confirmpwd', 'label' => 'Confirm password', 'name' => 'confirmpwd',
+                "equalTo=" => "#newpwd", 'value' => '', 'size' => 24])
+            ?>
+
+        </div>
+        <div class="row pad10">
+<?= $gem->submit(['name' => 'submit', 'value' => 'Set Password', 'onClick' => "validatePassword();"]) ?>
         </div>
     </div>
 
 </form>
+
+<script>
+    function validatePassword() {
+        var validpw = $('#pwdform').validate({
+            rules: {
+                confirmpwd: {
+                    equalTo: "#newpwd"
+                }
+
+            },
+            messages: {
+                newpwd: " Must be 8 or more characters",
+                confirmpwd: " Values need to match"
+            }
+        });
+    }
+
+
+    function pwd_requires() {
+        $('#newpwd').PassRequirements({
+            rules: {
+                minlength: {
+                    text: "be at least minLength characters long",
+                    minLength: 8,
+                },
+                containSpecialChars: {
+                    text: "Your input should contain at least minLength special character",
+                    minLength: 1,
+                    regex: new RegExp('([^!,%,&,@,#,$,^,*,?,_,~])', 'g')
+                },
+                containLowercase: {
+                    text: "Your input should contain at least minLength lower case character",
+                    minLength: 1,
+                    regex: new RegExp('[^a-z]', 'g')
+                },
+                containUppercase: {
+                    text: "Your input should contain at least minLength upper case character",
+                    minLength: 1,
+                    regex: new RegExp('[^A-Z]', 'g')
+                },
+                containNumbers: {
+                    text: "Your input should contain at least minLength number",
+                    minLength: 1,
+                    regex: new RegExp('[^0-9]', 'g')
+                }
+            }
+        });
+
+    }
+
+    window.onload = pwd_requires;
+</script>

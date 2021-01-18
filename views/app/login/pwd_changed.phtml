@@ -1,5 +1,11 @@
-
+<?php
+$assets->add('bootstrap');
+$us = $this->user_session;
+if ($us->getUserId() > 0) {
+    $us->wipe();
+}
+?>
 <div  class="container  outerwrap pad10" style="max-width:50em" >
-        <p> Password has been changed</p>
+        <p> Password has been changed, Please login with new password</p>
         <p><a href="/login">Login</a></p>
 </div>

@@ -30,7 +30,7 @@ class BlogAdmController extends BaseController
     
     public function getAllowRole()
     {
-        return 'Admin';
+        return 'Editor';
     }
 
     public $url = '/admin/blog/';
@@ -522,17 +522,17 @@ class BlogAdmController extends BaseController
             }
         }
         $db->commit();
-        $view = $this->getView();
-        $view->m->catset = $this->getCategorySet($blog_id);
+        $m = $this->getViewModel();
+
+        $m->catset = BlogView::getCategorySet($blog_id);
+        $m->url = $this->url;
         $this->noLayouts();
         return $this->render('partials', 'blog/category');
     }
 
     public function indexAction()
     {
-        $view = $this->getView();
-        $m = $view->m;
-        BlogView::pageFromRequest($m);
+        BlogView::pageFromRequest($this->getViewModel());
         return $this->render('admin', 'blog');
     }
 

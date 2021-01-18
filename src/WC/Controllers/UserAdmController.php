@@ -66,7 +66,8 @@ class UserAdmController extends BaseController
         $sql = <<< EOD
 select   u.* ,
     count(*) over() as full_count         
- from users u order by u.name LIMIT :ct OFFSET :start
+ from users u WHERE u.status <> 'D'
+     order by u.name LIMIT :ct OFFSET :start
 EOD;
         $qry = $this->dbq;
         $results = $qry->objectSet($sql, ['start' => intval($start), 'ct' => intval($grabsize) ], ['start' => Column::BIND_PARAM_INT, 'ct' => Column::BIND_PARAM_INT]);
@@ -148,18 +149,6 @@ EOS;
         }
     }
 
-    protected function addUserGroup($userid, $groupid)
-    {
-        $role = new UserAuth();
-        $role->groupid = $groupid;
-        $role->userid = $userid;
-        try {
-            $role->create();
-        } catch (\PDOException $e) {
-            return $this->errorPDO($e);
-        }
-        return true;
-    }
 
     public function gpostAction()
     {
@@ -172,37 +161,36 @@ EOS;
             foreach ($post as $key => $change) {
                 if (str_starts_with($key, 'dgp')) {
                     $gid = intval(substr($key, 3));
-                    UserAuth::delGroup($user->id, $gid);
+                    $this->delUserGroup($user->id, $gid);
                 } else if (str_starts_with($key, 'agp')) {
                     $gid = intval(substr($key, 3));
                     $this->addUserGroup($user->id, $gid);
                 }
             }
-            $this->showUserGroups($id);
+            return $this->showUserGroups($id);
         }
     }
 
     protected function showUserGroups($userid)
     {
-        $user = User::findFirstById($userid);
+        $user = Users::findFirstById($userid);
         $m = $this->getViewModel();
         if (!$user) {
             $m->user = null;
             $m->groups = [];
         } else {
             $m->user = $user;
-            $m->groups = User::groupList($userid);
-            $m->others = User::otherGroups($userid);
+            $m->groups = $this->getGroups($user);
+            $m->others = $this->otherGroups($userid);
         }
         $this->assets->add(['bootstrap']);
         $m->url = $this->url;
-        return $this->render('user'.'groups');
+        return $this->render('user','groups');
     }
 
-    public function groups($id)
+    public function groupsAction($id)
     {
         $m = $this->getViewModel();
-        $req = $_REQUEST;
 
         return $this->showUserGroups($id);
     }
@@ -211,5 +199,74 @@ EOS;
     {
         return 'Admin';
     }
+    
+    /**
+     * Deletes a user
+     *
+     * @param string $id
+     */
+    public function deleteAction()
+    {
+        $id = Valid::toInt($_POST,"userId");
+        if ($id === 0) {
+            $this->flash("Invalid User ID 0");
+            return $this->dispatcher->forward(array(
+                "controller" => "user_adm",
+                "action" => "index"
+            ));     
+        }
+        if ($id===1)
+        {
+            $this->flash("This user ID cannot be deleted");
+            return $this->dispatcher->forward(array(
+                "controller" => "user_adm",
+                "action" => "index"
+            ));          
+        }
+        $user = Users::findFirstByid($id);
+        if (!$user) {
+            $this->flash("user was not found");
 
+            return $this->dispatcher->forward(array(
+                "controller" => "user_adm",
+                "action" => "index"
+            ));
+        }
+        $user->status = 'D';
+        $user->update();
+        
+
+        $this->flash("user status set to deleted");
+
+        return $this->dispatcher->forward(array(
+            "controller" => "user_adm",
+            "action" => "index"
+        ));
+    }
+    /**
+     * This is for a manual "send confirmation" repeat
+     * @param type $id
+     * @return type
+     */
+    public function sendConfirmAction()
+    {
+        $post = $_POST;
+        $id = Valid::toInt($post, "userId");
+        $user = Users::findFirstById($id);
+        if (!$user) {
+            $this->flash("User was not found");
+            return $this->dispatcher->forward(array(
+                'action' => 'index'
+            ));
+        }
+        $user->mustChangePassword = 'Y';
+        $user->status = 'N';
+        $user->update();
+        $this->sendConfirm($user);
+        return $this->dispatcher->forward(array(
+                "controller" => "user_adm",
+                "action" => "index"
+            ));    
+
+    }
 }

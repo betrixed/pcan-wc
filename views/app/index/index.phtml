@@ -63,9 +63,9 @@ $assets->minify("pcan_home");
                         </span>                     
                     </div>
                     <div class="clear"></div>
-                    <div class="link-summary">
+                    <div class="link-summary" style="display:inline-block">
                             <?php if (!empty($link['im_file'])): ?>
-                            <figure style="float:left;width:47%;max-width:450px;margin:10px;">
+                            <figure style="display:block;float:left;width:47%;max-width:450px;margin:10px;">
                                 <img src="<?= '/' . $link['im_path'] . '/' . $link['im_file'] ?>" style="width:100%; margin:0;">
                             <?php if (!empty($link['im_caption'])): ?>
                                     <figcaption style="border-style:solid; padding:4px; font-size:0.9em;"><?= $link['im_caption'] ?></figcaption>

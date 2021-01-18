@@ -24,10 +24,10 @@ class SwiftMail
      * 
      * @return array['success' => boolean, 'errors' => *]
      */
-    public function send( array $msg ) : array
+    public function send( array $msg, string $settings = 'mail' ) : array
     {
         // Settings
-        $mailSettings = $this->app->getSecrets('mail');
+        $mailSettings = $this->app->getSecrets($settings);
         $smtp = $this->app->getSecrets('smtp');
         
         $from = isset($msg['from']) ? $msg['from'] :  $mailSettings['from'];

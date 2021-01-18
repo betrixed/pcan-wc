@@ -41,6 +41,10 @@ class BaseController extends Controller {
         return true;
     }
 
+    public function getPost() : array
+    {
+        return $_POST;
+    }
     public function notAuthorized() {
         $app = $this->app;
         $this->user_session->flash('No access to ' . $app->arguments);

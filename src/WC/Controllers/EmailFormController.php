@@ -117,12 +117,13 @@ class EmailFormController extends Controller {
             $model->rec = $rec;
             $model->link = $this->https_url();
             
+            $app = $this->app;
             $params['m'] = $model;
-            $params['app'] = $this->app;
+            $params['app'] = $app;
             $textMsg = static::simpleView('form/mail_text',$params);
             $htmlMsg = static::simpleView('form/mail_html',$params);
 
-            $mailer = new SwiftMail($this->app);
+            $mailer = new SwiftMail($app);
             $msg = [
                 "subject" => 'Website Contact',
                 "text" => $textMsg,

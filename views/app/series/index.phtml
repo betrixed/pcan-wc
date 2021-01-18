@@ -1,6 +1,7 @@
 <?php
 $gem = $this->htmlgem;
 $series = $m->series;
+$us = $this->user_session;
 $assets->add('bootstrap');
 ?>
 <style>
@@ -13,6 +14,9 @@ $assets->add('bootstrap');
         <div class="col-4">
             <h2>Series</h2>
         </div>
+         <div class="col-4">
+            <?= $gem->linkTo(['href' => '/admin/series/new', 'text' => 'New Series record']) ?>
+        </div>
     </div>
     <?php if ( !empty($series)): ?>
     <hr>
@@ -24,10 +28,19 @@ $assets->add('bootstrap');
             <div class="col-8"><span>Description</span></div>
         </div>
     <hr>
+    <?php if ($us->auth('Editor')) 
+    {
+        $href = "/admin/series/edit/";
+    }
+    else {
+        $href = "/series/";
+    }  
+    ?>
+
     <?php foreach($series as $sr): ?>
         <div class="row" style="margin-bottom:5px;">
             <div class="col-1"><p><?= $sr->id ?></p></div>
-            <div class="col-2"><p><a href="/series/<?= $sr->id ?>"><?= $sr->name ?></a></p></div>
+            <div class="col-2"><p><a href="<?= $href . $sr->id ?>"><?= $sr->name ?></a></p></div>
             <div class="col-1"><p><?= $sr->tinytag ?></p></div>
             <div class="col-8"><p><?= $sr->description ?></p></div>
         </div>

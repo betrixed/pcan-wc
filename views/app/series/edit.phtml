@@ -1,0 +1,42 @@
+<?php
+use WC\HtmlGem;
+$gem = new HtmlGem();
+
+$assets->add('bootstrap');
+$rec = $m->rec;
+
+?>
+
+
+<div class="outerwrap padborder">
+    <form id="sform" method="post" action="/admin/series/post">
+        <?= $gem->hidden(["name" => 'id', 'value' => $rec->id]) ?>
+    <div class="row">
+        <div class="col-4">
+            <?= $gem->plainText(['label' => 'Name', 'name' => 'name', 'value' => $rec->name]) ?>
+        </div>
+        <div class="col-4">
+             <?= $gem->plainText(['label' => 'Tag', 'name' => 'tag', 'value' => $rec->tinytag]) ?>
+        </div>
+       
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <?= $gem->multiline(['label' => 'Description', 'name' => 'description', 'value' => $rec->description, 
+                'style' => "width:100%;"]) ?>
+        </div>
+    </div>
+    <hr>
+        <div class="row">
+        <?php if (empty($rec->id)): ?>
+        <div class="col-4">
+            <?= $gem->submit([ 'name' => 'create', 'value' => 'Create']) ?>
+        </div>
+        <?php else: ?>
+        <div class="col-4">
+            <?= $gem->submit([ 'name' => 'update', 'value' => 'Update']) ?>
+        </div>   
+        <?php endif; ?>
+        </div>
+    </form>
+</div>

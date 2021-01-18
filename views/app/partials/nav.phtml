@@ -1,3 +1,8 @@
+<?php
+Use WC\Assets; 
+use WC\UserSession;
+
+?>
 <!-- <?= 'File: ' . __FILE__ ?> -->
 <style>
     nav  {
@@ -43,8 +48,11 @@
           <ul class="navbar-nav mr-auto">
             <?=  $this->partial('menus') ?>
         </ul>
+
+<?php if(UserSession::isLoggedIn('Editor')): ?>
         <ul class="navbar-nav ml-auto"  style="border-left-width:5px; border-left-style: groove;">
             <?=  $this->partial('menus_admin') ?>
         </ul>
+<?php endif; ?>
     </div>
 </nav>

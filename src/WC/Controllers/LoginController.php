@@ -61,7 +61,7 @@ class LoginController extends Controller
         $view = $this->getView();
         $ud->read();
         if (!$ud->isEmpty()) {
-            $ud->wipe();
+            $ud->nullify();
             return $this->render('login', 'logout');
         } else {
             return $this->render('login', 'error');
@@ -116,7 +116,7 @@ class LoginController extends Controller
         $logger = new \Log('login.log');
         $logger->write('Password change - ' . $msg);
         $this->flash($msg);
-        $this->changePwdView();
+        return $this->changePwdView();
     }
 
     function changePwdView()
@@ -127,17 +127,17 @@ class LoginController extends Controller
     function changePwdPostAction()
     {
         $post = $_POST;
-        $newpwd = Valid::toStr($post, 'new_pwd', null);
-        $chkpwd = Valid::toStr($post, 'confirm_pwd', null);
-        $email = Valid::toEmail($post, 'email');
+        $newpwd = Valid::toStr($post, 'newpwd', null);
+        $chkpwd = Valid::toStr($post, 'confirmpwd', null);
+        $userid = Valid::toInt($post, 'userid');
 
         if (empty($newpwd) || ($newpwd !== $chkpwd)) {
             return $this->errorChangePwd("Password not confirmed");
         }
-        $user = Users::findFirstByEmail($email);
+        $user = Users::findFirstByid($userid);
 
         if (empty($user)) {
-            return $this->errorChangePwd("User not found for $email");
+            return $this->errorChangePwd("User not found");
         }
 
         $db = $this->db;
@@ -145,24 +145,36 @@ class LoginController extends Controller
         $crypt = $this->security;
         try {
             $user->password = $crypt->hash($newpwd);
+            $user->mustChangePassword = 'N';
             $user->update();
             UserLog::logPwdChange($user->id);
             $db->commit();
+            
         } catch (\PDOException $perr) {
             return $this->errorChangePwd($perr->getMessage());
         }
         return $this->render('login', 'pwd_changed');
     }
 
-    function changePwd()
+    function changePwdAction()
     {
-        if (!$this->app->https()) {
-            return;
+        if ($this->need_ssl()) {
+            return $this->secure_connect();
         }
         $req = $_REQUEST;
-        $view = $this->view;
-        $view->header = "Change password";
-        $this->changePwdView();
+        $m = $this->getViewModel();
+        $m->title = "Password";
+        $m->header = "Please set a new password";
+        $m->posturl = "/login/changepwdpost";
+        // Must have a valid user session
+        $us = $this->user_session;
+        
+        
+        $m->id = $us->getUserId();
+        $m->email = $us->getUserEmail();
+        $m->name = $us->getUserName();
+        
+        return $this->changePwdView();
     }
 
     function defaultError()

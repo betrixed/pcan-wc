@@ -79,7 +79,7 @@ trait ViewPhalcon {
         
         $view->setVars(['sessUser'=>$us, 'flash' => $flash]);
         $view->start();
-       $view->render($controller, $action, $params);
+        $view->render($controller, $action, $params);
         $view->finish();
         return $view->getContent();
     }
