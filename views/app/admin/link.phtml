@@ -8,21 +8,38 @@ $ref = $ubase . $m->orderby;
 $page = $m->page;
 $orderalt = $m->orderalt;
 $col_arrow = $m->col_arrow;
-
+$btn_class = "btn btn-outline-info";
 ?>
 
+<style>
+    span.lighten {
+        color:#774488;
+    }
+    a:link {
+        color:black;
+    }
+    a:visited {
+        color:darkblue;
+    }
+    div.gap {
+        padding-bottom:15px;
+        margin-bottom:15px;
+    }
+</style>
 <div class='container body-wrap'>
     <div class="row">
         <div class="col-2">
-            <span><b>Links</b></span> 
+            <span><b>Links</b></span>&#x25C7; 
+            <?= $gem->linkTo(['href' => $url . 'new', 'text' => 'New Link', 'class' => $btn_class]) ?>
         </div>
         <div class="col-8">
-&nbsp;&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $url . 'new', 'text' => 'New link record']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $ref . '&page=1', 'text' => 'First']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $ref . '&page='. $page->before, 'text' => 'Previous']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $ref . '&page='. $page->next, 'text' => 'Next']) ?>&#x3009;
-&nbsp;-&nbsp;&#x27E8;<?= $gem->linkTo(['href' => $ref . '&page='. $page->last, 'text' => 'Last']) ?>&#x3009;
-&nbsp;&nbsp;Page <?= $page->current . " of " .  $page->last ?>
+&#x25C7; 
+<?= $gem->linkTo(['href' => $ref . '&page=1', 'btn-glyph' => "fast-backward",  'class' => $btn_class]) ?>&#x25C7; 
+<?= $gem->linkTo(['href' => $ref . '&page='. $page->before, 'btn-glyph'=>'arrow-left', 'class' => $btn_class]) ?>&#x25C7; 
+<?= $gem->linkTo(['href' => $ref . '&page='. $page->next, 'btn-glyph'=>'arrow-right', 'class' => $btn_class]) ?>&#x25C7; 
+
+<?= $gem->linkTo(['href' => $ref . '&page='. $page->last, 'btn-glyph' => "fast-forward", 'class' => $btn_class]) ?>
+    &#x25C7;Page <?= $page->current . " of " .  $page->last ?>
         </div>
     </div>
 </div>

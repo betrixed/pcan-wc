@@ -46,9 +46,9 @@ $page = $m->page;
         
 <?php if ($page->last > 1): ?>
         <?= $gem->linkTo(['href' => "/admin/dash", 'text' => "Dash", 'class' => $btn_class]) ?> &#x25C7;
-         <?= $gem->linkTo(['href' => $link, 'btn-glyph' => "fast-backward", 'class' => $btn_class]) ?> 
-         <?= $gem->linkTo(['href' => $link . '&page=' . $page->before, 'btn-glyph'=>'arrow-left', 'class' => $btn_class]) ?> 
-          <?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'btn-glyph'=>'arrow-right', 'class' => $btn_class]) ?> 
+         <?= $gem->linkTo(['href' => $link, 'btn-glyph' => "fast-backward", 'class' => $btn_class]) ?> &#x25C7; 
+         <?= $gem->linkTo(['href' => $link . '&page=' . $page->before, 'btn-glyph'=>'arrow-left', 'class' => $btn_class]) ?> &#x25C7; 
+          <?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'btn-glyph'=>'arrow-right', 'class' => $btn_class]) ?> &#x25C7; 
           <?= $gem->linkTo(['href' => $link . '&page=' . $page->last, 'btn-glyph' => "fast-forward", 'class' => $btn_class]) ?> 
 <?php endif ?>
     &#x25C7; <?= $page->current . "/" . $page->last ?>

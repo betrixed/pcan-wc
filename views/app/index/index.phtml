@@ -3,6 +3,7 @@
 $hasEvents = !empty($m->events);
 $assets->add(['bootstrap','styles']);
 $assets->minify("pcan_home");
+$doEdit = $sessUser->auth('Editor');
 ?>
 
 <style>
@@ -98,3 +99,14 @@ $assets->minify("pcan_home");
         </div>
     </div>
 </div>
+
+<?php if ($doEdit): ?>
+<script>
+    document.oncontextmenu = editClick;
+    
+function editClick( clickEvent ) {
+    clickEvent.preventDefault();
+}
+
+</script>
+<?php endif; ?>
