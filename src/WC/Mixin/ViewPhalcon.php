@@ -46,7 +46,7 @@ trait ViewPhalcon {
             $this->title = $app->route->getName();
         }
         else {
-            $this->title = "Error";
+            $this->title = $app->site;
         }
     }
    /**

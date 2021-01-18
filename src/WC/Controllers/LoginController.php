@@ -24,6 +24,7 @@ use function debugLine;
 class LoginController extends Controller
 {
 
+    const CHANGE_PWD_POST = "/login/changepwdpost";
     use \WC\Mixin\Captcha;
     use \WC\Mixin\ViewPhalcon;
 
@@ -165,7 +166,7 @@ class LoginController extends Controller
         $m = $this->getViewModel();
         $m->title = "Password";
         $m->header = "Please set a new password";
-        $m->posturl = "/login/changepwdpost";
+        $m->posturl = self::CHANGE_PWD_POST;
         // Must have a valid user session
         $us = $this->user_session;
         
@@ -204,8 +205,10 @@ class LoginController extends Controller
             }
             $m = $this->getViewModel();
             $m->email = $email;
+            $m->id = $userid;
             $m->header = "Change password for " . $email;
             $m->url = "/login/";
+            $m->posturl = self::CHANGE_PWD_POST;
             return $this->changePwdView();
         } else {
             $this->flash('Code is invalid or expired');
@@ -284,7 +287,7 @@ class LoginController extends Controller
             ]
         ];
 
-        $isValid = $mailer->send($msg);
+        $isValid = $mailer->send($msg, "reset_password");
 
         if ($isValid['success'] === false) {
             return $this->errorForgot($isValid['errors']);
