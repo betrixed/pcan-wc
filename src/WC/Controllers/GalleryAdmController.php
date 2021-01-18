@@ -736,17 +736,19 @@ class GalleryAdmController extends BaseController {
 //$response->setHeader("Content-Type", "text/plain");
         $post = $_POST;
         $logger = $this->logger;
-        $logger->info('upload ' . print_r($post,true));
+        
         $reply = [];
 // get the gallery to upload to
         $galleryid = Valid::toInt($post, 'galleryid');
         $gal = Gallery::findFirstById($galleryid);
         $req = $this->request;
+        $logger->info('Upload to Gallery ' . $galleryid);
         $logger->info('Ajax = ' . $req->isAjax());
         if (empty($gal)) {
             $reply[] = 'No record gallery ' . $galleryid;
         } else if (!$req->hasFiles()) {
             $reply[] = 'No files received';
+            $logger->info('No files ');
         } else {
             $toThumbs = Valid::toBool($post, 'thumbs');
             $dest_dir = $this->getWebDir() . $gal->path . '/';
