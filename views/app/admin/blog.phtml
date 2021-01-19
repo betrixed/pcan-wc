@@ -1,5 +1,4 @@
 <?php
-
 $gem = $this->htmlgem;
 
 $assets->add(['bootstrap', 'select']);
@@ -17,7 +16,7 @@ if ($catId > 0) {
 } else {
     $ubase = $url . "?orderby=";
 }
-$show_slug = ($m->orderby === 'slug' || $m->orderby ==='slug-alt') ? true : false;
+$show_slug = ($m->orderby === 'slug' || $m->orderby === 'slug-alt') ? true : false;
 
 $link = $ubase . $m->orderby;
 $page = $m->page;
@@ -41,91 +40,92 @@ $page = $m->page;
 
 <div class="container-fluid body-wrap">
     <div class="row">
-    
-    <div class="col-4">
-        
-<?php if ($page->last > 1): ?>
-        <?= $gem->linkTo(['href' => "/admin/dash", 'text' => "Dash", 'class' => $btn_class]) ?> &#x25C7;
-         <?= $gem->linkTo(['href' => $link, 'btn-glyph' => "fast-backward", 'class' => $btn_class]) ?> &#x25C7; 
-         <?= $gem->linkTo(['href' => $link . '&page=' . $page->before, 'btn-glyph'=>'arrow-left', 'class' => $btn_class]) ?> &#x25C7; 
-          <?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'btn-glyph'=>'arrow-right', 'class' => $btn_class]) ?> &#x25C7; 
-          <?= $gem->linkTo(['href' => $link . '&page=' . $page->last, 'btn-glyph' => "fast-forward", 'class' => $btn_class]) ?> 
-<?php endif ?>
-    &#x25C7; <?= $page->current . "/" . $page->last ?>
-    </div>
 
-    <div class="col-4">
+        <div class="col-4">
+
+            <?php if ($page->last > 1): ?>
+                <?= $gem->linkTo(['href' => "/admin/dash", 'text' => "Dash", 'class' => $btn_class]) ?> &#x25C7;
+                <?= $gem->linkTo(['href' => $link, 'btn-glyph' => "fast-backward", 'class' => $btn_class]) ?> &#x25C7; 
+                <?= $gem->linkTo(['href' => $link . '&page=' . $page->before, 'btn-glyph' => 'arrow-left', 'class' => $btn_class]) ?> &#x25C7; 
+                <?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'btn-glyph' => 'arrow-right', 'class' => $btn_class]) ?> &#x25C7; 
+                <?= $gem->linkTo(['href' => $link . '&page=' . $page->last, 'btn-glyph' => "fast-forward", 'class' => $btn_class]) ?> 
+            <?php endif ?>
+            &#x25C7; <?= $page->current . "/" . $page->last ?>
+        </div>
+
+        <div class="col-4">
             <form method='get'>
-                <?= $gem->select(['label' => 'Category', 'class' => 'selectpicker', 'list' => $catItems, 'name'=>'catId', 'value' => $catId]) ?>
-                <?= $gem->hidden(['name'=>'args' , 'value' => $m->args]) ?> 
-                <?= $gem->submit( [ 'value' => "Fetch" ]) ?>
+                <?= $gem->select(['label' => 'Category', 'class' => 'selectpicker', 'list' => $catItems, 'name' => 'catId', 'value' => $catId]) ?>
+                <?= $gem->hidden(['name' => 'args', 'value' => $m->args]) ?> 
+                <?= $gem->submit(['value' => "Fetch"]) ?>
             </form>
         </div>
         <div class="col-4">
-            
+
             <?= $gem->linkTo(['href' => $url . 'new', 'text' => "New Article", 'class' => $btn_class]) ?>
         </div>
     </div>
-<div class="container outerwrap">
-    <form method="post" action="<?= $url . 'postflag' ?>" >
+    <div class="hline"></div>
+    <div class="container outerwrap">
+        <form method="post" action="<?= $url . 'postflag' ?>" >
 
-        <table class="table table-bordered table-striped" align="center">
-            <thead>
-                <tr>
-                    <th><img src='<?= $theme ?>/tick16.png' /></th>
-                    <th style="width:50%;"><?= $gem->linkTo(['href' => $ubase . $orderalt['title'], 'text' => 'Title' . $col_arrow['title']]) ?> / 
-                    <?= $gem->linkTo(['href' => $ubase . $orderalt['slug'], 'text' => 'Slug' . $col_arrow['slug']]) ?></th>
-                    <th style="width:15%;"><?= $gem->linkTo(['href' => $ubase . $orderalt['author'], 'text' => "Author" . $col_arrow['author']]) ?></th>
-                    <th style="width:10%;"><?= $gem->linkTo(['href' => $ubase . $orderalt['date'], 'text' => "Date" . $col_arrow['date']]) ?></th>
-                    <th>Feature</th>
-                    <th>Enable</th>
-                    <th>Comment</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($page->items as $blog):
-                    $pubdate = (new DateTime($blog['date_saved']))->format('d M y');
-                    ?>
+            <table class="table table-bordered table-striped" align="center">
+                <thead>
                     <tr>
-                        <td><?= $gem->checkbox(['name' => 'op' . $blog['id']]) ?></td>
-                <?php if ($show_slug): ?>
-                <td class="leftCell"><?= $gem->linkTo(['href' => $url . "edit/" . $blog['id'], 'text' => $blog['title_clean']]) ?></td>
-    <?php else: ?>
-                <td class="leftCell"><?= $gem->linkTo(['href' => $url . "edit/" . $blog['id'], 'text' => $blog['title']]) ?></td>
-    <?php endif ?>
-              
-                <td><span class="lighten"><?= $blog['author_name'] ?></span></td>
-                <td><span class="lighten"><?= $pubdate ?></span></td>
-                <td><?php if ($blog['featured']): ?>
-                        <img src="<?= $theme ?>/tick16.png" />
-                    <?php endif ?></td>
-                <td><?php if ($blog['enabled']): ?>
-                        <img src='<?= $theme ?>/tick16.png' />
-                    <?php endif ?></td>
-                <td><?php if ($blog['comments']): ?>
-                        <img src='<?= $theme ?>/tick16.png' />
-                <?php endif ?></td>
-                </td>
-                </tr>
-<?php endforeach ?>
-            </tbody>
-        </table>
-        <div class="row gap">
-            <div class="col-2">
-                <select name="flagsel">
-                    <option value="enable">Enable</option>
-                    <option value="disable">Disable</option>
-                    <option value="comment">Comment</option>
-                    <option value="noComment">No Comment</option>
-                    <option value="feature">Feature</option>
-                    <option value="noFeature">No Feature</option>
-                </select>
+                        <th><img src='<?= $theme ?>/tick16.png' /></th>
+                        <th style="width:50%;"><?= $gem->linkTo(['href' => $ubase . $orderalt['title'], 'text' => 'Title' . $col_arrow['title']]) ?> / 
+                            <?= $gem->linkTo(['href' => $ubase . $orderalt['slug'], 'text' => 'Slug' . $col_arrow['slug']]) ?></th>
+                        <th style="width:15%;"><?= $gem->linkTo(['href' => $ubase . $orderalt['author'], 'text' => "Author" . $col_arrow['author']]) ?></th>
+                        <th style="width:10%;"><?= $gem->linkTo(['href' => $ubase . $orderalt['date'], 'text' => "Date" . $col_arrow['date']]) ?></th>
+                        <th>Feature</th>
+                        <th>Enable</th>
+                        <th>Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($page->items as $blog):
+                        $pubdate = (new DateTime($blog['date_saved']))->format('d M y');
+                        ?>
+                        <tr>
+                            <td><?= $gem->checkbox(['name' => 'op' . $blog['id']]) ?></td>
+                            <?php if ($show_slug): ?>
+                                <td class="leftCell"><?= $gem->linkTo(['href' => $url . "edit/" . $blog['id'], 'text' => $blog['title_clean']]) ?></td>
+                            <?php else: ?>
+                                <td class="leftCell"><?= $gem->linkTo(['href' => $url . "edit/" . $blog['id'], 'text' => $blog['title']]) ?></td>
+                            <?php endif ?>
+
+                            <td><span class="lighten"><?= $blog['author_name'] ?></span></td>
+                            <td><span class="lighten"><?= $pubdate ?></span></td>
+                            <td><?php if ($blog['featured']): ?>
+                                    <img src="<?= $theme ?>/tick16.png" />
+                                <?php endif ?></td>
+                            <td><?php if ($blog['enabled']): ?>
+                                    <img src='<?= $theme ?>/tick16.png' />
+                                <?php endif ?></td>
+                            <td><?php if ($blog['comments']): ?>
+                                    <img src='<?= $theme ?>/tick16.png' />
+                                <?php endif ?></td>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+            <div class="row gap">
+                <div class="col-2">
+                    <select name="flagsel">
+                        <option value="enable">Enable</option>
+                        <option value="disable">Disable</option>
+                        <option value="comment">Comment</option>
+                        <option value="noComment">No Comment</option>
+                        <option value="feature">Feature</option>
+                        <option value="noFeature">No Feature</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <?= $gem->submit(['value' => "Change selected"]) ?>
+                </div>
             </div>
-            <div class="col">
-<?= $gem->submit(['value' => "Change selected"]) ?>
-            </div>
-        </div>
-        <hidden name="args" value="<?= $m->args ?>" ></hidden>
-    </form>
-</div>
+            <hidden name="args" value="<?= $m->args ?>" ></hidden>
+        </form>
+    </div>

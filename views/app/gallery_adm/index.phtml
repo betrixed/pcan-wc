@@ -4,20 +4,45 @@ $ubase = "/admin/gallery?orderby=";
 $link =  $ubase . $m->orderby;  
 $page = $m->page;
 $url =  "/admin/gallery/images/";
+$btn_class = "btn btn-outline-info";
 $assets->add(['bootstrap','grid']);
 ?>
-<a href="/dash" class="title">Dash</a> &nbsp; &gt;&gt; &nbsp;
-      <span><b>Gallery Index</b></span> &nbsp; &#x2609; &nbsp;
-   <?= $gem->linkTo(['href'=>$link, 'text'=>'First']) ?> &nbsp; | &nbsp;
-    <?= $gem->linkTo(['href'=>$link.'&page='.$page->before,
-   'text'=>'Previous']) ?> &nbsp; | &nbsp;
- <?= $gem->linkTo(['href'=>$link.'&page='.$page->next,
-   'text'=>'Next']) ?> &nbsp; | &nbsp;
- <?= $gem->linkTo(['href'=>$link.'&page='.$page->last,
-   'text'=>'Last']) ?> &nbsp; | &nbsp;
- <?=$page->current . "/" . $page->last ?> &nbsp; &#x2609; &nbsp;
- <a href="/admin/gallery/new" class="title">New Gallery</a>
-<div class="body-wrap">
+<style>
+    span.lighten {
+        color:#774488;
+    }
+    a:link {
+        color:black;
+    }
+    a:visited {
+        color:darkblue;
+    }
+    div.gap {
+        padding-bottom:15px;
+        margin-bottom:15px;
+    }
+</style>
+<div class="container body-wrap">
+<div class="outerwrap">
+    <div class="row">
+    <div class="col-4">
+        &nbsp;<?= $gem->linkTo(['href'=> "/dash", 'text' => 'Dash', 'class' => $btn_class]) ?>
+      <span> --> <b>Gallery Index</b></span>
+    </div>
+    <div class="col-5" >
+   <?= $gem->linkTo(['href'=>$link,  'btn-glyph' => "fast-backward", 'class' => $btn_class]) ?> &nbsp;
+    <?= $gem->linkTo(['href'=>$link.'&page='.$page->before, 'btn-glyph' => 'arrow-left', 'class' => $btn_class]) ?> &nbsp;
+ <?= $gem->linkTo(['href'=>$link.'&page='.$page->next, 'btn-glyph' => 'arrow-right', 'class' => $btn_class]) ?> &nbsp;
+ <?= $gem->linkTo(['href'=>$link.'&page='.$page->last,'btn-glyph' => "fast-forward", 'class' => $btn_class]) ?> &nbsp;
+ <?=$page->current . "/" . $page->last ?> 
+    </div>
+    <div class="col-3">
+  <?= $gem->linkTo(['href'=> "/admin/gallery/new", 'text' => 'New Gallery' , 'class' => $btn_class]) ?>
+    </div>
+</div>
+</div>
+ <div class="hline"></div>
+ <div class="outerwrap">
 <table class='table table-striped'>
     <thead>
         <tr>
