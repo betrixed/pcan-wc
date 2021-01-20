@@ -225,10 +225,10 @@ class UserSession
         $this->delayWrite();
     }
 
-    /** Write is performed by fat free hive persist */
-    public function write()
+    /** Persisted by framework session */
+    public function write(bool $force = false)
     {
-        if ($this->doWrite) {
+        if ($this->doWrite || $force) {
             $this->doWrite = false;
             $session = $this->getSession();
             $session->userData = $this->data;
@@ -279,9 +279,10 @@ class UserSession
     }
 
     /**
-     * set a flash key
+     * set any key (flash is used already)
      * @param $key
-     * @param bool $val
+     * @param mixed $val
+     * Value type must be serialisble
      */
     public function setKey($key, $val = TRUE)
     {
@@ -374,36 +375,46 @@ class UserSession
     }
 
     public function getUserRoles() {
+        if (!$this->wasRead) {
+            $this->read();
+        }
         return $this->data->roles;
     }
     public function getUserEmail()
     {
+        if (!$this->wasRead) {
+            $this->read();
+        }
         return $this->data->email;
     }
 
     public function getUserName()
     {
+        if (!$this->wasRead) {
+            $this->read();
+        }
         return $this->data->userName;
     }
 
     public function getUserId()
     {
+        if (!$this->wasRead) {
+            $this->read();
+        }
         return $this->data->id;
     }
 
     public function auth($role): bool
     {
-        $this->read();
+        if (!$this->wasRead) {
+            $this->read();
+        }
         return $this->data->auth($role);
     }
 
     public function sessionName()
     {
-        $data = $this->data;
-        if (!empty($data->userName)) {
-            return $data->userName;
-        }
-        return 'NULL';
+        return $this->getUserName();
     }
 
     public function save()

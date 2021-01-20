@@ -10,7 +10,8 @@ namespace WC\Link;
 
 use WC\Models\{
     EmailConfirmations,
-    UserAuth
+    UserAuth,
+    Users
 };
 use WC\{
     SwiftMail,
@@ -90,6 +91,48 @@ EOD;
         return preg_replace('/[^a-zA-Z0-9]/', '', base64_encode(openssl_random_pseudo_bytes($size)));
     }
 
+    public function newPlainUser(string $name, string $email) : ?Users {
+        return $this->makeNewUser($name, $email, ['User']);      
+    }
+    
+    protected function makeNewUser(string $user_name, string $user_email, array $groups): ?Users
+    {
+        $user = new Users();
+        $user->name = $user_name;
+        $user->email = $user_email;
+        $user->mustChangePassword = 'Y';
+        $user->status = 'N';
+        $user->created_at = Valid::now();
+        $user->changed_at = $user->created_at;
+                        
+        $pwd = $this->security->hash(self::makeCode(16));
+        $user->password = $this->security->hash($pwd);
+
+
+        try {
+            $user->create();
+            $db = $this->db;
+            $pdo = $db->pdo();
+
+            $grouplist = '(';
+
+            foreach ($groups as $ix => $g) {
+                if ($ix > 0) {
+                    $grouplist .= ',';
+                }
+                $grouplist .= $pdo->quote($g);
+            }
+            $grouplist .= ')';
+            $sql = <<<EOS
+insert into user_auth (userid, groupid) select :uid, ug.id from user_group ug
+   where ug.name in $grouplist
+EOS;
+            $db->execute($sql, ['uid' => $user['id']]);
+        } catch (\PDOException $e) {
+            $this->flash($e->getMessage());
+        }
+        return $user;
+    }
     public function sendConfirm($user) {
         $ec = new EmailConfirmations();
 

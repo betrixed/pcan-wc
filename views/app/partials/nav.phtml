@@ -1,7 +1,11 @@
 <?php
-Use WC\Assets; 
-use WC\UserSession;
-
+$cfg = $app->module_cfg;
+if (is_array($cfg)) {
+    $menus = $cfg['menus'] ?? null;
+}
+else {
+    $menus = null;
+}
 ?>
 <!-- <?= 'File: ' . __FILE__ ?> -->
 <style>
@@ -44,15 +48,13 @@ use WC\UserSession;
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
+    <?php if (is_array($menus)): ?>
     <div class="collapse navbar-collapse" id="navbarNavDropdown"> 
-          <ul class="navbar-nav mr-auto">
-            <?=  $this->partial('menus') ?>
-        </ul>
-
-<?php if(UserSession::isLoggedIn('Editor')): ?>
-        <ul class="navbar-nav ml-auto"  style="border-left-width:5px; border-left-style: groove;">
-            <?=  $this->partial('menus_admin') ?>
-        </ul>
-<?php endif; ?>
-    </div>
+        <?php  foreach($menus as $msrc): ?>
+    <ul class="navbar-nav mr-auto">
+        <?=  $this->partial($msrc) ?>
+    </ul>    
+    <?php endforeach; ?>
+            </div>
+    <?php endif; ?>
 </nav>

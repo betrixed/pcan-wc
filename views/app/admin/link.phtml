@@ -29,17 +29,17 @@ $btn_class = "btn btn-outline-info";
 <div class='container body-wrap'>
     <div class="row">
         <div class="col-2">
-            <span><b>Links</b></span>&#x25C7; 
+            <span><b>Links</b></span>&nbsp; 
             <?= $gem->linkTo(['href' => $url . 'new', 'text' => 'New Link', 'class' => $btn_class]) ?>
         </div>
         <div class="col-8">
-&#x25C7; 
-<?= $gem->linkTo(['href' => $ref . '&page=1', 'btn-glyph' => "fast-backward",  'class' => $btn_class]) ?>&#x25C7; 
-<?= $gem->linkTo(['href' => $ref . '&page='. $page->before, 'btn-glyph'=>'arrow-left', 'class' => $btn_class]) ?>&#x25C7; 
-<?= $gem->linkTo(['href' => $ref . '&page='. $page->next, 'btn-glyph'=>'arrow-right', 'class' => $btn_class]) ?>&#x25C7; 
+&nbsp; 
+<?= $gem->linkTo(['href' => $ref . '&page=1', 'btn-glyph' => "fast-backward",  'class' => $btn_class]) ?>&nbsp; 
+<?= $gem->linkTo(['href' => $ref . '&page='. $page->before, 'btn-glyph'=>'arrow-left', 'class' => $btn_class]) ?>&nbsp; 
+<?= $gem->linkTo(['href' => $ref . '&page='. $page->next, 'btn-glyph'=>'arrow-right', 'class' => $btn_class]) ?>&nbsp; 
 
 <?= $gem->linkTo(['href' => $ref . '&page='. $page->last, 'btn-glyph' => "fast-forward", 'class' => $btn_class]) ?>
-    &#x25C7;Page <?= $page->current . " of " .  $page->last ?>
+    &nbsp;Page <?= $page->current . " of " .  $page->last ?>
         </div>
     </div>
 </div>

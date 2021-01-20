@@ -6,8 +6,18 @@ $back = $m->back;
 $theme = '/' . $m->theme;
 $revision = $m->revision;
 $assets->add(['bootstrap','styles']);
-?>
+$page_url = "https://" . $app->domain . "/article/" . $blog->title_clean;
+$coded_url = urlencode($page_url);
 
+
+?>
+<div class="fb-share-button" 
+     data-href="<?=$page_url?>" 
+     data-layout="button" data-size="large">
+    <a target="_blank" 
+       href="https://www.facebook.com/sharer/sharer.php?u=<?=$coded_url?>&amp;src=sdkpreparse" 
+       class="fb-xfbml-parse-ignore">Share</a>
+</div>
 <style>
     div#title-box {
         background-color:white;
@@ -70,9 +80,10 @@ $assets->add(['bootstrap','styles']);
     </div>
 <?php endif; ?>
 <?php if ( $blog->comments ): ?>
-    <div>
+    <div class="outerwrap">
+        
         <div id="fb-root"></div>
         <fb:login-button autologoutlink="True" length="short" background="white" size="large"></fb:login-button>
-        <div class="fb-comments" data-href="<?= $m->canonical ?>" data-width="900" data-numposts="5"></div>
+        <div class="fb-comments" data-href="<?= $m->canonical ?>" data-width="960" data-numposts="5"></div>
     </div>
-<?php endif; ?>
+    <?php endif; ?>

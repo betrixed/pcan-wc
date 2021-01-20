@@ -1,20 +1,17 @@
 <?php  
-    use \WC\UserSession; 
+$uid = $sessUser->getUserId();
+if ($uid !== 0): 
 ?>
 <div class="clear"></div>
 <!-- std_foot -->
-<footer class="page-footer">
-    <div class="row" >
+    <footer style="mt-auto">
+        <div class="user-footer"  style="clear:both;">
+        <div class="row" >
         <div class="col-3">
             <div id="footer_id">
             <?php
-            $sid = $this->user_session->getUserName();
-            if ($sid !== 'NULL') {
-                echo("&nbsp;<a style=\"color:white;font-weight:bold;font-size;1.1em;\" href=\"/end_session\">PHP Session as: " . strtoupper($sid) . "</a>");
-            }
-            else {
-                echo("No session");
-            }
+                $sid = $sessUser->getUserName();
+                echo("&nbsp;<a href=\"/end_session\">" . strtoupper($sid) . "</a>");
             ?>
             </div>
         </div>
@@ -25,10 +22,30 @@
             <?= $app->end_stats(); ?>
         </div>
     </div>
-</footer>
+    </div>
+    </footer>
+<?php else: ?>
+    <footer class="page-footer" style="mt-auto">
+        <div class="row" >
+        <div class="col-3">
+            <div id="footer_id">
+            <?php
+                echo("&nbsp;<a href=\"\login\">" . "Login" . "</a>");
+            ?>
+            </div>
+        </div>
+        <div class="col-3"> 
+            &copy;&nbsp;<?= $app->organization ?>
+        </div>
+        <div class="col-6">            
+            <?= $app->end_stats(); ?>
+        </div>
+    </div>
+    </footer>
+<?php endif; ?>
 <script>
     function update_footer_id() {
-        var text = "&nbsp;<a style=\"color:white;font-weight:bold;font-size;1.1em;\" href=\"/end_session\">PHP Session as: " + window.php_id + "</a>";
+        var text = "&nbsp;<a style=\"color:white;font-size;1.1em;\" href=\"/end_session\">Session : " + window.php_id + "</a>";
         $("#footer_id").html(text);
     }
 </script>
