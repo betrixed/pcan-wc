@@ -40,7 +40,7 @@ trait RevisionOp
      * @param type $rid
      * @return object|null 
      */
-    static public function getBlogRevision($bid, $rid): ?object
+    static public function getBlogRevision($bid, $rid): ?BlogRevision
     {
         $rev = BlogRevision::findFirst([
                     'conditions' => 'blog_id = :bid: and revision = :rev:',

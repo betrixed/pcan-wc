@@ -7,80 +7,42 @@ namespace WC\Controllers;
  *
  * @author Michael Rynn
  */
-
 use WC\Db\Server;
 use WC\Models\Blog;
 use WC\Models\Linkery;
 use WC\Valid;
 use Phalcon\Mvc\Controller;
-use WC\Link\BlogView;
+use WC\Link\Article;
 
-class ArticleController  extends Controller {
-use \WC\Mixin\ViewPhalcon;
-use \WC\Link\RevisionOp;
+class ArticleController extends BaseController {
 
+    use \WC\Mixin\ViewPhalcon;
 
     public function titleAction($title) {
-        $blog = Blog::findFirstByTitleClean($title);
+        $m = $this->getViewModel();
+        // If necessary creates a new blog record (not saved).
+        if (Article::findArticleTitle($title, $m)) {
 
-        if (empty($blog)) {
-            $blog = new Blog();
-            $blog->title = "Not found { /$title }";
-            $style_class = 'noclass';
-        }
-        else {
-            $style_class = $blog->style;
-        }
-        $v = $this->getView();
-        $m = $v->m;
-        
-        $briefTitle = $blog->title;
-        if (strlen($briefTitle) > 30) {
-            $temp = explode("\n", wordwrap( $briefTitle, 30));
-            $briefTitle = $temp[0] . "\u{2026}";
-        }
-        $m->title =  $blog->title;
-        $m->blog = $blog;
-        $m->revision = self::getLinkedRevision($blog);
-        if (empty($m->revision)) {
-            $revobj = new \stdClass();
-            $revobj->content = "<p>Error in content index</p>";
-            $m->revision = $revobj;
-        }
-        $m->analytics = true;
-        $meta = [];
-        // fill the array up with article meta tags.
-        $hostUrl = 'http' . '://' . $_SERVER['HTTP_HOST'];
-        if (!empty($blog->id)) {
-            $m->metadata = BlogView::getMetaTagHtml($blog->id,$meta, $hostUrl);
-        }
-        else {
-            $m->metadata = [];
-        }
-        $m->metaloaf = $meta;
-        $m->back = null;
-        $req = $_REQUEST;
-        $ly = Valid::toInt($req,'lnky',0);
-        if (!empty($ly)) {
-            $linkery = Linkery::findFirstById($ly);
-            
-            if (!empty($linkery)) {
-                $m->back = '/linkery/view/' . $linkery->name;
-                $m->backname = $linkery->name;
+            $m->body_container = "container";
+            $m->back = null;
+            $req = $this->getRequest();
+
+            // see if previous page hint exists
+            $ly = Valid::toInt($req, 'lnky', 0);
+            if (!empty($ly)) {
+                $linkery = Linkery::findFirstById($ly);
+
+                if (!empty($linkery)) {
+                    $m->back = '/linkery/view/' . $linkery->name;
+                    $m->backname = $linkery->name;
+                }
             }
+            if (isset($req['sub'])) {
+                $this->noLayouts();
+            }
+            return $this->render('index', 'article');
+        } else {
+            return $this->error("Article not found: $title");
         }
-
-        //$canonical = $this->request->isSecure() ? 'https://' : 'http://';
-        // Facebook likes reference to be only one of https or http
-        $m->canonical = 'http://' . $_SERVER['HTTP_HOST'] . "/article/" . $title;
-        
-
-        if (isset($req['sub'])) {
-           $this->noLayouts();
-        }
-        
-
-        
-        return $this->render('index','article');
     }
 }

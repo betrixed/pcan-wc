@@ -18,6 +18,7 @@ use Phalcon\Mvc\View;
 class CatViewController extends Controller {
 use \WC\Mixin\ViewPhalcon;
 use \WC\Link\RevisionOp;
+use \WC\Mixin\Captcha;
    /** Do not get a new view here, use the existing one
     * Menu id passed
     * @param type $mit
@@ -52,6 +53,9 @@ use \WC\Link\RevisionOp;
     }
     
     public function articleAction($title) {
+        if ($this->need_ssl()) {
+            return $this->secure_connect();
+        }
         $req = $this->request;
         $isSub = $req->getQuery('sub', 'int', 0);
         if (!($isSub > 0)) {

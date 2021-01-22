@@ -1,6 +1,8 @@
 <?php
+
 use \WC\HtmlGem as Gem;
 use \WC\UserSession;
+$m->title = "Logged in";
 $us = $this->user_session;
 ?>
 <style>
@@ -19,28 +21,41 @@ $us = $this->user_session;
 </style>
 <div class='container outerwrap pad10'>
     <div class="row">
-        <div class="col text-right">
-            <label>Account user name:</label> 
-            <br><label>Account email:</label> 
-            <br><label>Account role tokens:</label>  
+        <div class="col-4 text-right">
+        <label>Account user name:</label> 
         </div>
         <div class="col-8">
-            <span class="detail"> <?= $us->getUserName() ?></span>
-            <br><span class="detail"> <?= $us->getUserEmail() ?></span>
-            <br><span class="detail"> <?= implode(',',$us->getUserRoles()) ?></span>
+        <span class="detail"> <?= $us->getUserName() ?></span> 
         </div>
     </div>
-    <?php if ($us->auth(['Admin','Editor','Finance'])): ?>
+    <div class="row">
+                <div class="col-4 text-right">
+        <label>Account email:</label> 
+        </div>
+        <div class="col-8">
+        <span class="detail"> <?= $us->getUserEmail() ?></span> 
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-4 text-right">
+        <label>Account roles:</label> 
+        </div>
+        <div class="col-8">
+        <span class="detail"> <?= implode(', ', $us->getUserRoles()) ?></span> 
+        </div>
+    </div>
+</div>
+<?php if ($us->auth(['Admin', 'Editor', 'Finance'])): ?>
     <div class="row gap">
         <div class="col text-center">
             <a href="/admin/dash" class="btn btn-large btn-outline btn-info">Dashboard</a>
         </div>
     </div>
-    <?php endif ?>
-    <div class="row gap">
-        <div class="col text-center">
-            <a href="/end_session" class="btn btn-large btn-outline btn-info">Log out from this session!</a>
-        </div>
+<?php endif ?>
+<div class="row gap">
+    <div class="col text-center">
+        <a href="/end_session" class="btn btn-large btn-outline btn-info">Log out from this session!</a>
     </div>
+</div>
 </div>
 

@@ -12,5 +12,15 @@
     <title><?= $m->title ?></title>
     <?php endif; ?>
     <?= $assets->Link() ?>
-    <?= $assets->CssHeader(); ?> 
+    <?= $assets->CssHeader(); ?>
+    
+    <style>
+    body {
+                background-image: url("/<?= $app->theme ?>/body.png");
+        }
+    nav {
+        background-image: url("/<?=$m->theme?>/tile-fog.png");
+        color:lightcoral;
+    }
+    </style>
 </head>

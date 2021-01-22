@@ -11,12 +11,16 @@ namespace WC\Link;
 use WC\Models\{
     EmailConfirmations,
     UserAuth,
-    Users
+    Users,
+    FbookUser,
+    FbookDeluser
 };
 use WC\{
     SwiftMail,
-    WConfig
+    WConfig,
+    Valid
 };
+use stdClass;
 use function debugLine;
 
 /**
@@ -181,4 +185,92 @@ EOS;
         }
     }
 
+    /**
+     * Assume Facebook userid already extracted,
+     * Assume "connected" status is true
+     * @param array $post
+     * @return stdClass
+     */
+    public function validFBLogin(int $fb_userid, array $post) : stdClass
+    {
+        $fbdata = new stdClass();
+        $fbdata->user_id = $fb_userid;
+        $fbdata->connected = true;
+        // svr_token is passed back users id
+        $fbdata->svr_token = Valid::toInt($post,"svr_token");
+        $fbdata->signed_req = Valid::toStr($post,"signed_req");
+        $fbdata->graph_domain = Valid::toStr($post, "graph_domain");
+        $fbdata->exp_time = Valid::toInt($post,"exp_time");
+        $fbdata->access_exp = Valid::toInt($post,"access_exp");
+        $fbdata->access_token = Valid::toStr($post,"access_token");  
+        return $fbdata;
+    }
+    
+    
+    /**
+     * New FbookUser from standard user id, and $fbdata class
+     * Two different primary keys -   fbuser->id is facebooks userid
+     * $userid is users record id
+     */
+    public function createFbookUser(stdClass $fbdata, int $id) : FbookUser
+    {
+        /* make a FbookUser for counting purposes */
+        $fbuser = new FbookUser();
+        $fbuser->id = $fbdata->user_id;
+        $fbuser->userid = $id;
+        $fbuser->fb_email = $fbdata->email;
+        $fbuser->fb_name = $fbdata->name;
+        $fbuser->created_at = Valid::now();
+        $fbuser->modified_at = $fbuser->created_at;
+        $fbuser->update_count = 0;
+        $fbuser->create();
+        return $fbuser;
+    }
+    
+    /** 
+     * Helper function for facebook user delete 
+     */
+    
+    static  public function base64_url_decode($input) {
+        return base64_decode(strtr($input, '-_', '+/'));
+    }
+    /** 
+     * parse FbookUser deletion $request 
+     * return $data
+     */
+    static public  function parse_deletion_request(string $request) : string
+    {
+         list($encoded_sig, $payload) = explode(',', $request, 2);
+         $app = $this->app;
+         $app_data = $app->getSecrets('facebook');
+         
+         $sig = base64_url_decode($encoded_sig);
+         $data = json_decode(base64_url_decode($payload), true);
+         $expected_sig = hash_hmac('sha256', $payload, $app_data->app_secret,$raw = true);
+         if ($sig !== $expected_sig) {
+             $this->error_log('Bad Signed JSON signature');
+             return null;
+         }
+         return $data;
+    }
+    
+    /**
+     * Remove what little data there is for facebook user record
+     * @param int $userid
+     */
+    public function fbUserDelete(int $userid) : int {
+        $rec = FbookUser::findFirstByid($userid);
+        if ($rec !== null) {
+            // create a deletion entry
+            $del = new FbookDeluser();
+            $del->fb_user = $userid;
+            $del->created_at = Valid::now();
+            if ($del->create()) {
+                $result = $del->id;
+            }
+            $rec->delete();
+            return $result;
+        }
+        return 0;
+    }
 }

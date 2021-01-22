@@ -1,23 +1,16 @@
 <?php
 
 namespace WC\Link;
-
-use WC\Db\Server;
-use WC\Db\DbQuery;
 use Phalcon\Db\Column;
-use WC\Models\Blog;
-use WC\Models\BlogRevision;
-use WC\Valid;
-use WC\App;
-
+use WC\Db\ {DbQuery, Server};
+use WC\Models\{ BlogRevision, Blog};
+use WC\{App, Valid, WConfig};
 /**
- *
+ * 
  * @author Michael Rynn
  */
 class BlogView
 {
-
-    // return highest revision number plus 1
 
     static function pageFromRequest($m)
     {
@@ -63,30 +56,7 @@ EOS;
         $m->isEditor = true;
     }
 
-    /** get metatags for $blogid
-     * 
-     * @param int $id
-     * @return array
-     */
-    static public function getMetaTags($id): array
-    {
-        global $container;
-// setup metatag info
-        $sql = "select m.id, m.meta_name,"
-                . "m.template, m.data_limit, b.blog_id, b.content"
-                . " from meta m"
-                . " left join blog_meta b on b.meta_id = m.id"
-                . " and b.blog_id = :blogId";
-// form with m_attr_value as labels, content as edit text.
 
-        $qry = $container->get('dbq');
-        $results = $qry->arraySet($sql, ['blogId' => $id]);
-        if ($results) {
-            return $results;
-        } else {
-            return [];
-        }
-    }
 
     /**
      * Delete related constraints and blog id in one transaction
@@ -286,44 +256,30 @@ EOS;
         $model->col_arrow = $col_arrow;
         return $order_field;
     }
-
-    static public function getMetaTagHtml(int $id, array &$meta, string $hostUrl): array
+    /** get metatags for $blogid
+     * 
+     * @param int $id
+     * @return array
+     */
+    static public function getMetaTags($id): array
     {
         global $container;
+// setup metatag info
+        $sql = "select m.id, m.meta_name,"
+                . "m.template, m.data_limit, b.blog_id, b.content"
+                . " from meta m"
+                . " left join blog_meta b on b.meta_id = m.id"
+                . " and b.blog_id = :blogId";
+// form with m_attr_value as labels, content as edit text.
+
         $qry = $container->get('dbq');
-        // setup metatag info
-        $sql = <<<EOD
-select m.*, b.content
-    from meta m
-    join blog_meta b on b.meta_id = m.id
-    and b.blog_id = :id
-    order by meta_name
-EOD;
-        $results = $qry->arraySet($sql, ['id' => $id]);
-        //$scheme = $server['REQUEST_SCHEME'];
-        //$sitePrefix = 'http' . '://' . $_SERVER['HTTP_HOST'];
-
-        if (!empty($results)) {
-            if (is_array($meta)) {
-                $meta_tags = [];
-                foreach ($results as $row) {
-                    $content = str_replace("'", "&apos;", $row['content']);
-                    // replace ' with &apos; 
-
-                    if ($row['prefix_site'] && !str_starts_with($content, "http")) {
-                        if (!str_starts_with($content, '/')) {
-                            $content = '/' . $content;
-                        }
-                        $content = $hostUrl . $content;
-                    }
-                    $meta_tags[] = str_replace("{}", $content, $row ['template']);
-                }
-                $meta = $meta_tags;
-            }
+        $results = $qry->arraySet($sql, ['blogId' => $id]);
+        if ($results) {
+            return $results;
         } else {
-            $results = [];
+            return [];
         }
-        return $results;
     }
+    
 
 }

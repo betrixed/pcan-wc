@@ -20,14 +20,17 @@ use Phalcon\Mvc\Controller;
 use WC\Assets;
 use WC\WConfig;
 use function debugLine;
+use WC\Model\Blog;
+use WC\Link\Article;
 
-class LoginController extends Controller
+class LoginController extends BaseController
 {
 
     const CHANGE_PWD_POST = "/login/changepwdpost";
     use \WC\Mixin\Captcha;
     use \WC\Mixin\ViewPhalcon;
-
+    use \WC\Link\RevisionOp;
+    
     private $username;
     private $model;
 
@@ -37,11 +40,11 @@ class LoginController extends Controller
         if ($this->need_ssl()) {
             return $this->secure_connect();
         }
-        $view = $this->getView();
+        
         if ($this->user_session->isLoggedIn('User')) {
             return $this->render('login', 'details');
         }
-        $m = $view->m;
+        $m = $this->getViewModel();
         $m->title = 'Login';
         $m->password = '';
         $m->email = '';
@@ -125,6 +128,22 @@ class LoginController extends Controller
         return $this->render('login','changePWD');
     }
 
+    function getLegalDocument($name) {
+        $m = $this->getViewModel();
+        if (Article::findArticleTitle($name, $m)) {
+           return $this->render('legal','document');
+        }
+        else {
+            return $this->error("Document not found: $name");
+        }
+    }
+    function termsAction() {
+        return $this->getLegalDocument("terms-of-service");
+     }
+    
+    function privacyAction() {
+         return $this->getLegalDocument("privacy-policy");
+    }
     function changePwdPostAction()
     {
         $post = $_POST;
@@ -303,7 +322,7 @@ class LoginController extends Controller
      */
     function checkAction()
     {
-        $post = $_POST;
+        $post = $this->getPost();
         $m = $this->getViewModel();
         $m->email = Valid::toEmail($post, "email");
         $m->alias = Valid::toStr($post, "alias");

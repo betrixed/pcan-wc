@@ -36,10 +36,10 @@ class MenuBuild
     
     public function __construct(array $options)
     {
-        global $app, $container;
+        global $APP, $container;
         $this->output_dir = $options['output_dir'];
         $this->schema_file = $options['schema'];
-        $this->app = $app;
+        $this->app = $APP;
         $this->db = $container->get('db');
         $this->gem = $container->get('htmlgem');
         

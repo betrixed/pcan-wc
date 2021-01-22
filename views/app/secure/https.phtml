@@ -3,21 +3,18 @@ $assets->add('bootstrap');
 $url = $m->url;
 $args = explode("?",$m->url,2);
 if (count($args) > 1) {
-    $uri = $args[0];
+    $path = $args[0];
     $query = $args[1];
 }
 else {
-    $uri = $url;
+    $path = $url;
     $query = "";
 }
 ?>
 
 <div class='container outerwrap novosti pad10'>
-    <p style="font-size:2em;">HTTPS Redirect to 
-    <a id="redirect" href="<?= $url ?>"><?= $uri ?></a></p>
-    <?php if (!empty($query)): ?>
-    <div><p>? <?=$query?></p></div>
-    <?php endif ?>
+    <p style="font-size:1.2em;">Redirect for HTTPS service
+    <a id="redirect" href="<?= $url ?>"><?= $path ?></a></p>
     <div id="message"></div>
 </div>
 
@@ -25,7 +22,7 @@ else {
 function pageRedirect(){
  var delay = 4000; // time in milliseconds
 
- var url = document.getElementById("redirect").innerHTML;
+ var url = document.getElementById("redirect").getAttribute("href");
  // Display message
  document.getElementById("message").innerHTML = "Please wait for redirect to secure https";
 

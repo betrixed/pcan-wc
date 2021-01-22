@@ -152,6 +152,7 @@ EOQ;
           $view->content = 'front/home.phtml';
           $view->layout = 'front/layout.phtml';
           $view->nav = 'front/nav.phtml'; */
+        $m->title = "Home";
         return $this->render('index', 'index');
     }
 

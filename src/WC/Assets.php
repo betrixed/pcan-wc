@@ -59,7 +59,7 @@ class Assets
         $this->assetProd = $app->temp_dir . $cfg->assetCache;
         $this->order = [];
         $this->mark = [];
-        $this->add('default');
+
         if (isset($app->theme)) {
             $srcpaths[] = $app->web_dir . "/" . $app->theme;
         }

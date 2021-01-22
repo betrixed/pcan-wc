@@ -38,26 +38,26 @@ $page = $m->page;
 <div class="container-fluid body-wrap">
     <div class="row">
 
-        <div class="col-4">
+        <div class="col-5">
 
             <?php if ($page->last > 1): ?>
-                <?= $gem->linkTo(['href' => "/admin/dash", 'text' => "Dash", 'class' => $btn_class]) ?> &#x25C7;
-                <?= $gem->linkTo(['href' => $link, 'btn-glyph' => "fast-backward", 'class' => $btn_class]) ?> &#x25C7; 
-                <?= $gem->linkTo(['href' => $link . '&page=' . $page->before, 'btn-glyph' => 'arrow-left', 'class' => $btn_class]) ?> &#x25C7; 
-                <?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'btn-glyph' => 'arrow-right', 'class' => $btn_class]) ?> &#x25C7; 
+                <?= $gem->linkTo(['href' => "/admin/dash", 'text' => "Dash", 'class' => $btn_class]) ?> &nbsp;
+                <?= $gem->linkTo(['href' => $link, 'btn-glyph' => "fast-backward", 'class' => $btn_class]) ?> &nbsp; 
+                <?= $gem->linkTo(['href' => $link . '&page=' . $page->before, 'btn-glyph' => 'arrow-left', 'class' => $btn_class]) ?> &nbsp; 
+                <?= $gem->linkTo(['href' => $link . '&page=' . $page->next, 'btn-glyph' => 'arrow-right', 'class' => $btn_class]) ?> &nbsp; 
                 <?= $gem->linkTo(['href' => $link . '&page=' . $page->last, 'btn-glyph' => "fast-forward", 'class' => $btn_class]) ?> 
             <?php endif ?>
-            &#x25C7; <?= $page->current . "/" . $page->last ?>
+            &nbsp; <?= $page->current . "/" . $page->last ?>
         </div>
 
-        <div class="col-4">
+        <div class="col-5">
             <form method='get'>
                 <?= $gem->select(['label' => 'Category', 'class' => 'selectpicker', 'list' => $catItems, 'name' => 'catId', 'value' => $catId]) ?>
                 <?= $gem->hidden(['name' => 'args', 'value' => $m->args]) ?> 
                 <?= $gem->submit(['value' => "Fetch"]) ?>
             </form>
         </div>
-        <div class="col-4">
+        <div class="col-2 text-right">
 
             <?= $gem->linkTo(['href' => $url . 'new', 'text' => "New Article", 'class' => $btn_class]) ?>
         </div>
