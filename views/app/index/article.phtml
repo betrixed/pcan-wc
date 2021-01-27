@@ -7,20 +7,29 @@ $theme = '/' . $m->theme;
 $revision = $m->revision;
 $assets->add(['bootstrap','styles']);
 $page_url = "https://" . $app->domain . "/article/" . $blog->title_clean;
-$coded_url = urlencode($page_url);
 
+$zentix = $app->use_zentix;
+$facebook = $app->want_facebook;
 
 ?>
-<?php if ($app->want_facebook): ?>
-<div class="fb-share-button" 
-     data-href="<?=$page_url?>" 
-     data-layout="button" data-size="large">
-    <a target="_blank" 
-       href="https://www.facebook.com/sharer/sharer.php?u=<?=$coded_url?>&amp;src=sdkpreparse" 
-       class="fb-xfbml-parse-ignore">Share</a>
-</div>
-<?php endif ?>
+<?php 
+    if ($app->want_facebook) { 
+        $this->partial('facebook_share', [
+        'coded_url'=>urlencode($page_url),
+        'canonical' => $m->canonical
+        ]);
+} 
+?>
+
 <style>
+    .cmtx_container {
+        padding:0.2em;
+        background-color:palegoldenrod;
+    }
+    .cmtx_form_heading {
+        padding-left: 0.5em;
+    }
+    
     div#title-box {
         background-color:white;
         font-family: Times;
@@ -75,16 +84,23 @@ $coded_url = urlencode($page_url);
 </div>
 <div class='clear'></div>
 
-<?php if ( !empty($metadata) ): ?>
-    <div class="fb-share-button" 
-         data-href="<?= $m->canonical ?>" 
-         data-layout="button_count">
-    </div>
-<?php endif; ?>
-<?php if ( $blog->comments && $app->want_facebook): ?>
+
+
+<?php if ( $blog->comments ): ?>
+<?php if ($app->want_facebook): ?>
     <div class="outerwrap">
         <div id="fb-root"></div>
         <fb:login-button autologoutlink="True" length="short" background="white" size="large"></fb:login-button>
         <div class="fb-comments" data-href="<?= $m->canonical ?>" data-width="960" data-numposts="5"></div>
     </div>
+<?php elseif ($app->use_zentix): ?>
+    <div class="comment-wrap">
+    <?php
+    $cmtx_identifier = 'b' . $blog->id;
+    $cmtx_reference = $blog->title;
+    $cmtx_folder    = '/posts/';
+    require ($_SERVER['DOCUMENT_ROOT'] . $cmtx_folder . 'frontend/index.php');
+    ?>
+    </div>
 <?php endif; ?>
+<?php endif;  // comments ?>
