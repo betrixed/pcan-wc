@@ -1,0 +1,51 @@
+<?php
+$user = $m->user;
+$url = $m->url;
+$gem = $this->htmlgem;
+$btn_class = "btn btn-outline-info";
+$m->title = "U#" . $user->id;
+?>
+
+<style>
+    .btn {
+        margin-left:30px;
+    }
+
+    .label {
+        min-width: 150px;
+        text-align:right;
+    }
+</style>
+<form method="post" action="/admin/user/newpost" autocomplete="off">
+
+    <div class='container outerwrap'>
+        <div class='row'>
+            <?= $gem->linkTo(['href' => $url, 'text' => "User Index", 'class' => $btn_class]) ?>
+
+        </div>
+    </div>
+
+    <div class="container-fluid body-wrap">
+        <h2>New User</h2>
+
+
+        <hr>
+        <?= $gem->hidden(['name' => 'id', 'value' => $user->id]) ?>
+
+        <div class="row">
+
+            <div class="col-3">
+                <?= $gem->plainText(['label' => 'Name', 'name' => 'name', 'value' => $user->name]) ?>
+
+                <br><?= $gem->plainText(['label' => 'E-Mail', 'name' => 'email', 'value' => $user->email]) ?>
+            </div>
+
+            <div class="col-1"></div>
+            <div class="col-1">
+                <?= $gem->submit(['name' => 'create', 'value' => 'Create']) ?>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr>

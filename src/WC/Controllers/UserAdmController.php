@@ -16,6 +16,7 @@ use WC\Models\{
     UserEvent
 };
 use WC\{
+    DirPath,
     UserSession,
     Valid
 };
@@ -108,12 +109,18 @@ EOD;
         return $this->render('user','edit');
     }
 
+    public function newAction() {
+        $m = $this->getViewModel();
+        $m->url = $this->url;
+        $m->user = new Users();
+        return $this->render('user', 'new');
+    }
     protected function errorPDO($e)
     {
         $err = $e->errorInfo;
         $this->flash($err[0] . ": " . $err[1]);
     }
-
+/**
     protected function makeNewUser($user_name, $user_email, $user_pwd, $groups)
     {
         $user = new User();
@@ -148,7 +155,7 @@ EOS;
             return $this->errorPDO($e);
         }
     }
-
+*/
 
     public function gpostAction()
     {
@@ -250,6 +257,13 @@ EOS;
      */
     public function sendConfirmAction()
     {
+       
+        global $SITE_DIR;
+        $app = $this->app;
+        $old_paths = $app->plates->UI;
+        $app->plates->UI = DirPath::pushInFirst($SITE_DIR . "/views",  $old_paths);
+
+
         $post = $_POST;
         $id = Valid::toInt($post, "userId");
         $user = Users::findFirstById($id);
@@ -263,10 +277,36 @@ EOS;
         $user->status = 'N';
         $user->update();
         $this->sendConfirm($user);
+        
+        $app->plates->UI = $oldpaths; // restore, because
         return $this->dispatcher->forward(array(
                 "controller" => "user_adm",
                 "action" => "index"
             ));    
 
+    }
+    
+    function newpostAction() {
+        $req = $_POST;
+
+        $email = Valid::toEmail($req, 'email');
+        $name = Valid::toStr($req, 'name');
+        
+        try {
+            $user = $this->newPlainUser($name, $email);
+        }
+        catch (\Exception $e)
+        {
+            $this->flash($e->getMessage());
+            $m = $this->getViewModel();
+            $user = new Users();
+            $user->email = $email;
+            $user->name = $name;
+            $m->user = $user;
+            
+            return $this->render('user', 'new');
+        }
+        
+        return $this->reroute($this->url . "edit/" . $user->id);
     }
 }

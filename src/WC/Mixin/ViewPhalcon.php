@@ -84,7 +84,6 @@ trait ViewPhalcon {
         return $view->getContent();
     }
     
-    
     function  simpleView($path, $params, ?object $plates = null) {
         $view = new Simple();
         // ViewDir must be string!

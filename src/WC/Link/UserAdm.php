@@ -116,7 +116,7 @@ EOD;
         try {
             $user->create();
             $db = $this->db;
-            $pdo = $db->pdo();
+            $pdo = $db->getInternalHandler();
 
             $grouplist = '(';
 
@@ -137,9 +137,11 @@ EOS;
         }
         return $user;
     }
+     
+     
     public function sendConfirm($user) {
         $ec = new EmailConfirmations();
-
+        
         $ec->usersId = $user->id;
         $ec->createdAt = date('Y-m-d H:i:s');
         $ec->modifiedAt = $ec->createdAt;
@@ -153,6 +155,8 @@ EOS;
             'userName' => $user->name
         ];
 
+
+        
         $htmlMsg = $textMsg = static::simpleView('email/confirm', $params);
         $textMsg = static::simpleView('email/confirm_text', $params);
 

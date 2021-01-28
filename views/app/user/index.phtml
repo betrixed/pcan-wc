@@ -13,7 +13,7 @@
 </style>
 
 <div class="container body-wrap">
-    <?php if($page->last > 1): ?>
+    <?php if($page->last >= 1): ?>
     <div class="btn-group">
         <?= $gem->linkTo(['href' => $url . 'new', 'text' => "Create New User", 'class' => $bclass ]) ?>
         <?= $gem->linkTo(['href' => $url, 'text' => "First", 'class' => $bclass , 'icon'=> 'fa fa-fast-backward' ]) ?>
@@ -23,6 +23,7 @@
     </div>
        <?php endif ?>
 <span class="help-inline">Page <?= $page->current . "/" . $page->last ?></span>
+
 </div>
 <div class='container outerwrap'>
 <table class="table table-bordered table-striped" align="center">
