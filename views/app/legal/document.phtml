@@ -8,8 +8,7 @@ $revision = $m->revision;
 $assets->add(['bootstrap','styles']);
 $page_url = "https://" . $app->domain . "/article/" . $blog->title_clean;
 $coded_url = urlencode($page_url);
-
-
+$hasComments = $blog->comments && (($app->want_facebook) || ($app->use_zentix));
 ?>
 <?php if ($app->want_facebook): ?>
 <div class="fb-share-button" 
@@ -67,22 +66,5 @@ $coded_url = urlencode($page_url);
  <?php endif; ?>
     <hr />
 </div>
-<div class='clear'></div>
 
-<?php if (($app->want_facebook) && (!empty($metadata))): ?>
-    <div class="fb-share-button" 
-         data-href="<?= $m->canonical ?>" 
-         data-layout="button_count">
-    </div>
-<?php endif; ?>
-<?php if ( $blog->comments ): ?>
-    <div class="outerwrap">
-        
-        <?php if ($app->want_facebook): ?>
-        <div id="fb-root"></div>
-        <fb:login-button autologoutlink="True" length="short" background="white" size="large"></fb:login-button>
-        <div class="fb-comments" data-href="<?= $m->canonical ?>" data-width="960" data-numposts="5"></div>
-        <?php endif ?>
-    </div>
-<?php endif; ?>
 
