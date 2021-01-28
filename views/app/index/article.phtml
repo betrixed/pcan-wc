@@ -10,16 +10,12 @@ $page_url = "https://" . $app->domain . "/article/" . $blog->title_clean;
 
 $zentix = $app->use_zentix;
 $facebook = $app->want_facebook;
+if ($facebook) {
+    $m->want_facebook = true;
+    $m->fbook = $app->getSecrets('facebook');
+}
+?>
 
-?>
-<?php 
-    if ($app->want_facebook) { 
-        $this->partial('facebook_share', [
-        'coded_url'=>urlencode($page_url),
-        'canonical' => $m->canonical
-        ]);
-} 
-?>
 
 <style>
     .cmtx_container {
@@ -43,8 +39,13 @@ $facebook = $app->want_facebook;
     div#metadata {
         background-image: url( "<?= $theme ?>/tile-fog.png" );
     }
+    div.article-wrap {
+        background-color: white;
+        border-radius: 8px;
+    }
 </style>
-<div class='outerwrap'>
+<div class='container article-wrap'>
+
     <div  class="row">
         <div class="col-6">
             <?php if($back): ?>
@@ -52,12 +53,25 @@ $facebook = $app->want_facebook;
             <?php endif; ?>
         </div>
     </div>
+
     <div id="article-box">
     <div class='<?=$blog->style ?>' >
-        <div id="title-box" class="row">
+        <div class="row">
+
              <div class="col">
-            <span><?= $blog->title ?></span>
+
+                <div id="title-box"><?= $blog->title ?></div>
+
              </div>
+                <?php if ($app->want_facebook): ?>
+
+                 <?php $this->partial('facebook_share', [
+                        'coded_url'=>urlencode($page_url),
+                        'canonical' => $m->canonical
+                    ]); ?>
+                 
+
+                     <?php endif ?>
         </div>
         <div class="row">
             <div class="col">
@@ -82,6 +96,7 @@ $facebook = $app->want_facebook;
  <?php endif; ?>
     <hr />
 </div>
+
 <?php if ( $blog->comments ): ?>
 <div style='clear:both;'></div>
 <?php if ($app->want_facebook): ?>
@@ -99,5 +114,6 @@ $facebook = $app->want_facebook;
     require ($_SERVER['DOCUMENT_ROOT'] . $cmtx_folder . 'frontend/index.php');
     ?>
     </div>
+
 <?php endif; ?>
 <?php endif;  // comments ?>
