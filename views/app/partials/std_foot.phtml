@@ -1,19 +1,31 @@
 <?php  
 $uid = $sessUser->getUserId();
+$gem = new \WC\HtmlGem();
 if ($uid !== 0): 
+    $sid = $sessUser->getUserName();
+    $footer_class = "user-footer";
+    $footer_login = $gem->linkTo(['href' => '/end_session', 'text'=>'Logout ' . $sid, 'style' => 'font-size:1.1em;']);
+else:
+    $footer_class = "page-footer";
+    $footer_login = $gem->linkTo(['href' => '/login', 'text'=>'Login', 'style' => 'font-size:1.1em;']);
+endif;
 ?>
 <div class="clear"></div>
 <div class="hline"></div>
-<!-- std_foot -->
-    <footer style="mt-auto">
-        <div class="user-footer"  style="clear:both;">
+ <footer style="mt-auto">
+     <div class="<?= $footer_class ?>">
+        <div class="row" >
+            <div class="col-6 text-center">
+               <?= $gem->linkTo(['href'=>"/login/terms_service", 'text' => "Terms of Service"]); ?>
+            </div>
+             <div class="col-6 text-center">
+               <?= $gem->linkTo(['href'=>"/login/data_privacy", 'text' => "Privacy Policy"]); ?>
+            </div>
+        </div>
         <div class="row" >
         <div class="col-3">
             <div id="footer_id">
-            <?php
-                $sid = $sessUser->getUserName();
-                echo("&nbsp;<a href=\"/end_session\">" . strtoupper($sid) . "</a>");
-            ?>
+                <?= $footer_login ?>
             </div>
         </div>
         <div class="col-3"> 
@@ -24,26 +36,8 @@ if ($uid !== 0):
         </div>
     </div>
     </div>
-    </footer>
-<?php else: ?>
-    <footer class="page-footer" style="mt-auto">
-        <div class="row" >
-        <div class="col-3">
-            <div id="footer_id">
-            <?php
-                echo("&nbsp;<a href=\"\login\">" . "Login" . "</a>");
-            ?>
-            </div>
-        </div>
-        <div class="col-3"> 
-            &copy;&nbsp;<?= $app->organization ?>
-        </div>
-        <div class="col-6">            
-            <?= $app->end_stats(); ?>
-        </div>
-    </div>
-    </footer>
-<?php endif; ?>
+ </footer>
+
 <script>
     function update_footer_id() {
         var text = "&nbsp;<a style=\"color:white;font-size;1.1em;\" href=\"/end_session\">Session : " + window.php_id + "</a>";
