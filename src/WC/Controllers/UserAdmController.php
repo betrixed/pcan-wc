@@ -278,7 +278,7 @@ EOS;
         $user->update();
         $this->sendConfirm($user);
         
-        $app->plates->UI = $oldpaths; // restore, because
+        $app->plates->UI = $old_paths; // restore, because
         return $this->dispatcher->forward(array(
                 "controller" => "user_adm",
                 "action" => "index"
