@@ -7,7 +7,6 @@ use WC\Db\Server;
 use WC\Link\PageInfo;
 use WC\App;
 use WC\Models\Gallery;
-use Phalcon\Db\Column;
 /**
  * Gallery operations
  *
@@ -17,7 +16,7 @@ trait GalleryView
 {
     public function  countImgGallery($imageid) {
         $result = (new DbQuery($this->db))->arraySet("select count(*) as gct from img_gallery g where g.imageid = :id"
-                , ['id' => $imageid] , ['id' => Column::BIND_PARAM_INT]);
+                , ['id' => $imageid] , ['id' => \PDO::PARAM_INT]);
         return $result[0]['gct'];
     }
     
@@ -26,7 +25,7 @@ trait GalleryView
         $db = $this->db;
         return $db->execute("delete from img_gallery where imageid = :imgid and galleryid = :gid",
                     ['imgid' => $img_id, 'gid' => $gallery_id], 
-                    ['imgid' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_INT]);
+                    ['imgid' => \PDO::PARAM_INT, 'gid' => \PDO::PARAM_INT]);
     }
     
     public function setVisible($galleryid, $imageid, $value) {
@@ -34,8 +33,8 @@ trait GalleryView
         return $db->execute("update img_gallery set visible = :val "
                 . "where imageid = :imgid and galleryid = :galid", 
                 ['val' => $value, 'imgid' => $imageid, 'galid' => $galleryid],
-                ['val' => Column::BIND_PARAM_INT, 'imgid' => Column::BIND_PARAM_INT,
-                        'galid' =>Column::BIND_PARAM_INT]);
+                ['val' => \PDO::PARAM_INT, 'imgid' => \PDO::PARAM_INT,
+                        'galid' =>\PDO::PARAM_INT]);
     }
     public function getImages($id)
     {

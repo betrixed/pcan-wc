@@ -3,7 +3,6 @@
 namespace WC\Link;
 use WC\Db\Server;
 use WC\Db\DbQuery;
-use Phalcon\Db\Column;
 /**
  * @author michael
  */
@@ -13,7 +12,7 @@ trait EventOps
          $qry = new DbQuery($this->db);
          return $qry->objectSet(
                  'select * from register where eventid = :eid', 
-                 ['eid' => $eid], ['eid' => Column::BIND_PARAM_INT]);
+                 ['eid' => $eid], ['eid' => \PDO::PARAM_INT]);
     }
     protected function getRegoMail($eid) {
          $qry = new DbQuery($this->db);
@@ -21,7 +20,7 @@ trait EventOps
                  'select R.*, RM.mail from register R '
                      . ' left outer join reg_mail RM on RM.reg_id = R.id'
                  . ' where R.eventid = :eid', 
-                 ['eid' => $eid], ['eid' => Column::BIND_PARAM_INT]);
+                 ['eid' => $eid], ['eid' => \PDO::PARAM_INT]);
     }
     protected function getPending() {
         $db = $this->db;

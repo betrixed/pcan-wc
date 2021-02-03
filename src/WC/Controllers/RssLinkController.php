@@ -6,7 +6,7 @@ namespace WC\Controllers;
 
 use Phalcon\Mvc\Model\Criteria;
 use Phalcon\Paginator\Adapter\Model;
-use WC\Models\RssLink;
+use WC\Models\{RssLink, RssFeed};
 use Masterminds\HTML5;
 use WC\Link\RssView;
 
@@ -19,6 +19,7 @@ class RssLinkController extends BaseController
      * Index action
      */
     public $text;
+    public $use_https;
 
     public function getAllowRole() : string
     {
@@ -59,9 +60,10 @@ class RssLinkController extends BaseController
         $link = RssLink::findFirstById($id);
         $m = $this->getViewModel();
         $m->link = $link;
-        $m->feed = $link->getRelated('RssFeed');
+        $m->feed = RssFeed::findFirstById($link->feed_id);
         $url = $link->link;
-        if (intval($m->feed->use_https)===1) {
+        $this->use_https = true;
+        if (intval($this->use_https)===1) {
             if (str_starts_with($url, 'http:')) {
                 $url = 'https:' . substr($url, 5);
                 $link->link = $url;
@@ -98,7 +100,7 @@ class RssLinkController extends BaseController
                         }
                         if (isset($data->datePublished)) {
                             $datekey = new \DateTime($data->datePublished);
-                            $link->pubDate = $datekey->format('Y-m-d H:i:s');
+                            $link->pub_date = $datekey->format('Y-m-d H:i:s');
                         }
                     }
                     else if (isset($obj->author)) {
@@ -108,7 +110,7 @@ class RssLinkController extends BaseController
                         }               
                         if (isset($obj->datePublished)) {
                         $datekey = new \DateTime($obj->datePublished);
-                        $link->pubDate = $datekey->format('Y-m-d H:i:s');
+                        $link->pub_date = $datekey->format('Y-m-d H:i:s');
                         }
                     }
                 }
@@ -233,7 +235,7 @@ class RssLinkController extends BaseController
         $rss_link->setextractTitle($this->request->getPost("extract_title", "int"));
 
 
-        if (!$rss_link->save()) {
+        if (!$rss_link->create()) {
             foreach ($rss_link->getMessages() as $message) {
                 $this->flash->error($message);
             }
@@ -289,7 +291,7 @@ class RssLinkController extends BaseController
         $rss_link->setextractTitle($this->request->getPost("extract_title", "int"));
 
 
-        if (!$rss_link->save()) {
+        if (!$rss_link->update()) {
 
             foreach ($rss_link->getMessages() as $message) {
                 $this->flash->error($message);

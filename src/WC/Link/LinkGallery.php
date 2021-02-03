@@ -5,7 +5,6 @@
 namespace WC\Link;
 use WC\Db\Server;
 use WC\Db\DbQuery;
-use Phalcon\Db\Column;
 /**
  *
  * @author Michael Rynn
@@ -25,7 +24,7 @@ trait LinkGallery
             return (new DbQuery($this->db))->arraySet("select G.* from link_gallery G "
                     . " join linktogallery L on G.id = L.gallid "
                     . " where L.linkid = :lid",
-                    ['lid' => $linkid], ['lid' => Column::BIND_PARAM_INT]
+                    ['lid' => $linkid], ['lid' => \PDO::PARAM_INT]
                     );
     }
     

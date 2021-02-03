@@ -63,7 +63,7 @@ use \WC\Mixin\Captcha;
         try {
             
             if ($isNew) {
-                $member->save();
+                $member->create();
             }
             else {
                 $member->update();
@@ -72,7 +72,7 @@ use \WC\Mixin\Captcha;
             $mbr_email->memberid = $member->id;
             $mbr_email->email_address = $email;
             $mbr_email->status = null;
-            $mbr_email->save();
+            $mbr_email->create();
             /*
             $eid = $mbr_email['id'];
             $entry = ChimpEntry::addMemberEmail($eid);

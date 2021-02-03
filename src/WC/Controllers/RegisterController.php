@@ -12,7 +12,7 @@ use WC\Valid;
 use WC\UserSession;
 use WC\SwiftMail;
 //! Front-end processorg
-use \Phalcon\Db\Column;
+
 use Soundasleep\Html2Text;
 
 class RegisterController extends BaseController {
@@ -58,7 +58,7 @@ select e.*
 EOD;
         $result = $db->arraySet($sql,
                 ['slug' => $slug],
-                ['slug' => Column::BIND_PARAM_STR]);
+                ['slug' => \PDO::BIND_INT]);
         if (!empty($result)) {
             return $result[0];
         } else

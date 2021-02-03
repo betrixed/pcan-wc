@@ -11,7 +11,6 @@ namespace WC\Link;
 use WC\Db\DbQuery;
 use WC\Link\PageInfo;
 use WC\Models\Linkery;
-use Phalcon\Db\Column;
 use WC\Valid;
 /**
  * Description of LinkeryData
@@ -27,7 +26,7 @@ select i.* from links i
     join linktogallery k on i.id = k.linkid and k.gallid = :id    
 EOD;
         $results = (new DbQuery($this->db))->objectSet($sql,
-                ['id' => $id], ['id' => Column::BIND_PARAM_INT]);
+                ['id' => $id], ['id' => \PDO::PARAM_INT]);
         return $results;
     }
 
@@ -44,8 +43,8 @@ EOD;
         $results = (new DbQuery($this->db))->objectSet($sql,
                 ['pgsize' => $pageRows,
                     'pgstart' => $start],
-                ['pgsize' => Column::BIND_PARAM_INT,
-                    'pgstart' => Column::BIND_PARAM_INT]);
+                ['pgsize' => \PDO::PARAM_INT,
+                    'pgstart' => \PDO::PARAM_INT]);
 
         $maxrows = !empty($results) ? $results[0]->full_count : 0;
 

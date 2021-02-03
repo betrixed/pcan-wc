@@ -78,7 +78,7 @@ EOD;
         $role->groupid = $groupid;
         $role->userid = $userid;
         try {
-            $role->create();
+            $role->save();
         } catch (\PDOException $e) {
             return $this->errorPDO($e);
         }
@@ -88,7 +88,7 @@ EOD;
     public function delUserGroup($userid, $groupid) {
         $db = $this->db;
 
-        $db->execute("delete from user_auth where userid = $userid and groupid = $groupid");
+        $db->exec("delete from user_auth where userid = $userid and groupid = $groupid");
     }
 
     public static function makeCode(int $size = 24): string {
@@ -114,7 +114,7 @@ EOD;
 
 
         try {
-            $user->create();
+            $user->save();
             $db = $this->db;
             $pdo = $db->getInternalHandler();
 
@@ -172,7 +172,7 @@ EOS;
         ];
         $mok = $mailer->send($msg, "email_confirm");
 
-        if ($mok && $ec->create()) {
+        if ($mok && $ec->save()) {
 
             $this->flash('A confirmation mail has been sent to ' . $user->email);
         } else {
@@ -227,7 +227,7 @@ EOS;
         $fbuser->created_at = Valid::now();
         $fbuser->modified_at = $fbuser->created_at;
         $fbuser->update_count = 0;
-        $fbuser->create();
+        $fbuser->save();
         return $fbuser;
     }
     
@@ -269,7 +269,7 @@ EOS;
             $del = new FbookDeluser();
             $del->fb_user = $userid;
             $del->created_at = Valid::now();
-            if ($del->create()) {
+            if ($del->save()) {
                 $result = $del->id;
             }
             $rec->delete();

@@ -46,10 +46,10 @@ class UnregController extends BaseController {
                 $results = $qry->queryOA($sql);
                 foreach ($results as $obj) {
                     $dsql = 'delete from reg_mail where reg_id = ' . $obj->id;
-                    $this->db->execute($dsql);
+                    $this->db->exec($dsql);
                 }
                 $dsql = "delete from register where email = '$email'";
-                $this->db->execute($dsql);
+                $this->db->exec($dsql);
                 $this->flash("All records deleted");
                 return $this->render('email_group', 'no_records');
             }

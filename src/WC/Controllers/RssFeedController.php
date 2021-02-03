@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace WC\Controllers;
 
 use WC\Valid;
-use Phalcon\Mvc\Model\Criteria;
-use Phalcon\Paginator\Adapter\Model;
+
 use WC\Models\RssFeed;
 use WC\Db\DbQuery;
 use WC\UserSession;
 use WC\Models\RssLink;
 use WC\Link\RssView;
-use Phalcon\Db\Column;
+
 
 class RssFeedController extends BaseController
 {
@@ -53,6 +52,14 @@ class RssFeedController extends BaseController
         return $this->render_action('index');
     }
 
+    function getLink(int $id, string $guid) : ?RssLink 
+    {
+        return RssLink::findFirst(
+                            ['conditions' => "feed_id = :id and guid = :gid",
+                                'bind' => ['id' => $id, 'gid' => $guid],
+                                'bindTypes' => ['id' => \PDO::PARAM_INT, 'gid' => \PDO::PARAM_STR]
+        ]);
+    }
     /**
      * Searches for rss_feed
      */
@@ -239,11 +246,8 @@ class RssFeedController extends BaseController
                 $node = $node->nextSibling;
             }
 
-            $link = RssLink::findFirst(
-                            ['conditions' => "feed_id = :id: and guid = :gid:",
-                                'bind' => ['id' => $id, 'gid' => $guid],
-                                'bindTypes' => ['id' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_STR]
-            ]);
+            $link = $this->getLink($id, $guid);
+            
 
             if (empty($link)) {
                 $link = new RssLink();
@@ -333,11 +337,7 @@ class RssFeedController extends BaseController
             
             if (count($values) === 5) {
                 $guid = $values['guid'];
-                $link = RssLink::findFirst(
-                            ['conditions' => "feed_id = :id: and guid = :gid:",
-                                'bind' => ['id' => $id, 'gid' => $guid],
-                                'bindTypes' => ['id' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_STR]
-                ]);
+                $this->getLink($id, $guid);
                 
                 if (empty($link)) {
                     $link = new RssLink();
@@ -371,11 +371,7 @@ class RssFeedController extends BaseController
                 $node = $node->nextSibling;
             }
 
-            $link = RssLink::findFirst(
-                            ['conditions' => "feed_id = :id: and guid = :gid:",
-                                'bind' => ['id' => $id, 'gid' => $guid],
-                                'bindTypes' => ['id' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_STR]
-            ]);
+            $link = $this->getLink($id, $guid);
 
             if (empty($link)) {
                 $link = new RssLink();
@@ -450,11 +446,7 @@ class RssFeedController extends BaseController
                 $node = $node->nextSibling;
             }
 
-            $link = RssLink::findFirst(
-                            ['conditions' => "feed_id = :id: and guid = :gid:",
-                                'bind' => ['id' => $id, 'gid' => $guid],
-                                'bindTypes' => ['id' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_STR]
-            ]);
+            $link = $this->getLink($id, $guid);
 
             if (empty($link)) {
                 $link = new RssLink();
@@ -549,11 +541,8 @@ class RssFeedController extends BaseController
                 $node = $node->nextSibling;
             }
 
-            $link = RssLink::findFirst(
-                            ['conditions' => "feed_id = :id: and guid = :gid:",
-                                'bind' => ['id' => $id, 'gid' => $guid],
-                                'bindTypes' => ['id' => Column::BIND_PARAM_INT, 'gid' => Column::BIND_PARAM_STR]
-            ]);
+            $link = $this->getLink($id, $guid);
+            
             if (!empty($link)) {
                 if (in_array($link->section, $this->newsLimitedExcludes)) {
                     $link->delete();
@@ -634,7 +623,7 @@ class RssFeedController extends BaseController
             ]);
             return;
         }
-        $last_read = new \DateTime($rss_feed->last_read);
+        $last_read = $rss_feed->last_read;
         $now = new \DateTime();
         $diff = $now->diff($last_read);
         $getnew =  ($diff->y > 0 || $diff->m > 0 || $diff->d > 0 || $diff->h > 23);

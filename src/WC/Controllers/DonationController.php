@@ -8,7 +8,6 @@ use WC\Models\Donation;
 use WC\Models\Member;
 use WC\Valid;
 use WC\Db\DbQuery;
-use Phalcon\Db\Column;
 
 class DonationController extends BaseController
 {
@@ -142,7 +141,7 @@ EOS;
         $donation->setmemberDate($this->request->getPost("member_date", "int"));
         $donation->setDetail($this->request->getPost("detail", "string"));
 
-        if (!$donation->save()) {
+        if (!$donation->create()) {
             foreach ($donation->getMessages() as $message) {
                 $this->flash->error($message);
             }

@@ -12,7 +12,7 @@ use WC\Models\ChimpEntry;
 use WC\Models\MemberEmail;
 use WC\Models\Member;
 use WC\App;
-use Phalcon\Db\Column;
+
 /**
  * Description of chimplists
  *
@@ -60,12 +60,12 @@ trait ChimpData {
     static function memberNamePhone($fname, $lname, $phone) {
         return Member::findFirst([
             'conditions' =>
-             'fname = :fn: and lname = :ln: and phone = :ph:',
+             'fname = :fn and lname = :ln and phone = :ph',
             'bind' => 
             ['fn' => $fname, 'ln' => $lname, 'ph' => $phone], 
             
             'bindTypes' => 
-            ['fn' => Column::BIND_PARAM_STR, 'ln' >= Column::BIND_PARAM_STR, 'ph' => Column::BIND_PARAM_STR]
+            ['fn' => \PDO::PARAM_STR, 'ln' >= \PDO::PARAM_STR, 'ph' => \PDO::PARAM_STR]
             ]);
     }
 
@@ -100,9 +100,11 @@ trait ChimpData {
 
     static public function byUniqueId($id, $uid) {
         return ChimpEntry::findFirst(
-                        ["listid = ?0 and uniqueid = ?1",
-                            'bind' => [$id, $uid]
-        ]);
+                ['conditions' => ["listid = :id and uniqueid = :uid"], 
+                 'bind' => [':id' => $id, ':uid' => $uid]
+                ]
+                            
+        );
     }
 
     /**
@@ -212,9 +214,9 @@ trait ChimpData {
         $api = $this->getApi();
         
         $db = $this->db;
-        $db->execute("LOCK TABLES chimp_lists WRITE");
+        $db->exec("LOCK TABLES chimp_lists WRITE");
         try {
-            $db->execute("SET autocommit=0");
+            $db->exec("SET autocommit=0");
             $json = $api->getLists();
 
             foreach ($json->lists as $list) {
@@ -245,9 +247,9 @@ trait ChimpData {
 
                 $allLists[] = $chimplist;
             }
-            $db->execute("COMMIT");
+            $db->exec("COMMIT");
         } finally {
-            $db->execute("UNLOCK TABLES");
+            $db->exec("UNLOCK TABLES");
         }
 
         return $allLists;
@@ -416,7 +418,7 @@ trait ChimpData {
                     static::mergeValue($member_rec, 'createDate', $create_date);
                     static::mergeValue($member_rec, 'phpjson', $email_address);
                     if ($newMember) {
-                            $member_rec->create(); // need record id now
+                            $member_rec->save(); // need record id now
                     }
                     else {
                         $needMemberUpdate = true;
@@ -437,7 +439,7 @@ trait ChimpData {
                     $entry_rec->emailid = $email_rec->id;
                     $entry_rec->chimpid = $mcid;
                     $entry_rec->status = $status;
-                    $entry_rec->create();
+                    $entry_rec->save();
                 }
                 else if ($status !== $entry_rec->status) {
                     $entry_rec->status = $status;

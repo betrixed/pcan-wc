@@ -9,7 +9,7 @@ namespace WC\Controllers;
 use WC\Valid;
 use WC\DB\Server;
 
-use WC\Models\{Blog, Links,Event,BlogRevision};
+use WC\Models\{Blog, Links, Event, BlogRevision};
 
 use WC\Db\DbQuery;
 use WC\WConfig;
@@ -186,15 +186,17 @@ class BlogAdmController extends BaseController
             if ($action === 'Revision') {
                 //  have new primary key
                 $new_revision = new BlogRevision();
-                $new_revision->setRevision($blog->getRevision());
-                $new_revision->setBlogId($blog->getId());
-                $new_revision->setContent($revision->getContent());
-                $new_revision->setDateSaved($revision->getDateSaved());
+                $new_revision->revision = $blog->revision;
+                $new_revision->blog_id = $blog->id;
+                $new_revision->content = $revision->content;
+                $new_revision->date_saved = $revision->date_saved;
                 $new_revision->create(); // a create using old record object fails silently
+                $revid = $new_revision->revision;
             } else {
                 // update existing revision
                 $revision->update();
             }
+            // 
             $blog->update();
         } catch (\PDOException $e) {
             return $this->errorPDO($e, $blogid);
@@ -262,7 +264,7 @@ class BlogAdmController extends BaseController
         $m = $view->m;
         $blog = Blog::findFirstById($bid);
         $m->blog = $blog;
-        $all = $blog->getRelated('BlogRevision');
+        $all = $this->getAllRevisions($bid);
         $list = [];
         foreach ($all as $revision) {
             $item = new WConfig();
@@ -327,9 +329,10 @@ class BlogAdmController extends BaseController
         }
         $params['val'] = $val;
         $db->begin();
+        $sth = $db->prepare($sql);
         foreach ($list as $id) {
             $params['id'] = $id;
-            $db->execute($sql, $params);
+            $sth->execute($params);
         }
         $db->commit();
         $args = $post['args'];
@@ -461,7 +464,7 @@ class BlogAdmController extends BaseController
                     $event->totime = Valid::toDateTime($post, 'totime');
                     $event->slug = Valid::toStr($post, 'slug');
                     $event->enabled = 1;
-                    $event->save();
+                    $event->create();
                 } catch (\Exception $e) {
                     $err = $e->errorInfo;
                     $this->flash('New event fail: ' . $err[0] . ' ' . $err[1]);

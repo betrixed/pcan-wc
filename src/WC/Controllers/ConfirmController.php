@@ -106,7 +106,7 @@ class ConfirmController extends BaseController {
         /**
          * Change the confirmation to 'reset'
          */
-        if (!$resetPassword->save()) {
+        if (!$resetPassword->update()) {
 
             foreach ($resetPassword->getMessages() as $message) {
                 $this->flash->error($message);

@@ -20,7 +20,11 @@ class SeriesAdmController extends BaseController {
 
     public function indexAction() {
         $m = $this->getViewModel();
-        $m->series = Series::find();
+        $obj = Series::find();
+        if (is_object($obj)) {
+            $obj = [$obj];
+        }
+        $m->series = $obj;
       
         return $this->render('series', 'index');
     }

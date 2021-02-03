@@ -2,11 +2,9 @@
 namespace WC\Controllers;
 
 use WC\Models\Series;
-use Phalcon\Mvc\Controller;
 use WC\Db\DbQuery;
-use Phalcon\Db\Column;
 
-class SeriesViewController extends Controller {
+class SeriesViewController extends BaseController {
 use \WC\Mixin\ViewPhalcon;
 
     public function viewAction($id) {
@@ -23,7 +21,7 @@ use \WC\Mixin\ViewPhalcon;
         $m->episodes = ($this->dbq)->objectSet(
                 'select * from gallery where seriesid = :sid order by last_upload desc',
                 ['sid' => $series->id],
-                ['sid' => Column::BIND_PARAM_INT]);
+                ['sid' => \PDO::PARAM_INT]);
         //$series->getRelated('Gallery');
         return  $this->render('series','view');
     }

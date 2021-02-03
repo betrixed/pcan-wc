@@ -18,8 +18,6 @@ use WC\Link\Path;
 use WC\App;
 use WC\WConfig;
 
-use Phalcon\Db;
-use Phalcon\Db\Column;
 use WC\Models\BlogCategory;
 
 class MenuBuild
@@ -50,7 +48,7 @@ class MenuBuild
         foreach ($midata as $fname => $fvalue) {
             $mi->$fname = $fvalue;
         }
-        $mi->create();
+        $mi->save();
         return $mi->id;
     }
     static function insert_menus(&$data, $pid)
@@ -104,7 +102,7 @@ class MenuBuild
                  'conditions' => 'name_clean = :str:', 
                  'bind' => [ 'str' => $cat],
                  'bindTypes' => [
-                     Column::BIND_PARAM_STR
+                     \PDO::PARAM_STR
                  ] ]);
         if (empty($catrec)) {
             return;
@@ -117,13 +115,13 @@ class MenuBuild
      join blog_revision R on R.blog_id = B.id and R.revision = B.revision
      order by pdate desc $rowslimit
 EOD;
-        $result = $db->query($sql, ["id" => $catrec->id], ["id" => Column::BIND_PARAM_INT]);
+        $result = $db->query($sql, ["id" => $catrec->id], ["id" => \PDO::PARAM_INT]);
         
         if (empty($result)) {
             return;
         }
         
-        $result->setFetchMode(Db\ENUM::FETCH_ASSOC);
+        $result->setFetchMode(\PDO::FETCH_ASSOC);
         $rset = $result->fetchAll();
         $data = [];
         

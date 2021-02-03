@@ -6,7 +6,7 @@ use WC\Server;
 use WC\DbQuery;
 use WC\App;
 use WC\Models\Blog;
-use Phalcon\Db\Column;
+
 use Masterminds\HTML5;
 use WC\Link\RevisionOp;
 use WC\Link\BlogView;
@@ -131,10 +131,10 @@ class BlogExport {
         if (!empty($blog->id)) {
             $blog->update();
         } else {
-            $blog->create();
+            $blog->save();
         }
          $revision->blog_id = $blog->id;
-         $revision->create();
+         $revision->save();
          
         $blogid = $blog->id;
         if ($op === "update") {
@@ -155,9 +155,9 @@ class BlogExport {
                                 'mid' => $mid,
                                 'ct' => $md['content']
                             ],
-                            ['bid' => Column::BIND_PARAM_INT,
-                                'mid' => Column::BIND_PARAM_INT,
-                                'ct' => Column::BIND_PARAM_STR]);
+                            ['bid' => \PDO::PARAM_INT,
+                                'mid' => \PDO::PARAM_INT,
+                                'ct' => \PDO::PARAM_STR]);
                 }
             }
         }
@@ -168,11 +168,11 @@ class BlogExport {
                 // ensure entry in blog_to_category
                 $catid = $qry->arraySet('select bc.id where bc.name_clean = :slug',
                         ['slug' => $slug],
-                        ['slug' => Column::BIND_PARAM_STR]);
+                        ['slug' => \PDO::PARAM_STR]);
                 if (!empty($catid)) {
                     $db->execute("insert into blog_to_category(blog_id, category_id) values (:b1, :c1)",
                             ["b1" => $blogid, "c1" => $catid[0]['id']],
-                            ["b1" => Column::BIND_PARAM_INT, "c1" => Column::BIND_PARAM_INT]
+                            ["b1" => \PDO::PARAM_INT, "c1" => \PDO::PARAM_INT]
                     );
                 }
             }

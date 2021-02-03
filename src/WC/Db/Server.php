@@ -3,20 +3,21 @@
 namespace WC\Db;
 
 use WC\App;
-Use Phalcon\Db;
-use Phalcon\Db\Adapter\PdoFactory;
-use Phalcon\Db\Adapter\AdapterInterface;
+use ActiveRecord\{Connection, ConnectionManager, Config};
 
 /**
  * @author Michael Rynn
+ * Centralize and share database configuration(s) with
+ * ActiveRecord setup.
+ * Active record has ConnectionManager for named live connections,
+ * Config for named connection strings.
  */
 class Server
 {
 
-    protected $dbparams = [];
-    protected $srv = [];
-    protected $defaultName = "database";
-
+    protected ?Config $con_data = null;
+    protected ?ConnectionManager $con_live = null;
+    
     const DB_connect = ['host', 'port', 'charset', 'dbname'];
 
     
@@ -26,52 +27,42 @@ class Server
     
     public function __construct(string $defaultName = "database", array $dbparams = [])
     {
-        $this->defaultName = $defaultName;
         $this->dbparams = $dbparams;
+        $cfg = Config::instance();
+        $this->con_data = $cfg;
+        foreach($dbparams as $name => $conn) {
+            $cfg->add_connection($name, $conn);
+        }
+        $cfg->set_default_name($defaultName);
+        $this->con_live = ConnectionManager::instance();
+        // TODO: is deprecated!
+        Connection::$datetime_format = 'Y-m-d H:i:s';
+        // dont forget $cfg->set_model_directory($APP->ar_models);
     }
     
     function addConfig(string $name, array $params) {
-        $this->dbparams[$name] = $params;
+        $this->con_data->add_connection($name, $params);
     }
-    function connection(array $cfg): AdapterInterface
-    {
-        $factory = new PdoFactory();
-        $adapter = $cfg['adapter'];
-        unset($cfg['adapter']);
-        return $factory->newInstance($adapter, $cfg);
-    }
+    
 
     /**
      * Create Database object from configuration name
      * @param type $name
      * @return type
      */
-    function dbconfig(array $cfg): AdapterInterface
+    function dbconfig(string $name): Connection
     {
-        return  $this->connection($cfg);
+        return  Connection::instance($name);
     }
 
-    function setDefault(AdapterInterface $db)
+    function setDefault(string $name)
     {
-       $this->srv[$this->defaultName] = $db;
+       $this->con_strings->set_default_connect($name);
     }
 
     /** return database by configuration name */
-    function db($name = null): AdapterInterface
+    function db($name = null): Connection
     {
-        if (empty($name)) {
-            $name = $this->defaultName;
-        }
-        $config = $this->dbparams[$name] ?? null;
-        if (is_null($config)) {
-            throw new \Exception('Database configuration "' . $name . '" not found');
-        }
-        if (empty(static::$srv) || !isset($this->srv[$name])) {
-            $db = $this->dbconfig($config);
-            $this->srv[$name] = $db;
-            return $db;
-        } else {
-            return  $this->srv[$name];
-        }
+        return $this->con_live->get_connection($name);
     }
 }

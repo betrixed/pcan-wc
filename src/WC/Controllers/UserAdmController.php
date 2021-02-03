@@ -21,8 +21,6 @@ use WC\{
     Valid
 };
 
-use Phalcon\Db\Column;
-
 class UserAdmController extends BaseController
 {
 
@@ -71,7 +69,9 @@ select   u.* ,
      order by u.name LIMIT :ct OFFSET :start
 EOD;
         $qry = $this->dbq;
-        $results = $qry->objectSet($sql, ['start' => intval($start), 'ct' => intval($grabsize) ], ['start' => Column::BIND_PARAM_INT, 'ct' => Column::BIND_PARAM_INT]);
+        $results = $qry->objectSet($sql, 
+            ['start' => intval($start), 'ct' => intval($grabsize) ], 
+            ['start' => \PDO::PARAM_INT, 'ct' => \PDO::PARAM_INT]);
         $maxrows = !empty($results) ? $results[0]->full_count : 0;
         $paginator = new PageInfo($numberPage, $grabsize, $results, $maxrows);
         $m = $this->getViewModel();

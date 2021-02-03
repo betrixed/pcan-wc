@@ -6,12 +6,10 @@ namespace WC\Controllers;
 use WC\Link\PageInfo;
 use WC\Models\BlogCategory;
 
-use WC\Db\Server;
 use WC\Db\DbQuery;
 use WC\UserSession;
 use WC\Valid;
 
-use Phalcon\Db\Column;
 class CatAdmController extends BaseController
 {
 use \WC\Mixin\ViewPhalcon;
@@ -95,7 +93,7 @@ use \WC\Mixin\Auth;
         $sql = "select *, count(*) over() as full_count from blog_category " . 
                 " limit :grab offset :start";
         $results = $db->arraySet($sql, [ 'grab' => $grabsize, 'start' => $start], 
-                ['grab' => Column::BIND_PARAM_INT, 'start' => Column::BIND_PARAM_INT]);
+                ['grab' => \PDO::PARAM_INT, 'start' => \PDO::PARAM_INTPARAM_INT]);
         $maxrows = !empty($results) ? $results[0]['full_count'] : 0;
         $paginator = new PageInfo($numberPage, $grabsize, $results, $maxrows);
         $m->page = $paginator;

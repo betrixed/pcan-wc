@@ -7,8 +7,7 @@ use WC\App;
 use WC\WConfig;
 
 use WC\Db\Server;
-use Phalcon\Db\Column;
-use Phalcon\Db;
+
 /**
  * MenuTree is a tree of \Models\Menu
  */
@@ -82,12 +81,12 @@ class MenuTree  {
         if (is_numeric($menuName)) {
             $root_field = 'id';
             $params = ['root'=> intval($menuName) ]; 
-            $bind = ['root' => Column::BIND_PARAM_INT];
+            $bind = ['root' => \PDO::PARAM_INT];
         }
         else {
             $root_field = 'caption';
             $params = ['root'=> $menuName ]; 
-            $bind = ['root' => Column::BIND_PARAM_STR];
+            $bind = ['root' => \PDO::PARAM_STR];
         }
            
 $menu_sql = <<<EOD
@@ -116,7 +115,7 @@ EOD;
             return null;
         }
         
-        $set->setFetchMode(Db\ENUM::FETCH_ASSOC);
+        $set->setFetchMode(\PDO::FETCH_ASSOC);
         $results = $set->fetchAll();
         $topItem = null;
         $prevLevel = null;

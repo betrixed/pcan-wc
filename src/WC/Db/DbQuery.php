@@ -2,29 +2,57 @@
 
 namespace WC\Db;
 
-use WC\Db\Server;
-use Phalcon\Db;
-use Phalcon\Db\Adapter\AdapterInterface;
-use Phalcon\Db\Column;
+use ActiveRecord\Connection;
 
 class DbQuery {
 
-    public AdapterInterface $db;
+    public Connection $db;
     private $order;
     private $limit;
     private $where;
     private $params;
     private $binds;
 
-    public function __construct(AdapterInterface $db) {
+    public function __construct(Connection $db) {
         $this->db = $db;
     }
 
-    public function getSchemaName(): string {
-        $data = $this->db->getDescriptor();
-        if (isset($data['dbname'])) {
-            return $data['dbname'];
+    public static function getBindType($value) : int {
+        switch(gettype($value)) {
+            case 'integer' : 
+                return \PDO::PARAM_INT;
+            case 'string' : 
+            default :
+                return \PDO::PARAM_STR;
         }
+    }
+    /**
+         * 
+         * @param string $sql
+         * @param int $fetch_style PDO::FETCH_?  ASSOC | COLUMN | OBJ
+         * @param array $params
+         * @param array $bindtypes
+         * @return array
+         */
+    public function fetchAll(string $sql, int $fetch_style, array $params=null, array $bindtypes = null) : array 
+    {
+        $db = $this->db->connection;
+        $sth = $db->prepare($sql);
+        if (is_array($params)) {
+            foreach($params as $key => $value) {
+                $btype = $bindtypes[$key] ?? self::getBindType($value);
+                $sth->bindValue($key, $value, $btype);
+            }
+        }
+        if ($sth->execute()) {
+            return $sth->fetchAll($fetch_style); // 
+        }
+        else  {
+            return []; // todo: throw something
+        }
+    }
+    public function getSchemaName(): string {
+        return $this->db->getSchema();
     }
 
     private function reset() {
@@ -40,13 +68,13 @@ class DbQuery {
     }
 
     public function arrayColumn(string $sql, array $params = null, array $bindtypes = null): array {
-        $result = $this->db->fetchAll($sql, Db\Enum::FETCH_COLUMN, $params, $bindtypes);
+        $result = $this->fetchAll($sql, \PDO::FETCH_COLUMN, $params, $bindtypes);
         $this->reset();
         return $result;
     }
 
     public function arraySet(string $sql, array $params = null, array $bindtypes = null): array {
-        $result = $this->db->fetchAll($sql, Db\Enum::FETCH_ASSOC, $params, $bindtypes);
+        $result = $this->fetchAll($sql, \PDO::FETCH_ASSOC, $params, $bindtypes);
         $this->reset();
         return $result;
     }
@@ -63,7 +91,7 @@ class DbQuery {
         return $result;
     }
     public function objectSet(string $sql, array $params = null, $bindtypes = null): array {
-        $result = $this->db->fetchAll($sql, Db\Enum::FETCH_OBJ, $params, $bindtypes);
+        $result = $this->fetchAll($sql, \PDO::FETCH_OBJ, $params, $bindtypes);
         $this->reset();
         return $result;
     }
@@ -142,14 +170,14 @@ class DbQuery {
         $pname = $this->newParamName();
         $this->where .= str_replace('?', ':' . $pname, $condition);
         $this->params[$pname] = $value;
-        $bind_type = is_integer($value) ? Column::BIND_PARAM_INT : Column::BIND_PARAM_STR;
+        $bind_type = is_integer($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
         $this->binds[$pname] = $bind_type;
     }
 
     /** Value BIND_PARAM_XX deduced from PHP type, so may need cast like (int) */
     public function bindParam(string $pname, $value) {
         $this->params[$pname] = $value;
-        $bind_type = is_integer($value) ? Column::BIND_PARAM_INT : Column::BIND_PARAM_STR;
+        $bind_type = is_integer($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
         $this->binds[$pname] = $bind_type;
     }
 
@@ -158,12 +186,12 @@ class DbQuery {
             $pname = $this->newParamName();
             $this->limit = ' LIMIT :' . $pname;
             $this->params[$pname] = $rows;
-            $this->binds[$pname] = Column::BIND_PARAM_INT;
+            $this->binds[$pname] = \PDO::PARAM_INT;
             if ($offset > 0) {
                 $p2 = $this->newParamName();
                 $this->limit .= ' OFFSET :' . $pname;
                 $this->params[$p2] = $offset;
-                $this->binds[$p2] = Column::BIND_PARAM_INT;
+                $this->binds[$p2] = \PDO::PARAM_INT;
             }
         }
     }

@@ -44,7 +44,7 @@ class InitMenusController extends \Pcan\Controller
         foreach ($midata as $fname => $fvalue) {
             $mi[$fname] = $fvalue;
         }
-        $mi->save();
+        $mi->create();
         return $mi['id'];
     }
 

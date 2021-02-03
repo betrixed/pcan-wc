@@ -78,7 +78,7 @@ class EventAdmController extends BaseController
                     // ensure mail  job record exists
                     $sql = "insert into reg_mail(reg_id, mail) values ($regid,1)"
                             . " on duplicate key update mail=1";
-                    $db->execute($sql);
+                    $db->exec($sql);
                 }
             }
             return $this->display($event);
@@ -101,15 +101,15 @@ class EventAdmController extends BaseController
                         if ($actions === "Mail") {
                             $sql = "insert into reg_mail(reg_id, mail) values ($regid,1)"
                                     . " on duplicate key update mail=1";
-                            $db->execute($sql);
+                            $db->exec($sql);
                         }
                         else if ($actions === "Delete") {
                             $sql = "delete from register where id = $regid";
-                            $db->execute($sql);
+                            $db->exec($sql);
                         }
                         else if ($actions === "Remove") {
                             $sql = "delete from reg_mail where reg_id = $regid";
-                            $db->execute($sql);
+                            $db->exec($sql);
                         }
                     }
                 }

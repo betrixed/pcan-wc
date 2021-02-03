@@ -1,28 +1,27 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace WC {
 
     /**
      * Assigns global instance $WCLOADER
-     *
+     * Really dump loader class.
+     * Simple loader for 1 or 2 levels of class prefix
+     * "RootNS => 'Path'
+     * OR
+     * "RootNS => [ 0 => "Path",  1 = ["SubNS1" => "Path", "SubNS2=>"Path"]]
      * @author michael
      */
-// Simple loader for 1 or 2 levels of class prefix
+// 
     class Loader {
 
         protected array $prefixPaths;
-
+        protected array $folders = []; // Class file
+        
         static public function instance() {
             global $WCLOADER;
             return $WCLOADER;
         }
-
+        
         static public function loadfile($file): bool {
             if (file_exists($file)) {
                 try {
@@ -43,6 +42,12 @@ namespace WC {
             return $WCLOADER->load($class);
         }
 
+        public function addClassFolder($path) {
+            if (!file_exists($path) && is_dir($path)) {
+                throw new \Exception("Path not found " . $path);
+            }
+            $this->folders[] = $path;
+        }
         public function load($class): bool {
             $pos = strpos($class, "\\");
             if ($pos !== false) {
@@ -53,19 +58,29 @@ namespace WC {
                     return false;
                 }
                 if (is_array($path)) {
-                    // 2nd level
+                    $levels = $path;
+                    // Resolve $path to a string
                     $pos2 = strpos($class, "\\", $pos + 1);
                     if ($pos2 !== false) {
-                        $prefix2 = substr($class, $pos + 1, $pos2 - $pos - 1);
-                        $path2 = $path[$prefix2] ?? null;
-                    } else {
-                        $path2 = null;
+                        // level 1?
+                        $level1 = $levels[1] ?? null;
+                        if ($level1) {
+                            $prefix2 = substr($class, $pos + 1, $pos2 - $pos - 1);
+                            $path2 = $level1[$prefix2] ?? null;
+                            if (!$path2) {
+                                $path = $levels[0] ?? null;
+                        //debugLine("Level 2 prefix not found: ", $prefix2);
+                            }
+                            else {
+                                $path = $path2;
+                                $pos = $pos2;
+                            }
+                        } 
                     }
-                    if (!$path2) {
-                        debugLine("Level 2 prefix not found: ", $prefix2);
-                    }
-                    $path = $path2;
-                    $pos = $pos2;
+                    else {
+                        // first level
+                        $path = $levels[0] ?? null;
+                    } 
                 }
                 if (is_string($path)) {
                     $leaf = str_replace("\\", DIRECTORY_SEPARATOR, substr($class, $pos));
@@ -81,6 +96,14 @@ namespace WC {
                     } else {
                         throw new \Exception("class file not found " . $file);
                     }
+                }
+            }
+            $leaf = $class . ".php";
+            foreach($this->folders as $path) {
+                $file = $path . "/" . $leaf;
+                if (file_exists($file)) {
+                    require $file;
+                    return true;
                 }
             }
             return false;

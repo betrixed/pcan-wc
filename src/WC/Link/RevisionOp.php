@@ -5,8 +5,6 @@ namespace WC\Link;
 use WC\Models\Blog;
 use WC\Models\BlogRevision;
 use WC\Valid;
-use Phalcon\Db\Column;
-
 /**
  *
  * @author michael
@@ -14,11 +12,14 @@ use Phalcon\Db\Column;
 trait RevisionOp
 {
 
+    public function getAllRevisions(int $blogid) {
+        return BlogRevision::find('all', ['conditions' => ['blog_id=?', $blogid]]);
+    }
     public function newRevisionId(Blog $blog): int
     {
         $qry = $this->dbq;
         $result = $qry->arrayColumn('SELECT MAX(revision) as max_revision from blog_revision where blog_id = :bid',
-                ['bid' => $blog->id], ['bid' => Column::BIND_PARAM_INT]);
+                ['bid' => $blog->id], ['bid' => \PDO::PARAM_INT]);
         if (!empty($result)) {
             return intval($result[0]) + 1;
         }
@@ -43,8 +44,7 @@ trait RevisionOp
     static public function getBlogRevision($bid, $rid): ?BlogRevision
     {
         $rev = BlogRevision::findFirst([
-                    'conditions' => 'blog_id = :bid: and revision = :rev:',
-                    'bind' => ['bid' => intval($bid), 'rev' => intval($rid)]
+                    'conditions' => ['blog_id = ? and revision = ?', intval($bid), intval($rid)]
         ]);
         return $rev;
     }

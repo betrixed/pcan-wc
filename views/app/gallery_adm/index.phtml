@@ -60,7 +60,7 @@ $assets->add(['bootstrap','grid']);
                  $name = $gallery['name'];
          ?>
 <tr>
-    <td class='leftCell'><?= $gem->linkTo(['href'=>$url.$name, 'text'=>$name]) ?></td>
+    <td class='leftCell'><?= $gem->linkTo(['href'=>$url . urlencode($name), 'text'=>$name]) ?></td>
             <td class='leftCell'><?= $description ?></td>
              <td><?= $udate ?></td>
         </tr>

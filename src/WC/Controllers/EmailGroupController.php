@@ -407,7 +407,7 @@ EOD;
         $link['linkid'] = $linkid;
         $link['gallid'] = $gallid;
         try {
-            $link->save();
+            $link->create();
         } catch (\PDOException $e) {
             $err = $e->errorInfo;
             $this->flash($err[0] . ": " . $err[1]);

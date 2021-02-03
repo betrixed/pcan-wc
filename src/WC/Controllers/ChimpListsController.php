@@ -20,7 +20,6 @@ use WC\Models\Member;
 use WC\Models\MemberEmail;
 use WC\Models\ChimpLists;
 
-use Phalcon\Db\Column;
 
 function gen_array(string &$outs, $prop, &$obj) {
     if ($prop === "_links") {
@@ -108,13 +107,13 @@ EOD;
         $params = ["id" => $id];
         $sql .= " order by " . $order_field;
         
-        $bind = ['id' => Column::BIND_PARAM_INT];
+        $bind = ['id' => \PDO::PARAM_INT];
         if ($page > 0) {
             $sql .= " LIMIT  :ct OFFSET :start  ";
             $params['ct'] = $pgsize;
             $params['start'] = ($page - 1) * $pgsize;
-            $bind['ct'] = Column::BIND_PARAM_INT;
-            $bind['start'] = Column::BIND_PARAM_INT;
+            $bind['ct'] = \PDO::PARAM_INT;
+            $bind['start'] = \PDO::PARAM_INT;
         }
          $qry = new DbQuery($this->db);
         $results = $qry->arraySet($sql,$params, $bind);

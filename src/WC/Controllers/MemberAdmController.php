@@ -271,7 +271,7 @@ EOS;
                             $mem->email_address = $email;
                             $mem->memberid = $mid;
                             $mem->status = $status;
-                            $mem->save();
+                            $mem->create();
                         }
                     }
                 } else if (strpos($ix, 'chk') === 0) {
@@ -310,7 +310,7 @@ EOS;
         $saved = false;
         try {
             if ($isNew) {
-                $rec->save();
+                $rec->create();
             } else {
                 $rec->update();
             }
@@ -352,7 +352,7 @@ EOS;
                 $give->created_at = Valid::now();
                 $give->memberid = $mid;
                 $give->detail = $detail;
-                $give->save();
+                $give->create();
                   
             } catch (\Exception $e) {
                 $this->flash($e->getMessage());

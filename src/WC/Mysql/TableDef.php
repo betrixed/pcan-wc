@@ -8,7 +8,7 @@ namespace WC\Mysql;
 
 use WC\NameDef;
 use WC\Db\{Script, DbQuery,BatchInsert};
-use Phalcon\Db\Enum;
+
 /**
  * Intermediate class for SQL table definition. 
  * Save and Load from TOML file format.
@@ -283,7 +283,7 @@ EOS;
         $result = 0;
         $columns = $this->columns;
         $fileHandler = null;
-        $rset->setFetchMode(Enum::FETCH_ASSOC);
+        $rset->setFetchMode(\PDO::FETCH_ASSOC);
         
         while ($row = $rset->fetch()) {
             $data = [];

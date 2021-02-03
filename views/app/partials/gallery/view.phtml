@@ -29,12 +29,12 @@ $gallery = $m->gallery;
             $idate = date('d-M-Y H:i',strtotime($fup['date_upload']));
             $name = $fup['name'];
             $fname = pathinfo($name,PATHINFO_FILENAME);
-            $linkname = $linkpath .  $name; 
+            $linkname = $linkpath .  urlencode($name); 
             if ($gallery['view_thumbs']):
               if (!empty($fup['thumb_ext'])):
-                $img = $linkpath . 'thumbs/' . $fname . "." . $fup['thumb_ext'];   
+                $img = $linkpath . 'thumbs/' . urlencode($fname) . "." . $fup['thumb_ext'];   
               else:
-                $img = $linkpath . 'thumbs/' . $fname . '.png'; 
+                $img = $linkpath . 'thumbs/' . urlencode($fname) . '.png'; 
               endif; 
             else:
              $img = $linkname;
@@ -43,7 +43,7 @@ $gallery = $m->gallery;
     <div class="row">
         <div class="col-7"><span><?= $name ?> <br> <?= $info ?></span>
             <div class="float-right">
-            <a href="<?= $linkpath .  $name ?>"><img src="<?= $img ?>"  title="<?= $info ?>" /></a>
+            <a href="<?= $linkpath .  urlencode($name) ?>"><img src="<?= $img ?>"  title="<?= $info ?>" /></a>
             </div>
         </div>
         <div class="col-2"><p><?= $idate ?></p></div>

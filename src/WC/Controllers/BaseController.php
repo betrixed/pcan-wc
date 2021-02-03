@@ -51,10 +51,21 @@ class BaseController extends Controller {
         return $_REQUEST;
     }
     
+    public function error($msg) {
+        $this->user_session->flash($msg);
+        $this->dispatcher->forward(['controller' => 'error',
+                                    'action' => 'route404',
+                                    'params' => [$msg]
+                        ]);
+    }
     public function notAuthorized() {
         $app = $this->app;
-        $this->user_session->flash('No access to ' . $app->arguments);
-        $this->reroute('/error/block');
+        $msg = 'No access to ' . $app->arguments;
+        $this->user_session->flash($msg);
+        $this->dispatcher->forward(['controller' => 'error',
+                                    'action' => 'block',
+                                    'params' => [$msg]
+                        ]);
     }
 
     public function reroute($url) {

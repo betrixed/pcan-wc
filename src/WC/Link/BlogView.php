@@ -1,7 +1,6 @@
 <?php
 
 namespace WC\Link;
-use Phalcon\Db\Column;
 use WC\Db\ {DbQuery, Server};
 use WC\Models\{ BlogRevision, Blog};
 use WC\{App, Valid, WConfig};
@@ -101,7 +100,7 @@ EOS;
                 . " left outer join blog_to_category b on b.category_id = c.id"
                 . " and b.blog_id = :blogid order by c.name";
         $qry = $container->get('dbq');
-        $results = $qry->arraySet($sql, ['blogid' => $id], ['blogid' => Column::BIND_PARAM_INT]);
+        $results = $qry->arraySet($sql, ['blogid' => $id], ['blogid' => \PDO::PARAM_INT]);
         $values = [];
         $slugs = [];
         $available = [];
@@ -147,12 +146,12 @@ EOS;
         $sql = 'select count(*) as dupe from blog where title_clean = :tc';
         $isUpdate = !is_null($blogid) && ($blogid > 0);
         $params['tc'] = $slug;
-        $bind['tc'] = Column::BIND_PARAM_STR;
+        $bind['tc'] = \PDO::PARAM_STR;
         if ($isUpdate) {
 // exclude self from search, in case of no change?
             $sql .= ' and id <> :bid';
             $params['bid'] = $blogid;
-            $bind['bid'] = Column::BIND_PARAM_INT;
+            $bind['bid'] = \PDO::PARAM_INT;
         }
         $qry = $container->get('dbq');
 

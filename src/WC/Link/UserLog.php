@@ -17,7 +17,6 @@ use WC\Models\{
     Users
 };
 
-use Phalcon\Db\Column;
 
 class UserLog
 {
@@ -52,7 +51,7 @@ EOD;
         $event->created_at = Valid::now();
         $event->event_type = self::PW_LOGIN;
         $event->user_id = $id;
-        $event->create();        
+        $event->save();   // no create for ActiveRecord     
     }
     static public function logPwdChange(int $id, ?string $ip = null, ?string $agent = null)
     {
@@ -70,7 +69,7 @@ EOD;
         $event->created_at = Valid::now();
         $event->event_type = self::PW_CHANGE;
         $event->user_id = $id;
-        $event->create();
+        $event->save();
     }
 
     static public function deleteOldCodes()
@@ -81,7 +80,8 @@ EOD;
         $yesterday->sub(new \DateInterval("P2D"));
         $ystr = $yesterday->format(Valid::DATE_TIME_FMT);
         $db = $container->get('db');
-        $result = $db->execute("delete from reset_code where created_at < :cdate", ['cdate' => $ystr], ['cdate' => Column::BIND_PARAM_STR] );
+        $result = $db->execute("delete from reset_code where created_at < :cdate", 
+                ['cdate' => $ystr], ['cdate' => \PDO::PARAM_STR] );
         return $result;
     }
     
@@ -118,13 +118,13 @@ EOD;
         try {
             $db->begin();
             if (empty($user->id)) {
-                $user->create();
+                $user->save();
             }
             $id = $user->id;
             $resetcode->user_id = $id;
             $event->user_id = $id;
-            $resetcode->create();
-            $event->create();
+            $resetcode->save();
+            $event->save();
             $db->commit();
         } catch (\PDOException $pd) {
             throw new \Exception('Error in Confirm Code', $pd->getCode(), $pd);

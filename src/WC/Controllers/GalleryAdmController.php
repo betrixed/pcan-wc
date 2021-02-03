@@ -15,7 +15,6 @@ use WC\Valid;
 use WC\Db\Server;
 use WC\Db\DbQuery;
 use WC\Mixin\ViewPhalcon;
-use Phalcon\Db\Column;
 
 use WC\App;
 
@@ -425,9 +424,9 @@ class GalleryAdmController extends BaseController {
         $bname = $info['basename'];
         $extension = strtolower($info['extension']);
         $active = Image::findFirst([
-                    'conditions' => "galleryid = :id: AND name = :name:",
+                    'conditions' => "galleryid = :id AND name = :name",
                     'bind' => ['id' => $gal->id, 'name' => $bname],
-                    'bindTypes' => [Column::BIND_PARAM_INT, Column::BIND_PARAM_STR]
+                    'bindTypes' => [\PDO::PARAM_INT, \PDO::PARAM_STR]
         ]);
         if (!empty($active)) {
             $image_id = $active->id;
@@ -453,9 +452,9 @@ class GalleryAdmController extends BaseController {
 
         $gid = $gal->id;
         $link = ImgGallery::findFirst([
-                    'conditions' => 'imageid = :mid: AND galleryid = :gid:',
+                    'conditions' => 'imageid = :mid AND galleryid = :gid',
                     'bind' => ['mid' => $image_id, 'gid' => $gid],
-                    'bindTypes' => [Column::BIND_PARAM_INT, Column::BIND_PARAM_INT]
+                    'bindTypes' => ['mid' => \PDO::PARAM_INT, 'gid' => \PDO::PARAM_INT]
                 ]);
         if (empty($link)) {
             $link = new ImgGallery();
@@ -569,7 +568,7 @@ class GalleryAdmController extends BaseController {
         if ($gal) {
             $this->scanMissing($gal);
         }
-        return $this->reroute($this->url . 'images/' . $name);
+        return $this->reroute($this->url . 'images/' . urlencode($name));
     }
 
     public function scanAction($name) {
@@ -577,9 +576,9 @@ class GalleryAdmController extends BaseController {
         $gal = $this->getGalleryFiles($m, $name);
         if ($gal) {
             $this->scanUnregistered($gal);
-            return $this->reroute($this->url . 'images/' . $name);
+            return $this->reroute($this->url . 'images/' . urlencode($name));
         } else {
-            $this->flash("Gallery not found: " . $name);
+            $this->flash("Gallery not found: [ " . $name . " ]");
             return $this->invalid();
         }
     }
@@ -588,8 +587,10 @@ class GalleryAdmController extends BaseController {
      * Edit just the gallery record
      */
     public function editAction($name) {
+        $gname = urldecode($name);
+        
         $m = $this->getViewModel();
-        $gal = $this->getGalleryFiles($m, $name);
+        $gal = $this->getGalleryFiles($m, $gname);
         if ($gal) {
             $prevlink = $gal->leva_path;
             $nextlink = $gal->prava_path;
@@ -603,7 +604,7 @@ class GalleryAdmController extends BaseController {
             //$view->assets(['bootstrap', 'grid', 'jquery-form', 'gallery-progress', 'imagelist']);
             return $this->render('gallery_adm', 'editgal');
         } else {
-            $this->flash("Gallery not found: " . $name);
+            $this->flash("Gallery not found: [ " . $name . " ]");
             return $this->invalid();
         }
     }
@@ -614,13 +615,14 @@ class GalleryAdmController extends BaseController {
     }
     /** Edit the gallery image list */
     public function imagesAction($name) {
+        $gname = urldecode($name);
         $m = $this->getViewModel();
-        $gal = $this->getGalleryFiles($m, $name);
+        $gal = $this->getGalleryFiles($m, $gname);
         if ($gal) {
             $this->constructModel($gal);
             return $this->render('gallery_adm', 'edit');
         } else {
-            $this->flash("Gallery not found: " . $name);
+            $this->flash("Gallery not found: " . $gname);
             return $this->invalid();
         }
     }
@@ -767,7 +769,7 @@ class GalleryAdmController extends BaseController {
                     $imgRec = $this->registerImage($gal, $dest_file);
                     if ($imgRec !== false) {
                         $this->set_thumb($imgRec->name, $dest_dir, $thumbs_dir);
-                        if ($gal->getViewThumbs()) {
+                        if ($gal->view_thumbs) {
                             $this->update_sizeinfo($imgRec,$dest_dir, $thumbs_dir);
                         }
                     }

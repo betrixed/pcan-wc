@@ -92,7 +92,7 @@ use \WC\Link\LinkeryData;
             } else {
                 $gal = new Linkery();
                 $this->assignFromPost($post, $gal, true);
-                $gal->save();
+                $gal->create();
             }
         } catch (\PDOException $e) {
             $err = $e->errorInfo;
@@ -170,7 +170,7 @@ use \WC\Link\LinkeryData;
         $link['linkid'] = $linkid;
         $link['gallid'] = $gallid;
         try {
-            $link->save();
+            $link->create();
         } catch (\PDOException $e) {
             $err = $e->errorInfo;
             $this->flash($err[0] . ": " . $err[1]);

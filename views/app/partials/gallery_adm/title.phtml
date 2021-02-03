@@ -12,7 +12,7 @@ $index = $m->indexlink  ?? null;
     <span style='font-size:1.2em;'> 
         <a href="/admin/dash">Dash</a> &nbsp; &gt;&gt; &nbsp; 
         <a href="/admin/gallery/">Galleries Index</a> &nbsp; &gt;&gt; &nbsp;
-        Gallery: <a href="/admin/gallery/images/<?= $gallery->name  ?>"><?= $gallery->name ?></a><br>
+        Gallery: <a href="/admin/gallery/images/<?= urlencode($gallery->name)  ?>"><?= $gallery->name ?></a><br>
         <i><?= $gallery->description ?></i>
         
     </span>
@@ -22,7 +22,7 @@ $index = $m->indexlink  ?? null;
     <?php if(!is_null($prevlink)): ?>
                     <div class="col-md-auto">
                         <div class="btn btn-light">
-                            <a href="<?=$prefix . $prevlink->name?>">
+                            <a href="<?=$prefix . urlencode($prevlink->name)?>">
                                 <span class="nextprev"><img src="/font/glyphicons_free/glyphicons/png/glyphicons-225-chevron-left.png">&nbsp;<?=$prevlink->name?></span></a>
                         </div>
                     </div>
@@ -34,7 +34,7 @@ $index = $m->indexlink  ?? null;
                 <?php if(!is_null($nextlink)): ?>
                 
                     <div class="col-md-auto">
-                        <a class="btn btn-light" href="<?=$prefix . $nextlink->name?>"><span class="nextprev"><?=$nextlink->name ?>&nbsp;<img src="/font/glyphicons_free/glyphicons/png/glyphicons-224-chevron-right.png"></a>
+                        <a class="btn btn-light" href="<?=$prefix . urlencode($nextlink->name) ?>"><span class="nextprev"><?=$nextlink->name ?>&nbsp;<img src="/font/glyphicons_free/glyphicons/png/glyphicons-224-chevron-right.png"></a>
                     </div>
                  <?php endif ?>
  </div>

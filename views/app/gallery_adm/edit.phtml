@@ -44,7 +44,7 @@ $assets->add(['bootstrap', 'grid', 'select','jquery-form', 'gallery-progress', '
 <div class="container-fluid outerwrap">
     <div class="row">
         <div class="col">
-                <?= $gem->linkTo(['href' => '/admin/gallery/edit/' . $name,
+                <?= $gem->linkTo(['href' => '/admin/gallery/edit/' . urlencode($name),
                     'class' => $btnclass, 'text' => 'Edit Gallery Record'])
                 ?>
             <div class="boxit">

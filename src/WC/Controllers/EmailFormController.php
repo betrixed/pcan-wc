@@ -109,7 +109,7 @@ class EmailFormController extends Controller {
             if (!empty($id)) {
                 $rec->update();
             } else {
-                $rec->save();
+                $rec->create();
             }
             $errors = [];
 

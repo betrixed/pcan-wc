@@ -65,7 +65,7 @@ class Script {
                     $i++;
                     continue;
                 }
-                $db->execute($text);
+                $db->exec($text);
                 $i++;
             }
         } catch (\Exception $ex) {
