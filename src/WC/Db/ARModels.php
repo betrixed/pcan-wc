@@ -18,7 +18,7 @@ class ARModels {
             global $APP;
             
             $db = ConnectionManager::get_connection($dbconfig_name);
-            $tables = $db->query_for_tables()->fetchAll(\PDO::FETCH_COLUMN);
+            $tables = $db->query_for_tables();
             $eol = PHP_EOL;
             $eol2 = PHP_EOL . PHP_EOL;
             $tab = "    ";
