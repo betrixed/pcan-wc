@@ -16,7 +16,7 @@ class Article {
     static public function getBlogRevision($bid, $rid): ?BlogRevision
     {
         $rev = BlogRevision::findFirst([
-                    'conditions' => 'blog_id = :bid: and revision = :rev:',
+                    'conditions' => 'blog_id = :bid and revision = :rev',
                     'bind' => ['bid' => intval($bid), 'rev' => intval($rid)]
         ]);
         return $rev;

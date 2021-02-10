@@ -83,6 +83,7 @@ class RssView
     static public function inlineImage($img)
     {
         $src = null;
+        $result = null;
         $datasrc = $img->getAttribute('data-src');
         if (!empty($datasrc)) {
             $src = $datasrc;

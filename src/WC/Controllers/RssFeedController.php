@@ -231,7 +231,7 @@ class RssFeedController extends BaseController
         $this->reroute($this->url . "edit/" . $rss_feed->id);
     }
 
-    public function processFairfax($id, $chan): array
+    public function processFairfax($feed, $chan): array
     {
         $itemlist = $chan->getElementsByTagName('item');
         $items = [];
@@ -246,13 +246,13 @@ class RssFeedController extends BaseController
                 $node = $node->nextSibling;
             }
 
-            $link = $this->getLink($id, $guid);
+            $link = $this->getLink($feed->id, $guid);
             
 
             if (empty($link)) {
                 $link = new RssLink();
                 $link->guid = $guid;
-                $link->feed_id = $id;
+                $link->feed_id = $feed->id;
 
 
                 $node = $item->firstChild;
@@ -623,10 +623,15 @@ class RssFeedController extends BaseController
             ]);
             return;
         }
+        $req=$this->getRequest();
+        $forceNew=Valid::toBool($req,'new');
         $last_read = $rss_feed->last_read;
         $now = new \DateTime();
         $diff = $now->diff($last_read);
-        $getnew =  ($diff->y > 0 || $diff->m > 0 || $diff->d > 0 || $diff->h > 23);
+        if (!$forceNew) {
+            $forceNew = empty($fss_feed->content);
+        }
+        $getnew =  $forceNew || ($diff->y > 0 || $diff->m > 0 || $diff->d > 0 || $diff->h > 23);
         if ($getnew) {
             $content = RssView::pullContent($rss_feed->url);
             if (str_contains($content[1], "xml")) {

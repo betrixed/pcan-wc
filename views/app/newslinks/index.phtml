@@ -1,0 +1,36 @@
+<?php
+/**
+ * @var \Phalcon\Mvc\View\Engine\Php $this
+ */
+$assets->add(['bootstrap']);
+$gem = $this->htmlgem;
+$m->title = "News Links";
+$url = "/news/rss_link/view/";
+?>
+
+
+<div class="container-fluid outerwrap">
+<?php foreach($m->data as $link): ?>
+<div class="row">
+    <div class="col-7">
+        <?=  $gem->linkTo(['text'=>$link->title, 'href'=>$link->link]) ?>
+    </div>
+    <div class="col-3">
+        <?= $link->provider ?>
+    </div>
+    <div class="col-2">
+        <?= $gem->datetime_text($link->pub_date) ?>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <?=  $link->description  ?>
+    </div>
+    <div class="col-6">
+        <?=  $gem->linkTo(['href'=>$url . $link->id, 'text'=>'Extracted View'])  ?>
+    </div>    
+</div>
+    <hr>
+
+<?php endforeach; ?>
+</div>

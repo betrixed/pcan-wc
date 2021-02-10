@@ -2,6 +2,7 @@
 $assets->add('bootstrap');
 $url = '/admin/dash/cmd/';
 $us = $this->user_session;
+
 ?>
 <div style="font-size:24px;">
     <div class="container outerwrap pad10">
@@ -65,12 +66,14 @@ $us = $this->user_session;
                 <div class="col-3">
                     <a href="/admin/email_group/index">Email Templates</a><br>
                 </div>
+                <?php if (isset($app->sub_routes['news'])): ?>
                 <div class="col-3">
                     <a href="/news/rss/fetch">News Fetch</a><br>
                 </div>
                 <div class="col-3">
                     <a href="/news/rss_feed/index/">News Feeds</a><br>
                 </div>
+                <?php endif ?>
             </div>
 
         <?php endif ?>

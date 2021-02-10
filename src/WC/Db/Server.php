@@ -3,7 +3,7 @@
 namespace WC\Db;
 
 use WC\App;
-use ActiveRecord\{Connection, ConnectionManager, Config};
+use ActiveRecord\{Connection, ConnectionManager, Config, Singleton};
 
 /**
  * @author Michael Rynn
@@ -12,7 +12,7 @@ use ActiveRecord\{Connection, ConnectionManager, Config};
  * Active record has ConnectionManager for named live connections,
  * Config for named connection strings.
  */
-class Server
+class Server 
 {
 
     protected ?Config $con_data = null;

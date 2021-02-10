@@ -163,6 +163,27 @@ class HtmlGem
         return $out;
     }
 
+    // date format depends on recency
+    public function datetime_text(string $dtvalue) : string{
+        $dob = new \DateTime($dtvalue);
+        $now = new \DateTime();
+        $diff = $now->diff($dob);
+        
+        if ($diff->y < 1 && $diff->m < 1) {
+            if ( $diff->d >= 14) {
+                return intval($diff->d / 7) . ' weeks ago';
+            }
+            else {
+                return $diff->d . ' days ago';
+            }
+        }
+        
+        $vals = explode(' ', $dtvalue);
+        if (is_array($vals)) {
+            return $vals[0];
+        }
+        return '';
+    }
     /**
      *  display datetime , optional label and forma
      * @param array $pset

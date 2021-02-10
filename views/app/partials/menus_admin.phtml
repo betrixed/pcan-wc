@@ -1,19 +1,23 @@
-
+<?php 
+Use WC\Assets; 
+use WC\UserSession ?>
+<?php if($sessUser->isLoggedIn('Admin')): ?>
 <li class="nav-item dropdown">
-<a class="nav-link dropdown-toggle" href="#" id="dd_m61" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<a class="nav-link dropdown-toggle" href="#" id="dd_m52" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 Dash
 </a>
-<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dd_m61">
-<a href="/admin/dash?mit=62" class="dropdown-item">Dashboard</a>
-<a href="/admin/menu?mit=63" class="dropdown-item">Menus</a>
-<a href="/admin/blog?mit=64" class="dropdown-item">Articles</a>
-<a href="/admin/gallery?mit=65" class="dropdown-item">Gallery</a>
-<a href="/admin/link?mit=66" class="dropdown-item">Links</a>
-<a href="/admin/linkery?mit=67" class="dropdown-item">Linkery</a>
-<a href="/admin/cat?mit=68" class="dropdown-item">Categories</a>
+<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dd_m52">
+<a href="/admin/dash?mit=53" class="dropdown-item">Dashboard</a>
+<a href="/admin/menu?mit=54" class="dropdown-item">Menus</a>
+<a href="/admin/blog?mit=55" class="dropdown-item">Articles</a>
+<a href="/admin/gallery?mit=56" class="dropdown-item">Gallery</a>
+<a href="/admin/link?mit=57" class="dropdown-item">Links</a>
+<a href="/admin/linkery?mit=58" class="dropdown-item">Linkery</a>
+<a href="/admin/cat?mit=59" class="dropdown-item">Categories</a>
 <div class="dropdown-divider"></div>
-<a href="/logout/?mit=70" class="dropdown-item">Log Out</a>
+<a href="/logout/?mit=61" class="dropdown-item">Log Out</a>
 
 </div>
 </li>
 
+<?php endif ?>

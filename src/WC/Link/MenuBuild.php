@@ -99,7 +99,7 @@ class MenuBuild
         $db = $this->db;
 
         $catrec = BlogCategory::findFirst([
-                 'conditions' => 'name_clean = :str:', 
+                 'conditions' => 'name_clean = :str', 
                  'bind' => [ 'str' => $cat],
                  'bindTypes' => [
                      \PDO::PARAM_STR
@@ -233,7 +233,7 @@ EOD;
         }
         $output = $this->output_dir . $config_file . '.phtml';
         file_put_contents($output, $this->navbar_plates);
-
+        echo "Generated " . $output . PHP_EOL;
         MenuTree::resetMenuCache('');
         $this->navbar_plates = null;
         $this->drop_down_params = [];
@@ -244,7 +244,7 @@ EOD;
         
         $db = $container->get('db');
         
-        $adapter = $db->getDialectType();
+        $adapter = $db->getType();
 
         
         //$adapter = $dbcfg['adapter'];

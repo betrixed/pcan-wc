@@ -162,16 +162,22 @@ class DbQuery {
     /** Must not already have a where clause in sql.
      * Add a simple where condition, must have a '?'  for replacement of value, eg "size = ?"  
      */
-    public function whereCondition(string $condition, $value) {
+    public function whereCondition(string $condition, $value = null) {
 
         if (!empty($this->where)) {
             $this->where .= ' and ';
         }
         $pname = $this->newParamName();
-        $this->where .= str_replace('?', ':' . $pname, $condition);
-        $this->params[$pname] = $value;
-        $bind_type = is_integer($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
-        $this->binds[$pname] = $bind_type;
+        
+        if ($value !== null) {
+            $this->where .= str_replace('?', ':' . $pname, $condition);
+            $this->params[$pname] = $value;
+            $bind_type = is_integer($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
+            $this->binds[$pname] = $bind_type;
+        }
+        else {
+            $this->where .= $condition;
+        }
     }
 
     /** Value BIND_PARAM_XX deduced from PHP type, so may need cast like (int) */

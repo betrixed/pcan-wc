@@ -8,7 +8,7 @@ namespace WC\Controllers;
  *
  * @author michael
  */
-class RssController extends \Phalcon\Mvc\Controller {
+class RssController extends BaseController {
 
     use \WC\Mixin\ViewPhalcon;
 
