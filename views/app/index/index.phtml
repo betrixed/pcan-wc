@@ -30,10 +30,16 @@ $doEdit = $sessUser->auth('Editor');
                 <?php
                 foreach ($m->events as $box):
                     $href = "/article/" . $box['title_clean'];
+                    $dt = new DateTime($box['date1']);
                     ?>
-                    <div class="<?= $box['style'] ?>">
+                    <div class="row">
+                    <div class="col-8 <?= $box['style'] ?>">
                         <div class="title"><a href="<?= $href ?>"><?= $box['title'] ?></a></div>
                         <p><?= $box['content'] ?> </p>
+                    </div>
+                        <div class="col-4">
+                            <b><?= $dt->format('g:ia \o\n l jS F Y') ?></b>
+                        </div>
                     </div>
                     <hr>
     <?php endforeach; ?>
