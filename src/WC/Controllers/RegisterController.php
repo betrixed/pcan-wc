@@ -20,6 +20,7 @@ class RegisterController extends BaseController {
     use \WC\Mixin\ViewPhalcon;
     use \WC\Mixin\Captcha;
     use \WC\Link\RevisionOp;
+    use \WC\Link\EmailData;
     
     const formid = "regevt";
 
@@ -85,15 +86,15 @@ EOD;
 
 
         $m = $this->formModel();
+
         $event = null;
         if (! is_numeric($eventId)) {
-            $event_set  = Event::find([ 
-                'conditions' => 'slug = :slug: and NOW() < fromtime and enabled = 1',
+            $event  = Event::findFirst([ 
+                'conditions' => 'slug = :slug and NOW() < fromtime and enabled = 1',
                 'bind' => [ 'slug' => $eventId],
                 'order' => 'fromtime',
                 'limit' => 1
                 ]);
-            $event = $event_set->getFirst();
 
         } else {
             $event = Event::findFirstById($eventId);
@@ -119,12 +120,16 @@ EOD;
         }
     }
 
-    private function error($msg) {
+    public function error($msg) {
         $this->flash($msg);
     }
 
     private function formModel(bool $first = true) : object {
         $m = $this->getViewModel();
+        $m->xcheck = null;
+        $m->google = ['enabled' => false];
+            
+        
         if ($first) {
             $this->captchaView($m);
             $this->xcheckView($m);
@@ -257,7 +262,7 @@ EOD;
         $resend = Valid::toStr($post, 'resend');
 
         
-        $m->eblog = $this->getBlogAndRevision($event->blog_id, $event->revisionid);
+        $m->eblog = $this->getBlogAndRevision($event->blogid, $event->revisionid);
         $m->event = $event;
         if (!empty($resend)) {
             $rec = Register::findFirstById($regid);
