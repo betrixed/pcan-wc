@@ -242,7 +242,9 @@ class XmlPhp extends \XMLReader {
                 $this->setValue(null, $k);
                 break;
             case "s" :
-                $this->setValue($this->readString(), $k);
+                $ds = $this->readString();
+                debugLine(print_r($ds,true));
+                $this->setValue($ds, $k);
                 break;
             case "b" :
                 $s = strtolower($this->readString());

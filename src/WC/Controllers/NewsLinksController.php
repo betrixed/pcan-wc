@@ -10,7 +10,12 @@ use WC\Db\DbQuery;
  */
 class NewsLinksController extends BaseController {
     use \WC\Mixin\ViewPhalcon;
-    
+    use \WC\Mixin\Auth;
+        
+    public function getAllowRole() : string
+    {
+        return 'User';
+    }
     //put your code here
     public function indexAction() {
         $m = $this->getViewModel();

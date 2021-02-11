@@ -40,7 +40,7 @@ class RssFeedController extends BaseController
 
     public function getAllowRole(): string
     {
-        return 'Admin';
+        return 'User';
     }
 
     /**

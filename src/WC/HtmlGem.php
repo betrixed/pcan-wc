@@ -48,11 +48,17 @@ class HtmlGem
     {
         $out = '<' . $tag;
         foreach ($pset as $arg => $val):
-
+            if (is_object($val) && $val instanceof \DateTime) {
+                $pval = $val->format('Y-m-d H:i:s');
+            }
+            else {
+                $pval = $val;
+            }
             if (is_int($arg)) {
-                $out .= ' ' . $val;
-            } else {
-                $out .= ' ' . $arg . '="' . $val . '"';
+                $out .= ' ' . $pval;
+            } 
+            else {
+                $out .= ' ' . $arg . '="' . $pval . '"';
             }
         endforeach;
         $out .= '>';

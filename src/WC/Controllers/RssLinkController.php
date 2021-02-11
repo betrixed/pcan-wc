@@ -23,7 +23,7 @@ class RssLinkController extends BaseController
 
     public function getAllowRole() : string
     {
-        return 'Admin';
+        return 'User';
     }
     public function scanTree($node) {
         while (!empty($node)) {
