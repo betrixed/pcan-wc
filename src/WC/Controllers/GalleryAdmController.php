@@ -285,7 +285,7 @@ class GalleryAdmController extends BaseController {
 
     
     protected function checkSizeInfo($dpath, $img, $gal) {
-           if (intval($img->getHeight()) === 0 && ($gal->getViewThumbs())) {
+           if (intval($img->height === 0 && ($gal->view_thumbs))) {
                    $thumb_file =   $dpath . self::get_thumb_path($img, $gal);
                    if (file_exists($thumb_file)) {
                        $this->get_sizeinfo($img,$thumb_file);
@@ -340,7 +340,8 @@ class GalleryAdmController extends BaseController {
             //$fileset = $this->scanImages($dpath);
 
             $fileset = static::dirFileList($dpath);
-            $imglist = $gal->getRelated('Image');
+            $imglist = Image::findAll(['conditions' => ['galleryid = :id'],
+                                    'bind'=>['id' => $gal->id]]);
             
 
             $lookup = [];

@@ -36,6 +36,7 @@ trait GalleryView
                 ['val' => \PDO::PARAM_INT, 'imgid' => \PDO::PARAM_INT,
                         'galid' =>\PDO::PARAM_INT]);
     }
+    
     public function getImages($id)
     {
         $sql = <<<EOD
