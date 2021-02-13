@@ -8,9 +8,8 @@
 
 namespace WC;
 
-use Phalcon\Mvc\Router;
-use Phalcon\Mvc\Router\Route;
-use Phalcon\Cli\Router as CliRouter;
+use Phalcon\Mvc\RouterInterface;
+
 /**
  * Description of RouteCache
  *
@@ -18,30 +17,34 @@ use Phalcon\Cli\Router as CliRouter;
  */
 use WC\RouteParse;
 
+use Phalcon\Di\DiInterface;
+
 class RouteCache
 {
     const NO_AJAX = 1;
     const ONLY_AJAX = 2;
     const ALLOW_AJAX = 3;
-
+    
+    
     static function requestIsJax()
     {
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
     }
 
-    static function loadRoutes(array $options): object
+    static function loadRoutes(RouterInterface $router, array $options): void
     {
 
         $routes = $options['routes'];
         $isWeb = $options['isWeb'];
-
+        $useCache = $options['cache'] ?? true;
+        
         $info = pathinfo($routes);
         $cache_file = $info['dirname'] . "/." . $info['filename'] . '.ser';
         if (empty($info['extension'])) {
             $routes .= '.php';
         }
         
-        if (file_exists($cache_file) && (filemtime($routes) < filemtime($cache_file))) {
+        if ($useCache && file_exists($cache_file) && (filemtime($routes) < filemtime($cache_file))) {
             $archive = unserialize(file_get_contents($cache_file));
         } else {
             $archive = null;
@@ -55,17 +58,11 @@ class RouteCache
             $archive = RouteParse::makeRouteObjects($rdata, $isWeb);
             file_put_contents($cache_file, serialize($archive));
         }
-        return self::makeRouter($archive, $isWeb);
+        self::setRoutes($router, $archive, $isWeb);
     }
 
-    static function makeRouter(object $route_set, bool $isWeb): object
+    static function setRoutes(RouterInterface $router, object $route_set, bool $isWeb): void
     {
-        if ($isWeb) {
-            $router = new Router(false);
-            $router->removeExtraSlashes(true);
-        } else {
-            $router = new CliRouter(false);
-        }
 
         //$gen = $router->getIdGenerator();
 
@@ -114,7 +111,6 @@ class RouteCache
                 $router->add($store->pattern, $task);
             }
         }
-        return $router;
     }
 
 }
