@@ -3,7 +3,7 @@ namespace WC;
 
 use Phalcon\Cache\Adapter\Stream;
 use Phalcon\Storage\SerializerFactory;
-
+use Phalcon\Support\HelperFactory;
 /** 
  * Somehow this failed as a trait to return $adapter directly
  */
@@ -11,9 +11,9 @@ class FileCache
 {
     private $adapter;
 
-    public function __construct(array $options) {
+    public function __construct(array $options, HelperFactory $helper) {
         $serializerFactory = new SerializerFactory();
-        $this->adapter = new Stream($serializerFactory, $options);
+        $this->adapter = new Stream($helper, $serializerFactory, $options);
     }
     
     public function clear() {
