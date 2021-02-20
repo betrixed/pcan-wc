@@ -74,6 +74,7 @@ class DbQuery {
     }
 
     public function arraySet(string $sql, array $params = null, array $bindtypes = null): array {
+        
         $result = $this->fetchAll($sql, \PDO::FETCH_ASSOC, $params, $bindtypes);
         $this->reset();
         return $result;

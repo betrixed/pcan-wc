@@ -62,24 +62,24 @@ class ColumnDef extends NameDef  {
         }
     }
     
-    public function setSchema($row)
+    public function setSchema(array $row)
      {    
-        $this->name = $row['Field'];
+        $this->name = $row['field'];
         
-        $def = static::get_type_size($row['Type']);
+        $def = static::get_type_size($row['type']);
 
         
-        $def['null'] = ($row['Null'] === 'YES') ? true : false;
+        $def['null'] = ($row['null'] === 'YES') ? true : false;
 
-        if (isset($row['Default'])) {
-            $def['default'] = $row['Default'];
+        if (isset($row['default'])) {
+            $def['default'] = $row['default'];
         }
 
-        if (isset($row['Collation'])) {
-            $def['collate'] = $row['Collation'];
+        if (isset($row['collation'])) {
+            $def['collate'] = $row['collation'];
         }
-        if (isset($row['Extra'])) {
-            if ($row['Extra'] === 'auto_increment') {
+        if (isset($row['extra'])) {
+            if ($row['extra'] === 'auto_increment') {
                 $def['auto_inc'] = true;
             }
         }

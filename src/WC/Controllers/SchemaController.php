@@ -1,9 +1,7 @@
 <?php
 namespace WC\Controllers;
 
-use WC\Db\{Server, Script, DbQuery};
-use WC\{Dos, XmlPhp, App, Assets, Valid, AdaptXml};
-use Phalcon\Mvc\Controller;
+use WC\{Dos, XmlPhp, Valid};
 use WC\Link\SiteBuild;
 
 class SchemaController extends BaseController
@@ -13,7 +11,7 @@ class SchemaController extends BaseController
     use \WC\Mixin\ViewPhalcon;
 
     public $sitedir;
-    public $schema_dir;
+    public $schema_dir = null;
     
     public function getAllowRole() {
         return 'Admin';
@@ -40,6 +38,12 @@ class SchemaController extends BaseController
         return $this->render('schema', 'input',$params);   
     }
 
+    private function getSchemaDir() {
+        if (empty($this->schema_dir)) {
+            $this->schema_dir = $this->app->schema_dir;
+        }
+        return $this->schema_dir;
+    }
     public function metaAction()
     {
         $post = $_POST;
@@ -109,12 +113,12 @@ class SchemaController extends BaseController
         echo $view->render();
     }
 
-    public function scriptAction($version)
+    public function scriptAction($v)
     {
         $req = $this->request->getQuery();
         
         $build = new SiteBuild($this);
-        $params = ['schema' => $version];
+        $params = ['schema' => $v];
         $params['adapter'] = $req['adapt'] ?? '';
         
         $script = $build->scriptBuild($params);

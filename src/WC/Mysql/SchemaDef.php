@@ -2,19 +2,36 @@
 
 namespace WC\Mysql;
 
-use WC\{NameDef, XmlPhp};
-use WC\Db\{DbQuery, Script};
-use Phalcon\Db;
-use Phalcon\Db\Adapter\Pdo\Mysql;
-
-
+use WC\{
+    PdocWriter
+    
+};
+use WC\Db\{
+    DbQuery,
+    Script
+};
+use PDO;
 
 class SchemaDef extends \WC\Db\AbstractDef {
 
     const SORT_FN = ['WC\NameDef', 'name_cmp'];
-
+    
+    static public function getClassTags() : array {
+        return [
+            "WC\\Mysql\\SchemaDef" => "sdef",
+            "WC\\Mysql\\TableDef" => "tdef",
+            "WC\\Mysql\\ReferenceDef" => "rdef",
+            "WC\\Mysql\\ColumnDef" => "col",
+            "WC\\Mysql\\IndexDef" => "indx",
+            "DateTime" => "datetm"
+        ];
+    }
+    
     public function toFile($path) {
-        $text = XmlPhp::toXmlDoc($this);
+        $writer = new PdocWriter();
+        
+        $text = $writer->write($this,self::getClassTags());
+        
         file_put_contents($path, $text);
     }
 
@@ -49,12 +66,12 @@ class SchemaDef extends \WC\Db\AbstractDef {
         }
     }
 
-    public function generate( $script,  $stage) {
+    public function generate($script, $stage) {
         $tables = $this->tables;
 
         uksort($tables, self::SORT_FN);
         foreach ($tables as $seq => $tdef) {
-             $tdef->generate($script, $stage);
+            $tdef->generate($script, $stage);
         }
         if (array_key_exists('references', $stage) && !empty($this->relations)) {
             $rtables = [];
@@ -150,17 +167,18 @@ class SchemaDef extends \WC\Db\AbstractDef {
             }
         }
     }
-    public function newQuery($db) : DbQuery
-    {
+
+    public function newQuery($db): DbQuery {
         return new DbQuery($db);
     }
+
     /**
      * Name needs to be set before calling.
      * @param type $db
      */
     public function readSchema($db) {
         $qry = $this->newQuery($db);
-        
+
         //$dbname = $db->getSchemaName();
         $tsql = <<<ESQL
   SELECT table_name, table_type, engine, auto_increment, 
@@ -168,22 +186,28 @@ class SchemaDef extends \WC\Db\AbstractDef {
    FROM information_schema.tables 
        WHERE table_schema = :dbname
 ESQL;
-        $table_names = $qry->arraySet($tsql, [':dbname' => $qry->getSchemaName()]);
-        
-        foreach ( $table_names as $rec) {
+        $caseAttr = $db->getCaseAttribute();
+        $db->setCaseAttribute(PDO::CASE_LOWER);
+        try {
+            $table_names = $qry->arraySet($tsql, [':dbname' => $qry->getSchemaName()]);
 
-            $tdef = new TableDef();
+            foreach ($table_names as $rec) {
 
-            $tdef->readSchema($qry, $rec);
+                $tdef = new TableDef();
 
-            $tdefs[$tdef->name] = $tdef;
+                $tdef->readSchema($qry, $rec);
+
+                $tdefs[$tdef->name] = $tdef;
+            }
+            $this->adapter = 'Mysql';
+            $this->tables = $tdefs;
+            $this->database = $qry->getSchemaName();
+            $this->date = new \DateTime();
+
+            $this->readRelations($qry);
+        } finally {
+            $db->setCaseAttribute($caseAttr);
         }
-        $this->adapter = 'Mysql';
-        $this->tables = $tdefs;
-        $this->database = $qry->getSchemaName();
-        $this->date = new \DateTime();
-        
-        $this->readRelations($qry);
     }
 
     public function readRelations(DbQuery $qry) {
@@ -228,14 +252,20 @@ ESQL;
         $constraint = '';
         $rdef = null;
         foreach ($data as $r => $row) {
-            if ($constraint !== $row['fk_constraint_name']) {
-                $constraint = $row['fk_constraint_name'];
+            $ctname = $row['fk_constraint_name'];
+            if ($constraint !== $ctname) {
+                $constraint = $ctname;
                 $rdef = new ReferenceDef();
                 $rdef->setSchema($row);
                 $relations[$rdef->name] = $rdef;
             } else {
-                $rdef->columns[] = $row['column_name'];
-                $rdef->p_columns[] = $row['p_column_name'];
+                $temp = $rdef->columns;
+                $temp[] = $row['column_name'];
+                $rdef->columns = $temp;
+                
+                $temp = $rdef->p_columns;
+                $temp[] = $row['p_column_name'];
+                $rdef->p_columns = $temp;
             }
         }
         $this->relations = $relations;
@@ -243,11 +273,15 @@ ESQL;
         foreach ($relations as $rdef) {
             $tdef = $this->getTable($rdef->table);
             if (!empty($tdef)) {
-                $tdef->references[] = $rdef->name;
+                $temp = $tdef->references;
+                $temp[] = $rdef->name;
+                $tdef->references = $temp;
             }
             $tdef = $this->getTable($rdef->p_table);
             if (!empty($tdef)) {
-                $tdef->foreignkeys[] = $rdef->name;
+                $oldfk = $tdef->foreignkeys;
+                $oldfk[] = $rdef->name;
+                $tdef->foreignkeys = $oldfk;
             }
         }
     }

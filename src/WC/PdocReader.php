@@ -1,14 +1,18 @@
 <?php
+
 namespace WC;
 
 class DStack {
+
     public $ref;
     public $dataType;
+
 }
 
 function intercept_error($errno, $errstr, $errfile, $errline) {
     throw new \Exception($errstr . "  at line " . $errline . " in " . $errfile);
 }
+
 /** Read specific xml file format into a nested php array 
  *   Elements are 
  * tb - associative PHP array
@@ -23,23 +27,39 @@ function intercept_error($errno, $errstr, $errfile, $errline) {
  * k - string key for associative array  
  */
 
-class XmlPhp extends \XMLReader {
+/**
+ * Version 2.0
+ * Enhancement for the heck of it.
+ * The document element always <pdom>, no attributes
+ * List of tags that alias a <root> class, defines the PHP class name only once
+ * <meta>
+ *     <tdef>WC\Mysql\TableDef</tdev>
+ *     <rdef>WC\Mysql\ReferenceDef<rdef>
+ * </meta>
+ */
+class PdocReader extends \XMLReader {
+
     const XC_ARRAY = 0; // none indexed array
     const XC_TABLE = 1; // indexed array
     const XC_CONFIG = 2; // WConfig
     const XC_VALUE = 3; // a value?
-    
+    const XC_CLASSTAG = 4; // mapped tag to class
+    const XC_DOCTAG = 5; // pdoc tag
+
     public $addRoot;
     public $root;
     public $table; // reference to array
     public $config; // config object
     public $path;
     public $dataType;
+    public array $tag_objs; //
 
     public function __construct($add = null) {
         $this->addRoot = $add;
         $this->dataType = null;
+        $this->tag_objs = [];
     }
+
     /**
      * Return array by reference
      * @param type $path
@@ -58,8 +78,28 @@ class XmlPhp extends \XMLReader {
                 } else if ($this->nodeType === \XMLReader::TEXT) {
                     
                 } else if ($this->nodeType === \XMLReader::END_ELEMENT) {
-                    if ($this->name === "tb" || $this->name === "a" || $this->name === "root") {
-                        $this->popTable();
+                    switch ($this->name) {
+                        case "tb":
+                        case "a" :
+                        case "root":
+                            $this->popTable();
+                            break;
+                        case "s" :                      
+                        case "a":
+                        case "i":
+                        case "f":
+                        case "_n":
+                        case "b" :
+                        case "pdoc":
+                            break;
+                        default:
+                            if (array_key_exists($this->name, $this->tag_objs)) {
+                                $this->popTable();
+                            }
+                            else {
+                                throw new \Exception("Unknown tag end " . $this->name);
+                            }
+                            break;
                     }
                 }
             }
@@ -75,6 +115,27 @@ class XmlPhp extends \XMLReader {
         return $this->root;
     }
 
+    /**
+     * process <tagname>namespace\class</tagname>
+     */
+    public function tagsTable() {
+        while ($this->read()) {
+            if ($this->nodeType === \XMLReader::ELEMENT) {
+                $tagname = $this->name;
+                $this->tag_objs[$tagname] = $this->readString();
+            } else if ($this->nodeType === \XMLReader::TEXT) {
+                
+            } else if ($this->nodeType === \XMLReader::END_ELEMENT) {
+                switch ($this->name) {
+                    case "xtag":
+                        return;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
     public function popTable() {
         $ct = count($this->path);
         if ($ct > 0) {
@@ -83,15 +144,14 @@ class XmlPhp extends \XMLReader {
             if ($ct > 0) {
                 $dstack = $this->path[$ct - 1];
                 $ptype = $dstack->dataType;
-                switch($ptype) {
+                switch ($ptype) {
                     CASE self::XC_TABLE:
                     CASE self::XC_ARRAY:
                         $this->table = &$dstack->ref;
                         break;
-                    CASE self::XC_CONFIG: 
+                    CASE self::XC_CONFIG:
                         $this->config = $dstack->ref;
                         break;
-                    
                 }
                 $this->dataType = $ptype;
             }
@@ -103,54 +163,56 @@ class XmlPhp extends \XMLReader {
     public function makeClass($c) {
         return new $c();
     }
+
     public function newRoot() {
         $class = $this->getAttribute('c');
         if (!empty($class)) {
             $nroot = $this->makeClass($class);
-        }
-        else {
+        } else {
             $nroot = new WConfig();
-        }    
+        }
         return $nroot;
     }
-    public function pushRoot($k = null) {
+
+    public function pushClass(string $classname, $k = null) {
         $ptype = $this->dataType;
+        $nroot = new $classname();
         if (is_null($ptype)) {
-            if ($this->addRoot) {
-                $nroot = $this->addRoot;
-            }
-            else {
-                $nroot = $this->newRoot();
-            }
             $this->root = $nroot;
-        } else {
-             $nroot = $this->newRoot();
-            // check out type of current "table"
-            if (!empty($k)) {
-                // use key
-                switch($ptype) {
-                    CASE self::XC_CONFIG:
-                        $this->config->$k = $nroot;
-                        break;
-                    CASE self::XC_TABLE:
-                        $this->table[$k] = $nroot;
-                        break;
-                    DEFAULT:
-                        throw new \Exception("Parent not indexed");
-                        break;
-                }   
-            } else {
-                // push end array
-                if ($ptype !== self::XC_ARRAY) {
-                    throw new \Exception("Parent not a list");
-                }
-                //$this->table->pushBack($ntb);
-                
-                $this->table[] = $nroot;
-            }
         }
-        //$this->table = null;
-        //If ->table is a reference, assigning to it does weird sxxx
+        else {
+            $this->linkRoot($k, $nroot);
+        }
+        $this->stackRoot($nroot);
+    }
+
+    protected function linkRoot(string $k, object $nroot) {
+        $ptype = $this->dataType;
+        if (!empty($k)) {
+            // use key
+            switch ($ptype) {
+                CASE self::XC_CONFIG:
+                    $this->config->$k = $nroot;
+                    break;
+                CASE self::XC_TABLE:
+                    $this->table[$k] = $nroot;
+                    break;
+                DEFAULT:
+                    throw new \Exception("Parent not indexed");
+                    break;
+            }
+        } else {
+            // push end array
+            if ($ptype !== self::XC_ARRAY) {
+                throw new \Exception("Parent not a list");
+            }
+            //$this->table->pushBack($ntb);
+
+            $this->table[] = $nroot;
+        }
+    }
+
+    public function stackRoot(object $nroot) {
         $this->config = $nroot;
         $this->dataType = self::XC_CONFIG;
         $dstack = new DStack();
@@ -158,6 +220,26 @@ class XmlPhp extends \XMLReader {
         $dstack->dataType = self::XC_CONFIG;
         $this->path[] = $dstack;
     }
+
+    public function pushRoot($k = null) {
+        $ptype = $this->dataType;
+        if (is_null($ptype)) {
+            if ($this->addRoot) {
+                $nroot = $this->addRoot;
+            } else {
+                $nroot = $this->newRoot();
+            }
+            $this->root = $nroot;
+        } else {
+            $nroot = $this->newRoot();
+            $this->linkRoot($k, $nroot);
+            // check out type of current "table
+        }
+        //$this->table = null;
+        //If ->table is a reference, assigning to it does weird sxxx
+        $this->stackRoot($nroot);
+    }
+
     public function pushTable($atype = null, $k = null) {
         // PHP arrays will require & for assignment
         $ntb = [];
@@ -167,9 +249,9 @@ class XmlPhp extends \XMLReader {
             $this->isTable = true;
         } else {
             if (!empty($k)) {
-                switch($ptype) {
+                switch ($ptype) {
                     CASE self::XC_CONFIG:
-                        $this->config->$k =  &$ntb;
+                        $this->config->$k = &$ntb;
                         break;
                     CASE self::XC_TABLE:
                         $this->table[$k] = &$ntb;
@@ -197,9 +279,9 @@ class XmlPhp extends \XMLReader {
     }
 
     public function setValue($val, $k = null) {
-        switch($this->dataType) {
+        switch ($this->dataType) {
             CASE self::XC_CONFIG:
-                $this->config->$k =  $val;
+                $this->config->$k = $val;
                 break;
             CASE self::XC_TABLE:
                 $this->table[$k] = $val;
@@ -225,6 +307,7 @@ class XmlPhp extends \XMLReader {
             }
         }
         switch ($this->name) {
+
             case "root":
                 $this->pushRoot($k);
                 break;
@@ -243,7 +326,6 @@ class XmlPhp extends \XMLReader {
                 break;
             case "s" :
                 $ds = $this->readString();
-                debugLine(print_r($ds,true));
                 $this->setValue($ds, $k);
                 break;
             case "b" :
@@ -254,6 +336,20 @@ class XmlPhp extends \XMLReader {
             case "f":
                 $this->setValue(floatval($this->readString()), $k);
                 break;
+            case "pdoc":
+                break;
+            case "xtag":
+                $this->tagsTable();
+                break;
+            default:
+                $classname = $this->tag_objs[$this->name] ?? null;
+                if ($classname) {
+                    $this->pushClass($classname,$k);
+                }
+                else {
+                    throw new \Exception("Unmapped tag " . $this->name);
+                }
+                break;
         }
     }
 
@@ -262,73 +358,9 @@ class XmlPhp extends \XMLReader {
             return false;
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
-    /**
-     * 
-     * @param type $ref - reference to array
-     * @param type $outs - reference to string
-     * @param type $doKey
-     * @param string $indent
-     */
-    static function arrayToXml(&$ref, &$outs, $doKey = true, $indent = "") {
-        $indent .= "  ";
-        foreach ($ref as $k => $v) {
-            $keyPart = $doKey ? " k=\"$k\"" : "";
-            if (is_array($v)) {
-                $hasKey = static::isAssoc($v);
-                $tb = $hasKey ? "tb" : "a";
-                $outs .= $indent . "<$tb$keyPart>" . PHP_EOL;
-                static::arrayToXml($v, $outs, $hasKey, $indent);
-                $outs .= $indent . "</$tb>" . PHP_EOL;
-            } else if (is_integer($v)) {
-                $outs .= $indent . "<i$keyPart>" . $v . "</i>" . PHP_EOL;
-            } else if (is_null($v)) {
-                $outs .= $indent . "<_n$keyPart></_n>" . PHP_EOL;
-            } else if (is_bool($v)) {
-                $outs .= $indent . "<b$keyPart>" . intval($v) . "</b>" . PHP_EOL;
-            }  else if (is_float($v)) {
-                $outs .= $indent . "<f$keyPart>" . $v . "</f>" . PHP_EOL;
-            } 
-            else if (is_string($v)) {
-                if (is_numeric($v)) {
-                    if (strpos($v,'.') !== false) {
-                        $outs .= $indent . "<f$keyPart>" . $v . "</f>" . PHP_EOL;
-                    }
-                    else {
-                        $outs .= $indent . "<i$keyPart>" . $v . "</i>" . PHP_EOL;
-                    }
-                }
-                else {
-                    $outs .= $indent . "<s$keyPart>" . $v . "</s>" . PHP_EOL;
-                }
-            }
-            else if (is_object($v)){
-                $class = get_class($v);
-                $cattr = 'c="' . $class . '"';
-                $outs .= $indent . "<root$keyPart $cattr>" . PHP_EOL;
-                static::arrayToXml($v, $outs, true, $indent);
-                $outs .= $indent . "</root>" . PHP_EOL;
-            }
-        }
+
+    static public function fromFile($filename) {
+        return (new PdocReader())->parseFile($filename);
     }
 
-    static function toXmlDoc($ref) {
-        $outs = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" . PHP_EOL;
-        if (is_object($ref)) {
-            $tag = 'root';
-            $class_attr = ' c="' . get_class($ref) . '"';
-        }
-        else {
-            $tag = 'tb';
-            $class_attr = '';
-        }
-        $outs .= "<$tag$class_attr>" . PHP_EOL;
-        static::arrayToXml($ref, $outs);
-        $outs .= "</$tag>" . PHP_EOL;
-        return $outs;
-    }
-    
-    static public function fromFile($filename) 
-    {
-        return (new XmlPhp())->parseFile($filename);
-    }
 }

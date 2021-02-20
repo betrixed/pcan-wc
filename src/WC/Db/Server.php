@@ -44,6 +44,13 @@ class Server
         $this->con_data->add_connection($name, $params);
     }
     
+    /**
+     * return connection data as string or array
+     */
+    function getConfig(string $name)
+    {
+        return $this->con_data->get_connection($name);
+    }
 
     /**
      * Create Database object from configuration name

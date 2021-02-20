@@ -19,9 +19,9 @@ class IndexDef extends \WC\Db\AbstractDef {
 
 
     public function setSchema($row) {
-        $this->name = $row['Key_name'];
+        $this->name = $row['key_name'];
         $def['name'] = $this->name;
-        if ($row['Non_unique']) {
+        if ($row['non_unique']) {
             $def['type'] = 'INDEX';
         }
         else {
@@ -32,7 +32,7 @@ class IndexDef extends \WC\Db\AbstractDef {
                 $def['type'] = 'UNIQUE';
             }
         }
-        $columns[] = $row['Column_name'];
+        $columns[] = $row['column_name'];
         $def['columns'] = $columns;
         $this->setProperties($def);
     }

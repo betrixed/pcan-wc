@@ -55,20 +55,24 @@ class WConfig extends \stdClass implements \ArrayAccess {
         $cfg = new WConfig();
         return $cfg->addArray($a);
     }
+/*
+    public function addXml( $filename) {
+        $xml = new XmlPhp($this);
+        return $xml->parseFile($filename);
+    }
 
     static public function fromToml( $filename )
     {
         return \Toml\Input::parseFile($filename);
     }
+
+ */
     static public function fromXml( $filename)
     {
-        $xml = new XmlPhp();
+        $xml = new PdocReader();
         return $xml->parseFile($filename);
     }
-    public function addXml( $filename) {
-        $xml = new XmlPhp($this);
-        return $xml->parseFile($filename);
-    }
+
     public function addArray( $root) {
         foreach($root as $key => $val) {
             $this->$key = $val;

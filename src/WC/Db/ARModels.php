@@ -3,6 +3,7 @@
 namespace WC\Db;
 
 use ActiveRecord\{ConnectionManager, Config, Connection};
+use WC\Valid;
 
 class ARModels {
    
@@ -14,7 +15,7 @@ class ARModels {
         return str_replace(' ','', ucwords(str_replace('_', ' ', $uname)));
     }
     
-    static public function makeModelFiles(string $dbconfig_name, string $folder) {
+    static public function makeModelFiles(string $dbconfig_name, string $folder, \Closure $output=null) {
             global $APP;
             
             $db = ConnectionManager::get_connection($dbconfig_name);
@@ -23,6 +24,7 @@ class ARModels {
             $eol2 = PHP_EOL . PHP_EOL;
             $tab = "    ";
             $mappings = require $APP->site_dir . "/schema/field_maps.php";
+            $comment = "/** Generated from '$dbconfig_name' " . Valid::now() . " */" . $eol;
             foreach($tables as $model) {
                 if (!empty($mappings)) {
                     $fmap = $mappings[$model] ?? null;
@@ -33,9 +35,13 @@ class ARModels {
                 
                 $class_name = self::ccuName($model);
                 $file_path = $folder . "/" . $class_name . ".php";
-               
+                
                 if (!file_exists($file_path)) {
+                    if ($output !== null) {
+                        $output($file_path);
+                    }
                     $cf = "<?php" . $eol;
+                    $cf .= $comment;
                     $cf .= "namespace WC\\Models;" . $eol2;
                     $cf .= "use ActiveRecord\\Model;" . $eol2;
                     $cf .= "class " . $class_name . " extends Model" . $eol;

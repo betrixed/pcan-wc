@@ -17,14 +17,10 @@ use WC\Db\{Script, DbQuery,BatchInsert};
  */
 class TableDef extends \WC\Db\AbstractDef
 {
-
-    public $columns;
-    public $indexes;
-    public $references;
-    public $options;
-
     public function __construct()
     {
+        parent::__construct();
+        
         $this->columns = [];
         $this->indexes = [];
         $this->references = [];
@@ -37,7 +33,7 @@ class TableDef extends \WC\Db\AbstractDef
      * @param type $key
      * @param type $value
      */
-    public function getColumnsByProperty($key, $value)
+    public function getColumnsByProperty($key, $value) : array
     {
         $list = [];
         foreach ($this->columns as $cdef) {
@@ -167,29 +163,34 @@ EOS;
         $src = $sdef->getSchemaName() . '.' . $this->name;
         $data = $sdef->arraySet('SHOW FULL COLUMNS from ' . $src . ' ');
 
-        $this->columns = [];
+        $columns = [];
         foreach ($data as $row) {
             $cdef = new ColumnDef();
             $cdef->setSchema($row);
-            $this->columns[$cdef->name] = $cdef;
+            $columns[$cdef->name] = $cdef;
         }
+        $this->columns = $columns;
         $data = $sdef->arraySet('SHOW INDEXES from ' . $src . ' ');
-        $this->indexes = [];
+        
 
 
         $keyname = '';
         $idef = null;
+        $indexes = [];
         foreach ($data as $row) {
-            $ixname = $row['Key_name'];
+            $ixname = $row['key_name'];
             if ($ixname !== $keyname) {
                 $idef = new IndexDef();
                 $idef->setSchema($row);
-                $this->indexes[$idef->name] = $idef;
+                $indexes[$idef->name] = $idef;
                 $keyname = $ixname;
             } else {
-                $idef->columns[] = $row['Column_name'];
+                $old_columns = $idef->columns;
+                $old_columns[] = $row['column_name'];
+                $idef->columns  = $old_columns;
             }
         }
+        $this->indexes = $indexes;
     }
 
     public function makeCreate($stage)
@@ -292,7 +293,11 @@ EOS;
             }
             $result += 1;
             foreach ($row as $key => $value) {
-                $cdef = $columns[$key];
+                $cdef = $columns[$key] ?? null;
+                if ($cdef === null) {
+                    // probable case of fieldname?
+                    throw new \Exception("Column name not found: $key");
+                }
                 if (ColumnDef::quotedType($cdef->type)) {
                     if ($value === '' || is_null($value)) {
                         $data[] = 'NULL';

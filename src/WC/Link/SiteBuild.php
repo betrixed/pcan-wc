@@ -8,8 +8,8 @@ use Phalcon\Di\Injectable;
  * @author michael
  */
 
-use WC\Db\{Server, Script, DbQuery};
-use WC\{Dos, XmlPhp, App, Assets, Valid, AdaptXml};
+use WC\Db\{Script, DbQuery};
+use WC\{Dos, XmlPhp, Valid, AdaptXml};
 
 class SiteBuild
 {

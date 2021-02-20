@@ -7,18 +7,30 @@
  */
 
 namespace WC;
-
+//use Phalcon\Collection\Collection;
 /**
  * This seems too simple to bother, but it seems like a useful place for
  * a tiny piece of common functionality
  *
+ * A very real problem is databases and their various interfaces
+ * handle case of column and table names in different ways.
+ * 
+ * Now I understand why the design of the Phalcon\Container 
+ * defaults to having case insensitive keys.
+ * 
+ * Unfortunately Phalcon\Container has some other constraints,
+ * such as failure to assign a reference to an array as a value
  * @author Michael Rynn
  */
-class NameDef implements \ArrayAccess {
+class NameDef extends \stdClass implements \ArrayAccess {
 
     //put your code here
     public $name;
 
+    public function __construct() {
+        $this->name = null;
+    }
+    
     public function getName() {
         return $this->name;
     }
@@ -28,27 +40,8 @@ class NameDef implements \ArrayAccess {
         $this->name = $val;
     }
 
-    /**
-     * 
-     * @param type $offset
-     * @return bool
-     */
-    public function offsetExists($offset) {
-        return isset($this->$offset);
-    }
 
-    public function offsetGet($offset) {
-        return isset($this->$offset) ?  $this->$offset : null;
-    }
-
-    public function offsetSet($offset, $value) {
-        $this->$offset = $value;
-    }
-
-    public function offsetUnset($offset)  {
-        $this->$offset = null;
-    }
-
+    /** $def - Some iterable object or array */
     public function setProperties($def) {
         foreach($def as $key => $value) {
             $this->$key = $value;
@@ -137,6 +130,28 @@ class NameDef implements \ArrayAccess {
         $a2 = str_replace('_', '|', $a);
         $b2 = str_replace('_', '|', $b);
         return strcmp($a2, $b2);
+    }
+    
+    
+    /**
+     * Methods for \ArrayAccess
+     * @param type $offset
+     * @return bool
+     */
+    public function offsetExists($offset) {
+        return isset($this->$offset);
+    }
+
+    public function offsetGet($offset) {
+        return isset($this->$offset) ?  $this->$offset : null;
+    }
+
+    public function offsetSet($offset, $value) {
+        $this->$offset = $value;
+    }
+
+    public function offsetUnset($offset)  {
+        $this->$offset = null;
     }
 
 }
