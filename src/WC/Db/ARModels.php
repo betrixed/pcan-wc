@@ -18,6 +18,9 @@ class ARModels {
     static public function makeModelFiles(string $dbconfig_name, string $folder, \Closure $output=null) {
             global $APP;
             
+            if (!(file_exists($folder) && is_dir($folder))) {
+                throw new \Exception("Not a directory: $folder");
+            }
             $db = ConnectionManager::get_connection($dbconfig_name);
             $tables = $db->query_for_tables();
             $eol = PHP_EOL;

@@ -47,7 +47,8 @@ class IndexController extends Controller
         }
         $qry = <<<EOQ
     SELECT A.id, A.title, B.fromtime as  date1, B.totime as date2,
-    R.content as article, A.style, A.title_clean, C.content, D.content as image
+    R.content as article, A.style, A.title_clean, C.content, D.content as image,
+    L.url as link_url
     from blog A join blog_revision R on R.blog_id = A.id and R.revision = A.revision
     join event B on A.id = B.blogid and A.enabled = 1
     and (
@@ -60,7 +61,9 @@ class IndexController extends Controller
     join
     (select MC.blog_id, MC.content from blog_meta MC join meta M on MC.meta_id = M.id
     where M.meta_name = 'og:image') D on D.blog_id = A.id
+    left outer join links L on L.refid=A.id
     order by B.fromtime
+    
 EOQ;
 
         return (new DbQuery($this->db))->arraySet($qry);

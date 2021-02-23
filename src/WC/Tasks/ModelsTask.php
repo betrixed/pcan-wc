@@ -14,7 +14,7 @@ use WC\Db\ARModels;
  *
  * @author michael
  */
-class ModelsTask {
+class ModelsTask extends \Phalcon\Cli\Task {
     //put your code here
     public function generateAction()
     {
