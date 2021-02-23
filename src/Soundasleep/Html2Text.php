@@ -57,7 +57,7 @@ class Html2Text {
 
 		$doc = static::getDocument($html, $options['ignore_errors']);
 
-		$output = static::iterateOverNode($doc, null, false, $is_office_document, $options);
+		$output = static::iterateOverNode($doc, $options, null, false, $is_office_document);
 
 		// process output for whitespace/newlines
 		$output = static::processWhitespaceNewlines($output);
@@ -229,7 +229,7 @@ class Html2Text {
 		return $nextName;
 	}
 
-	static function iterateOverNode($node, $prevName = null, $in_pre = false, $is_office_document = false, $options) {
+	static function iterateOverNode($node, array $options, $prevName = null, $in_pre = false, $is_office_document = false) {
 		if ($node instanceof \DOMText) {
 		  // Replace whitespace characters with a space (equivilant to \s)
 			if ($in_pre) {
@@ -350,7 +350,7 @@ class Html2Text {
 
 			while ($n != null) {
 
-				$text = static::iterateOverNode($n, $previousSiblingName, $in_pre || $name == 'pre', $is_office_document, $options);
+				$text = static::iterateOverNode($n, $options, $previousSiblingName, $in_pre || $name == 'pre', $is_office_document);
 
 				// Pass current node name to next child, as previousSibling does not appear to get populated
 				if ($n instanceof \DOMDocumentType
